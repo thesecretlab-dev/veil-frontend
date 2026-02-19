@@ -1,0 +1,9 @@
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin or sensitive areas
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://veil.markets/sitemap.xml

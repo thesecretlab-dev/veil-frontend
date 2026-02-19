@@ -1,0 +1,21 @@
+{
+  "name": "VEIL - Privacy-First Prediction Markets",
+  "short_name": "VEIL",
+  "description": "Trade on future events with complete privacy",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.jpg",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.jpg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

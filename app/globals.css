@@ -1,0 +1,324 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated color tokens to match dramatic lighting design brief */
+  --background: #0a0a0a; /* Very dark gray for light mode (still dark but distinguishable) */
+  --foreground: rgba(255, 255, 255, 0.95); /* Slightly translucent white */
+  --card: rgba(255, 255, 255, 0.05); /* Subtle card background */
+  --card-foreground: rgba(255, 255, 255, 0.9); /* Light text on cards */
+  --popover: rgba(10, 10, 10, 0.95); /* Dark popover */
+  --popover-foreground: rgba(255, 255, 255, 0.95); /* Light text in popovers */
+  --primary: oklch(0.7 0.15 165); /* Minty green primary (emerald) */
+  --primary-foreground: rgba(0, 0, 0, 0.95); /* Dark text on green */
+  --secondary: rgba(255, 255, 255, 0.1); /* Subtle secondary */
+  --secondary-foreground: rgba(255, 255, 255, 0.9); /* Light text on secondary */
+  --muted: rgba(255, 255, 255, 0.1); /* Muted elements */
+  --muted-foreground: rgba(255, 255, 255, 0.6); /* Muted text */
+  --accent: oklch(0.7 0.15 165); /* Minty green accent */
+  --accent-foreground: rgba(0, 0, 0, 0.95); /* Dark text on accent */
+  --destructive: oklch(0.6 0.2 40); /* Amber for destructive */
+  --destructive-foreground: rgba(255, 255, 255, 0.95); /* Light text on destructive */
+  --border: rgba(16, 185, 129, 0.2); /* Minty green border with transparency */
+  --input: rgba(255, 255, 255, 0.05); /* Subtle input background */
+  --ring: oklch(0.7 0.15 165); /* Minty green focus ring */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.5rem; /* Softer rounded corners */
+  --sidebar: rgba(10, 10, 10, 0.95); /* Dark sidebar */
+  --sidebar-foreground: rgba(255, 255, 255, 0.95); /* Light sidebar text */
+  --sidebar-primary: oklch(0.7 0.15 165); /* Minty green sidebar primary */
+  --sidebar-primary-foreground: rgba(0, 0, 0, 0.95); /* Dark text on sidebar primary */
+  --sidebar-accent: rgba(255, 255, 255, 0.1); /* Subtle sidebar accent */
+  --sidebar-accent-foreground: rgba(255, 255, 255, 0.9); /* Light text on sidebar accent */
+  --sidebar-border: rgba(16, 185, 129, 0.2); /* Minty green sidebar border */
+  --sidebar-ring: oklch(0.7 0.15 165); /* Minty green sidebar focus */
+  --font-instrument-serif: "Instrument Serif", serif; /* Instrument Serif font family configuration */
+  /* Added Figtree as the primary font variable */
+  --font-figtree: "Figtree", sans-serif; /* Figtree font family configuration */
+}
+
+.dark {
+  /* Dark mode maintains the same dramatic black background theme */
+  --background: #000000; /* Pure black for dark mode */
+  --foreground: rgba(255, 255, 255, 0.95);
+  --card: rgba(255, 255, 255, 0.03);
+  --card-foreground: rgba(255, 255, 255, 0.9);
+  --popover: rgba(0, 0, 0, 0.95);
+  --popover-foreground: rgba(255, 255, 255, 0.95);
+  --primary: oklch(0.75 0.18 165); /* Brighter minty green for dark mode */
+  --primary-foreground: rgba(0, 0, 0, 0.95);
+  --secondary: rgba(255, 255, 255, 0.08);
+  --secondary-foreground: rgba(255, 255, 255, 0.9);
+  --muted: rgba(255, 255, 255, 0.08);
+  --muted-foreground: rgba(255, 255, 255, 0.55);
+  --accent: oklch(0.75 0.18 165); /* Brighter minty green accent */
+  --accent-foreground: rgba(0, 0, 0, 0.95);
+  --destructive: oklch(0.6 0.2 40);
+  --destructive-foreground: rgba(255, 255, 255, 0.95);
+  --border: rgba(16, 185, 129, 0.15);
+  --input: rgba(255, 255, 255, 0.03);
+  --ring: oklch(0.75 0.18 165);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: rgba(0, 0, 0, 0.95);
+  --sidebar-foreground: rgba(255, 255, 255, 0.95);
+  --sidebar-primary: oklch(0.75 0.18 165);
+  --sidebar-primary-foreground: rgba(0, 0, 0, 0.95);
+  --sidebar-accent: rgba(255, 255, 255, 0.08);
+  --sidebar-accent-foreground: rgba(255, 255, 255, 0.9);
+  --sidebar-border: rgba(16, 185, 129, 0.15);
+  --sidebar-ring: oklch(0.75 0.18 165);
+  --font-instrument-serif: "Instrument Serif", serif; /* Instrument Serif font family configuration */
+  /* Added Figtree font variable for dark mode consistency */
+  --font-figtree: "Figtree", sans-serif; /* Figtree font family configuration */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --font-instrument-serif: var(--font-instrument-serif);
+  /* Added Figtree font to theme configuration */
+  --font-sans: var(--font-figtree);
+  --font-figtree: var(--font-figtree);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* Set Figtree as the default font family for the entire website */
+    font-family: var(--font-figtree);
+  }
+}
+
+.instrument {
+  font-family: var(--font-instrument-serif);
+}
+
+/* Adding custom scrollbar styles for cleaner appearance */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* === thesecretlab signature === */
+
+/* Signature timing for color/opacity transitions — NOT transform/scale */
+/* This prevents framer-motion hover springs from feeling sluggish */
+section h2, section h3, section h4,
+section p {
+  transition: color 1.5s ease, text-shadow 1.5s ease, filter 1.5s ease, opacity 1.5s ease !important;
+}
+section button, section a {
+  transition: color 0.6s ease, background 0.6s ease, border-color 0.6s ease, box-shadow 0.6s ease, opacity 0.6s ease !important;
+}
+
+/* Ghost all headings slightly more */
+section h2 {
+  filter: blur(0.3px);
+}
+
+/* Tame the hover:scale-105 — too jumpy, make it subtler */
+.hover\:scale-105:hover {
+  transform: scale(1.02) !important;
+}
+
+/* Cards: border glow — don't override framer-motion transforms */
+[class*="rounded-2xl"], [class*="rounded-xl"] {
+  transition: border-color 0.6s ease, box-shadow 0.6s ease, background 0.6s ease !important;
+}
+
+/* (heading transitions handled above) */
+
+/* Music player: ghostlier default */
+.fixed button {
+  transition: opacity 1.5s ease !important;
+}
+
+/* Footer link hover */
+footer a {
+  transition: color 1.5s ease, text-shadow 1.5s ease !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(16,185,129,0.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.18); }
+
+/* Selection */
+::selection { background: rgba(16, 185, 129, 0.15); }
+
+/* Smooth scroll — Lenis handles this now, CSS fallback for no-JS */
+html { scroll-behavior: smooth; }
+
+/* Hide default cursor when custom cursor is active (landing page only, not /app) */
+@media (pointer: fine) {
+  .veil-custom-cursor, .veil-custom-cursor *, .veil-custom-cursor *::before, .veil-custom-cursor *::after { cursor: none !important; }
+}
+
+/* Stealth text — ghost elements that brighten on section hover */
+.stealth-text {
+  transition: opacity 1.5s ease-in, color 1.5s ease-in;
+}
+section:hover .stealth-text {
+  opacity: 0.35;
+  transition: opacity 1.5s ease-in;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* Mobile touch targets + active feedback */
+@media (pointer: coarse) {
+  button, a, [role="button"], input, textarea, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  * { -webkit-tap-highlight-color: transparent; }
+  /* Active press feedback for cards on touch */
+  [class*="rounded-xl"]:active,
+  [class*="rounded-2xl"]:active {
+    transform: scale(0.985) !important;
+    transition: transform 0.1s ease !important;
+  }
+  button:active, a:active {
+    opacity: 0.8;
+    transition: opacity 0.1s ease !important;
+  }
+}
+
+/* Launch App button — stealth pill */
+.veil-launch-btn {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  transition: all 1.5s ease;
+}
+.veil-launch-btn:hover {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.1), 0 0 60px rgba(16, 185, 129, 0.04);
+}
+.veil-launch-btn:not(:hover) {
+  transition: all 4s ease-out;
+}
+.veil-launch-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.2);
+  transition: all 1.5s ease;
+}
+.veil-launch-btn:hover .veil-launch-dot {
+  background: rgba(16, 185, 129, 0.7);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+.veil-launch-text {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  font-family: var(--font-space-grotesk);
+  color: rgba(255, 255, 255, 0.35);
+  transition: all 1.5s ease;
+}
+.veil-launch-btn:hover .veil-launch-text {
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+.veil-launch-btn:not(:hover) .veil-launch-text {
+  transition: all 4s ease-out;
+}
+.veil-launch-arrow {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.26);
+  transition: all 1.5s ease;
+  transform: translateX(0);
+}
+.veil-launch-btn:hover .veil-launch-arrow {
+  color: rgba(16, 185, 129, 0.5);
+  transform: translateX(3px);
+}
+.veil-launch-btn:not(:hover) .veil-launch-arrow {
+  transition: all 4s ease-out;
+}
+
+/* ── Adaptive text: shifts color against shader background ── */
+/* Applied to the main content z-10 layer on the landing page */
+.veil-adaptive-text {
+  mix-blend-mode: exclusion;
+}
+/* Hero title gets difference for maximum contrast punch */
+.veil-adaptive-text--hero {
+  mix-blend-mode: difference;
+}
+/* Ensure cards/bordered elements don't get washed out by blend */
+.veil-adaptive-text [class*="border"],
+.veil-adaptive-text [class*="rounded-2xl"],
+.veil-adaptive-text [class*="rounded-xl"] {
+  isolation: isolate;
+}
+
+/* Subtle page load fade */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+body > * {
+  animation: page-enter 0.6s ease-out;
+}
