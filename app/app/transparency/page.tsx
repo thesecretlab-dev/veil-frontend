@@ -50,8 +50,8 @@ const metrics = [
   },
   {
     label: "Mempool Privacy",
-    value: "Threshold-Gated Release",
-    target: "Cryptographic threshold keying in progress",
+    value: "Threshold Keying Active (Primary)",
+    target: "Secondary committee validator rollout pending",
     status: "neutral" as const,
   },
 ]
@@ -80,6 +80,13 @@ const principles = [
 ]
 
 const developerJournal = [
+  {
+    date: "2026-02-21",
+    title: "Live Runtime Activation Fixed for Threshold Keying",
+    summary:
+      "Local VEIL startup now writes per-chain VM config from secret env before AvalancheGo launch, fixing plugin env isolation. Active node now emits the cryptographic threshold-keying runtime marker and passes primary rollout checks; remaining gap is secondary committee validator readiness.",
+    status: "In Progress",
+  },
   {
     date: "2026-02-18",
     title: "Where We Started: Whitepaper Baseline Locked",
@@ -163,6 +170,12 @@ const changelog = [
   {
     date: "2026-02-21",
     change:
+      "Local node startup now materializes per-chain VM config from env so plugin subprocesses activate cryptographic threshold-keying mode consistently.",
+    type: "Hardening",
+  },
+  {
+    date: "2026-02-21",
+    change:
       "Cryptographic threshold-keying mode added (per-envelope key split + per-validator encrypted shares + threshold combine before release).",
     type: "Hardening",
   },
@@ -226,7 +239,7 @@ const launchBlockers = [
   {
     gate: "Cryptographic Threshold Keying",
     detail:
-      "Implementation and tooling are complete; run validator key ceremony and production rollout for the threshold-keying path, then archive adversarial evidence proving production does not run fallback decrypt mode.",
+      "Primary validator runtime activation is verified; remaining blocker is secondary committee validator rollout/readiness, then archive adversarial evidence proving production does not run fallback decrypt mode.",
     status: "In Progress",
   },
   {
