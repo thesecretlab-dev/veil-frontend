@@ -50,8 +50,8 @@ const metrics = [
   },
   {
     label: "Mempool Privacy",
-    value: "Transport Encrypted",
-    target: "Threshold decrypt in progress",
+    value: "Threshold-Gated Release",
+    target: "Cryptographic threshold keying in progress",
     status: "neutral" as const,
   },
 ]
@@ -75,7 +75,7 @@ const principles = [
   {
     title: "Gate-Based Launch Discipline",
     description:
-      "Mainnet launch stays NO-GO until every required gate is PASS with archived evidence, including remaining mempool threshold-decrypt work.",
+      "Mainnet launch stays NO-GO until every required gate is PASS with archived evidence, including remaining cryptographic threshold-keying work for mempool privacy.",
   },
 ]
 
@@ -117,21 +117,34 @@ const developerJournal = [
   },
   {
     date: "2026-02-21",
+    title: "Threshold-Gated Decrypt Release Implemented",
+    summary:
+      "Encrypted tx gossip now uses threshold envelopes and a validator-share quorum gate before release into mempool submit path. Dockerized chain/vm tests pass for this path.",
+    status: "Completed",
+  },
+  {
+    date: "2026-02-21",
     title: "Current Critical Gap",
     summary:
-      "Threshold/network mempool decryption is still pending. Transport encryption is live, but full mempool privacy still requires that no single validator can decrypt gossip alone.",
+      "Cryptographic threshold keying is still pending. Release is now quorum-gated, but full mempool confidentiality still requires local secret compromise of a single validator to be insufficient for decryption.",
     status: "In Progress",
   },
   {
     date: "2026-02-21",
     title: "Current Launch Posture",
     summary:
-      "We remain NO-GO for production while remaining gates are closed, including threshold-decrypt completion, key ceremony/admin rotation, and full launch rehearsal.",
+      "We remain NO-GO for production while remaining gates are closed, including cryptographic threshold-keying completion, key ceremony/admin rotation, and full launch rehearsal.",
     status: "In Progress",
   },
 ]
 
 const changelog = [
+  {
+    date: "2026-02-21",
+    change:
+      "Threshold envelope gossip and validator-quorum-gated decrypt release path wired into VM mempool admission flow.",
+    type: "Hardening",
+  },
   {
     date: "2026-02-21",
     change:
@@ -178,9 +191,9 @@ const changelog = [
 
 const launchBlockers = [
   {
-    gate: "Threshold / Network Mempool Decrypt",
+    gate: "Cryptographic Threshold Keying",
     detail:
-      "Complete threshold decryption so no single validator can decrypt mempool gossip independently.",
+      "Replace shared-key decrypt capability with cryptographic threshold keying so one validator's local secrets are insufficient to decrypt mempool gossip.",
     status: "In Progress",
   },
   {
