@@ -82,6 +82,13 @@ const principles = [
 const developerJournal = [
   {
     date: "2026-02-21",
+    title: "Live Dev Journal Pipeline Verified",
+    summary:
+      "Transparency updates can now be published straight to production with isolated single-commit deployment flow, so live community updates ship without bundling unrelated in-progress frontend work.",
+    status: "Completed",
+  },
+  {
+    date: "2026-02-21",
     title: "Live Runtime Activation Fixed for Threshold Keying",
     summary:
       "Local VEIL startup now writes per-chain VM config from secret env before AvalancheGo launch, fixing plugin env isolation. Active node now emits the cryptographic threshold-keying runtime marker and passes primary rollout checks; remaining gap is secondary committee validator readiness.",
