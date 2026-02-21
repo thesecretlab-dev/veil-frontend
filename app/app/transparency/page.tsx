@@ -143,6 +143,20 @@ const developerJournal = [
       "We remain NO-GO for production while remaining gates are closed, including cryptographic threshold-keying completion, key ceremony/admin rotation, and full launch rehearsal.",
     status: "In Progress",
   },
+  {
+    date: "2026-02-21",
+    title: "Threshold Key-Ceremony Tooling Added",
+    summary:
+      "VeilVM key tooling now includes threshold-node and threshold-ceremony modes to generate committee public-key bundles, ceremony manifests, and per-validator rollout env snippets for cryptographic mempool threshold keying.",
+    status: "Completed",
+  },
+  {
+    date: "2026-02-21",
+    title: "Key Ceremony Execution Is the Active Blocker",
+    summary:
+      "Implementation and tooling are in place; remaining work is operational: execute production validator ceremony, roll config network-wide, and archive adversarial evidence that threshold-keying mode is active in production profile.",
+    status: "In Progress",
+  },
 ]
 
 const changelog = [
@@ -150,6 +164,12 @@ const changelog = [
     date: "2026-02-21",
     change:
       "Cryptographic threshold-keying mode added (per-envelope key split + per-validator encrypted shares + threshold combine before release).",
+    type: "Hardening",
+  },
+  {
+    date: "2026-02-21",
+    change:
+      "Threshold key-ceremony tooling added to veilvm-keygen for validator key generation, committee manifesting, and rollout env packaging.",
     type: "Hardening",
   },
   {
@@ -206,7 +226,7 @@ const launchBlockers = [
   {
     gate: "Cryptographic Threshold Keying",
     detail:
-      "Run validator key ceremony and production rollout for the threshold-keying path, then archive adversarial evidence proving production does not run fallback decrypt mode.",
+      "Implementation and tooling are complete; run validator key ceremony and production rollout for the threshold-keying path, then archive adversarial evidence proving production does not run fallback decrypt mode.",
     status: "In Progress",
   },
   {
