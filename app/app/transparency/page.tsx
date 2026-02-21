@@ -124,9 +124,16 @@ const developerJournal = [
   },
   {
     date: "2026-02-21",
+    title: "Cryptographic Threshold-Keying Mode Implemented",
+    summary:
+      "A cryptographic mode was added using per-envelope key-splitting and per-validator encrypted shares, with threshold combination before mempool release. Activation still requires production key ceremony and rollout evidence.",
+    status: "In Progress",
+  },
+  {
+    date: "2026-02-21",
     title: "Current Critical Gap",
     summary:
-      "Cryptographic threshold keying is still pending. Release is now quorum-gated, but full mempool confidentiality still requires local secret compromise of a single validator to be insufficient for decryption.",
+      "Production activation and evidence remain pending. Cryptographic threshold-keying code path is implemented, but launch claims require validator key ceremony, rollout, and adversarial replay proof in production profile.",
     status: "In Progress",
   },
   {
@@ -139,6 +146,12 @@ const developerJournal = [
 ]
 
 const changelog = [
+  {
+    date: "2026-02-21",
+    change:
+      "Cryptographic threshold-keying mode added (per-envelope key split + per-validator encrypted shares + threshold combine before release).",
+    type: "Hardening",
+  },
   {
     date: "2026-02-21",
     change:
@@ -193,7 +206,7 @@ const launchBlockers = [
   {
     gate: "Cryptographic Threshold Keying",
     detail:
-      "Replace shared-key decrypt capability with cryptographic threshold keying so one validator's local secrets are insufficient to decrypt mempool gossip.",
+      "Run validator key ceremony and production rollout for the threshold-keying path, then archive adversarial evidence proving production does not run fallback decrypt mode.",
     status: "In Progress",
   },
   {
