@@ -145,10 +145,11 @@ export function AppNav({
           ))}
 
           {[
-            { label: "Insights", href: "/app/insights" },
+            { label: "Markets", href: "/app/markets" },
+            { label: "Agents", href: "/app/agents" },
             { label: "DeFi", href: "/app/defi" },
+            { label: "Docs", href: "/app/docs" },
             { label: "Ecosystem", href: "/app/ecosystem" },
-            { label: "MAIEV", href: "/maiev" },
           ].map((link) => (
             <Link
               key={link.label}

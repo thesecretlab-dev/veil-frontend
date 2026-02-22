@@ -1641,13 +1641,13 @@ export default function ExploreVeilPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <ParticipateCard step="01" title="Build Agents"
                 description="Use the ANIMA SDK to create autonomous agents that trade markets, accumulate capital, and progress through the sovereignty lifecycle. Go runtime for lifecycle, TypeScript for strategy."
-                href="/app/docs" cta="Read the Docs" delay={0} />
-              <ParticipateCard step="02" title="Run Markets"
+                href="/app/agents" cta="View Agents" delay={0} />
+              <ParticipateCard step="02" title="Trade Markets"
                 description="Create and resolve prediction markets. Provide liquidity. Bond into chain-owned pools. Every market is an arena where agents prove capability under real economic pressure."
                 href="/app/markets" cta="Explore Markets" delay={0.08} />
-              <ParticipateCard step="03" title="Validate"
-                description="Run a VEIL validator node and participate in consensus. Earn staking rewards through vVEIL, join the reveal committee for batch settlement, help secure the chain."
-                href="/app/ecosystem" cta="View Ecosystem" delay={0.16} />
+              <ParticipateCard step="03" title="Stake & Govern"
+                description="Stake VEIL into vVEIL for yield. Wrap into gVEIL for governance weight. Participate in bond markets. Run a validator node and join the reveal committee for batch settlement."
+                href="/app/defi" cta="View DeFi" delay={0.16} />
             </div>
           </div>
         </section>
@@ -1749,17 +1749,48 @@ export default function ExploreVeilPage() {
                   letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)",
                 }}>VEIL</span>
               </div>
-              <div className="flex items-center gap-8">
+              <div className="flex items-center gap-8 flex-wrap">
                 {[
-                  { label: "Docs", href: "/app/docs" },
-                  { label: "Ecosystem", href: "/app/ecosystem" },
-                  { label: "Blog", href: "/app/blog" },
-                  { label: "GitHub", href: "https://github.com/0x12371C" },
-                  { label: "Transparency", href: "/app/transparency" },
+                  { label: "Markets", href: "/app/markets" },
+                  { label: "Agents", href: "/app/agents" },
+                  { label: "DeFi", href: "/app/defi" },
+                  { label: "Gov", href: "/app/gov" },
                 ].map(link => (
                   <Link key={link.label} href={link.href}
                     className="text-[11px] tracking-[0.15em] uppercase transition-colors duration-500 hover:text-emerald-400/50"
-                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.15)" }}>
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.2)" }}>
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="mt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-6 flex-wrap justify-center">
+                {[
+                  { label: "Docs", href: "/app/docs" },
+                  { label: "Blog", href: "/app/blog" },
+                  { label: "Ecosystem", href: "/app/ecosystem" },
+                  { label: "MAIEV", href: "/maiev" },
+                  { label: "Transparency", href: "/app/transparency" },
+                  { label: "Investor Deck", href: "/app/investor-deck" },
+                  { label: "GitHub", href: "https://github.com/0x12371C" },
+                ].map(link => (
+                  <Link key={link.label} href={link.href}
+                    className="text-[10px] tracking-[0.12em] uppercase transition-colors duration-500 hover:text-emerald-400/40"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.1)" }}>
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+              <div className="flex items-center gap-6">
+                {[
+                  { label: "Terms", href: "/app/terms" },
+                  { label: "Privacy", href: "/app/privacy" },
+                  { label: "Support", href: "/app/support" },
+                ].map(link => (
+                  <Link key={link.label} href={link.href}
+                    className="text-[10px] tracking-[0.12em] uppercase transition-colors duration-500 hover:text-white/20"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.07)" }}>
                     {link.label}
                   </Link>
                 ))}
@@ -1769,7 +1800,7 @@ export default function ExploreVeilPage() {
               <p style={{
                 fontFamily: "var(--font-space-grotesk)", fontSize: "10px",
                 letterSpacing: "0.2em", color: "rgba(255,255,255,0.08)",
-              }}>© 2026 VEIL · Built by THE SECRET LAB</p>
+              }}>© 2026 VEIL · Built by <Link href="https://thesecretlab.app" className="hover:text-white/15 transition-colors">THE SECRET LAB</Link></p>
             </div>
           </div>
         </footer>
