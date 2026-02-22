@@ -3,10 +3,10 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Portfolio",
-  description: "View your trading portfolio, active positions, and transaction history on VEIL.",
+  description: "Preview portfolio UX and position analytics for VEIL while live execution remains gated.",
   openGraph: {
     title: "Portfolio - VEIL",
-    description: "Manage your privacy-first prediction market positions.",
+    description: "Preview portfolio UX for VEIL's staged launch environment.",
   },
 }
 

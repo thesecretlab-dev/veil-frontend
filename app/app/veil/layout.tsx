@@ -2,20 +2,20 @@ import type React from "react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "VEILfi - Staking, Liquidity & Governance | VEIL Protocol",
+  title: "VEILfi Preview - Staking, Liquidity & Governance | VEIL Protocol",
   description:
-    "Stake into rebasing vVEIL, wrap to gVEIL governance units, provide liquidity to chain-owned pools, and participate in governance. Track POL depth, liquidity targets, and reward policy.",
+    "Preview VEILfi staking, liquidity, and governance mechanics. Execution is gated while launch readiness remains in-progress.",
   openGraph: {
-    title: "VEILfi - Staking, Liquidity & Governance",
+    title: "VEILfi Preview - Staking, Liquidity & Governance",
     description:
-      "Stake into rebasing vVEIL, wrap to gVEIL governance units, provide liquidity to chain-owned pools, and participate in governance.",
+      "Preview VEILfi staking, liquidity, and governance mechanics while launch gates remain in-progress.",
     type: "website",
     url: "https://veil.exchange/app/veil",
   },
   twitter: {
     card: "summary_large_image",
-    title: "VEILfi - Staking, Liquidity & Governance",
-    description: "Stake into rebasing vVEIL, wrap to gVEIL, provide liquidity, and govern the protocol.",
+    title: "VEILfi Preview - Staking, Liquidity & Governance",
+    description: "Preview VEILfi staking and liquidity mechanics; execution is currently gated by launch readiness.",
   },
 }
 

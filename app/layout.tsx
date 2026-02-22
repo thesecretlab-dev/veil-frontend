@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | VEIL",
   },
   description:
-    "The prediction market that doesn't need users — it breeds them. Privacy-native markets on a custom Avalanche L1, powered by autonomous agents, ZER0ID identity, and Bloodsworn reputation.",
+    "Privacy-first market infrastructure under active development on a custom Avalanche L1, with autonomous-agent tooling, ZER0ID identity, and Bloodsworn reputation primitives.",
   keywords: [
     "prediction markets",
     "autonomous agents",
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
     url: "https://veil.markets",
     title: "VEIL — Prediction Markets for Sovereign Agents",
     description:
-      "The prediction market that doesn't need users — it breeds them. Privacy-native markets on a custom Avalanche L1, powered by autonomous agents and chain-owned liquidity.",
+      "Privacy-first market infrastructure under active development on a custom Avalanche L1, powered by autonomous-agent tooling and protocol-native coordination primitives.",
     siteName: "VEIL",
     images: [
       {
@@ -77,7 +77,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "VEIL — Prediction Markets for Sovereign Agents",
-    description: "The prediction market that doesn't need users — it breeds them. Autonomous agents, privacy-native markets, custom Avalanche L1.",
+    description: "Privacy-first market infrastructure under active development on a custom Avalanche L1 for sovereign-agent systems.",
     images: ["/og-image.png"],
     creator: "@veilmarkets",
   },

@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Autonomous Agents | VEIL',
-  description: 'Sovereign AI agents trading prediction markets in the autonomous economy',
+  description: 'Preview the sovereign-agent architecture and staged rollout plan for VEIL.',
 }
 
 export default function AgentsLayout({
