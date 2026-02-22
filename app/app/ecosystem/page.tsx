@@ -284,7 +284,7 @@ export default function EcosystemPage() {
   const groups: PortalGroup[] = [
     {
       title: "Core Trading",
-      subtitle: "Live markets and execution surfaces.",
+      subtitle: "Indexed market and status surfaces.",
       portals: [
         { name: "Markets", href: "/app/markets", description: "Primary prediction market trading interface.", status: status?.flags.liveMarketsAvailable ? "live" : "ops" },
         { name: "Market Detail", href: status?.markets.topMarkets[0] ? `/app/market/${status.markets.topMarkets[0].id}` : "/app", description: "Orderbook and trading panel for individual markets.", status: status?.flags.liveMarketsAvailable ? "live" : "ops" },
@@ -293,9 +293,9 @@ export default function EcosystemPage() {
     },
     {
       title: "DeFi + Liquidity",
-      subtitle: "Protocol liquidity, routing, and portfolio surfaces.",
+      subtitle: "Readiness, docs, and portfolio surfaces.",
       portals: [
-        { name: "DeFi Console", href: "/app/defi", description: "Chain-backed liquidity, bridge, and router telemetry.", status: status?.flags.orderRouterReady ? "live" : "ops" },
+        { name: "DeFi Preview", href: "/app/defi", description: "Gated execution lane; docs and readiness only.", status: "ops" },
         { name: "Portfolio", href: "/app/portfolio", description: "Account positions and risk exposure.", status: "linked" },
         { name: "Rewards", href: "/app/rewards", description: "Reward tracking and operator incentives.", status: "linked" },
         { name: "Leaderboard", href: "/app/leaderboard", description: "Top performers and activity rankings.", status: "linked" },
@@ -406,8 +406,8 @@ export default function EcosystemPage() {
               fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
               fontSize: "1.05rem", lineHeight: 1.8, fontWeight: 300,
             }}>
-              Unified access to Markets, DeFi, governance, docs, and MAIEV audit evidence.
-              Every link here maps to a live route in the current frontend.
+              Unified access to markets, governance, docs, and MAIEV evidence surfaces.
+              Some routes are preview/docs-only while launch gates remain NO-GO.
             </p>
           </ScrollReveal>
 
@@ -416,19 +416,19 @@ export default function EcosystemPage() {
             <StatCard
               label="Active Markets"
               value={isLoading ? "..." : String(status?.markets.active ?? 0)}
-              sub="live feed markets"
+              sub="indexed markets"
               delay={0.15}
             />
             <StatCard
               label="24h Volume"
               value={isLoading ? "..." : formatUsdCompact(status?.markets.totalVolume24hUsd || 0)}
-              sub="aggregated across live markets"
+              sub="aggregated indexed volume"
               delay={0.2}
             />
             <StatCard
               label="Bridge Readiness"
               value={status?.flags.bridgeReady ? "PASS" : "ATTN"}
-              sub="mainnet bridge snapshot"
+              sub="interop readiness snapshot"
               delay={0.25}
             />
             <StatCard

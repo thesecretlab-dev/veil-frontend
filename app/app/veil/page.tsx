@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 
+import { getFeature } from "@/app/lib/surface-translation-registry"
 import type { PortalStatusResponse } from "@/lib/portal-status"
 
 /* ─── Types ─── */
@@ -86,6 +87,15 @@ const ECOSYSTEM_FLOW: Array<{ step: string; detail: string }> = [
   { step: "5. Bond", detail: "LP positions can be bonded into chain-owned liquidity lanes." },
   { step: "6. Execute", detail: "Keepers and governance-approved jobs run treasury and market operations." },
 ]
+
+const COMPANION_RAILS = getFeature("companion_evm_rails")
+const WALLET_COMPAT = getFeature("evm_wallet_compatibility")
+const EXECUTION_ENABLED = COMPANION_RAILS?.ui_action_policy.cta_state === "enabled"
+const WALLET_ENABLED = WALLET_COMPAT?.ui_action_policy.cta_state === "enabled"
+const EXECUTION_REASON =
+  COMPANION_RAILS?.ui_action_policy.cta_reason ?? "Execution remains gated by launch readiness."
+const WALLET_REASON =
+  WALLET_COMPAT?.ui_action_policy.cta_reason ?? "Wallet compatibility remains in staged rollout."
 
 /* ─── Helpers ─── */
 function shortAddress(value: string): string {
@@ -282,6 +292,10 @@ export default function VeilDeFiPage() {
   }, [])
 
   useEffect(() => {
+    if (!WALLET_ENABLED) {
+      setWalletAddress("")
+      return
+    }
     if (typeof window === "undefined" || typeof window.ethereum === "undefined") return
     let mounted = true
     const syncAccounts = async () => {
@@ -406,6 +420,10 @@ export default function VeilDeFiPage() {
 
   /* ─── Wallet ─── */
   const connectWallet = async () => {
+    if (!WALLET_ENABLED) {
+      setWalletError(`Wallet connection is currently gated: ${WALLET_REASON}.`)
+      return
+    }
     if (typeof window === "undefined" || typeof window.ethereum === "undefined") {
       setWalletError("No injected wallet found. Install VEIL Wallet or MetaMask.")
       return
@@ -431,6 +449,10 @@ export default function VeilDeFiPage() {
   }
 
   const executeAction = () => {
+    if (!EXECUTION_ENABLED) {
+      setToast(`Execution is gated: ${EXECUTION_REASON}.`)
+      return
+    }
     if (!walletAddress) { setWalletError("Connect wallet first."); return }
     if (activeTab === "swap") { setToast("Swap request queued in testnet execution lane."); return }
     if (activeTab === "stake") { setToast("Stake request queued. vVEIL rebases by dynamic APY; gVEIL wrapper index updates each epoch."); return }
@@ -538,7 +560,7 @@ export default function VeilDeFiPage() {
           <div className="flex items-center gap-3">
             <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
             <span className="font-[var(--font-instrument-serif)] text-lg tracking-tight text-white/90">VEIL</span>
-            <span className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.2em] text-white/25">DeFi Console</span>
+            <span className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.2em] text-white/25">DeFi Preview</span>
           </div>
           <div className="flex items-center gap-1">
             {[
@@ -579,7 +601,7 @@ export default function VeilDeFiPage() {
                 Swap, Stake, Bond
               </h1>
               <p className="mx-auto mt-4 max-w-xl font-[var(--font-figtree)] text-sm leading-relaxed text-white/35">
-                Traditional DeFi console with VEIL-native vVEIL rebasing and gVEIL governance wrapping.
+                Preview console for VEIL-native staking, bonding, and liquidity mechanics. Production execution remains gated by launch status.
               </p>
             </header>
           </ScrollReveal>
@@ -589,6 +611,14 @@ export default function VeilDeFiPage() {
             <ScrollReveal>
               <div className="mb-10 rounded-[16px] border border-amber-500/20 bg-amber-500/[0.04] px-5 py-3.5 text-center font-[var(--font-figtree)] text-sm text-amber-200/70">
                 Testnet mode active. Financial outcomes are non-production and should not be treated as live market performance.
+              </div>
+            </ScrollReveal>
+          )}
+
+          {(!EXECUTION_ENABLED || !WALLET_ENABLED) && (
+            <ScrollReveal>
+              <div className="mb-10 rounded-[16px] border border-white/[0.08] bg-white/[0.02] px-5 py-3.5 text-center font-[var(--font-figtree)] text-sm text-white/60">
+                Preview mode only. Execution: {EXECUTION_REASON}. Wallet: {WALLET_REASON}.
               </div>
             </ScrollReveal>
           )}
@@ -616,7 +646,7 @@ export default function VeilDeFiPage() {
 
           {/* ─── 02 · Action Console + Sidebar ─── */}
           <ScrollReveal>
-            <SectionLabel number="02" title="Console" sub="Execute protocol operations" />
+            <SectionLabel number="02" title="Console" sub="Preview protocol operations (execution gated)" />
           </ScrollReveal>
           <div className="mb-16 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
             <ScrollReveal>
@@ -655,7 +685,8 @@ export default function VeilDeFiPage() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <button
                     onClick={executeAction}
-                    className="group relative overflow-hidden rounded-[14px] border border-emerald-500/25 bg-emerald-500/10 px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400 transition-all hover:bg-emerald-500/15 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)]"
+                    disabled={!EXECUTION_ENABLED}
+                    className="group relative overflow-hidden rounded-[14px] border border-emerald-500/25 bg-emerald-500/10 px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400 transition-all hover:bg-emerald-500/15 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-emerald-500/10 disabled:hover:shadow-none"
                   >
                     <span className="relative z-10">Execute {activeTab}</span>
                   </button>
@@ -687,10 +718,10 @@ export default function VeilDeFiPage() {
                   ) : (
                     <button
                       onClick={connectWallet}
-                      disabled={isWalletConnecting}
+                      disabled={isWalletConnecting || !WALLET_ENABLED}
                       className="mb-4 w-full rounded-[14px] border border-emerald-500/20 bg-emerald-500/8 px-4 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400 transition-all hover:bg-emerald-500/12 disabled:opacity-50"
                     >
-                      {isWalletConnecting ? "Connecting..." : "Connect Wallet"}
+                      {!WALLET_ENABLED ? "Wallet Waitlist" : isWalletConnecting ? "Connecting..." : "Connect Wallet"}
                     </button>
                   )}
                   {walletError && <p className="mb-3 font-[var(--font-figtree)] text-xs text-amber-300/80">{walletError}</p>}
@@ -850,3 +881,4 @@ export default function VeilDeFiPage() {
     </>
   )
 }
+
