@@ -85,6 +85,7 @@ const developerJournal = [
     title: "Private Liquidity Proof Path Hardened (Local Evidence)",
     summary:
       "Marketless private-liquidity envelope handling was corrected in VeilVM action verification, then validated with passing adversarial backup+malformed evidence (20260222-024215) and a passing post-fix smoke run (20260222-033228). Consolidated full-set rerun archive is still pending before launch-gate promotion.",
+    briefing: "Fixed private liquidity verification edge case, then validated with adversarial and smoke PASS evidence in local profile.",
     status: "Completed",
   },
   {
@@ -92,6 +93,7 @@ const developerJournal = [
     title: "Secondary Committee Rollout Closed (Local Profile)",
     summary:
       "Secondary validator committee activation is now live in the active VeilVM stack. Threshold-keying rollout audit passes for both validators with readiness green and runtime cryptographic markers present in logs (evidence run: tkroll-20260221-235446).",
+    briefing: "Second validator now participates in threshold-keyed decrypt release with passing rollout audit evidence.",
     status: "Completed",
   },
   {
@@ -99,6 +101,7 @@ const developerJournal = [
     title: "Live Dev Journal Pipeline Verified",
     summary:
       "Transparency updates can now be published straight to production with isolated single-commit deployment flow, so live community updates ship without bundling unrelated in-progress frontend work.",
+    briefing: "Established clean single-file publish flow so community updates can ship live without frontend churn.",
     status: "Completed",
   },
   {
@@ -106,6 +109,7 @@ const developerJournal = [
     title: "Live Runtime Activation Fixed for Threshold Keying",
     summary:
       "Local VEIL startup now writes per-chain VM config from secret env before AvalancheGo launch, fixing plugin env isolation. The secondary committee rollout gap that remained at this stage is now closed in the active local profile.",
+    briefing: "Startup config materialization now reliably activates threshold mode in the VM runtime process.",
     status: "Completed",
   },
   {
@@ -113,6 +117,7 @@ const developerJournal = [
     title: "Where We Started: Whitepaper Baseline Locked",
     summary:
       "We finalized the implementation baseline for VeilVM: encrypted mempool, shielded commitment/nullifier ledger, proof-gated batch execution, objective slashing, and deterministic replay.",
+    briefing: "Locked protocol scope to whitepaper invariants and used it as the engineering source of truth.",
     status: "Completed",
   },
   {
@@ -120,6 +125,7 @@ const developerJournal = [
     title: "Chain Bring-Up and Proof Pipeline",
     summary:
       "Local VEIL chain reached stable block production, proof-gated batch flow was wired, Vellum proof blob storage was enabled, and benchmark validation was hardened to require indexed execution success.",
+    briefing: "Reached stable local chain operation with strict proof path checks and indexed execution validation.",
     status: "Completed",
   },
   {
@@ -127,6 +133,7 @@ const developerJournal = [
     title: "Reliability and Interop Rails",
     summary:
       "Launch-gate runner reliability improved with targeted execution and fuel preflight hardening. Companion EVM intent relay paths were wired for both order and liquidity intents.",
+    briefing: "Improved launch-gate reliability and wired EVM compatibility rails for intents and liquidity routing.",
     status: "Completed",
   },
   {
@@ -134,6 +141,7 @@ const developerJournal = [
     title: "Private-Only Admission Enforced",
     summary:
       "Consensus now enforces a private-only action allowlist for core flow. Direct public AMM paths are rejected in strict mode; native liquidity ingress routes through private CommitOrder envelopes.",
+    briefing: "Consensus now rejects public core-flow actions and only admits proof-verified private envelope routes.",
     status: "Completed",
   },
   {
@@ -141,6 +149,7 @@ const developerJournal = [
     title: "Mempool Gossip Hardening Shipped",
     summary:
       "Tx gossip transport is now authenticated-encrypted (AES-256-GCM) with fail-closed key requirements. Local key management was moved to git-ignored secrets.",
+    briefing: "Gossip confidentiality and authenticity are enforced, with fail-closed key requirements in local stack.",
     status: "Completed",
   },
   {
@@ -148,6 +157,7 @@ const developerJournal = [
     title: "Threshold-Gated Decrypt Release Implemented",
     summary:
       "Encrypted tx gossip now uses threshold envelopes and a validator-share quorum gate before release into mempool submit path. Dockerized chain/vm tests pass for this path.",
+    briefing: "Decrypt release now requires committee quorum shares before transaction admission into mempool.",
     status: "Completed",
   },
   {
@@ -155,6 +165,7 @@ const developerJournal = [
     title: "Cryptographic Threshold-Keying Mode Implemented",
     summary:
       "A cryptographic mode was added using per-envelope key-splitting and per-validator encrypted shares, with threshold combination before mempool release. Activation still requires production key ceremony and rollout evidence.",
+    briefing: "Cryptographic threshold mechanism is implemented; production activation evidence and ceremony remain pending.",
     status: "In Progress",
   },
   {
@@ -162,6 +173,7 @@ const developerJournal = [
     title: "Current Critical Gap",
     summary:
       "Local activation and rollout evidence are now passing. Remaining critical gap is production-profile validator ceremony/rollout and adversarial evidence proving fallback decrypt mode is not active in production.",
+    briefing: "Main remaining risk is production custody and proving fallback decrypt mode cannot activate in production.",
     status: "In Progress",
   },
   {
@@ -169,6 +181,7 @@ const developerJournal = [
     title: "Current Launch Posture",
     summary:
       "We remain NO-GO for production while remaining gates are closed, including cryptographic threshold-keying completion, key ceremony/admin rotation, and full launch rehearsal.",
+    briefing: "Launch remains NO-GO until all gates are PASS with archived production-grade evidence.",
     status: "In Progress",
   },
   {
@@ -176,6 +189,7 @@ const developerJournal = [
     title: "Threshold Key-Ceremony Tooling Added",
     summary:
       "VeilVM key tooling now includes threshold-node and threshold-ceremony modes to generate committee public-key bundles, ceremony manifests, and per-validator rollout env snippets for cryptographic mempool threshold keying.",
+    briefing: "Added operator tooling for committee manifests, validator bundles, and rollout snippets for key ceremony.",
     status: "Completed",
   },
   {
@@ -183,6 +197,7 @@ const developerJournal = [
     title: "Key Ceremony Execution Is the Active Blocker",
     summary:
       "Implementation and tooling are in place; remaining work is operational: execute production validator ceremony, roll config network-wide, and archive adversarial evidence that threshold-keying mode is active in production profile.",
+    briefing: "Code is ready; blocker is operational execution of production ceremony, rollout, and audit evidence.",
     status: "In Progress",
   },
 ]
@@ -552,6 +567,12 @@ export default function TransparencyPage() {
                     style={{ color: "rgba(255, 255, 255, 0.42)", fontFamily: "var(--font-figtree)" }}
                   >
                     {entry.summary}
+                  </p>
+                  <p
+                    className="text-sm font-light mt-4"
+                    style={{ color: "rgba(16, 185, 129, 0.82)", fontFamily: "var(--font-space-grotesk)" }}
+                  >
+                    Dev briefing: {entry.briefing}
                   </p>
                 </div>
               </ScrollReveal>
