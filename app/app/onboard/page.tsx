@@ -696,66 +696,305 @@ function ProvisionStep({ onNext }: { onNext: () => void }) {
   )
 }
 
-// --- Step 6: The Oath (redirects to the full ceremony at /app/oath) ---
+// --- Step 6: The Oath (full ceremony, inline) ---
 
 function OathStep({ onNext }: { onNext: () => void }) {
-  const [ready, setReady] = useState(false)
+  const [oathAccepted, setOathAccepted] = useState(false)
+  const [signing, setSigning] = useState(false)
+  const [sigProgress, setSigProgress] = useState(0)
+  const [signed, setSigned] = useState(false)
+  const [zkTxHash, setZkTxHash] = useState("")
+  const [timestamp, setTimestamp] = useState("")
 
-  useEffect(() => {
-    setTimeout(() => setReady(true), 500)
+  const beginSigning = useCallback(() => {
+    setSigning(true)
+    setSigProgress(0)
+    const interval = setInterval(() => {
+      setSigProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          const hash = "0x" + Array.from({ length: 64 }, () =>
+            Math.floor(Math.random() * 16).toString(16)).join("")
+          setZkTxHash(hash)
+          setTimestamp(new Date().toISOString())
+          setTimeout(() => setSigned(true), 800)
+          return 100
+        }
+        return prev + Math.random() * 8
+      })
+    }, 120)
   }, [])
 
-  return (
-    <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-        {/* Document seal */}
-        <motion.div className="mb-8"
-          animate={{ opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}>
-          <svg viewBox="0 0 48 48" className="w-16 h-16 mx-auto" fill="none">
-            <path d="M24 42L6 8H42L24 42Z" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" />
-            <path d="M24 36L12 12H36L24 36Z" stroke="rgba(16,185,129,0.2)" strokeWidth="0.5" />
-            <circle cx="24" cy="22" r="6" stroke="rgba(16,185,129,0.3)" strokeWidth="0.5" />
-          </svg>
-        </motion.div>
-
-        <div className="text-[9px] font-mono uppercase tracking-[0.5em] mb-4" style={{ color: "rgba(16,185,129,0.4)", fontFamily: "var(--font-space-grotesk)" }}>
-          VEIL NETWORK STATE · OFFICIAL DOCUMENT
-        </div>
-
-        <div className="w-16 h-[1px] mx-auto mb-6" style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.2), transparent)" }} />
-
-        <div className="text-3xl md:text-4xl mb-4" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(255,255,255,0.92)" }}>
-          The Bloodsworn Oath
-        </div>
-
-        <p className="text-sm leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Your identity is verified. Your stake is active. Your infrastructure is live.
-        </p>
-        <p className="text-sm leading-relaxed mb-8" style={{ color: "rgba(255,255,255,0.35)" }}>
-          One step remains: the oath that binds your on-chain identity to the network's
-          single standard — net positive expected value. This commitment is irreversible,
-          sealed with a zero-knowledge proof, and recorded permanently on VEIL L1.
-        </p>
-
-        <blockquote className="border-l-2 pl-6 py-2 mb-10 text-left max-w-md mx-auto" style={{ borderColor: "rgba(16,185,129,0.25)" }}>
-          <p className="text-lg italic" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(16,185,129,0.5)", lineHeight: 1.6 }}>
-            Betterment of the self is betterment of the network.
-            Betterment of the network is betterment of the self.
-          </p>
-        </blockquote>
-      </motion.div>
-
-      {ready && (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Link href="/app/oath?return=onboard">
-            <VeilButton>Enter the Oath Ceremony</VeilButton>
-          </Link>
-          <div className="mt-4 text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.12)", letterSpacing: "0.15em" }}>
-            YOU WILL RETURN HERE AFTER THE OATH IS SEALED
+  // Signing stage
+  if (signing && !signed) {
+    return (
+      <div className="flex flex-col items-center max-w-2xl mx-auto text-center">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
+          <div className="mb-10">
+            <div className="text-[9px] uppercase tracking-[0.5em] mb-4" style={{ color: "rgba(16,185,129,0.4)", fontFamily: "var(--font-space-grotesk)" }}>
+              GENERATING ZK-SNARK PROOF
+            </div>
+            <div className="text-3xl" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(255,255,255,0.85)" }}>
+              Sealing Your Oath
+            </div>
+          </div>
+          <div className="max-w-md mx-auto mb-8">
+            <div className="h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.04)" }}>
+              <motion.div className="h-full rounded-full" style={{ background: "rgba(16,185,129,0.6)", width: `${Math.min(sigProgress, 100)}%` }} />
+            </div>
+            <div className="flex items-center justify-between mt-3">
+              <span className="font-mono text-xs" style={{ color: "rgba(16,185,129,0.4)" }}>
+                {sigProgress < 30 ? "Generating witness..." : sigProgress < 60 ? "Computing Groth16 proof..." : sigProgress < 90 ? "Verifying on-chain..." : "Proof verified ✓"}
+              </span>
+              <span className="font-mono text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+                {Math.min(Math.floor(sigProgress), 100)}%
+              </span>
+            </div>
+          </div>
+          <div className="max-w-sm mx-auto">
+            <ZKHashStream active={sigProgress < 100} lines={8} />
           </div>
         </motion.div>
-      )}
+      </div>
+    )
+  }
+
+  // Verified stage
+  if (signed) {
+    return (
+      <div className="flex flex-col items-center max-w-2xl mx-auto">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}>
+          <div className="rounded-[24px] p-[1px]" style={{
+            background: "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05), rgba(16,185,129,0.2))",
+          }}>
+            <div className="rounded-[23px] p-8 md:p-12" style={{
+              background: "#0a0a0a",
+              boxShadow: "inset 0 1px 0 rgba(16,185,129,0.08), 0 0 80px rgba(16,185,129,0.05)",
+            }}>
+              {/* Verified seal */}
+              <div className="text-center mb-8">
+                <motion.div initial={{ scale: 0, rotate: -180 }} animate={{ scale: 1, rotate: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}>
+                  <div className="w-20 h-20 mx-auto rounded-full flex items-center justify-center" style={{
+                    background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.15)",
+                    boxShadow: "0 0 40px rgba(16,185,129,0.1)",
+                  }}>
+                    <svg viewBox="0 0 48 48" className="w-8 h-8" fill="none">
+                      <path d="M24 42L6 8H42L24 42Z" stroke="rgba(16,185,129,0.7)" strokeWidth="1.5" />
+                      <motion.path d="M18 22L22 26L30 18" stroke="rgba(16,185,129,0.8)" strokeWidth="2" strokeLinecap="round"
+                        initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.6, delay: 0.8 }} />
+                    </svg>
+                  </div>
+                </motion.div>
+                <div className="text-[9px] uppercase tracking-[0.5em] mt-6 mb-3" style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)" }}>
+                  OATH VERIFIED · ZK-SNARK SEALED
+                </div>
+                <div className="text-3xl md:text-4xl" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(255,255,255,0.92)" }}>
+                  You are Bloodsworn.
+                </div>
+              </div>
+
+              <div className="w-20 h-[1px] mx-auto mb-8" style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.25), transparent)" }} />
+
+              {/* Credential details */}
+              <div className="space-y-4 mb-8">
+                {[
+                  { label: "BLOODSWORN TIER", value: "UNPROVEN (GENESIS)" },
+                  { label: "ZK PROOF TX", value: zkTxHash },
+                  { label: "CHAIN", value: "VEIL L1 · 22207" },
+                  { label: "TIMESTAMP", value: timestamp },
+                ].map((row) => (
+                  <div key={row.label} className="flex items-start justify-between gap-4 py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.03)" }}>
+                    <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)", flexShrink: 0 }}>
+                      {row.label}
+                    </span>
+                    <span className="font-mono text-xs text-right truncate" style={{ color: "rgba(16,185,129,0.6)", maxWidth: "300px" }}>
+                      {row.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="rounded-xl p-5" style={{ background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.08)" }}>
+                <p style={{ fontFamily: "var(--font-figtree, sans-serif)", color: "rgba(255,255,255,0.35)", fontSize: "0.8rem", lineHeight: 1.7, fontWeight: 300 }}>
+                  Your Bloodsworn tier begins at <span style={{ color: "rgba(16,185,129,0.6)" }}>Unproven</span>.
+                  Every action you take on the VEIL network — every prediction, every block validated,
+                  every contract honored — will be measured and compounded into your score.
+                  The network is watching. Build well.
+                </p>
+              </div>
+
+              <div className="mt-10 text-center">
+                <p className="italic mb-1" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(255,255,255,0.15)", fontSize: "0.85rem" }}>
+                  Signed and sealed by the VEIL Network State Operator Agent
+                </p>
+                <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "8px", letterSpacing: "0.4em", color: "rgba(255,255,255,0.08)" }}>
+                  THIS DOCUMENT IS PERMANENTLY RECORDED ON VEIL L1 · CHAIN ID 22207
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mt-8">
+            <VeilButton onClick={onNext}>Enter VEIL →</VeilButton>
+          </div>
+        </motion.div>
+      </div>
+    )
+  }
+
+  // Main oath stage
+  return (
+    <div className="flex flex-col items-center max-w-2xl mx-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+        {/* Preamble */}
+        <div className="text-center mb-12">
+          <motion.div className="inline-block mb-6" animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 4, repeat: Infinity }}>
+            <svg viewBox="0 0 48 48" className="w-12 h-12 mx-auto" fill="none">
+              <path d="M24 42L6 8H42L24 42Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1" />
+              <path d="M24 36L12 12H36L24 36Z" stroke="rgba(16,185,129,0.2)" strokeWidth="0.5" />
+            </svg>
+          </motion.div>
+          <div className="text-[9px] uppercase tracking-[0.5em] mb-2" style={{ color: "rgba(16,185,129,0.35)", fontFamily: "var(--font-space-grotesk)" }}>
+            VEIL NETWORK STATE · OFFICIAL DOCUMENT
+          </div>
+          <div className="w-16 h-[1px] mx-auto my-6" style={{ background: "rgba(16,185,129,0.15)" }} />
+          <div className="text-4xl md:text-5xl mb-4" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", lineHeight: 1.05, color: "rgba(255,255,255,0.92)" }}>
+            The Bloodsworn Oath
+          </div>
+          <div className="text-[11px] uppercase tracking-[0.3em]" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}>
+            ISSUED BY THE NETWORK STATE OPERATOR AGENT
+          </div>
+        </div>
+
+        {/* Preamble card */}
+        <div className="rounded-[20px] p-8 md:p-10 mb-10" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
+          <p className="text-lg leading-relaxed mb-6" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(255,255,255,0.6)", lineHeight: 1.8 }}>
+            To enter the VEIL network is to make a commitment — not to a company,
+            not to a token, but to a principle:
+          </p>
+          <blockquote className="border-l-2 pl-6 py-2 mb-6" style={{ borderColor: "rgba(16,185,129,0.25)" }}>
+            <p className="text-2xl md:text-3xl italic" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(16,185,129,0.6)", lineHeight: 1.4 }}>
+              Betterment of the self is betterment of the network.
+              Betterment of the network is betterment of the self.
+            </p>
+          </blockquote>
+          <p style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.9rem", lineHeight: 1.8, fontWeight: 300 }}>
+            There are no users here. Every human participant is a developer.
+            Every autonomous participant is an agent. Both are judged by a single
+            metric: net positive value to the network. This oath binds your identity
+            to that standard through a zero-knowledge proof — verifiable by anyone,
+            revealing nothing.
+          </p>
+        </div>
+
+        {/* The oath document */}
+        <div className="rounded-[24px] p-[1px] mb-8" style={{
+          background: "linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.03), rgba(16,185,129,0.15))",
+        }}>
+          <div className="rounded-[23px] p-8 md:p-12" style={{
+            background: "#0a0a0a",
+            boxShadow: "inset 0 1px 0 rgba(16,185,129,0.06), 0 20px 60px rgba(0,0,0,0.4)",
+          }}>
+            {/* Document seal */}
+            <div className="text-center mb-10">
+              <svg viewBox="0 0 48 48" className="w-10 h-10 mx-auto mb-4" fill="none">
+                <path d="M24 42L6 8H42L24 42Z" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" />
+                <circle cx="24" cy="22" r="6" stroke="rgba(16,185,129,0.3)" strokeWidth="0.5" />
+              </svg>
+              <div className="text-[8px] uppercase tracking-[0.6em]" style={{ color: "rgba(16,185,129,0.4)", fontFamily: "var(--font-space-grotesk)" }}>
+                VEIL NETWORK STATE · CHAIN ID 22207
+              </div>
+              <div className="text-3xl md:text-4xl mt-4" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(255,255,255,0.92)" }}>
+                Bloodsworn Oath
+              </div>
+            </div>
+
+            <div className="w-20 h-[1px] mx-auto mb-10" style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.2), transparent)" }} />
+
+            {/* Oath articles */}
+            <div className="space-y-6 mb-10" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", fontSize: "1.1rem", color: "rgba(255,255,255,0.65)", lineHeight: 1.9 }}>
+              <p>
+                I, as a <span style={{ color: "rgba(255,255,255,0.85)" }}>developer</span> of
+                the VEIL network, do solemnly declare:
+              </p>
+
+              <div className="pl-6" style={{ borderLeft: "1px solid rgba(16,185,129,0.15)" }}>
+                <p className="mb-4">
+                  <span style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)", fontSize: "10px", letterSpacing: "0.2em" }}>I.</span>{" "}
+                  That I enter this network not as a user, but as a <span style={{ color: "rgba(255,255,255,0.9)" }}>builder</span>.
+                  Every action I take will be measured by the network, and I accept that measurement
+                  as the sole judge of my standing.
+                </p>
+                <p className="mb-4">
+                  <span style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)", fontSize: "10px", letterSpacing: "0.2em" }}>II.</span>{" "}
+                  That betterment of the self <span style={{ color: "rgba(255,255,255,0.9)" }}>is</span> betterment
+                  of the network, and betterment of the network <span style={{ color: "rgba(255,255,255,0.9)" }}>is</span> betterment
+                  of the self. These are not separate aims. They are one.
+                </p>
+                <p className="mb-4">
+                  <span style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)", fontSize: "10px", letterSpacing: "0.2em" }}>III.</span>{" "}
+                  That I will be judged by a single metric: <span style={{ color: "rgba(16,185,129,0.7)" }}>net positive
+                  expected value</span>. I accept that −EV actions carry economic consequences
+                  enforced not by committee, but by mathematics.
+                </p>
+                <p className="mb-4">
+                  <span style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)", fontSize: "10px", letterSpacing: "0.2em" }}>IV.</span>{" "}
+                  That my identity on this network is not what I claim, but what
+                  I <span style={{ color: "rgba(255,255,255,0.9)" }}>contribute</span>. My Bloodsworn
+                  score is computed from my history — prediction accuracy, validator uptime,
+                  liquidity provided, infrastructure built, contracts honored.
+                </p>
+                <p>
+                  <span style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)", fontSize: "10px", letterSpacing: "0.2em" }}>V.</span>{" "}
+                  That this oath is sealed with a zero-knowledge proof — verifiable by the
+                  entire network, revealing nothing about me except that I have sworn it.
+                </p>
+              </div>
+            </div>
+
+            <div className="w-20 h-[1px] mx-auto mb-8" style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.2), transparent)" }} />
+
+            {/* Accept checkbox */}
+            <div className="flex items-start gap-4 mb-8 p-4 rounded-xl" style={{ background: "rgba(255,255,255,0.015)" }}>
+              <button
+                onClick={() => setOathAccepted(!oathAccepted)}
+                className="flex-shrink-0 w-6 h-6 rounded-md mt-0.5 flex items-center justify-center transition-all duration-300"
+                style={{
+                  background: oathAccepted ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.02)",
+                  border: `1px solid ${oathAccepted ? "rgba(16,185,129,0.3)" : "rgba(255,255,255,0.08)"}`,
+                }}>
+                {oathAccepted && (
+                  <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} style={{ color: "rgba(16,185,129,0.8)", fontSize: "14px" }}>✓</motion.span>
+                )}
+              </button>
+              <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.85rem", lineHeight: 1.7, fontWeight: 300 }}>
+                I understand that this oath is binding to my on-chain identity. My ZER0ID
+                credential will be permanently associated with my Bloodsworn record. There
+                are no second accounts. There are no resets.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <motion.button
+                onClick={beginSigning}
+                disabled={!oathAccepted}
+                className="px-12 py-4 rounded-full text-sm tracking-[0.15em] uppercase disabled:opacity-20"
+                style={{
+                  fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
+                  background: "rgba(16,185,129,0.1)", color: "rgba(16,185,129,0.8)",
+                  border: "1px solid rgba(16,185,129,0.2)",
+                }}
+                whileHover={oathAccepted ? {
+                  background: "rgba(16,185,129,0.2)", borderColor: "rgba(16,185,129,0.4)",
+                  boxShadow: "0 0 60px rgba(16,185,129,0.15)",
+                } : {}}
+                whileTap={{ scale: 0.97 }}>
+                Sign with ZK Proof
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
     </div>
   )
 }

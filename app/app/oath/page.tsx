@@ -650,27 +650,15 @@ export default function BloodswornOathPage() {
 
                 {/* Actions */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-                  {typeof window !== "undefined" && new URLSearchParams(window.location.search).get("return") === "onboard" ? (
-                    <Link href="/app/onboard?step=citizen"
-                      className="px-8 py-3.5 rounded-full text-[11px] tracking-[0.15em] uppercase text-center transition-all duration-700 hover:shadow-[0_0_40px_rgba(16,185,129,0.1)]"
-                      style={{
-                        fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
-                        background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.7)",
-                        border: "1px solid rgba(16,185,129,0.15)",
-                      }}>
-                      Complete Onboarding →
-                    </Link>
-                  ) : (
-                    <Link href="/app"
-                      className="px-8 py-3.5 rounded-full text-[11px] tracking-[0.15em] uppercase text-center transition-all duration-700 hover:shadow-[0_0_40px_rgba(16,185,129,0.1)]"
-                      style={{
-                        fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
-                        background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.7)",
-                        border: "1px solid rgba(16,185,129,0.15)",
-                      }}>
-                      Enter the Chain →
-                    </Link>
-                  )}
+                  <Link href="/app"
+                    className="px-8 py-3.5 rounded-full text-[11px] tracking-[0.15em] uppercase text-center transition-all duration-700 hover:shadow-[0_0_40px_rgba(16,185,129,0.1)]"
+                    style={{
+                      fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
+                      background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.7)",
+                      border: "1px solid rgba(16,185,129,0.15)",
+                    }}>
+                    Enter the Chain →
+                  </Link>
                   <Link href="/app/docs"
                     className="px-8 py-3.5 rounded-full text-[11px] tracking-[0.15em] uppercase text-center transition-all duration-700 hover:border-white/15"
                     style={{
