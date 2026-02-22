@@ -82,6 +82,14 @@ const principles = [
 const developerJournal = [
   {
     date: "2026-02-22",
+    title: "ANIMA Tier 0 Native SDK + Runtime Guard Baseline Pushed",
+    summary:
+      "ANIMA Native v1 Tier 0 execution baseline is now pushed in the ANIMA repo: typed VeilVM Tier 0 client methods (CommitOrder, RevealBatch, SubmitBatchProof, ClearBatch, SetProofConfig, SetRevealCommittee), per-call signer override routing, strict-private runtime admission/fencing in ANIMA, and local unit coverage for VM SDK + ANIMA dispatch/guard behavior. Local live-flow harness/env scaffolding is added, but live strict-private flow execution remains pending runtime/proof fixture setup.",
+    briefing: "Pushed ANIMA Tier 0 native SDK/runtime baseline with strict-private guards and passing local unit coverage; live flow harness is scaffolded, not claimed as passing.",
+    status: "Completed",
+  },
+  {
+    date: "2026-02-22",
     title: "Private Liquidity Proof Path Hardened (Local Evidence)",
     summary:
       "Marketless private-liquidity envelope handling was corrected in VeilVM action verification, then validated with passing adversarial backup+malformed evidence (20260222-024215) and a passing post-fix smoke run (20260222-033228). Consolidated full-set rerun archive is still pending before launch-gate promotion.",
@@ -203,6 +211,12 @@ const developerJournal = [
 ]
 
 const changelog = [
+  {
+    date: "2026-02-22",
+    change:
+      "ANIMA Native v1 Tier 0 baseline pushed: typed VeilVM Tier 0 SDK methods, per-call signer override routing, strict-private ANIMA runtime guard/fencing, and passing local unit suites (VM SDK + ANIMA); live Tier 0 flow remains scaffolded/pending local runtime+proof fixtures.",
+    type: "Milestone",
+  },
   {
     date: "2026-02-22",
     change:
