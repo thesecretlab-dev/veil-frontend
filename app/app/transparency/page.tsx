@@ -82,6 +82,13 @@ const principles = [
 const developerJournal = [
   {
     date: "2026-02-22",
+    title: "Private Liquidity Proof Path Hardened (Local Evidence)",
+    summary:
+      "Marketless private-liquidity envelope handling was corrected in VeilVM action verification, then validated with passing adversarial backup+malformed evidence (20260222-024215) and a passing post-fix smoke run (20260222-033228). Consolidated full-set rerun archive is still pending before launch-gate promotion.",
+    status: "Completed",
+  },
+  {
+    date: "2026-02-22",
     title: "Secondary Committee Rollout Closed (Local Profile)",
     summary:
       "Secondary validator committee activation is now live in the active VeilVM stack. Threshold-keying rollout audit passes for both validators with readiness green and runtime cryptographic markers present in logs (evidence run: tkroll-20260221-235446).",
@@ -184,6 +191,12 @@ const changelog = [
   {
     date: "2026-02-22",
     change:
+      "Private liquidity proof path hardened for marketless envelope flow, with archived PASS evidence for backup+malformed (20260222-024215) and post-fix smoke (20260222-033228); consolidated full-set rerun remains pending.",
+    type: "Hardening",
+  },
+  {
+    date: "2026-02-22",
+    change:
       "Threshold-keying rollout now passes for both primary and secondary validators in local profile, with fixed secondary bootstrap wiring and archived passing evidence (tkroll-20260221-235446).",
     type: "Milestone",
   },
@@ -259,7 +272,7 @@ const launchBlockers = [
   {
     gate: "Cryptographic Threshold Keying",
     detail:
-      "Local profile is passing on both validators with archived rollout evidence. Remaining blocker is production-profile ceremony rollout and adversarial proof that fallback decrypt mode is not active in production.",
+      "Local profile is passing on both validators with archived rollout evidence, including additional private-liquidity proof-path passes (20260222-024215 and 20260222-033228). Remaining blocker is production-profile ceremony rollout, adversarial proof that fallback decrypt mode is not active in production, and a consolidated full-set rerun archive.",
     status: "In Progress",
   },
   {
