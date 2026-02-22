@@ -633,7 +633,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
             <div className="w-full px-4 py-3 mb-6 font-mono text-xs text-center"
               style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.04)" }}>
               <div className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(255,255,255,0.15)" }}>TARGET NULLIFIER</div>
-              <div style={{ color: "rgba(16,185,129,0.15)", filter: puzzleSolved ? "none" : "blur(3px)", transition: "filter 0.5s" }}>
+              <div style={{ color: "rgba(16,185,129,0.6)", letterSpacing: "0.05em" }}>
                 {puzzle.fullHash}
               </div>
             </div>
