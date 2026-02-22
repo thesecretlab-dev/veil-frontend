@@ -43,7 +43,7 @@ const channels = [
 const faqs = [
   {
     q: "How do I get started on VEIL?",
-    a: "Connect your Web3 wallet (VEIL Wallet, MetaMask, Coinbase Wallet), sign the whitelist message to qualify for VEIL token airdrops, and start trading on any market.",
+    a: "Connect a compatible wallet for preview access, review launch status, and follow onboarding steps. Live market trading remains gated until launch checklist closure.",
   },
   {
     q: "What wallets are supported?",

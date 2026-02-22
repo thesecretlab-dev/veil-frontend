@@ -141,8 +141,8 @@ export default function PrivacyPage() {
               protect your information when you use our decentralized prediction market platform.
             </p>
             <p>
-              We use zero-knowledge proofs and cryptographic techniques to ensure your trading activity remains private
-              while maintaining the transparency and security of the blockchain.
+              We use zero-knowledge proofs and cryptographic techniques in staged and local environments. Privacy behavior
+              is route-dependent and production rollout remains gated.
             </p>
           </Section>
 
@@ -183,12 +183,12 @@ export default function PrivacyPage() {
 
           <Section number="04" title="Zero-Knowledge Privacy" delay={0.05}>
             <p>
-              VEIL implements zero-knowledge cryptography to protect your privacy. Your trading positions, balances, and
-              market activity are encrypted and cannot be viewed by VEIL, other users, or third parties.
+              VEIL implements zero-knowledge cryptography to protect privacy on supported routes. Privacy scope depends on
+              environment and execution lane.
             </p>
             <p>
-              Only you can decrypt and view your private trading data using your wallet&apos;s private key. We cannot access,
-              modify, or disclose your encrypted information.
+              Do not assume universal shielding. Some interoperability or public-lane activity may remain observable on
+              public infrastructure.
             </p>
           </Section>
 

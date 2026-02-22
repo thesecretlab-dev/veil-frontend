@@ -27,7 +27,7 @@ const sections = [
     title: "Regulatory Framework",
     content: [
       "VEIL operates as a decentralized protocol on the Avalanche blockchain. We are committed to operating within applicable legal frameworks while preserving user privacy, decentralization, and the core principles of Web3.",
-      "As a decentralized platform, VEIL does not act as a financial intermediary or custodian of user funds. All trades are executed peer-to-peer via smart contracts, and users maintain full custody of their assets through their Web3 wallets.",
+      "As a decentralized platform, VEIL does not act as a financial intermediary or custodian of user funds. Trading and execution capabilities may vary by launch stage, and users maintain custody through their Web3 wallets when routes are enabled.",
       "We actively monitor regulatory developments in key jurisdictions and adapt our compliance approach as needed to ensure continued operation while protecting user rights.",
     ],
   },
@@ -139,13 +139,13 @@ const sections = [
     num: "10",
     title: "Audit & Transparency",
     content: [
-      "VEIL smart contracts have been professionally audited by reputable security firms. Audit reports are publicly available for review. However, audits do not guarantee the absence of vulnerabilities.",
+      "VEIL publishes internal and staged validation evidence. External third-party audits are listed only after publication and should not be assumed for all surfaces.",
       "We maintain transparency through:",
     ],
     list: [
       "Open-source smart contract code",
       "Public blockchain transactions",
-      "Regular security audits and bug bounty programs",
+      "Staged validation evidence and security review updates",
       "Transparent governance and decision-making processes",
     ],
   },

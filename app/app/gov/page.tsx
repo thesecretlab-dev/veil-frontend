@@ -348,7 +348,7 @@ export default function GovernancePage() {
                 Shape the Future<br />of VEIL
               </h1>
               <p className="text-[17px] leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.35)" }}>
-                Vote on proposals, delegate your veVEIL, and participate in protocol governance with commit-reveal privacy.
+                Governance interface preview for staged rollout. Voting and delegation remain gated until launch readiness is closed.
               </p>
 
               <div className="flex items-center justify-center gap-4 pt-4">

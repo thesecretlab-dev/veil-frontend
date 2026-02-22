@@ -1030,7 +1030,7 @@ function ProvisionStep({ onNext }: { onNext: () => void }) {
       {done && (
         <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="text-sm mb-6" style={{ color: "rgba(16,185,129,0.6)" }}>
-            Your VEIL infrastructure is live. One step remains.
+            Your local VEIL setup is ready in preview mode. One step remains.
           </div>
           <VeilButton onClick={onNext}>Proceed to the Oath</VeilButton>
         </motion.div>
@@ -1378,8 +1378,7 @@ function CitizenStep() {
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3, duration: 0.8 }}>
         <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>
-          You are now a native citizen of the VEIL network. Your identity is verified, your stake is active,
-          your infrastructure is provisioned, and your oath is recorded on-chain.
+          Local onboarding simulation complete. Identity, stake, and infrastructure steps shown here are preview artifacts until production launch gates are closed.
         </p>
       </motion.div>
 

@@ -166,8 +166,8 @@ export default function TermsPage() {
 
           <Section number="03" title="Market Participation and Trading" delay={0.05}>
             <p>
-              VEIL provides a decentralized platform for users to trade on prediction markets. All trades are executed via
-              smart contracts on the Avalanche blockchain and are final and non-reversible once confirmed.
+              VEIL is currently in staged launch mode. Trading surfaces shown in this frontend may be preview-only until
+              launch gates are fully closed and production activation is announced.
             </p>
             <p>
               Market outcomes are determined by decentralized oracle consensus. VEIL does not control or manipulate market
@@ -182,12 +182,12 @@ export default function TermsPage() {
 
           <Section number="04" title="Privacy and Zero-Knowledge Technology" delay={0.05}>
             <p>
-              VEIL uses zero-knowledge cryptography to protect user privacy. We do not collect or store personally
-              identifiable information beyond what is necessary for blockchain transactions (wallet addresses).
+              VEIL implements privacy primitives with local validation coverage. Production privacy guarantees remain gated
+              pending final launch criteria and operational controls.
             </p>
             <p>
-              Your trading positions, balances, and activity are encrypted and private. However, certain transaction data is
-              recorded on the public Avalanche blockchain for transparency and security purposes.
+              Some transaction metadata may be visible on public infrastructure depending on route and environment. Review
+              route-specific privacy scope before assuming shielded execution.
             </p>
             <p>For more details on how we handle your data, please review our Privacy Policy.</p>
           </Section>

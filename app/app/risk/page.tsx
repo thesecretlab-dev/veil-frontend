@@ -35,9 +35,9 @@ const sections = [
     num: "02",
     title: "Smart Contract Risk",
     content: [
-      "VEIL operates on smart contracts deployed to the Avalanche blockchain. While our contracts have been professionally audited, smart contracts may contain bugs, vulnerabilities, or design flaws that could result in loss of funds.",
+      "VEIL operates on smart contracts deployed to the Avalanche blockchain. Validation coverage is staged and evolving; smart contracts may contain bugs, vulnerabilities, or design flaws that could result in loss of funds.",
       "Smart contract code is immutable once deployed. If a vulnerability is discovered, it may not be possible to fix it without migrating to new contracts, which could be disruptive or result in temporary loss of access to funds.",
-      "You should review our smart contract code and audit reports before using the Platform. VEIL is not liable for losses resulting from smart contract vulnerabilities.",
+      "You should review available source code and published validation evidence before using the Platform. VEIL is not liable for losses resulting from smart contract vulnerabilities.",
     ],
   },
   {

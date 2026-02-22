@@ -85,7 +85,7 @@ export default function InsightsPage() {
   const [showNewKeyModal, setShowNewKeyModal] = useState(false)
 
   const apiKeys = [
-    { id: "1", name: "Production API", key: "veil_live_••••••••••••3x9k", created: "2025-01-15", lastUsed: "2 hours ago" },
+    { id: "1", name: "Preview API", key: "veil_preview_••••••••••••3x9k", created: "2025-01-15", lastUsed: "2 hours ago" },
     { id: "2", name: "Development", key: "veil_test_••••••••••••7m2p", created: "2025-01-10", lastUsed: "5 days ago" },
   ]
 
@@ -705,3 +705,4 @@ export default function InsightsPage() {
     </div>
   )
 }
+
