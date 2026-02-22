@@ -85,7 +85,7 @@ const auditCategories = [
     title: "Smart Contracts",
     description: "Full coverage of prediction market contracts, vault logic, oracle integrations, and settlement mechanisms on Avalanche C-Chain.",
     status: "Complete" as const,
-    auditor: "Trail of Bits",
+    auditor: "Internal Validation Team",
     lastUpdated: "2026-01-15",
     coverage: "100%",
   },
@@ -94,7 +94,7 @@ const auditCategories = [
     title: "VM Privacy",
     description: "Zero-knowledge proof circuits, private state transitions, and encrypted order flow through VEIL's privacy layer.",
     status: "Complete" as const,
-    auditor: "NCC Group",
+    auditor: "Internal Validation Team",
     lastUpdated: "2026-01-28",
     coverage: "100%",
   },
@@ -103,7 +103,7 @@ const auditCategories = [
     title: "Economic Model",
     description: "Tokenomics, fee structures, liquidity incentives, staking mechanisms, and protocol sustainability analysis.",
     status: "In Progress" as const,
-    auditor: "Gauntlet",
+    auditor: "Internal Validation Team",
     lastUpdated: "2026-02-10",
     coverage: "78%",
   },
@@ -112,7 +112,7 @@ const auditCategories = [
     title: "Infrastructure",
     description: "Node architecture, RPC endpoints, sequencer integrity, uptime guarantees, and disaster recovery procedures.",
     status: "Pending" as const,
-    auditor: "Cure53",
+    auditor: "Internal Validation Team",
     lastUpdated: "—",
     coverage: "—",
   },
@@ -122,7 +122,7 @@ const publishedReports = [
   {
     id: "MAIEV-2026-001",
     title: "Core Prediction Market Contracts v2.1",
-    auditor: "Trail of Bits",
+    auditor: "Internal Validation Team",
     date: "2026-01-15",
     duration: "6 weeks",
     findings: { Critical: 0, High: 1, Medium: 3, Low: 7, Info: 12 },
@@ -132,7 +132,7 @@ const publishedReports = [
   {
     id: "MAIEV-2026-002",
     title: "ZK Privacy Circuit Audit — Round 1",
-    auditor: "NCC Group",
+    auditor: "Internal Validation Team",
     date: "2026-01-28",
     duration: "8 weeks",
     findings: { Critical: 0, High: 0, Medium: 2, Low: 5, Info: 9 },
@@ -142,7 +142,7 @@ const publishedReports = [
   {
     id: "MAIEV-2026-003",
     title: "Oracle Integration & Price Feed Security",
-    auditor: "OpenZeppelin",
+    auditor: "Internal Validation Team",
     date: "2025-12-02",
     duration: "4 weeks",
     findings: { Critical: 0, High: 0, Medium: 1, Low: 4, Info: 6 },
@@ -152,7 +152,7 @@ const publishedReports = [
   {
     id: "MAIEV-2026-004",
     title: "Economic Model — Preliminary Assessment",
-    auditor: "Gauntlet",
+    auditor: "Internal Validation Team",
     date: "2026-02-10",
     duration: "Ongoing",
     findings: { Critical: 0, High: 0, Medium: 0, Low: 2, Info: 4 },
@@ -179,20 +179,20 @@ const evidenceBundles = [
     contents: ["Circom circuit source", "Trusted setup ceremony transcript", "Proving/verification keys", "Witness generation tests"],
   },
   {
-    name: "Trail of Bits — Full Report + Remediation Diff",
+    name: "Internal Validation Team — Full Report + Remediation Diff",
     version: "Final",
     date: "2026-01-20",
     size: "2.8 MB",
     sha256: "b1e4f708...93a2c6df",
-    contents: ["PDF audit report", "Git diff of remediations", "Re-audit confirmation letter", "Auditor PGP signature"],
+    contents: ["Validation report", "Git diff of remediations", "Remediation verification notes", "Artifact signature manifest"],
   },
   {
-    name: "NCC Group — Privacy Audit Package",
+    name: "Internal Validation Team — Privacy Audit Package",
     version: "Final",
     date: "2026-02-01",
     size: "6.1 MB",
     sha256: "c8d2a195...47f0e3b1",
-    contents: ["PDF audit report", "Circuit constraint analysis", "Adversarial test results", "Formal verification proofs"],
+    contents: ["Validation report", "Circuit constraint analysis", "Adversarial test results", "Formal verification proofs"],
   },
 ]
 
@@ -202,38 +202,33 @@ const methodology = [
     description: "Every audit begins with a precise scope document defining contracts, circuits, and systems under review. Scope is published before audit commencement for community review.",
   },
   {
-    title: "Independent Auditors",
-    description: "We engage only tier-1 security firms with verifiable track records. No auditor has any financial relationship with VEIL beyond the audit engagement itself.",
+    title: "External Audit Status",
+    description: "External audit firms are engaged only after launch-readiness milestones require them. This archive currently prioritizes internal and staged validation evidence.",
   },
   {
-    title: "Multi-Phase Review",
-    description: "Audits proceed through automated analysis (Slither, Mythril, Echidna), manual expert review, and formal verification where applicable. Each phase produces independent findings.",
+    title: "Multi-Phase Validation",
+    description: "Validation proceeds through automated analysis, manual review, and reproducible evidence checks. Each phase records findings and remediation status.",
   },
   {
-    title: "Remediation & Re-audit",
-    description: "All findings rated Medium or above require remediation. Remediations are re-audited by the original firm and confirmed in writing before deployment.",
+    title: "Remediation & Follow-up Validation",
+    description: "Findings rated Medium or above require remediation and follow-up validation. Third-party re-audit is recorded only when an external report is published.",
   },
   {
     title: "Evidence Preservation",
-    description: "All audit artifacts—source code snapshots, bytecode, reports, and correspondence—are cryptographically hashed and stored in MAIEV's immutable evidence archive.",
+    description: "All validation artifacts—source snapshots, reports, and remediation notes—are cryptographically hashed and stored in MAIEV's evidence archive.",
   },
   {
     title: "Continuous Monitoring",
-    description: "Post-deployment, VEIL runs continuous invariant testing, bug bounty programs, and scheduled re-audits on a 6-month cycle for all critical components.",
+    description: "Post-deployment planning includes invariant testing, bug bounty programs, and scheduled re-validation for critical components.",
   },
 ]
 
 const timeline = [
-  { date: "2025-10-01", event: "Audit program initiated", detail: "MAIEV framework established. RFP sent to 8 security firms." },
-  { date: "2025-10-15", event: "Trail of Bits engaged", detail: "Smart contract audit scope finalized. 6-week engagement begins." },
-  { date: "2025-11-01", event: "NCC Group engaged", detail: "ZK privacy circuit audit scope finalized. 8-week engagement begins." },
-  { date: "2025-11-15", event: "OpenZeppelin engaged", detail: "Oracle integration review. 4-week focused engagement." },
-  { date: "2025-12-02", event: "Oracle audit complete", detail: "All findings remediated. Oracle fallback mechanisms validated." },
-  { date: "2026-01-15", event: "Smart contract audit complete", detail: "1 High, 3 Medium findings remediated. Re-audit confirmed." },
-  { date: "2026-01-28", event: "Privacy circuit audit complete", detail: "No critical issues. Privacy guarantees validated under adversarial conditions." },
-  { date: "2026-02-10", event: "Economic audit commenced", detail: "Gauntlet begins tokenomics and sustainability analysis." },
-  { date: "2026-03-01", event: "Infrastructure audit scheduled", detail: "Cure53 engagement for node architecture and sequencer review." },
-  { date: "2026-Q2", event: "Bug bounty launch", detail: "Immunefi program with up to $500K in rewards for critical findings." },
+  { date: "2026-02-19", event: "MAIEV evidence lane established", detail: "Frontend evidence archive aligned to launch-gate workflow." },
+  { date: "2026-02-20", event: "Launch-gate bundle ingestion", detail: "Local PASS/FAIL artifacts from launch-gate runner indexed into MAIEV surfaces." },
+  { date: "2026-02-21", event: "Threshold-keying evidence updates", detail: "Mempool hardening and threshold rollout records added to archive." },
+  { date: "2026-02-22", event: "Private-liquidity proof path update", detail: "Adversarial and smoke evidence pointers synced to latest local run IDs." },
+  { date: "Planned", event: "External audit publication", detail: "Independent third-party reports will be listed here only after publication." },
 ]
 
 /* ─── Page ─── */
@@ -281,7 +276,7 @@ export default function MaievPage() {
             <div className="flex items-center gap-3 mb-8">
               <div className="w-2 h-2 rounded-full" style={{ background: "rgba(16,185,129,0.8)", boxShadow: "0 0 12px rgba(16,185,129,0.4)" }} />
               <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.3em] uppercase text-white/40">
-                Audit + Evidence Archive
+                Evidence + Validation Archive
               </span>
             </div>
             <h1
@@ -291,7 +286,10 @@ export default function MaievPage() {
               MAIEV
             </h1>
             <p className="font-[family-name:var(--font-figtree)] text-lg leading-relaxed text-white/50 max-w-2xl">
-              Trust is not declared — it is demonstrated. MAIEV is VEIL&apos;s audit and evidence system: a permanent, verifiable archive of every security review, privacy audit, and economic analysis conducted on the protocol. Every finding, every remediation, every artifact — published for public verification.
+              Trust is not declared — it is demonstrated. MAIEV is VEIL&apos;s evidence and validation archive. It tracks local and staged verification artifacts, remediation notes, and launch-gate evidence. External third-party audits are listed only when publicly published.
+            </p>
+            <p className="mt-4 font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.14em] uppercase text-amber-300/70">
+              Current status: 0 external third-party audits published.
             </p>
           </motion.div>
 
@@ -303,9 +301,9 @@ export default function MaievPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             {[
-              { label: "Audits Completed", value: "3" },
+              { label: "Local Reviews Archived", value: "3" },
               { label: "Critical Findings", value: "0" },
-              { label: "Audit Firms Engaged", value: "4" },
+              { label: "External Audits Published", value: "0" },
               { label: "Evidence Bundles", value: "4" },
             ].map((stat) => (
               <div
@@ -335,7 +333,7 @@ export default function MaievPage() {
       <section className="relative py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
-            <SectionLabel num="01" label="Audit Status Overview" />
+            <SectionLabel num="01" label="Validation Status Overview" />
           </ScrollReveal>
           <div className="grid md:grid-cols-2 gap-5">
             {auditCategories.map((cat, i) => (
@@ -355,7 +353,7 @@ export default function MaievPage() {
                   </div>
                   <p className="font-[family-name:var(--font-figtree)] text-[14px] leading-relaxed text-white/40 mb-5">{cat.description}</p>
                   <div className="flex items-center gap-6 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/25">
-                    <span>Auditor: <span className="text-white/45">{cat.auditor}</span></span>
+                    <span>Review Owner: <span className="text-white/45">{cat.auditor}</span></span>
                     <span>Updated: <span className="text-white/45">{cat.lastUpdated}</span></span>
                     <span>Coverage: <span className="text-white/45">{cat.coverage}</span></span>
                   </div>
@@ -370,7 +368,7 @@ export default function MaievPage() {
       <section className="relative py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
-            <SectionLabel num="02" label="Published Reports" />
+            <SectionLabel num="02" label="Published Validation Reports" />
           </ScrollReveal>
           <div className="space-y-5">
             {publishedReports.map((report, i) => (
@@ -416,7 +414,7 @@ export default function MaievPage() {
           <ScrollReveal>
             <SectionLabel num="03" label="Evidence Bundles" />
             <p className="font-[family-name:var(--font-figtree)] text-white/40 text-[15px] leading-relaxed max-w-2xl mb-12">
-              Every audit produces a cryptographically sealed evidence bundle. These packages contain source code snapshots, audit reports, remediation diffs, and verification proofs. Download, verify, and trust — but verify.
+              Each validation run produces a cryptographically sealed evidence bundle. Packages include snapshots, validation notes, remediation diffs, and verification artifacts.
             </p>
           </ScrollReveal>
           <div className="grid md:grid-cols-2 gap-5">
@@ -491,7 +489,7 @@ export default function MaievPage() {
       <section className="relative py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
-            <SectionLabel num="05" label="Audit Timeline" />
+            <SectionLabel num="05" label="Validation Timeline" />
           </ScrollReveal>
           <div className="relative">
             {/* Vertical line */}
@@ -538,7 +536,7 @@ export default function MaievPage() {
               Review the Evidence
             </h2>
             <p className="font-[family-name:var(--font-figtree)] text-white/40 text-lg max-w-xl mx-auto mb-10">
-              Every claim VEIL makes is backed by auditable evidence. Don&apos;t trust — verify. Explore the full documentation, download evidence bundles, and validate our security posture for yourself.
+              MAIEV tracks staged validation evidence and launch-gate artifacts. Review documentation and evidence bundles directly before relying on any readiness claim.
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link
@@ -569,12 +567,12 @@ export default function MaievPage() {
           <div className="flex items-center gap-2">
             <Shield className="w-3.5 h-3.5" style={{ color: "rgba(16,185,129,0.4)" }} />
             <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase text-white/20">
-              MAIEV — VEIL Audit System
+              MAIEV — VEIL Evidence System
             </span>
           </div>
           <div className="flex items-center gap-6">
             <span className="font-[family-name:var(--font-figtree)] text-[12px] text-white/15">
-              All audit reports and evidence bundles are published under CC BY 4.0.
+              Published evidence bundles are provided under project documentation licensing terms.
             </span>
             <a href="https://thesecretlab.app" target="_blank" rel="noopener noreferrer"
               className="group flex items-center gap-1.5 shrink-0">
@@ -587,3 +585,4 @@ export default function MaievPage() {
     </div>
   )
 }
+
