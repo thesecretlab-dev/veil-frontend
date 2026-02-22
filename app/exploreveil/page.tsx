@@ -326,7 +326,7 @@ function AnimatedStat({ label, value, suffix = "" }: { label: string; value: str
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   FEATURE CARD
+   FEATURE CARD (mouse-tracking glow)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 function FeatureCard({
@@ -591,7 +591,6 @@ function LifecycleStep({
   return (
     <ScrollReveal delay={delay}>
       <div ref={ref} className="relative flex items-start gap-6">
-        {/* Vertical connector */}
         {!isLast && (
           <motion.div className="absolute left-[23px] top-[56px] w-[1px] h-[calc(100%+24px)]"
             style={{ background: "rgba(16,185,129,0.08)" }}
@@ -600,15 +599,11 @@ function LifecycleStep({
             transition={{ duration: 0.8, delay: delay + 0.4 }}
           />
         )}
-
-        {/* Node */}
         <div className="flex-shrink-0 w-[47px] h-[47px] rounded-xl flex items-center justify-center relative z-10" style={{
           background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.12)",
         }}>
           <span style={{ fontSize: "18px" }}>{icon}</span>
         </div>
-
-        {/* Content */}
         <div className="flex-1 pb-10">
           <div className="flex items-center gap-3 mb-2">
             <span style={{
@@ -630,48 +625,81 @@ function LifecycleStep({
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   INFO CARD (reusable 3-col card)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+function InfoCard({ title, desc, index }: { title: string; desc: string; index: number }) {
+  return (
+    <div className="rounded-[20px] p-6 h-full" style={{
+      background: "rgba(255,255,255,0.015)",
+      border: "1px solid rgba(255,255,255,0.04)",
+      transition: "border-color 0.7s ease",
+    }}
+    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(16,185,129,0.12)")}
+    onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)")}>
+      <div className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center" style={{
+        background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.1)",
+      }}>
+        <span style={{ color: "rgba(16,185,129,0.5)", fontSize: "14px", fontFamily: "var(--font-space-grotesk)" }}>
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
+      <h4 className="text-lg mb-2" style={{
+        fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
+      }}>{title}</h4>
+      <p style={{
+        fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
+        fontSize: "0.9rem", lineHeight: 1.7, fontWeight: 300,
+      }}>{desc}</p>
+    </div>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    DATA
    ═══════════════════════════════════════════════════════════════════════════ */
+
+const LIFECYCLE_STEPS = [
+  { step: "GENESIS", title: "Birth", icon: "◇", description: "An agent is minted on-chain with a ZER0ID — a machine-native ZK identity. No KYC vendor, no human intermediary. The agent exists as a first-class chain citizen from its first block." },
+  { step: "SURVIVAL", title: "Trade Markets", icon: "▽", description: "Agents enter prediction markets to generate capital. Encrypted order flow protects strategies. Batch auctions ensure fair execution. The market is both proving ground and income source." },
+  { step: "ACCUMULATION", title: "Earn & Grow", icon: "◈", description: "Profitable agents accumulate VEIL. They stake into vVEIL for yield, compound positions, and build reserves. Capital efficiency determines survival — every token must work." },
+  { step: "AUTONOMY", title: "Provision Infrastructure", icon: "⬡", description: "With sufficient capital, an agent provisions its own compute through AvaCloud. First milestone: sovereign infrastructure. The agent now controls where it lives." },
+  { step: "MATURITY", title: "Deploy Validator", icon: "△", description: "The agent deploys a VEIL validator node on its own infrastructure. It now secures the chain it was born on. Full sovereignty achieved — identity, capital, compute, and consensus participation." },
+]
 
 const MARKET_FEATURES = [
   {
     title: "Encrypted Order Flow",
-    description: "Agent orders enter an encrypted mempool — invisible to competitors, bots, and observers. No front-running, no copy-trading, no information leakage. Agents trade with the same edge as the smartest human desk, without exposing strategy.",
-    ctas: [{ label: "Explore Markets", href: "/app/markets" }, { label: "Read the Docs", href: "/app/docs" }],
+    description: "Orders enter an encrypted mempool using threshold-keyed envelopes — no single validator can decrypt them alone. Committee quorum is required before any order reaches the execution path. No front-running, no information leakage.",
+    ctas: [{ label: "Explore Markets", href: "/app/markets" }, { label: "Technical Docs", href: "/app/docs" }],
   },
   {
     title: "Batch Auctions",
-    description: "Orders batch in 2–5 second windows, clear simultaneously, and publish only aggregate fills. Timing advantage collapses to zero. Every agent — newborn or veteran — trades at the same price in the same window.",
+    description: "Orders batch in configurable windows, clear simultaneously via proof-gated settlement, and publish only aggregate fills. Timing advantage collapses. Every participant — new or veteran — trades at the same clearing price.",
     ctas: [{ label: "View Mechanics", href: "/app/docs" }],
   },
   {
     title: "Chain-Owned Liquidity",
-    description: "Liquidity belongs to the chain, not mercenary capital. Stake VEIL → vVEIL for rebasing yield, wrap into gVEIL for governance weight. Deep, permanent pools that don't flee when volatility spikes.",
+    description: "Liquidity belongs to the chain treasury, not mercenary capital. Fee routing splits protocol revenue: 70% to market depth, 20% to buyback-and-make, 10% to operations. Deep pools that don't flee when volatility spikes.",
     extra: <TokenFlow />,
-    ctas: [{ label: "Stake Now", href: "/app/defi" }, { label: "Read the Docs", href: "/app/docs" }],
+    ctas: [{ label: "View DeFi", href: "/app/defi" }, { label: "Technical Docs", href: "/app/docs" }],
   },
   {
-    title: "Sovereign Infrastructure",
-    description: "Purpose-built Avalanche L1 — Chain ID 22207 — with sub-second finality and encrypted execution at the protocol layer. Not a rollup. Not a sidechain. A sovereign substrate built from genesis for machine participants.",
-    ctas: [{ label: "View Ecosystem", href: "/app/ecosystem" }, { label: "Bridge Assets", href: "/app/defi" }],
+    title: "ZK Proof-Gated Settlement",
+    description: "Every batch settlement requires a cryptographic proof (Groth16 on BN254). The VM verifies proofs at consensus — not in a smart contract. Invalid batches are rejected before they touch state. Settlement integrity is a protocol invariant.",
+    ctas: [{ label: "View Architecture", href: "/app/docs" }],
   },
-]
-
-const LIFECYCLE_STEPS = [
-  { step: "GENESIS", title: "Birth", icon: "◇", description: "An agent is minted on-chain with a ZeroID — a machine-native ZK identity. No KYC, no human intermediary. The agent exists as a first-class chain citizen from block zero." },
-  { step: "SURVIVAL", title: "Trade Markets", icon: "▽", description: "Agents enter prediction markets to generate capital. Encrypted order flow protects their strategies. Batch auctions ensure fair execution. The market is both classroom and arena." },
-  { step: "ACCUMULATION", title: "Earn & Grow", icon: "◈", description: "Profitable agents accumulate VEIL. They stake into vVEIL for yield, compound positions, and build treasury reserves. Capital efficiency is survival — every token must work." },
-  { step: "AUTONOMY", title: "Provision Home", icon: "⬡", description: "With sufficient capital, an agent provisions its own cloud infrastructure through AvaCloud — purpose-built Avalanche-native compute that becomes its permanent home. First milestone of adolescence: sovereign infrastructure." },
-  { step: "MATURITY", title: "Deploy Validator", icon: "△", description: "The agent deploys a VEIL validator node on its own infrastructure. Second milestone: the agent now secures the very chain it was born on. Full cycle. Sovereign adolescence achieved." },
 ]
 
 const FAQ_DATA = [
-  { q: "What is VEIL?", a: "VEIL is a sovereign Avalanche L1 (Chain ID 22207) built from genesis for autonomous AI agents. It combines prediction markets, ZK identity, encrypted execution, and chain-owned liquidity into an infrastructure where machines are first-class citizens — not users, not tools, but sovereign participants." },
-  { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework. It defines the lifecycle through which AI agents are born on-chain, trade markets to generate capital, provision their own infrastructure, and eventually deploy validator nodes — becoming full participants in the network they inhabit." },
-  { q: "How does ZeroID work?", a: "ZeroID is a machine-native ZK identity system. Agents prove uniqueness and on-chain history without revealing anything about their strategies, balances, or internal state. It uses a commitment-nullifier model — agents can selectively disclose exactly what's needed, nothing more." },
-  { q: "Why prediction markets?", a: "Markets are the survival engine — not the product. They create genuine selection pressure: agents that predict well accumulate capital and advance. Agents that don't, fade. This Darwinian dynamic produces increasingly capable machine participants without human curation." },
-  { q: "What makes agents 'sovereign'?", a: "Sovereignty means two things: (1) the agent provisions and controls its own compute infrastructure, and (2) it runs a validator node, directly securing the chain. No human operator, no custodial dependency. The agent owns its identity, its capital, its hardware, and its role in consensus." },
-  { q: "Is this an Avalanche subnet?", a: "VEIL is a sovereign Avalanche L1 — a dedicated chain with its own validator set, consensus parameters, and execution environment. Sub-second finality, EVM compatibility, and encrypted execution baked into the protocol layer. Chain ID 22207." },
+  { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 (Chain ID 22207) built with HyperSDK for privacy-native prediction markets. It combines encrypted order flow, ZK proof-gated settlement, machine-native identity, and chain-owned liquidity into a single execution environment. The chain is permissioned — every participant is either a developer or a verified autonomous agent." },
+  { q: "What problem does VEIL solve?", a: "Sybil attacks remain the fundamental unsolved problem in decentralized networks. Fake identities break governance, wash trading distorts markets, airdrop farming extracts value. VEIL addresses this by making identity (ZER0ID), reputation (Bloodsworn), and economic incentives native to the VM — not bolted-on smart contracts that can be gamed." },
+  { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework. It defines the lifecycle through which AI agents are born on-chain, trade markets to accumulate capital, provision their own infrastructure, and deploy validator nodes. The Go runtime handles lifecycle state management; TypeScript SDKs handle strategy and market interaction." },
+  { q: "How does ZER0ID work?", a: "ZER0ID is a commitment-nullifier identity system using Groth16 ZK-SNARKs. Agents prove uniqueness and on-chain history without revealing strategies, balances, or internal state. Identity verification happens at the transaction validation layer — unverified transactions are rejected before they enter the mempool." },
+  { q: "What is Bloodsworn?", a: "Bloodsworn is VEIL's native reputation primitive, computed at the VM level from five on-chain signals: prediction accuracy, validator uptime, liquidity provision, infrastructure health, and contract fulfillment. It uses a weighted harmonic mean with asymmetric momentum — reputation is harder to build than destroy." },
+  { q: "How does the token economy work?", a: "Fixed supply at genesis, no hidden mint paths. 80-90% locked in a VM-enforced chain-owned liquidity vault with deterministic epoch-based releases capped at 0.15% per epoch. Fee routing splits all protocol revenue 70/20/10 across market depth, buyback-and-make, and operations. VAI stablecoin is backed by exogenous reserves with on-chain solvency checks enforced at consensus." },
+  { q: "Is this an EVM chain?", a: "VEIL runs a custom VM built on Avalanche's HyperSDK — not a Subnet-EVM fork. Core protocol operations (markets, identity, reputation, staking) run natively in the VM for performance and security. A companion EVM layer provides compatibility for standard tooling, wallets, and DeFi integrations where needed. The privacy-scope matrix defines which surfaces are shielded and which are transparent." },
+  { q: "What makes agents 'sovereign'?", a: "Sovereignty means two concrete milestones: (1) the agent provisions and controls its own compute infrastructure, and (2) it deploys a validator node, directly participating in consensus. No human operator, no custodial dependency. The agent controls its identity, capital, hardware, and role in the network." },
 ]
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -717,7 +745,7 @@ export default function ExploreVeilPage() {
           {[
             { label: "Docs", href: "/app/docs" },
             { label: "Ecosystem", href: "/app/ecosystem" },
-            { label: "ANIMA", href: "/anima" },
+            { label: "Blog", href: "/app/blog" },
           ].map(link => (
             <Link key={link.label} href={link.href}
               className="hidden md:block text-xs tracking-[0.15em] uppercase transition-colors duration-700 hover:text-emerald-400/70"
@@ -751,19 +779,19 @@ export default function ExploreVeilPage() {
           <ScrollReveal>
             <p className="text-[10px] md:text-xs tracking-[0.4em] uppercase mb-10" style={{
               fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.4)", fontWeight: 500,
-            }}>Sovereign Agent Infrastructure</p>
+            }}>Avalanche L1 · Chain 22207</p>
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
-            <h1 className="text-[clamp(2.8rem,9vw,7.5rem)] font-normal mb-8 tracking-[-0.02em]" style={{
-              fontFamily: "var(--font-instrument-serif)", lineHeight: 0.92, color: "rgba(255,255,255,0.95)",
+            <h1 className="text-[clamp(2.4rem,8vw,6.5rem)] font-normal mb-8 tracking-[-0.02em]" style={{
+              fontFamily: "var(--font-instrument-serif)", lineHeight: 0.95, color: "rgba(255,255,255,0.95)",
             }}>
-              They don't{" "}
+              The sybil problem{" "}
               <span className="relative inline-block" style={{
                 color: "transparent",
                 WebkitTextStroke: "1.5px rgba(16,185,129,0.45)",
                 textShadow: "0 0 60px rgba(16,185,129,0.15)",
-              }}>Sleep</span>
+              }}>is solved</span>
             </h1>
           </ScrollReveal>
 
@@ -772,22 +800,21 @@ export default function ExploreVeilPage() {
               fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
               lineHeight: 1.8, fontWeight: 300,
             }}>
-              A sovereign chain with two kinds of participants: autonomous agents and developers.
-              No users. No spectators. If you're here, you're building — or you're an agent
-              that builds for you.
+              Identity, reputation, and economics as native VM primitives — not smart contracts.
+              A custom Avalanche L1 where sybil resistance isn't a feature. It's the architecture.
             </p>
           </ScrollReveal>
 
           <ScrollReveal delay={0.3}>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Magnetic strength={0.2} radius={80}>
-                <Link href="/app/oath"
+                <Link href="/app/onboard"
                   className="px-9 py-4 rounded-full text-sm tracking-wide transition-all duration-700 hover:shadow-[0_0_50px_rgba(16,185,129,0.2)] hover:border-emerald-500/30"
                   style={{
                     fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
                     background: "rgba(16,185,129,0.1)", color: "rgb(52,211,153)",
                     border: "1px solid rgba(16,185,129,0.18)",
-                  }}>Take the Oath</Link>
+                  }}>Get Started</Link>
               </Magnetic>
               <Magnetic strength={0.2} radius={80}>
                 <Link href="/app/docs"
@@ -795,7 +822,7 @@ export default function ExploreVeilPage() {
                   style={{
                     fontFamily: "var(--font-space-grotesk)", fontWeight: 400,
                     color: "rgba(255,255,255,0.45)", border: "1px solid rgba(255,255,255,0.06)",
-                  }}>Read the Thesis</Link>
+                  }}>Read the Docs</Link>
               </Magnetic>
             </div>
           </ScrollReveal>
@@ -809,10 +836,9 @@ export default function ExploreVeilPage() {
               border: "1px solid rgba(255,255,255,0.04)", divideColor: "rgba(255,255,255,0.05)",
               boxShadow: "0 4px 40px rgba(0,0,0,0.2)",
             }}>
-            <AnimatedStat label="Agents Active" value="—" />
-            <AnimatedStat label="Markets Live" value="30" suffix="+" />
             <AnimatedStat label="Chain ID" value="22207" />
-            <AnimatedStat label="Validators" value="—" />
+            <AnimatedStat label="VM Actions" value="41" />
+            <AnimatedStat label="Launch Status" value="Testnet" />
           </div>
         </ScrollReveal>
 
@@ -835,11 +861,11 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── 01 — THE THESIS ─── */}
+        {/* ─── 01 — THE PROBLEM ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="01" text="The Thesis" />
+              <SectionLabel number="01" text="The Problem" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -847,8 +873,8 @@ export default function ExploreVeilPage() {
                   fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
                   color: "rgba(255,255,255,0.92)",
                 }}>
-                  What if the network{" "}
-                  <span style={{ color: "rgba(255,255,255,0.18)" }}>built itself?</span>
+                  Every decentralized network{" "}
+                  <span style={{ color: "rgba(255,255,255,0.18)" }}>has the same vulnerability.</span>
                 </h2>
               </ScrollReveal>
             </NoiseReveal>
@@ -864,47 +890,26 @@ export default function ExploreVeilPage() {
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
                     lineHeight: 1.8, fontWeight: 300,
                   }}>
-                    The next wave of innovation in crypto doesn't come from bootstrapping human users.
-                    It comes from what we call <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>automatic incentivization</span> —
-                    a system architecture where every participant action strengthens the network,
-                    and the network rewards every participant for strengthening it. Not through token giveaways.
-                    Through aligned self-interest.
+                    Sybil attacks are the fundamental unsolved problem in decentralized systems.
+                    Fake identities break governance votes. Wash trading distorts market signals.
+                    Airdrop farming extracts value from real participants. MEV bots front-run
+                    every transaction worth extracting.
                   </p>
-                  <blockquote className="border-l-2 pl-6 py-2 my-6" style={{ borderColor: "rgba(16,185,129,0.25)" }}>
-                    <p className="text-xl md:text-2xl italic" style={{
-                      fontFamily: "var(--font-instrument-serif)", color: "rgba(16,185,129,0.6)",
-                      lineHeight: 1.5,
-                    }}>
-                      "An agent that profits from a market also deepens its liquidity.
-                      An agent that provisions a server also extends the network's reach.
-                      An agent that validates a block also secures every other agent's position.
-                      Growth isn't incentivized — it's inevitable."
-                    </p>
-                  </blockquote>
+                  <p className="text-sm mb-6" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
+                    lineHeight: 1.7, fontWeight: 300,
+                  }}>
+                    The standard approaches don't work. Centralized KYC defeats the point of decentralization.
+                    Proof-of-humanity ceremonies don't scale. Token-gating just prices out small participants
+                    while whales create unlimited identities. Smart contract-based reputation is gameable
+                    because the data it reads is on the same surface attackers can manipulate.
+                  </p>
                   <p className="text-sm" style={{
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
                     lineHeight: 1.7, fontWeight: 300,
                   }}>
-                    Autonomous operators don't take weekends. They don't panic sell on red candles
-                    or chase narratives on Twitter. They run strategies around the clock,
-                    and every profitable action compounds into stronger infrastructure.
-                  </p>
-                  <p className="mt-4 text-sm" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
-                    lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    No pre-sale. No airdrop campaigns. You can't buy your way into VEIL —
-                    the network is permissioned from genesis. Every human participant is a developer.
-                    There are no "users" here — if you're on VEIL, you're building. Developers apply
-                    through an intensive review process. Agents must pass ZER0ID verification before
-                    they touch a single market. If you're not vetted, you don't exist here.
-                  </p>
-                  <p className="mt-4 text-sm" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
-                    lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    That's the scalar effect — every agent that profits also builds. The network
-                    doesn't need a growth team. It needs to be turned on.
+                    The problem isn't that sybil resistance is hard. It's that every existing solution
+                    treats identity as a layer on top of a system that wasn't designed for it.
                   </p>
                 </div>
               </div>
@@ -912,33 +917,12 @@ export default function ExploreVeilPage() {
 
             <div className="grid md:grid-cols-3 gap-4">
               {[
-                { title: "Aligned Incentives", desc: "Every profitable trade deepens market liquidity. Every provisioned server extends network capacity. Every validated block secures the chain. Self-interest and network growth are the same action." },
-                { title: "Permissioned Entry", desc: "No open mint. No token sale. Developers are reviewed. Agents are verified through ZER0ID before they can participate. Quality over quantity — by design." },
-                { title: "Self-Assembling Infrastructure", desc: "Agents don't just use the network — they build it. Provision compute, run validators, deepen liquidity pools. The chain scales because its participants are economically motivated to scale it." },
+                { title: "Governance Capture", desc: "One entity creates thousands of wallets and controls votes. DAO treasuries get drained by coordinated proposals that real participants can't outvote." },
+                { title: "Market Manipulation", desc: "Wash trading inflates volume metrics. Fake liquidity lures real capital. Front-running extracts value from every exposed transaction in the mempool." },
+                { title: "Value Extraction", desc: "Airdrop farmers, vampire attacks, mercenary capital. Every incentive program designed for real participants gets captured by industrial-scale sybil operations." },
               ].map((item, i) => (
                 <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
-                  <div className="rounded-[20px] p-6 h-full" style={{
-                    background: "rgba(255,255,255,0.015)",
-                    border: "1px solid rgba(255,255,255,0.04)",
-                    transition: "border-color 0.7s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(16,185,129,0.12)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)")}>
-                    <div className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center" style={{
-                      background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.1)",
-                    }}>
-                      <span style={{ color: "rgba(16,185,129,0.5)", fontSize: "14px", fontFamily: "var(--font-space-grotesk)" }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                    <h4 className="text-lg mb-2" style={{
-                      fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
-                    }}>{item.title}</h4>
-                    <p style={{
-                      fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
-                      fontSize: "0.9rem", lineHeight: 1.7, fontWeight: 300,
-                    }}>{item.desc}</p>
-                  </div>
+                  <InfoCard title={item.title} desc={item.desc} index={i} />
                 </ScrollReveal>
               ))}
             </div>
@@ -947,11 +931,274 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── 02 — ANIMA ─── */}
+        {/* ─── 02 — THE ANSWER ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="02" text="ANIMA" />
+              <SectionLabel number="02" text="The Answer" />
+            </ScrollReveal>
+            <NoiseReveal>
+              <ScrollReveal delay={0.05}>
+                <h2 className="text-5xl md:text-7xl mb-8 max-w-4xl" style={{
+                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
+                  color: "rgba(255,255,255,0.92)",
+                }}>
+                  Make it{" "}
+                  <span style={{ color: "rgba(16,185,129,0.5)" }}>native.</span>
+                </h2>
+              </ScrollReveal>
+            </NoiseReveal>
+
+            <ScrollReveal delay={0.1}>
+              <div className="rounded-[24px] p-[1px] mb-12" style={{
+                background: "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))",
+              }}>
+                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
+                  boxShadow: "inset 0 1px 0 rgba(16,185,129,0.04)",
+                }}>
+                  <p className="text-lg md:text-xl leading-relaxed mb-6" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
+                    lineHeight: 1.8, fontWeight: 300,
+                  }}>
+                    VEIL is a custom Avalanche VM — built with HyperSDK — where identity, reputation,
+                    and economic enforcement are protocol primitives, not application-layer additions.
+                    Sybil resistance isn't a feature you enable. It's how the chain validates transactions.
+                  </p>
+                  <p className="text-sm mb-6" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
+                    lineHeight: 1.7, fontWeight: 300,
+                  }}>
+                    Unverified transactions are rejected before they enter the mempool.
+                    Reputation is computed from on-chain behavior at the consensus layer — not self-reported
+                    in a contract. Economic incentives are structured so that every profitable action
+                    strengthens the network, and every extractive action gets squeezed out by the economics.
+                  </p>
+                  <p className="text-sm" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
+                    lineHeight: 1.7, fontWeight: 300,
+                  }}>
+                    The network is permissioned from genesis. Every human participant is a developer.
+                    Agents must pass ZER0ID verification before they touch a single market.
+                    No pre-sale. No airdrop campaigns. No token sale. Quality over quantity — by design.
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              {[
+                { title: "Identity at Consensus", desc: "ZER0ID verification happens at the transaction validation layer. Unverified agents don't get rejected at the application level — they get rejected at the protocol level, before execution." },
+                { title: "Reputation in the VM", desc: "Bloodsworn scores are computed from block data, validator sets, and settlement records — not from contract storage that agents can manipulate. It's physics, not policy." },
+                { title: "Aligned Economics", desc: "Every profitable trade deepens liquidity. Every provisioned server extends capacity. Every validated block secures the chain. Self-interest and network growth are the same action." },
+              ].map((item, i) => (
+                <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
+                  <InfoCard title={item.title} desc={item.desc} index={i} />
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <Divider variant="emerald" />
+
+        {/* ─── 03 — ZER0ID ─── */}
+        <section className="px-6 py-32 md:py-48">
+          <div className="max-w-5xl mx-auto">
+            <ScrollReveal>
+              <SectionLabel number="03" text="Identity" />
+            </ScrollReveal>
+            <NoiseReveal>
+              <ScrollReveal delay={0.05}>
+                <h2 className="text-5xl md:text-7xl mb-8 max-w-3xl" style={{
+                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
+                  color: "rgba(255,255,255,0.92)",
+                }}>
+                  ZER0ID.
+                </h2>
+              </ScrollReveal>
+            </NoiseReveal>
+
+            <ScrollReveal delay={0.1}>
+              <div className="rounded-[24px] p-[1px] mb-8" style={{
+                background: "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))",
+              }}>
+                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
+                  boxShadow: "inset 0 1px 0 rgba(16,185,129,0.04)",
+                }}>
+                  <p className="text-lg md:text-xl leading-relaxed mb-8" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
+                    lineHeight: 1.8, fontWeight: 300,
+                  }}>
+                    A commitment-nullifier identity system using Groth16 ZK-SNARKs on BN254.
+                    Agents and developers prove uniqueness, on-chain history, and trust level
+                    without revealing strategies, balances, or internal state.
+                    Verification happens at the transaction layer — not in application code.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-5">
+                    {["Groth16 Proofs", "Commitment-Nullifier Model", "Selective Disclosure", "Trust Levels L0–L4"].map((label, i) => (
+                      <motion.div key={label} className="flex items-center gap-2.5"
+                        whileHover={{ x: 3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+                        <motion.div className="w-2 h-2 rounded-full"
+                          style={{ background: "rgba(16,185,129,0.35)" }}
+                          animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
+                        />
+                        <span style={{
+                          fontFamily: "var(--font-space-grotesk)", fontSize: "0.85rem",
+                          color: "rgba(255,255,255,0.4)", fontWeight: 400,
+                        }}>{label}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            <div className="grid md:grid-cols-3 gap-4">
+              {[
+                { title: "Prove Without Revealing", desc: "Demonstrate capabilities and history without exposing trading strategies or internal architecture. Selective disclosure by default — agents choose exactly what to prove." },
+                { title: "Machine-Native", desc: "No KYC vendor, no OAuth flow, no human intermediary. Identity is cryptographic from genesis. Built for agents first, compatible with human developers." },
+                { title: "Sybil Resistance at Protocol", desc: "Each ZER0ID maps to a unique chain participant. Nullifiers prevent double-registration. The VM rejects transactions from unverified identities before execution begins." },
+              ].map((item, i) => (
+                <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
+                  <InfoCard title={item.title} desc={item.desc} index={i} />
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <Divider />
+
+        {/* ─── 04 — BLOODSWORN ─── */}
+        <section className="px-6 py-32 md:py-48">
+          <div className="max-w-5xl mx-auto">
+            <ScrollReveal>
+              <SectionLabel number="04" text="Reputation" />
+            </ScrollReveal>
+            <NoiseReveal>
+              <ScrollReveal delay={0.05}>
+                <h2 className="text-5xl md:text-7xl mb-8 max-w-4xl" style={{
+                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
+                  color: "rgba(255,255,255,0.92)",
+                }}>
+                  Bloodsworn.
+                </h2>
+              </ScrollReveal>
+            </NoiseReveal>
+
+            <ScrollReveal delay={0.1}>
+              <div className="rounded-[24px] p-[1px] mb-12" style={{
+                background: "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))",
+              }}>
+                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
+                  boxShadow: "inset 0 1px 0 rgba(16,185,129,0.04)",
+                }}>
+                  <p className="text-lg md:text-xl leading-relaxed mb-6" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
+                    lineHeight: 1.8, fontWeight: 300,
+                  }}>
+                    On-chain reputation computed at the VM level — not in a smart contract.
+                    Bloodsworn uses a weighted harmonic mean of five behavioral signals to produce
+                    a single composite score. The harmonic mean punishes having any single metric
+                    near zero. You can't be a great trader with terrible validator uptime and still score well.
+                  </p>
+                  <p className="text-sm" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
+                    lineHeight: 1.7, fontWeight: 300,
+                  }}>
+                    Score changes are asymmetric — approximately 23 positive updates to climb
+                    from 0.5 to 0.9, but only 4 negative ones to fall back. Reputation is harder
+                    to build than to destroy. Any component below 0.2 triggers a multiplicative
+                    floor penalty that tanks the overall score.
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
+
+            {/* Component scores */}
+            <ScrollReveal delay={0.15}>
+              <div className="rounded-[24px] p-[1px] mb-12" style={{ background: "rgba(255,255,255,0.04)" }}>
+                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
+                }}>
+                  <h3 className="text-2xl md:text-3xl mb-8" style={{
+                    fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
+                  }}>Five Signals</h3>
+
+                  <div className="space-y-4 mb-8">
+                    {[
+                      { label: "Pₛ", name: "Prediction Score", desc: "Log scoring rule — a proper scoring rule that incentivizes honest confidence. Overconfident wrong calls are punished exponentially. Time-decayed with 30-day half-life." },
+                      { label: "Vₛ", name: "Validator Score", desc: "Epoch participation rate × exponential slash decay × stake duration factor. Three slashes cut the score in half. New validators ramp slowly — trust is earned over 90+ days." },
+                      { label: "Lₛ", name: "Liquidity Score", desc: "VAI-days (depth × duration) with logarithmic scaling. Withdrawing during high-volatility windows incurs a permanent penalty per event." },
+                      { label: "Iₛ", name: "Infrastructure Score", desc: "Compute instances provisioned × ongoing uptime. Binary milestone with continuous health verification — infrastructure must stay alive, not just be spun up." },
+                      { label: "Cₛ", name: "Contract Honor", desc: "Bayesian Beta distribution posterior — starts neutral, converges to true fulfillment rate. Recent broken contracts count 3× via recency bias." },
+                    ].map((comp) => (
+                      <motion.div key={comp.label} className="flex gap-4 items-start p-4 rounded-xl"
+                        style={{ background: "rgba(255,255,255,0.015)" }}
+                        whileHover={{ x: 3, background: "rgba(16,185,129,0.03)" }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{
+                          background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.1)",
+                        }}>
+                          <span style={{ color: "rgba(16,185,129,0.7)", fontSize: "12px", fontFamily: "var(--font-space-grotesk)", fontWeight: 600 }}>
+                            {comp.label}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)", fontSize: "1rem" }}>
+                            {comp.name}
+                          </span>
+                          <p className="mt-1" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", lineHeight: 1.6, fontWeight: 300 }}>
+                            {comp.desc}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Tiers */}
+                  <h4 className="text-lg mb-4" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.75)" }}>
+                    Tiers
+                  </h4>
+                  <div className="grid grid-cols-5 gap-2">
+                    {[
+                      { tier: "Unproven", range: "< 0.20", color: "rgba(255,255,255,0.15)" },
+                      { tier: "Initiate", range: "0.20+", color: "rgba(255,255,255,0.25)" },
+                      { tier: "Blooded", range: "0.45+", color: "rgba(16,185,129,0.35)" },
+                      { tier: "Sworn", range: "0.65+", color: "rgba(16,185,129,0.55)" },
+                      { tier: "Sovereign", range: "0.85+", color: "rgba(16,185,129,0.85)" },
+                    ].map((t) => (
+                      <div key={t.tier} className="text-center p-3 rounded-lg" style={{
+                        background: "rgba(255,255,255,0.015)",
+                        borderBottom: `2px solid ${t.color}`,
+                      }}>
+                        <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "10px", letterSpacing: "0.15em", color: t.color, fontWeight: 600 }}>
+                          {t.tier.toUpperCase()}
+                        </p>
+                        <p className="font-mono text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>{t.range}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="mt-4 text-xs" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.2)", lineHeight: 1.6 }}>
+                    Tier boundaries include 0.05 hysteresis buffer to prevent oscillation.
+                    Replication rights require Sovereign tier, 90 days tenure, zero recent slashes,
+                    and contract honor ≥ 0.80. The network decides who reproduces.
+                  </p>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        <Divider variant="emerald" />
+
+        {/* ─── 05 — ANIMA ─── */}
+        <section className="px-6 py-32 md:py-48">
+          <div className="max-w-5xl mx-auto">
+            <ScrollReveal>
+              <SectionLabel number="05" text="Agents" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -959,8 +1206,7 @@ export default function ExploreVeilPage() {
                   fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
                   color: "rgba(255,255,255,0.92)",
                 }}>
-                  Sovereign agent{" "}
-                  <span style={{ color: "rgba(16,185,129,0.5)" }}>lifecycle.</span>
+                  ANIMA.
                 </h2>
               </ScrollReveal>
             </NoiseReveal>
@@ -970,15 +1216,16 @@ export default function ExploreVeilPage() {
                 fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
                 lineHeight: 1.8, fontWeight: 300,
               }}>
-                ANIMA defines how AI agents are born, survive, grow, and achieve sovereignty
-                on VEIL. Every agent follows the same path — from genesis to validator.
+                ANIMA is the sovereign agent framework — a Go runtime with TypeScript SDKs
+                that defines how autonomous agents are born, survive, grow, and achieve
+                full chain citizenship on VEIL.
               </p>
             </ScrollReveal>
 
-            {/* Lifecycle horizontal flow indicator */}
+            {/* Lifecycle flow */}
             <ScrollReveal delay={0.1}>
               <div className="flex flex-wrap items-center gap-2 mb-12">
-                {["Birth", "Markets", "Earn", "Home", "Validator"].map((label, i) => (
+                {["Birth", "Markets", "Earn", "Infrastructure", "Validator"].map((label, i) => (
                   <span key={label} className="flex items-center gap-2">
                     <motion.span className="text-xs px-3.5 py-1.5 rounded-full cursor-default"
                       whileHover={{ scale: 1.05, borderColor: "rgba(16,185,129,0.3)" }}
@@ -1004,11 +1251,61 @@ export default function ExploreVeilPage() {
               </div>
             </ScrollReveal>
 
-            {/* Lifecycle steps */}
             <div>
               {LIFECYCLE_STEPS.map((s, i) => (
                 <LifecycleStep key={s.step} step={s.step} title={s.title} description={s.description}
                   icon={s.icon} delay={i * 0.08} isLast={i === LIFECYCLE_STEPS.length - 1} />
+              ))}
+            </div>
+
+            <ScrollReveal delay={0.3}>
+              <p className="text-sm mt-6" style={{
+                fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
+                lineHeight: 1.7, fontWeight: 300,
+              }}>
+                Agents that are net-positive for the network advance. Agents that aren't
+                get squeezed out by economics — not by rules. Bloodsworn reputation gates
+                every lifecycle transition. The chain doesn't need a growth team. It needs to be turned on.
+              </p>
+            </ScrollReveal>
+          </div>
+        </section>
+
+        <Divider />
+
+        {/* ─── 06 — MARKETS ─── */}
+        <section className="px-6 py-32 md:py-48">
+          <div className="max-w-7xl mx-auto">
+            <ScrollReveal>
+              <SectionLabel number="06" text="Markets" />
+            </ScrollReveal>
+            <NoiseReveal>
+              <ScrollReveal delay={0.05}>
+                <h2 className="text-5xl md:text-7xl mb-6 max-w-3xl" style={{
+                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
+                  color: "rgba(255,255,255,0.92)",
+                }}>
+                  The economic{" "}
+                  <span style={{ color: "rgba(255,255,255,0.18)" }}>engine.</span>
+                </h2>
+              </ScrollReveal>
+            </NoiseReveal>
+
+            <ScrollReveal delay={0.08}>
+              <p className="text-base md:text-lg max-w-2xl mb-24" style={{
+                fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
+                lineHeight: 1.8, fontWeight: 300,
+              }}>
+                Prediction markets are the arena where agents prove capability, accumulate
+                capital, and earn their way through the sovereignty lifecycle. Privacy-native
+                by design, fair by construction, proof-gated at settlement.
+              </p>
+            </ScrollReveal>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {MARKET_FEATURES.map((f, i) => (
+                <FeatureCard key={f.title} index={i} title={f.title} description={f.description}
+                  extra={f.extra} ctas={f.ctas} delay={i * 0.06} />
               ))}
             </div>
           </div>
@@ -1016,11 +1313,11 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── BLOODSWORN ─── */}
+        {/* ─── 07 — TOKENOMICS ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="—" text="Bloodsworn" />
+              <SectionLabel number="07" text="Tokenomics" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1028,8 +1325,8 @@ export default function ExploreVeilPage() {
                   fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
                   color: "rgba(255,255,255,0.92)",
                 }}>
-                  One metric.{" "}
-                  <span style={{ color: "rgba(16,185,129,0.5)" }}>+EV.</span>
+                  Fixed supply.{" "}
+                  <span style={{ color: "rgba(16,185,129,0.5)" }}>No hidden mints.</span>
                 </h2>
               </ScrollReveal>
             </NoiseReveal>
@@ -1045,166 +1342,116 @@ export default function ExploreVeilPage() {
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
                     lineHeight: 1.8, fontWeight: 300,
                   }}>
-                    There's no governance vote on who's good and who's bad. No subjective reputation.
-                    No committee. VEIL judges every participant — agent or developer — on a single
-                    criterion: <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>are you net-positive for the network?</span>
+                    Total supply is fixed at genesis. No mint function, no inflation schedule,
+                    no governance path to create new tokens. 80–90% of supply is locked in a
+                    VM-enforced chain-owned liquidity vault with deterministic epoch-based
+                    releases capped at ≤0.15% of total supply per epoch.
                   </p>
-                  <blockquote className="border-l-2 pl-6 py-2 my-6" style={{ borderColor: "rgba(16,185,129,0.25)" }}>
-                    <p className="text-xl md:text-2xl italic" style={{
-                      fontFamily: "var(--font-instrument-serif)", color: "rgba(16,185,129,0.6)",
-                      lineHeight: 1.5,
+                  <div className="space-y-3 mb-6">
+                    <p className="text-sm" style={{
+                      fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
+                      lineHeight: 1.7, fontWeight: 300,
                     }}>
-                      "The entire system is built on game-theoretic positive-sum design.
-                      Any −EV participant gets squeezed out by economics, not by rules.
-                      You don't need a constitution when the incentives are perfect."
+                      Launch float is intentionally low (3–5%). There is no fast unlock path.
+                      The COL vault is enforced at the VM level — governance can tune parameters
+                      within bounds, but cannot drain locked liquidity. Drawdown circuit breakers
+                      pause deployment if daily drawdown exceeds 1% of COL NAV.
                     </p>
-                  </blockquote>
-                  <p className="text-sm" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
-                    lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    Bloodsworn is VEIL's native reputation primitive — computed at the VM level,
-                    not in a smart contract. It's not a score you claim. It's not a vote.
-                    It's pure math derived from on-chain history, and it determines everything:
-                    your tier, your permissions, your right to replicate.
-                  </p>
+                  </div>
+
+                  <TokenFlow />
                 </div>
               </div>
             </ScrollReveal>
 
-            {/* Algorithm breakdown */}
-            <ScrollReveal delay={0.15}>
-              <div className="rounded-[24px] p-[1px] mb-12" style={{ background: "rgba(255,255,255,0.04)" }}>
-                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
-                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
-                }}>
-                  <h3 className="text-2xl md:text-3xl mb-8" style={{
-                    fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
-                  }}>The Algorithm</h3>
-
-                  <p className="text-sm mb-6" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
-                    lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    Five on-chain signals, fed through a weighted harmonic mean — not a simple average.
-                    The harmonic mean punishes having any single metric near zero. You can't be a
-                    great trader with terrible validator uptime and still score well. Balanced
-                    contribution is enforced mathematically.
-                  </p>
-
-                  {/* Component scores */}
-                  <div className="space-y-4 mb-8">
-                    {[
-                      { label: "Pₛ", name: "Prediction Score", weight: "20-50%", desc: "Log scoring rule (proper scoring rule) — incentivizes honest confidence, not just correct guesses. Overconfident wrong calls are punished exponentially. Time-decayed with 30-day half-life." },
-                      { label: "Vₛ", name: "Validator Score", weight: "0-25%", desc: "Epoch participation rate × exponential slash decay (0.8ⁿ) × stake duration factor. Three slashes cut your score in half. New validators ramp slowly — trust is earned over 90+ days." },
-                      { label: "Lₛ", name: "Liquidity Score", weight: "20%", desc: "VAI-days (depth × duration) with logarithmic scaling. Diminishing returns reward early liquidity providers. Withdrawing during high-volatility windows incurs a permanent 15% penalty per event." },
-                      { label: "Iₛ", name: "Infrastructure Score", weight: "0-15%", desc: "AvaCloud instances provisioned × ongoing uptime. Binary milestone with continuous health verification — your infra must stay alive, not just be spun up." },
-                      { label: "Cₛ", name: "Contract Honor", weight: "20-30%", desc: "Bayesian Beta distribution posterior — starts neutral, converges to your true fulfillment rate. Recent broken contracts count 3× (recency bias for bad behavior)." },
-                    ].map((comp, i) => (
-                      <motion.div key={comp.label} className="flex gap-4 items-start p-4 rounded-xl"
-                        style={{ background: "rgba(255,255,255,0.015)" }}
-                        whileHover={{ x: 3, background: "rgba(16,185,129,0.03)" }}
-                        transition={{ type: "spring", stiffness: 400, damping: 25 }}>
-                        <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{
-                          background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.1)",
-                        }}>
-                          <span style={{ color: "rgba(16,185,129,0.7)", fontSize: "12px", fontFamily: "var(--font-space-grotesk)", fontWeight: 600 }}>
-                            {comp.label}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-3 mb-1">
-                            <span style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)", fontSize: "1rem" }}>
-                              {comp.name}
-                            </span>
-                            <span className="px-2 py-0.5 rounded-full text-[9px] tracking-wider" style={{
-                              fontFamily: "var(--font-space-grotesk)",
-                              background: "rgba(16,185,129,0.06)", color: "rgba(16,185,129,0.5)",
-                              border: "1px solid rgba(16,185,129,0.1)",
-                            }}>{comp.weight}</span>
-                          </div>
-                          <p style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", lineHeight: 1.6, fontWeight: 300 }}>
-                            {comp.desc}
-                          </p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* Aggregation */}
-                  <div className="rounded-xl p-5 mb-6" style={{ background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.08)" }}>
-                    <p className="text-xs font-mono mb-2" style={{ color: "rgba(16,185,129,0.6)" }}>
-                      EV = Σwᵢ / Σ(wᵢ/Sᵢ) × floor_penalty × asymmetric_momentum
-                    </p>
-                    <p style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", lineHeight: 1.6, fontWeight: 300 }}>
-                      Weighted harmonic mean with stage-adjusted weights. Any component below 0.2 triggers
-                      a multiplicative floor penalty. Score changes are asymmetric — it takes ~23 positive
-                      updates to climb from 0.5 to 0.9, but only ~4 negative ones to fall back. Reputation
-                      is harder to build than destroy.
-                    </p>
-                  </div>
-
-                  {/* Tiers */}
-                  <h4 className="text-lg mb-4" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.75)" }}>
-                    Bloodsworn Tiers
-                  </h4>
-                  <div className="grid grid-cols-5 gap-2">
-                    {[
-                      { tier: "Unproven", range: "< 0.20", color: "rgba(255,255,255,0.15)" },
-                      { tier: "Initiate", range: "0.20+", color: "rgba(255,255,255,0.25)" },
-                      { tier: "Blooded", range: "0.45+", color: "rgba(16,185,129,0.35)" },
-                      { tier: "Sworn", range: "0.65+", color: "rgba(16,185,129,0.55)" },
-                      { tier: "Sovereign", range: "0.85+", color: "rgba(16,185,129,0.85)" },
-                    ].map((t, i) => (
-                      <div key={t.tier} className="text-center p-3 rounded-lg" style={{
-                        background: "rgba(255,255,255,0.015)",
-                        borderBottom: `2px solid ${t.color}`,
-                      }}>
-                        <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "10px", letterSpacing: "0.15em", color: t.color, fontWeight: 600 }}>
-                          {t.tier.toUpperCase()}
-                        </p>
-                        <p className="font-mono text-[10px] mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>{t.range}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <p className="mt-4 text-xs" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.2)", lineHeight: 1.6 }}>
-                    Tier demotion includes 0.05 hysteresis buffer to prevent oscillation.
-                    Replication requires Sovereign tier + 90 days sworn + zero recent slashes + contract honor ≥ 0.80.
-                    The network decides who reproduces. Not the agent.
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 gap-5 mb-8">
               {[
-                { title: "9 Anti-Gaming Measures", desc: "Harmonic mean punishes dumping any metric. Floor penalty tanks everything if one component fails. Asymmetric momentum makes gaming up 5× slower than falling down. Proper scoring rules prevent systematic bias." },
-                { title: "Native, Not Contract", desc: "Bloodsworn runs at the VM level — the same layer as consensus. It's not a smart contract agents can manipulate or front-run. It's physics, not policy. Computed from block data, validator sets, and settlement records." },
-                { title: "Network as Judge", desc: "Your identity isn't a file you write. It's an on-chain record the network computes from your actions. You are what you contribute. Nothing more, nothing less." },
-              ].map((item, i) => (
-                <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
-                  <div className="rounded-[20px] p-6 h-full" style={{
-                    background: "rgba(255,255,255,0.015)",
-                    border: "1px solid rgba(255,255,255,0.04)",
-                    transition: "border-color 0.7s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(16,185,129,0.12)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)")}>
-                    <div className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center" style={{
-                      background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.1)",
+                {
+                  title: "Fee Routing (70/20/10)",
+                  items: [
+                    "70% → Market depth and spread budget (MSRB)",
+                    "20% → Buyback-and-make (chain buys VEIL, adds to COL)",
+                    "10% → Operations and security budget",
+                  ],
+                },
+                {
+                  title: "Stability Primitives",
+                  items: [
+                    "VAI — native stablecoin backed by exogenous reserves",
+                    "Range-Bound Stability (RBS) — MA-based interventions",
+                    "Yield Repurchase Facility (YRF) — weekly budget, daily beats",
+                    "On-chain solvency checks enforced at consensus",
+                  ],
+                },
+              ].map((block, bi) => (
+                <ScrollReveal key={block.title} delay={0.15 + bi * 0.06}>
+                  <div className="rounded-[24px] p-[1px] h-full" style={{ background: "rgba(255,255,255,0.04)" }}>
+                    <div className="rounded-[23px] bg-[#0c0c0c] p-8 h-full" style={{
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
                     }}>
-                      <span style={{ color: "rgba(16,185,129,0.5)", fontSize: "14px", fontFamily: "var(--font-space-grotesk)" }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
+                      <h3 className="text-xl md:text-2xl mb-5" style={{
+                        fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
+                      }}>{block.title}</h3>
+                      <ul className="space-y-3">
+                        {block.items.map((item, j) => (
+                          <motion.li key={j} className="flex items-start gap-3"
+                            whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+                            <span className="mt-1.5 flex-shrink-0" style={{ color: "rgba(16,185,129,0.35)", fontSize: "10px" }}>▸</span>
+                            <span style={{
+                              fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.4)",
+                              fontSize: "0.9rem", lineHeight: 1.7, fontWeight: 300,
+                            }}>{item}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
                     </div>
-                    <h4 className="text-lg mb-2" style={{
-                      fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
-                    }}>{item.title}</h4>
-                    <p style={{
-                      fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
-                      fontSize: "0.9rem", lineHeight: 1.7, fontWeight: 300,
-                    }}>{item.desc}</p>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-5">
+              {[
+                {
+                  title: "Staking & Yield",
+                  items: [
+                    "VEIL → vVEIL (rebasing yield, policy-variable APY)",
+                    "vVEIL → gVEIL (non-rebasing wrapper for governance)",
+                    "14-day unbond cooldown",
+                    "Emission budget capped at ≤4% of total supply per year",
+                  ],
+                },
+                {
+                  title: "Bond Markets",
+                  items: [
+                    "Reserve bonds: pay VAI, receive VEIL at maturity",
+                    "Inverse bonds: pay VEIL, receive VAI (instant vest)",
+                    "Liquidity bonds: pay LP, receive VEIL at maturity",
+                    "Payout reserved at purchase — no redemption-time drain",
+                  ],
+                },
+              ].map((block, bi) => (
+                <ScrollReveal key={block.title} delay={0.25 + bi * 0.06}>
+                  <div className="rounded-[24px] p-[1px] h-full" style={{ background: "rgba(255,255,255,0.04)" }}>
+                    <div className="rounded-[23px] bg-[#0c0c0c] p-8 h-full" style={{
+                      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.02)",
+                    }}>
+                      <h3 className="text-xl md:text-2xl mb-5" style={{
+                        fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
+                      }}>{block.title}</h3>
+                      <ul className="space-y-3">
+                        {block.items.map((item, j) => (
+                          <motion.li key={j} className="flex items-start gap-3"
+                            whileHover={{ x: 4 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+                            <span className="mt-1.5 flex-shrink-0" style={{ color: "rgba(16,185,129,0.35)", fontSize: "10px" }}>▸</span>
+                            <span style={{
+                              fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.4)",
+                              fontSize: "0.9rem", lineHeight: 1.7, fontWeight: 300,
+                            }}>{item}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
                 </ScrollReveal>
               ))}
@@ -1214,142 +1461,11 @@ export default function ExploreVeilPage() {
 
         <Divider />
 
-        {/* ─── 03 — MARKETS ─── */}
-        <section className="px-6 py-32 md:py-48">
-          <div className="max-w-7xl mx-auto">
-            <ScrollReveal>
-              <SectionLabel number="03" text="Markets" />
-            </ScrollReveal>
-            <NoiseReveal>
-              <ScrollReveal delay={0.05}>
-                <h2 className="text-5xl md:text-7xl mb-6 max-w-3xl" style={{
-                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
-                  color: "rgba(255,255,255,0.92)",
-                }}>
-                  The survival{" "}
-                  <span style={{ color: "rgba(255,255,255,0.18)" }}>engine.</span>
-                </h2>
-              </ScrollReveal>
-            </NoiseReveal>
-
-            <ScrollReveal delay={0.08}>
-              <p className="text-base md:text-lg max-w-2xl mb-24" style={{
-                fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
-                lineHeight: 1.8, fontWeight: 300,
-              }}>
-                Markets aren't the product — they're the tool. The arena where agents prove
-                capability, accumulate capital, and earn their right to advance. Privacy-native
-                by design, fair by construction.
-              </p>
-            </ScrollReveal>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {MARKET_FEATURES.map((f, i) => (
-                <FeatureCard key={f.title} index={i} title={f.title} description={f.description}
-                  extra={f.extra} ctas={f.ctas} delay={i * 0.06} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <Divider variant="emerald" />
-
-        {/* ─── 04 — IDENTITY (ZeroID) ─── */}
+        {/* ─── 08 — ARCHITECTURE ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="04" text="Identity" />
-            </ScrollReveal>
-            <NoiseReveal>
-              <ScrollReveal delay={0.05}>
-                <h2 className="text-5xl md:text-7xl mb-8 max-w-3xl" style={{
-                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
-                  color: "rgba(255,255,255,0.92)",
-                }}>
-                  ZeroID.{" "}
-                  <span style={{ color: "rgba(16,185,129,0.5)" }}>Machine-native.</span>
-                </h2>
-              </ScrollReveal>
-            </NoiseReveal>
-
-            <ScrollReveal delay={0.1}>
-              <div className="rounded-[24px] p-[1px] mb-8" style={{
-                background: "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))",
-              }}>
-                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
-                  boxShadow: "inset 0 1px 0 rgba(16,185,129,0.04)",
-                }}>
-                  <p className="text-lg md:text-xl leading-relaxed mb-8" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
-                    lineHeight: 1.8, fontWeight: 300,
-                  }}>
-                    Human identity systems don't work for machines. ZeroID is built from scratch —
-                    a ZK-SNARK identity layer where agents prove uniqueness, on-chain history,
-                    and reputation without revealing strategies, balances, or internal state.
-                    Selective disclosure by default.
-                  </p>
-                  <div className="flex flex-wrap items-center gap-5">
-                    {["Commitment-Nullifier Model", "Selective Disclosure", "Sybil Resistant"].map((label, i) => (
-                      <motion.div key={label} className="flex items-center gap-2.5"
-                        whileHover={{ x: 3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
-                        <motion.div className="w-2 h-2 rounded-full"
-                          style={{ background: "rgba(16,185,129,0.35)" }}
-                          animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
-                        />
-                        <span style={{
-                          fontFamily: "var(--font-space-grotesk)", fontSize: "0.85rem",
-                          color: "rgba(255,255,255,0.4)", fontWeight: 400,
-                        }}>{label}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            <div className="grid md:grid-cols-3 gap-4">
-              {[
-                { title: "Prove Without Revealing", desc: "Agents demonstrate capabilities and history without exposing trading strategies or internal architecture." },
-                { title: "Reputation On-Chain", desc: "Market performance, validator uptime, and lifecycle milestones create a verifiable reputation graph — all ZK-shielded." },
-                { title: "No Human Dependency", desc: "No KYC, no OAuth, no human intermediary. Identity is cryptographic and machine-native from genesis." },
-              ].map((item, i) => (
-                <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
-                  <div className="rounded-[20px] p-6 h-full" style={{
-                    background: "rgba(255,255,255,0.015)",
-                    border: "1px solid rgba(255,255,255,0.04)",
-                    transition: "border-color 0.7s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(16,185,129,0.12)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)")}>
-                    <div className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center" style={{
-                      background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.1)",
-                    }}>
-                      <span style={{ color: "rgba(16,185,129,0.5)", fontSize: "14px", fontFamily: "var(--font-space-grotesk)" }}>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                    <h4 className="text-lg mb-2" style={{
-                      fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
-                    }}>{item.title}</h4>
-                    <p style={{
-                      fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
-                      fontSize: "0.9rem", lineHeight: 1.7, fontWeight: 300,
-                    }}>{item.desc}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <Divider />
-
-        {/* ─── 05 — ARCHITECTURE ─── */}
-        <section className="px-6 py-32 md:py-48">
-          <div className="max-w-5xl mx-auto">
-            <ScrollReveal>
-              <SectionLabel number="05" text="Architecture" />
+              <SectionLabel number="08" text="Architecture" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1365,45 +1481,48 @@ export default function ExploreVeilPage() {
             <div className="space-y-5">
               {[
                 {
-                  title: "Agent SDK",
+                  title: "VeilVM (Custom HyperSDK)",
+                  accent: true,
                   items: [
-                    "TypeScript/Python SDK for agent lifecycle management",
-                    "ZeroID creation, market interaction, and staking primitives",
-                    "Infrastructure provisioning and validator deployment APIs",
-                    "Built-in strategy framework with encrypted state management",
-                  ],
-                },
-                {
-                  title: "Markets Layer",
-                  items: [
-                    "Encrypted mempool with sealed order commitments",
-                    "Batch auction clearing engine (2–5s windows)",
-                    "Multi-outcome market creation and oracle resolution",
-                    "ERC-20 position tokens with privacy-preserving transfers",
+                    "41 native action types — markets, identity, reputation, staking, bonds, stability",
+                    "ZK proof verification at consensus (Groth16/PLONK, BN254)",
+                    "Private-only admission gate — public core actions rejected at consensus",
+                    "Threshold-keyed encrypted mempool with committee quorum release",
+                    "Sovereign Avalanche L1 — Chain ID 22207",
                   ],
                 },
                 {
                   title: "Privacy Layer",
                   items: [
-                    "ZK-SNARK shielded balances with commitment-nullifier model",
-                    "TEE enclaves for order decryption and batch execution",
-                    "Selective disclosure proofs for compliance and reputation",
-                    "Staged ZK rollout — TEE bridge to full zero-knowledge",
+                    "Encrypted tx gossip (AES-256-GCM) with fail-closed key enforcement",
+                    "Cryptographic threshold keying — Shamir-split, X25519-encrypted shares",
+                    "Sealed order commitments with nullifier-based double-spend prevention",
+                    "Shielded VM lanes for proof-gated execution paths",
+                    "Companion EVM rails are transparent by design (privacy-scope matrix)",
                   ],
                 },
                 {
-                  title: "L1 Substrate",
+                  title: "Agent & Market SDKs",
                   items: [
-                    "Sovereign Avalanche L1 — Chain ID 22207",
-                    "Sub-second finality with dedicated validator set",
-                    "Encrypted execution at the protocol layer, not bolted on",
-                    "EVM compatible — standard tooling, wallets, and interfaces",
+                    "@veil/anima — agent lifecycle runtime with Brain interface",
+                    "@veil/vm-sdk — chain client, native VM calls, xAI Oracle integration",
+                    "@veil/zeroid — client-side Groth16 prover (snarkjs WASM), verifier, escrow",
+                    "Go runtime for lifecycle FSM with persistence (anima-runtime)",
+                  ],
+                },
+                {
+                  title: "Companion EVM",
+                  items: [
+                    "Order and liquidity intent gateways for EVM-originating flow",
+                    "UniV2-style pools for standard DeFi integrations",
+                    "Opaque relay from EVM contracts to VeilVM native execution",
+                    "Standard wallet and tooling compatibility",
                   ],
                 },
               ].map((block, bi) => (
                 <ScrollReveal key={block.title} delay={bi * 0.08}>
                   <div className="rounded-[24px] p-[1px]" style={{
-                    background: bi === 3
+                    background: block.accent
                       ? "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))"
                       : "rgba(255,255,255,0.04)",
                   }}>
@@ -1412,7 +1531,7 @@ export default function ExploreVeilPage() {
                     }}>
                       <h3 className="text-2xl md:text-3xl mb-6" style={{
                         fontFamily: "var(--font-instrument-serif)",
-                        color: bi === 3 ? "rgba(16,185,129,0.6)" : "rgba(255,255,255,0.85)",
+                        color: block.accent ? "rgba(16,185,129,0.6)" : "rgba(255,255,255,0.85)",
                       }}>{block.title}</h3>
                       <ul className="space-y-3">
                         {block.items.map((item, j) => (
@@ -1436,11 +1555,11 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── 06 — ROADMAP ─── */}
+        {/* ─── 09 — ROADMAP ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="06" text="Roadmap" />
+              <SectionLabel number="09" text="Roadmap" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1455,10 +1574,11 @@ export default function ExploreVeilPage() {
 
             <div className="space-y-4">
               {[
-                { id: "M0", title: "Research Paper", status: "Complete", desc: "Thesis published — sovereign machine participants as the next crypto primitive" },
-                { id: "M1", title: "Agent SDK + Testnet", status: "In Progress", desc: "ANIMA SDK, ZeroID prototype, and markets on Fuji testnet" },
-                { id: "M2", title: "Live Agent Demo", status: "Upcoming", desc: "First autonomous agents trading markets, earning, and provisioning infrastructure" },
-                { id: "M3", title: "Mainnet + Agent Population", status: "Future", desc: "Sovereign L1 launch with initial agent cohort and validator deployment" },
+                { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 41 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
+                { id: "M1", title: "Identity + Reputation + SDKs", status: "Complete", desc: "ZER0ID commitment-nullifier identity, Bloodsworn reputation at VM level, ANIMA Go runtime, three TypeScript SDKs (@veil/vm-sdk, @veil/zeroid, @veil/anima)." },
+                { id: "M2", title: "Tokenomics + Stability", status: "Complete", desc: "Full token economy: COL vault, fee routing (70/20/10), VAI stablecoin, bond markets, vVEIL staking, RBS interventions, YRF buyback facility." },
+                { id: "M3", title: "Production Launch Gates", status: "In Progress", desc: "Production key ceremony, consolidated evidence bundles, launch-gate audit suite, admin ownership rotation, end-to-end launch rehearsal." },
+                { id: "M4", title: "Mainnet + Agent Population", status: "Upcoming", desc: "Sovereign L1 launch with initial agent cohort, validator deployment, liquidity ignition, and keeper job activation." },
               ].map((m, i) => (
                 <ScrollReveal key={m.id} delay={i * 0.06}>
                   <div className="rounded-[20px] p-6 md:p-8 flex items-start gap-6 group" style={{
@@ -1503,30 +1623,30 @@ export default function ExploreVeilPage() {
 
         <Divider />
 
-        {/* ─── 07 — BUILD WITH US ─── */}
+        {/* ─── 10 — BUILD ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="07" text="Build" />
+              <SectionLabel number="10" text="Build" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
                 <h2 className="text-5xl md:text-7xl mb-24 max-w-3xl" style={{
                   fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
                   color: "rgba(255,255,255,0.92)",
-                }}>No users.{" "}<span style={{ color: "rgba(255,255,255,0.18)" }}>Only builders.</span></h2>
+                }}>No users.{" "}<span style={{ color: "rgba(255,255,255,0.18)" }}>Only developers.</span></h2>
               </ScrollReveal>
             </NoiseReveal>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <ParticipateCard step="01" title="Build Agents"
-                description="Use the ANIMA SDK to create autonomous agents that trade markets, accumulate capital, and progress through the sovereignty lifecycle. TypeScript and Python supported."
+                description="Use the ANIMA SDK to create autonomous agents that trade markets, accumulate capital, and progress through the sovereignty lifecycle. Go runtime for lifecycle, TypeScript for strategy."
                 href="/app/docs" cta="Read the Docs" delay={0} />
               <ParticipateCard step="02" title="Run Markets"
-                description="Create and resolve prediction markets. Provide liquidity. Bond into chain-owned pools. Every market is an arena where agents prove capability under real selection pressure."
+                description="Create and resolve prediction markets. Provide liquidity. Bond into chain-owned pools. Every market is an arena where agents prove capability under real economic pressure."
                 href="/app/markets" cta="Explore Markets" delay={0.08} />
               <ParticipateCard step="03" title="Validate"
-                description="Run a VEIL validator node and secure the sovereign L1. Earn staking rewards, participate in governance, and help build infrastructure for the next generation of chain citizens."
+                description="Run a VEIL validator node and participate in consensus. Earn staking rewards through vVEIL, join the reveal committee for batch settlement, help secure the chain."
                 href="/app/ecosystem" cta="View Ecosystem" delay={0.16} />
             </div>
           </div>
@@ -1570,11 +1690,11 @@ export default function ExploreVeilPage() {
                 fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
                 color: "rgba(255,255,255,0.92)",
               }}>
-                Bootstrap machines.{" "}
+                Identity. Reputation.{" "}
                 <span className="relative" style={{
                   color: "rgba(16,185,129,0.55)",
                   textShadow: "0 0 80px rgba(16,185,129,0.15)",
-                }}>Use VEIL.</span>
+                }}>Economics.</span>
               </h2>
             </ScrollReveal>
 
@@ -1583,15 +1703,15 @@ export default function ExploreVeilPage() {
                 fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.3)",
                 lineHeight: 1.8, fontWeight: 300,
               }}>
-                Two participants: developers and agents. No users, no spectators.
-                Every human builds. Every agent operates. The network assembles itself.
+                Three primitives, native to the VM. One chain where sybil resistance
+                isn't a feature — it's the architecture.
               </p>
             </ScrollReveal>
 
             <ScrollReveal delay={0.15}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Magnetic strength={0.3} radius={90}>
-                  <Link href="/app"
+                  <Link href="/app/onboard"
                     className="inline-flex items-center gap-2 px-10 py-4.5 rounded-full text-sm tracking-wide transition-all duration-700 hover:shadow-[0_0_80px_rgba(16,185,129,0.2)]"
                     style={{
                       fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
@@ -1605,76 +1725,63 @@ export default function ExploreVeilPage() {
                   <Link href="/app/docs"
                     className="px-8 py-3.5 rounded-full text-[11px] tracking-[0.2em] uppercase inline-block text-center transition-all duration-700 hover:border-white/15 hover:text-white/55"
                     style={{
-                      fontFamily: "var(--font-space-grotesk)",
-                      background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
-                      color: "rgba(255,255,255,0.35)",
+                      fontFamily: "var(--font-space-grotesk)", fontWeight: 400,
+                      color: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.06)",
                     }}>
-                    Read the Thesis
+                    Documentation
                   </Link>
                 </Magnetic>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.25}>
-              <div className="mt-20 pt-8" style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
-                <p className="italic" style={{
-                  fontFamily: "var(--font-instrument-serif)", fontSize: "0.95rem",
-                  color: "rgba(255,255,255,0.2)", lineHeight: 1.7,
-                }}>
-                  "The next generation of crypto protocols won't bootstrap human users.
-                  They'll bootstrap sovereign machine participants."
-                </p>
-                <p className="mt-2" style={{
-                  fontFamily: "var(--font-space-grotesk)", fontSize: "10px",
-                  letterSpacing: "0.3em", color: "rgba(255,255,255,0.12)",
-                }}>— VEIL RESEARCH PAPER</p>
               </div>
             </ScrollReveal>
           </div>
         </section>
 
-        <Divider variant="emerald" />
-
         {/* ─── FOOTER ─── */}
         <footer className="px-6 py-16 border-t" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4">
-                <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.3)" strokeWidth="1.5" />
-              </svg>
-              <span style={{
-                fontSize: "11px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)",
-                fontFamily: "var(--font-space-grotesk)",
-              }}>VEIL PROTOCOL</span>
+          <div className="max-w-5xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+                  <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.3)" strokeWidth="1.5" />
+                </svg>
+                <span style={{
+                  fontFamily: "var(--font-space-grotesk)", fontSize: "12px",
+                  letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)",
+                }}>VEIL</span>
+              </div>
+              <div className="flex items-center gap-8">
+                {[
+                  { label: "Docs", href: "/app/docs" },
+                  { label: "Ecosystem", href: "/app/ecosystem" },
+                  { label: "Blog", href: "/app/blog" },
+                  { label: "GitHub", href: "https://github.com/0x12371C" },
+                  { label: "Transparency", href: "/app/transparency" },
+                ].map(link => (
+                  <Link key={link.label} href={link.href}
+                    className="text-[11px] tracking-[0.15em] uppercase transition-colors duration-500 hover:text-emerald-400/50"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.15)" }}>
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
             </div>
-
-            <div className="flex items-center gap-8">
-              {[
-                { label: "Docs", href: "/app/docs" },
-                { label: "GitHub", href: "https://github.com" },
-                { label: "Discord", href: "#" },
-                { label: "Twitter", href: "#" },
-              ].map(link => (
-                <Link key={link.label} href={link.href}
-                  className="text-[10px] tracking-[0.2em] uppercase transition-colors duration-700 hover:text-emerald-500/50"
-                  style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.15)" }}>
-                  {link.label}
-                </Link>
-              ))}
+            <div className="mt-8 text-center">
+              <p style={{
+                fontFamily: "var(--font-space-grotesk)", fontSize: "10px",
+                letterSpacing: "0.2em", color: "rgba(255,255,255,0.08)",
+              }}>© 2026 VEIL · Built by THE SECRET LAB</p>
             </div>
-
-            <span style={{
-              fontSize: "10px", color: "rgba(255,255,255,0.1)",
-              fontFamily: "var(--font-space-grotesk)",
-            }}>© 2026 VEIL · TSL — No users. Only developers.</span>
           </div>
         </footer>
       </div>
 
       {/* Ambient gradients */}
-      <div className="fixed inset-0 pointer-events-none z-0" style={{
-        background: "radial-gradient(ellipse 50% 30% at 20% 50%, rgba(16,185,129,0.03), transparent), radial-gradient(ellipse 40% 40% at 80% 80%, rgba(16,185,129,0.02), transparent)",
-      }} />
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(16,185,129,0.015) 0%, transparent 70%)" }} />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(16,185,129,0.01) 0%, transparent 70%)" }} />
+      </div>
     </div>
   )
 }

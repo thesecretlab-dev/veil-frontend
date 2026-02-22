@@ -2,8 +2,10 @@
 User-agent: *
 Allow: /
 
-# Disallow admin or sensitive areas
+# Disallow API and internal routes
 Disallow: /api/
+Disallow: /legacy/
+Disallow: /actions/
 
-# Sitemap location
+# Sitemap
 Sitemap: https://veil.markets/sitemap.xml

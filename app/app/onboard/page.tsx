@@ -372,25 +372,76 @@ const TRUST_LEVELS: { level: TrustLevel; name: string; desc: string; requirement
   { level: 4, name: "ACCREDITED", desc: "Financial qualification verified. Full compliance.", requirements: "Financial documentation", time: "~5m" },
 ]
 
-// --- Hash Puzzle Generator ---
+// --- Proof-of-Work Mining Engine ---
 
-function generatePuzzle() {
-  // Generate a target hash and fragment it into draggable pieces
-  const fullHash = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
-  // Split into 8 fragments of 8 chars
-  const fragments = Array.from({ length: 8 }, (_, i) => ({
-    id: i,
-    text: fullHash.slice(i * 8, (i + 1) * 8),
-    correctPosition: i,
-  }))
-  // Shuffle
-  const shuffled = [...fragments].sort(() => Math.random() - 0.5)
-  return { fullHash: "0x" + fullHash, fragments: shuffled }
+async function mineHashcash(
+  challenge: string,
+  difficulty: number, // leading zero bits required
+  onProgress: (stats: { nonce: number; hashRate: number; bestBits: number; currentHash: string }) => void,
+  signal: AbortSignal
+): Promise<{ nonce: number; hash: string; iterations: number; timeMs: number }> {
+  const encoder = new TextEncoder()
+  const start = performance.now()
+  let nonce = 0
+  let bestBits = 0
+  const batchSize = 2000 // hashes per yield to keep UI responsive
+
+  while (!signal.aborted) {
+    const batchStart = performance.now()
+    for (let i = 0; i < batchSize; i++) {
+      const data = encoder.encode(challenge + ":" + nonce)
+      const hashBuf = await crypto.subtle.digest("SHA-256", data)
+      const hashArr = new Uint8Array(hashBuf)
+
+      // Count leading zero bits
+      let zeroBits = 0
+      for (const byte of hashArr) {
+        if (byte === 0) { zeroBits += 8 }
+        else {
+          // Count leading zeros in this byte
+          let b = byte
+          while ((b & 0x80) === 0 && zeroBits < difficulty + 8) {
+            zeroBits++
+            b <<= 1
+          }
+          break
+        }
+      }
+
+      const hashHex = "0x" + Array.from(hashArr, b => b.toString(16).padStart(2, "0")).join("")
+
+      if (zeroBits > bestBits) bestBits = zeroBits
+
+      if (zeroBits >= difficulty) {
+        return {
+          nonce,
+          hash: hashHex,
+          iterations: nonce + 1,
+          timeMs: performance.now() - start,
+        }
+      }
+      nonce++
+    }
+
+    // Report progress and yield to UI thread
+    const elapsed = performance.now() - start
+    const hashRate = Math.floor(nonce / (elapsed / 1000))
+    const lastData = encoder.encode(challenge + ":" + (nonce - 1))
+    const lastBuf = await crypto.subtle.digest("SHA-256", lastData)
+    const lastArr = new Uint8Array(lastBuf)
+    const lastHex = "0x" + Array.from(lastArr, b => b.toString(16).padStart(2, "0")).join("")
+    onProgress({ nonce, hashRate, bestBits, currentHash: lastHex })
+
+    // Yield to main thread
+    await new Promise(r => setTimeout(r, 0))
+  }
+
+  throw new Error("Mining aborted")
 }
 
 function ZeroIdStep({ onNext }: { onNext: () => void }) {
   const [selectedLevel, setSelectedLevel] = useState<TrustLevel | null>(null)
-  const [phase, setPhase] = useState<"level" | "signature" | "puzzle" | "proving" | "verified">("level")
+  const [phase, setPhase] = useState<"level" | "signature" | "mining" | "proving" | "verified">("level")
 
   // Signature state
   const [sigChallenge, setSigChallenge] = useState("")
@@ -398,12 +449,15 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
   const [signed, setSigned] = useState(false)
   const [signature, setSignature] = useState("")
 
-  // Puzzle state
-  const [puzzle, setPuzzle] = useState<ReturnType<typeof generatePuzzle> | null>(null)
-  const [slots, setSlots] = useState<(number | null)[]>(Array(8).fill(null))
-  const [draggedFragment, setDraggedFragment] = useState<number | null>(null)
-  const [puzzleSolved, setPuzzleSolved] = useState(false)
-  const [puzzleAttempts, setPuzzleAttempts] = useState(0)
+  // Mining state
+  const [miningChallenge, setMiningChallenge] = useState("")
+  const [miningStats, setMiningStats] = useState<{ nonce: number; hashRate: number; bestBits: number; currentHash: string }>({ nonce: 0, hashRate: 0, bestBits: 0, currentHash: "" })
+  const [miningResult, setMiningResult] = useState<{ nonce: number; hash: string; iterations: number; timeMs: number } | null>(null)
+  const [miningStarted, setMiningStarted] = useState(false)
+  const abortRef = useRef<AbortController | null>(null)
+
+  // Difficulty: 20 bits = ~1M hashes avg, roughly 10-30s depending on device
+  const DIFFICULTY = 20
 
   // Proving state
   const [progress, setProgress] = useState(0)
@@ -415,6 +469,12 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
     const nonce = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
     const ts = Math.floor(Date.now() / 1000)
     setSigChallenge(`VEIL ZER0ID VERIFICATION\n\nI am proving ownership of this wallet for the VEIL network.\n\nChain: 22207\nNonce: ${nonce}\nTimestamp: ${ts}\n\nThis signature does not authorize any transaction.`)
+    setMiningChallenge(`veil:zeroid:${nonce}:${ts}:22207`)
+  }, [])
+
+  // Cleanup abort on unmount
+  useEffect(() => {
+    return () => { abortRef.current?.abort() }
   }, [])
 
   // Start signature
@@ -430,55 +490,29 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
       const sig = "0x" + Array.from({ length: 130 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
       setSignature(sig)
       setSigned(true)
-      // After signing, move to puzzle
+      // After signing, move to mining
       setTimeout(() => {
-        setPuzzle(generatePuzzle())
-        setPhase("puzzle")
+        setPhase("mining")
       }, 1200)
     }, 2000)
   }, [])
 
-  // Handle fragment placement
-  const placeFragment = useCallback((slotIdx: number) => {
-    if (draggedFragment === null || puzzleSolved) return
+  // Start PoW mining
+  const startMining = useCallback(async () => {
+    if (miningStarted) return
+    setMiningStarted(true)
+    const controller = new AbortController()
+    abortRef.current = controller
 
-    setSlots(prev => {
-      const next = [...prev]
-      // Remove fragment from any existing slot
-      const existingSlot = next.indexOf(draggedFragment)
-      if (existingSlot >= 0) next[existingSlot] = null
-      // If slot occupied, swap back
-      if (next[slotIdx] !== null) {
-        // Don't swap, just reject
-      } else {
-        next[slotIdx] = draggedFragment
-      }
-      return next
-    })
-    setDraggedFragment(null)
-  }, [draggedFragment, puzzleSolved])
-
-  // Remove from slot
-  const removeFromSlot = useCallback((slotIdx: number) => {
-    if (puzzleSolved) return
-    setSlots(prev => {
-      const next = [...prev]
-      next[slotIdx] = null
-      return next
-    })
-  }, [puzzleSolved])
-
-  // Check puzzle solution
-  const checkPuzzle = useCallback(() => {
-    if (!puzzle) return
-    setPuzzleAttempts(prev => prev + 1)
-    const correct = slots.every((fragId, slotIdx) => {
-      if (fragId === null) return false
-      return puzzle.fragments.find(f => f.id === fragId)?.correctPosition === slotIdx
-    })
-    if (correct) {
-      setPuzzleSolved(true)
-      // Start proof generation
+    try {
+      const result = await mineHashcash(
+        miningChallenge + ":" + signature.slice(0, 20),
+        DIFFICULTY,
+        (stats) => setMiningStats(stats),
+        controller.signal
+      )
+      setMiningResult(result)
+      // Transition to ZK proof generation
       setTimeout(() => {
         setPhase("proving")
         setProofActive(true)
@@ -487,8 +521,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
           setProgress(prev => {
             if (prev >= 100) {
               clearInterval(interval)
-              const hash = "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
-              setNullifier(hash)
+              setNullifier(result.hash)
               setProofActive(false)
               setTimeout(() => setPhase("verified"), 600)
               return 100
@@ -496,14 +529,11 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
             return prev + Math.random() * 4 + 1
           })
         }, 80)
-      }, 1000)
+      }, 1500)
+    } catch {
+      // Aborted
     }
-  }, [puzzle, slots])
-
-  // Check if all slots filled
-  const allSlotsFilled = slots.every(s => s !== null)
-  // Fragments not yet placed
-  const unplacedFragments = puzzle ? puzzle.fragments.filter(f => !slots.includes(f.id)) : []
+  }, [miningChallenge, signature, miningStarted, DIFFICULTY])
 
   return (
     <div className="flex flex-col items-center max-w-2xl mx-auto w-full">
@@ -520,7 +550,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
           {phase === "level" && "Select your trust level to begin identity verification."}
           {phase === "signature" && "Sign a message to prove wallet ownership."}
-          {phase === "puzzle" && "Reconstruct the nullifier hash to prove computational intent."}
+          {phase === "mining" && "Your browser is mining a proof-of-work hash collision."}
           {phase === "proving" && "Generating zero-knowledge proof..."}
           {phase === "verified" && "Identity verified. Proof sealed."}
         </p>
@@ -617,130 +647,124 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
           </motion.div>
         )}
 
-        {/* === PHASE: Hash Reconstruction Puzzle === */}
-        {phase === "puzzle" && puzzle && (
-          <motion.div key="puzzle" className="w-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+        {/* === PHASE: Proof-of-Work Mining === */}
+        {phase === "mining" && (
+          <motion.div key="mining" className="w-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <div className="mb-6">
               <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(0,229,176,0.5)" }}>
-                NULLIFIER RECONSTRUCTION
+                PROOF-OF-WORK CHALLENGE
               </div>
               <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
-                Your nullifier hash has been fragmented. Arrange the pieces in the correct order
-                to reconstruct it. This proves computational intent and prevents automated sybil attacks.
+                Your browser must find a SHA-256 hash collision with {DIFFICULTY} leading zero bits.
+                This burns real CPU cycles — proving computational commitment and preventing automated sybil attacks.
               </p>
             </div>
 
-            {/* Target hash (blurred) */}
-            <div className="w-full px-4 py-3 mb-6 font-mono text-xs text-center"
+            {/* Challenge display */}
+            <div className="w-full px-4 py-3 mb-6 font-mono text-xs"
               style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.04)" }}>
-              <div className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(255,255,255,0.15)" }}>TARGET NULLIFIER</div>
-              <div style={{ color: "rgba(0,229,176,0.6)", letterSpacing: "0.05em" }}>
-                {puzzle.fullHash}
+              <div className="text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(255,255,255,0.15)" }}>MINING CHALLENGE</div>
+              <div className="break-all" style={{ color: "rgba(0,229,176,0.4)", fontSize: "10px" }}>
+                SHA-256( {miningChallenge}:{signature.slice(0, 20)}:<span style={{ color: "rgba(0,229,176,0.7)" }}>nonce</span> )
+              </div>
+              <div className="mt-2 flex items-center gap-2">
+                <span style={{ color: "rgba(255,255,255,0.15)" }}>target:</span>
+                <span style={{ color: "rgba(0,229,176,0.5)" }}>{"0".repeat(DIFFICULTY / 4)}{"x".repeat(64 - DIFFICULTY / 4)}</span>
+                <span style={{ color: "rgba(255,255,255,0.1)" }}>({DIFFICULTY} leading zero bits)</span>
               </div>
             </div>
 
-            {/* Drop slots */}
-            <div className="w-full mb-4">
-              <div className="text-[9px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(255,255,255,0.15)" }}>
-                ASSEMBLY SLOTS
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                {slots.map((fragId, slotIdx) => {
-                  const fragment = fragId !== null ? puzzle.fragments.find(f => f.id === fragId) : null
-                  const isCorrect = puzzleSolved && fragment && fragment.correctPosition === slotIdx
-                  return (
-                    <button
-                      key={slotIdx}
-                      onClick={() => fragId !== null ? removeFromSlot(slotIdx) : placeFragment(slotIdx)}
-                      className="h-12 flex items-center justify-center font-mono text-[11px] transition-all relative"
-                      style={{
-                        background: fragment
-                          ? isCorrect ? "rgba(0,229,176,0.08)" : "rgba(255,255,255,0.04)"
-                          : draggedFragment !== null ? "rgba(0,229,176,0.03)" : "rgba(255,255,255,0.015)",
-                        border: `1px ${fragment ? "solid" : "dashed"} ${
-                          isCorrect ? "rgba(0,229,176,0.4)" :
-                          fragment ? "rgba(255,255,255,0.15)" :
-                          draggedFragment !== null ? "rgba(0,229,176,0.2)" : "rgba(255,255,255,0.06)"
-                        }`,
-                        color: fragment ? "rgba(0,229,176,0.7)" : "rgba(255,255,255,0.1)",
-                        cursor: puzzleSolved ? "default" : "pointer",
-                      }}
-                    >
-                      {fragment ? fragment.text : (
-                        <span className="text-[9px]" style={{ color: "rgba(255,255,255,0.1)" }}>{slotIdx + 1}</span>
-                      )}
-                      {isCorrect && (
-                        <motion.div className="absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center"
-                          style={{ background: "rgba(0,229,176,0.3)" }}
-                          initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                          <span style={{ fontSize: "8px", color: "rgba(0,229,176,0.9)" }}>✓</span>
-                        </motion.div>
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {/* Available fragments */}
-            {!puzzleSolved && (
-              <div className="w-full mb-6">
-                <div className="text-[9px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(255,255,255,0.15)" }}>
-                  HASH FRAGMENTS — CLICK TO SELECT, THEN CLICK A SLOT
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {puzzle.fragments.map(frag => {
-                    const isPlaced = slots.includes(frag.id)
-                    const isSelected = draggedFragment === frag.id
-                    if (isPlaced) return null
-                    return (
-                      <motion.button
-                        key={frag.id}
-                        onClick={() => setDraggedFragment(isSelected ? null : frag.id)}
-                        className="px-3 py-2 font-mono text-[11px] transition-all"
-                        style={{
-                          background: isSelected ? "rgba(0,229,176,0.12)" : "rgba(255,255,255,0.03)",
-                          border: `1px solid ${isSelected ? "rgba(0,229,176,0.4)" : "rgba(255,255,255,0.08)"}`,
-                          color: isSelected ? "rgba(0,229,176,0.9)" : "rgba(255,255,255,0.5)",
-                          cursor: "pointer",
-                          boxShadow: isSelected ? "0 0 15px rgba(0,229,176,0.1)" : "none",
-                        }}
-                        whileHover={{ scale: 1.05, y: -2 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {frag.text}
-                      </motion.button>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Attempt counter + verify */}
-            {!puzzleSolved && (
+            {!miningStarted ? (
               <div className="text-center">
-                {puzzleAttempts > 0 && !puzzleSolved && (
-                  <motion.div className="mb-4 text-xs font-mono" style={{ color: "rgba(239,68,68,0.5)" }}
-                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>
-                    Incorrect sequence. Attempts: {puzzleAttempts}
-                  </motion.div>
-                )}
-                <VeilButton onClick={checkPuzzle} disabled={!allSlotsFilled} variant="zeroid">
-                  Verify Hash Sequence
+                <p className="text-xs mb-6" style={{ color: "rgba(255,255,255,0.25)" }}>
+                  This will use your CPU for approximately 10–30 seconds.
+                  Your browser will compute hundreds of thousands of hashes to find a valid collision.
+                </p>
+                <VeilButton onClick={startMining} variant="zeroid">
+                  Begin Mining
                 </VeilButton>
               </div>
-            )}
+            ) : !miningResult ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                {/* Live mining stats */}
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {[
+                    { label: "HASHES COMPUTED", value: miningStats.nonce.toLocaleString() },
+                    { label: "HASH RATE", value: `${miningStats.hashRate.toLocaleString()} H/s` },
+                    { label: "BEST MATCH", value: `${miningStats.bestBits}/${DIFFICULTY} bits` },
+                  ].map(stat => (
+                    <div key={stat.label} className="px-3 py-3 text-center" style={{ background: "rgba(0,229,176,0.02)", border: "1px solid rgba(0,229,176,0.06)" }}>
+                      <div className="text-[8px] font-mono uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(255,255,255,0.15)" }}>{stat.label}</div>
+                      <div className="text-sm font-mono" style={{ color: "rgba(0,229,176,0.7)" }}>{stat.value}</div>
+                    </div>
+                  ))}
+                </div>
 
-            {puzzleSolved && (
-              <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <svg viewBox="0 0 24 24" className="w-5 h-5">
+                {/* Progress bar based on best bits found */}
+                <div className="mb-4">
+                  <ProgressBar progress={(miningStats.bestBits / DIFFICULTY) * 100} color="0,229,176" label="COLLISION SEARCH PROGRESS" />
+                </div>
+
+                {/* Live hash stream */}
+                <div className="w-full px-4 py-3 font-mono overflow-hidden" style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.04)", maxHeight: "120px" }}>
+                  <div className="text-[9px] uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(255,255,255,0.1)" }}>LIVE HASH OUTPUT</div>
+                  {miningStats.currentHash && (
+                    <motion.div key={miningStats.nonce} initial={{ opacity: 0, x: -5 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.1 }}>
+                      <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.08)" }}>nonce:{miningStats.nonce} → </span>
+                      <span className="text-[10px] break-all" style={{ 
+                        color: miningStats.bestBits >= DIFFICULTY - 4 ? "rgba(0,229,176,0.6)" : "rgba(0,229,176,0.25)" 
+                      }}>
+                        <span style={{ color: "rgba(0,229,176,0.8)" }}>{miningStats.currentHash.slice(0, 2 + Math.floor(miningStats.bestBits / 4))}</span>
+                        {miningStats.currentHash.slice(2 + Math.floor(miningStats.bestBits / 4))}
+                      </span>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Mining animation */}
+                <div className="flex items-center justify-center gap-3 mt-6">
+                  <div className="w-4 h-4 border-2 border-t-transparent rounded-full"
+                    style={{ borderColor: "rgba(0,229,176,0.5)", borderTopColor: "transparent", animation: "spin 0.6s linear infinite" }} />
+                  <span className="text-xs font-mono" style={{ color: "rgba(0,229,176,0.5)" }}>
+                    Mining in progress — do not close this tab
+                  </span>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div className="text-center" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}>
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <svg viewBox="0 0 24 24" className="w-6 h-6">
                     <path d="M5 13l4 4L19 7" stroke="rgba(0,229,176,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
                   </svg>
-                  <span className="text-sm" style={{ color: "rgba(0,229,176,0.7)" }}>Nullifier Reconstructed</span>
+                  <span className="text-base" style={{ color: "rgba(0,229,176,0.8)" }}>Collision Found</span>
                 </div>
+
+                {/* Result details */}
+                <div className="text-left px-4 py-3 mb-6 font-mono text-[10px]" style={{ background: "rgba(0,229,176,0.03)", border: "1px solid rgba(0,229,176,0.1)" }}>
+                  <div className="flex justify-between mb-1">
+                    <span style={{ color: "rgba(255,255,255,0.2)" }}>valid_hash</span>
+                    <span className="break-all text-right max-w-[280px]" style={{ color: "rgba(0,229,176,0.6)" }}>{miningResult.hash.slice(0, 22)}...{miningResult.hash.slice(-8)}</span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span style={{ color: "rgba(255,255,255,0.2)" }}>nonce</span>
+                    <span style={{ color: "rgba(0,229,176,0.6)" }}>{miningResult.nonce.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span style={{ color: "rgba(255,255,255,0.2)" }}>iterations</span>
+                    <span style={{ color: "rgba(0,229,176,0.6)" }}>{miningResult.iterations.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between mb-1">
+                    <span style={{ color: "rgba(255,255,255,0.2)" }}>time</span>
+                    <span style={{ color: "rgba(0,229,176,0.6)" }}>{(miningResult.timeMs / 1000).toFixed(1)}s</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span style={{ color: "rgba(255,255,255,0.2)" }}>difficulty</span>
+                    <span style={{ color: "rgba(0,229,176,0.6)" }}>{DIFFICULTY} bits</span>
+                  </div>
+                </div>
+
                 <div className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.2)" }}>
-                  GENERATING ZK PROOF...
+                  BINDING TO ZK PROOF...
                 </div>
               </motion.div>
             )}
@@ -784,7 +808,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                 Identity Verified
               </div>
               <div className="font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.25)" }}>
-                TRUST LEVEL L{selectedLevel} · WALLET SIGNED · PUZZLE SOLVED · NULLIFIER REGISTERED
+                TRUST LEVEL L{selectedLevel} · WALLET SIGNED · POW MINED · NULLIFIER REGISTERED
               </div>
             </div>
 
@@ -802,8 +826,12 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                 <span style={{ color: "rgba(0,229,176,0.4)" }}>groth16/bn128</span>
               </div>
               <div className="flex justify-between mb-1">
-                <span style={{ color: "rgba(255,255,255,0.2)" }}>puzzle_attempts</span>
-                <span style={{ color: "rgba(0,229,176,0.4)" }}>{puzzleAttempts}</span>
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>pow_iterations</span>
+                <span style={{ color: "rgba(0,229,176,0.4)" }}>{miningResult ? miningResult.iterations.toLocaleString() : "—"}</span>
+              </div>
+              <div className="flex justify-between mb-1">
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>pow_time</span>
+                <span style={{ color: "rgba(0,229,176,0.4)" }}>{miningResult ? `${(miningResult.timeMs / 1000).toFixed(1)}s` : "—"}</span>
               </div>
               <div className="flex justify-between">
                 <span style={{ color: "rgba(255,255,255,0.2)" }}>trust_level</span>

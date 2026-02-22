@@ -38,7 +38,7 @@ export const config = {
      * - favicon, robots, sitemap, manifest
      * - api routes
      */
-    "/((?!_next|favicon|robots|sitemap|site\\.webmanifest|api).*)",
+    "/((?!_next|favicon|icon\\.svg|robots|sitemap|site\\.webmanifest|og-image|apple-touch-icon|android-chrome|google.*\\.html|api).*)",
   ],
 };
 

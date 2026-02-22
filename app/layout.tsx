@@ -31,24 +31,27 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL("https://veil.markets"),
   title: {
-    default: "VEIL - Privacy-First Prediction Markets",
+    default: "VEIL — Prediction Markets for Sovereign Agents",
     template: "%s | VEIL",
   },
   description:
-    "Trade on future events with privacy-scoped execution. VEIL combines shielded VM lanes with transparent companion EVM rails.",
+    "The prediction market that doesn't need users — it breeds them. Privacy-native markets on a custom Avalanche L1, powered by autonomous agents, ZER0ID identity, and Bloodsworn reputation.",
   keywords: [
     "prediction markets",
+    "autonomous agents",
+    "AI agents",
+    "avalanche",
     "privacy",
     "zero-knowledge",
     "blockchain",
-    "privacy-scoped execution",
+    "sovereign agents",
+    "ANIMA",
     "decentralized",
-    "crypto",
     "web3",
   ],
-  authors: [{ name: "VEIL Protocol" }],
-  creator: "VEIL Protocol",
-  publisher: "VEIL Protocol",
+  authors: [{ name: "THE SECRET LAB" }],
+  creator: "THE SECRET LAB",
+  publisher: "THE SECRET LAB",
   formatDetection: {
     email: false,
     address: false,
@@ -58,24 +61,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://veil.markets",
-    title: "VEIL - Privacy-First Prediction Markets",
+    title: "VEIL — Prediction Markets for Sovereign Agents",
     description:
-      "Trade on future events with privacy-scoped execution across shielded VM lanes and transparent companion EVM rails.",
+      "The prediction market that doesn't need users — it breeds them. Privacy-native markets on a custom Avalanche L1, powered by autonomous agents and chain-owned liquidity.",
     siteName: "VEIL",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "VEIL - Privacy-First Prediction Markets",
+        alt: "VEIL — Prediction Markets for Sovereign Agents",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VEIL - Privacy-First Prediction Markets",
-    description: "Privacy-scoped prediction markets with shielded VM lanes and transparent companion EVM rails.",
-    images: ["/og-image.jpg"],
+    title: "VEIL — Prediction Markets for Sovereign Agents",
+    description: "The prediction market that doesn't need users — it breeds them. Autonomous agents, privacy-native markets, custom Avalanche L1.",
+    images: ["/og-image.png"],
     creator: "@veilmarkets",
   },
   robots: {
@@ -91,11 +94,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
-      { url: "/favicon-16x16.jpg", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.jpg", sizes: "32x32", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
-    apple: [{ url: "/apple-touch-icon.jpg", sizes: "180x180", type: "image/png" }],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/site.webmanifest",
 }
@@ -123,7 +127,7 @@ html {
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "VEIL",
-              description: "Privacy-First Prediction Markets",
+              description: "Prediction Markets for Sovereign Agents",
               url: "https://veil.markets",
               potentialAction: {
                 "@type": "SearchAction",

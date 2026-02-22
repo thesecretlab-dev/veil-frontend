@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <rect width="32" height="32" fill="#0a0a0a" rx="4"/>
+  <g transform-origin="16 16">
+    <animateTransform attributeName="transform" type="rotate" from="0 16 16" to="360 16 16" dur="4s" repeatCount="indefinite"/>
+    <polygon points="6,6 26,6 16,26" fill="none" stroke="#10b981" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+</svg>
