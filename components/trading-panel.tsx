@@ -204,7 +204,7 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
 
         {isPolygonNative && (
           <div className="text-[11px] text-center" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255, 255, 255, 0.2)" }}>
-            VEIL native trading coming soon
+            VEIL native trading is gated until launch readiness is closed
           </div>
         )}
 

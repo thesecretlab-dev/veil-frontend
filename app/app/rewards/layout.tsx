@@ -3,10 +3,10 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Rewards",
-  description: "Earn rewards for trading and participating in VEIL prediction markets.",
+  description: "Preview reward mechanics and incentive structure for VEIL prediction markets.",
   openGraph: {
     title: "Rewards - VEIL",
-    description: "Earn rewards for trading on privacy-first prediction markets.",
+    description: "Preview reward mechanics for VEIL's staged launch environment.",
   },
 }
 

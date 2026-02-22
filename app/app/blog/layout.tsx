@@ -4,10 +4,10 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Latest updates, insights, and news from the VEIL team about privacy, prediction markets, and decentralized finance.",
+    "Technical design notes and build journal from the VEIL team on architecture, privacy, and market infrastructure.",
   openGraph: {
     title: "Blog - VEIL",
-    description: "Latest updates from VEIL on privacy and prediction markets.",
+    description: "Technical design notes and build journal from VEIL.",
   },
 }
 

@@ -66,7 +66,7 @@ export function BurgerMenu() {
                 { label: "DeFi & Staking", href: "/app/defi" },
                 { label: "Governance", href: "/app/gov" },
                 { label: "Ecosystem", href: "/app/ecosystem" },
-                { label: "MAIEV Audits", href: "/maiev" },
+                { label: "MAIEV Evidence", href: "/maiev" },
                 { label: "Transparency", href: "/app/transparency" },
               ].map((item) => (
                 <Link key={item.label} href={item.href} onClick={() => setIsOpen(false)}

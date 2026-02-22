@@ -21,51 +21,51 @@ function ScrollReveal({ children, delay = 0 }: { children: React.ReactNode; dela
 
 const posts = [
   {
-    title: "On Privacy-Native Prediction Markets: A Systems Engineer's Musing on VEIL",
+    title: "On Privacy-Native Prediction Markets: Architecture Notes",
     date: "April 1, 2024",
     author: "Relic",
     excerpt:
-      "A comprehensive technical deep-dive into VEIL's architecture: sealed order flow, batch auctions, shielded ledgers, chain-owned liquidity as a native mixer, and the engineering discipline required to ship privacy-first prediction markets at scale.",
+      "Technical design notes on VEIL's architecture: sealed order flow, batch auctions, shielded ledgers, chain-owned liquidity, and the engineering discipline behind privacy-first market infrastructure.",
     slug: "privacy-native-prediction-markets",
   },
   {
-    title: "Introducing VEIL: Privacy-Native Prediction Markets",
+    title: "Why We're Building VEIL",
     date: "March 15, 2024",
     author: "Relic",
     excerpt:
-      "Today we're excited to announce VEIL, a new prediction market platform built on Avalanche with privacy at its core. Learn about our vision for censorship-resistant, anonymous trading on real-world events.",
+      "The thesis behind VEIL: a custom Avalanche L1 for privacy-scoped prediction markets, designed for sovereign agents and permissioned participation. What we're building and why.",
     slug: "introducing-veil",
   },
   {
-    title: "How Zero-Knowledge Proofs Enable Private Trading",
+    title: "Zero-Knowledge Proofs in VEIL's Design",
     date: "March 10, 2024",
     author: "Relic",
     excerpt:
-      "Deep dive into the cryptographic techniques that power VEIL's privacy features and protect trader anonymity while maintaining market integrity and auditability.",
+      "How Groth16 ZK-SNARKs are integrated into VeilVM for proof-gated settlement, identity verification, and shielded ledger operations.",
     slug: "zero-knowledge-proofs",
   },
   {
-    title: "VEIL Token Airdrop: Whitelist Now Open",
+    title: "VEIL Token Economics: Design Principles",
     date: "March 5, 2024",
     author: "Relic",
     excerpt:
-      "Early users can now whitelist their wallets for the upcoming VEIL token airdrop. Learn how to participate and what benefits token holders will receive.",
+      "Design principles behind VEIL's token economy: fixed supply, chain-owned liquidity, fee routing, and the role of the VEIL token in the network.",
     slug: "token-airdrop",
   },
   {
-    title: "Building on Avalanche: Why We Chose Subnets",
+    title: "Building on Avalanche: Why HyperSDK",
     date: "February 28, 2024",
     author: "Relic",
     excerpt:
-      "Explore the technical reasons behind our choice of Avalanche subnets for VEIL's infrastructure, including scalability, privacy, and customization benefits.",
+      "Why we chose Avalanche's HyperSDK for VEIL's custom VM rather than Subnet-EVM, and the tradeoffs involved in building a purpose-built execution environment.",
     slug: "avalanche-subnets",
   },
   {
-    title: "Market Resolution: How VEIL Ensures Fair Outcomes",
+    title: "Market Resolution: Oracle Design for VEIL",
     date: "February 20, 2024",
     author: "Relic",
     excerpt:
-      "Understanding VEIL's decentralized oracle system and how we ensure accurate, tamper-proof market resolutions through validator consensus.",
+      "Design notes on VEIL's oracle resolution system: decentralized outcome determination, dispute mechanisms, and the Grok 4.2 AI oracle for social/political markets.",
     slug: "market-resolution",
   },
 ]

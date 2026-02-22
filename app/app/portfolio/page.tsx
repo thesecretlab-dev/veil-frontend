@@ -244,8 +244,17 @@ export default function PortfolioPage() {
         </div>
       </nav>
 
+      {/* ─── Preview Banner ─── */}
+      <div className="relative z-10 pt-24 mx-auto max-w-6xl px-8">
+        <div className="rounded-[16px] border border-amber-500/20 bg-amber-500/5 px-5 py-3 text-center mb-4">
+          <span className="font-[var(--font-space-grotesk)] text-[11px] tracking-[0.15em] uppercase text-amber-300/70">
+            Demo Data — All positions and values shown are illustrative only. No live trading is active.
+          </span>
+        </div>
+      </div>
+
       {/* ─── Hero / Portfolio Value ─── */}
-      <div className="relative z-10 pt-32 pb-8 mx-auto max-w-6xl px-8">
+      <div className="relative z-10 pb-8 mx-auto max-w-6xl px-8">
         <ScrollReveal>
           <div className="text-center mb-20">
             <motion.div

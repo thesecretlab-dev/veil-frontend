@@ -256,23 +256,16 @@ export function WalletConnect() {
         </button>
       ) : (
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowWhitelistModal(true)}
-            disabled={isLoading}
+          <span
             className="px-4 py-2 rounded-lg font-sans text-xs font-medium
               bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20
-              text-emerald-400/90 hover:text-emerald-300
-              hover:bg-emerald-500/20 hover:border-emerald-500/40
-              transition-all duration-300
-              shadow-[0_0_15px_rgba(16,185,129,0.15)]
-              hover:shadow-[0_0_25px_rgba(16,185,129,0.25)]
-              disabled:opacity-50 disabled:cursor-not-allowed"
+              text-emerald-400/90"
             style={{
               textShadow: "0 0 10px rgba(16,185,129,0.3)",
             }}
           >
-            Get Whitelisted
-          </button>
+            Preview Mode
+          </span>
           <div
             className="px-4 py-2 rounded-lg font-mono text-xs
             bg-white/5 backdrop-blur-md border border-white/10
@@ -359,7 +352,7 @@ export function WalletConnect() {
                 textShadow: "0 0 8px rgba(255,255,255,0.15)",
               }}
             >
-              VEIL Wallet is the upcoming privacy-focused MetaMask fork tailored for private prediction markets.
+              Wallet connectivity is preview-only while launch gates remain in progress.
             </p>
 
             <button

@@ -78,10 +78,10 @@ export default function RewardsPage() {
               01 — Incentives
             </span>
             <h1 className="text-6xl leading-[1.05]" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.9)", letterSpacing: "-0.03em" }}>
-              Rewards & Airdrops
+              Rewards & Incentives
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.4)" }}>
-              Earn VEIL tokens by trading on the platform.
+              Preview reward mechanics and incentive structure. Distribution is not active until production launch.
             </p>
           </div>
         </ScrollReveal>

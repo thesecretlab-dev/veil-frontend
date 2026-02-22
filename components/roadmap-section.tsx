@@ -6,11 +6,11 @@ import CharReveal from "./char-reveal"
 
 export default function RoadmapSection() {
   const milestones = [
-    { id: "M0", title: "Local Demo", status: "Complete", desc: "Windowed commit \u2192 batch clear \u2192 price print loop" },
-    { id: "M1", title: "Public Testnet", status: "In Progress", desc: "Subnet live on AvaCloud with commit/clear contracts" },
-    { id: "M2", title: "Privacy POC", status: "Upcoming", desc: "TEE path with remote attestation and sealed keys" },
-    { id: "M3", title: "Audit & Mainnet Beta", status: "Upcoming", desc: "Security audits, bug bounty, gradual launch" },
-    { id: "M4", title: "ZK Expansion", status: "Future", desc: "Replace TEE checks with ZK proofs, shielded pool" },
+    { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM on HyperSDK with 42 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee." },
+    { id: "M1", title: "Identity + Reputation + SDKs", status: "In Progress", desc: "ZER0ID and Bloodsworn designed/scaffolded. ANIMA SDK baseline with local coverage. Live strict-private flows in progress." },
+    { id: "M2", title: "Tokenomics + Stability", status: "In Progress", desc: "COL, VAI, treasury/risk controls in design/runtime paths. Production parameter freeze pending (G4/G5)." },
+    { id: "M3", title: "Production Launch Gates", status: "In Progress", desc: "Key ceremony, admin rotation, consolidated evidence bundles, end-to-end launch rehearsal." },
+    { id: "M4", title: "Mainnet + Agent Population", status: "Upcoming", desc: "Sovereign L1 launch with initial agent cohort, validator deployment, liquidity ignition." },
   ]
 
   return (

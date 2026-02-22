@@ -556,14 +556,14 @@ export default function InvestorDeckPage() {
                 color: "rgba(255,255,255,0.9)",
               }}
             >
-              Early traction.
+              Build progress.
             </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { value: "12.5K", label: "Whitelist Signups" },
-                { value: "$2.4M", label: "Pre-Launch Volume" },
-                { value: "45", label: "Active Markets" },
-                { value: "98%", label: "User Satisfaction" },
+                { value: "42", label: "VM Actions Defined" },
+                { value: "6/12", label: "Launch Gates (Local PASS)" },
+                { value: "22207", label: "Chain ID (Testnet)" },
+                { value: "Tier 0", label: "ANIMA SDK Baseline" },
               ].map((item, i) => (
                 <ScrollReveal key={i} delay={i * 0.1}>
                   <Card className="p-8 text-center">
@@ -800,43 +800,43 @@ export default function InvestorDeckPage() {
             <div className="space-y-0">
               {[
                 {
-                  quarter: "Q1",
-                  title: "Public Testnet",
+                  quarter: "M0",
+                  title: "Custom VM + Proof Pipeline",
                   current: true,
                   items: [
-                    "Sealed windows and single-price clearing live",
-                    "Dashboards and analytics available",
-                    "Community testing and feedback",
+                    "VeilVM on HyperSDK with 42 native actions",
+                    "Groth16 proof-gated settlement, encrypted mempool",
+                    "Threshold-keyed committee, private-only admission",
                   ],
                 },
                 {
-                  quarter: "Q2",
-                  title: "Private Beta",
-                  current: false,
+                  quarter: "M1",
+                  title: "Identity + Reputation + SDKs",
+                  current: true,
                   items: [
-                    "Private trading with select partners",
-                    "First external security review",
-                    "Performance optimization and stress testing",
+                    "ZER0ID and Bloodsworn surfaces designed/scaffolded",
+                    "ANIMA TypeScript SDK baseline with local coverage",
+                    "Live runtime and strict-private flows in progress",
                   ],
                 },
                 {
-                  quarter: "Q3",
-                  title: "Mainnet Beta",
-                  current: false,
+                  quarter: "M2",
+                  title: "Tokenomics + Stability",
+                  current: true,
                   items: [
-                    "Outcomes and disputes live",
-                    "chain-owned liquidity seeded",
-                    "Public launch with core markets",
+                    "COL, VAI, treasury/risk controls in design/runtime paths",
+                    "Production parameter freeze pending (G4/G5)",
+                    "Fee routing 70/20/10 implemented",
                   ],
                 },
                 {
-                  quarter: "Q4",
-                  title: "Governance & Integrations",
+                  quarter: "M3",
+                  title: "Production Launch Gates",
                   current: false,
                   items: [
-                    "Governance parameters to token holders",
-                    "Integrations and expanded templates",
-                    "API access for institutional traders",
+                    "Key ceremony + admin rotation (G10)",
+                    "End-to-end launch rehearsal (G11)",
+                    "Consolidated evidence bundles",
                   ],
                 },
               ].map((phase, i) => (
@@ -964,8 +964,8 @@ export default function InvestorDeckPage() {
                         fontWeight: 300,
                       }}
                     >
-                      <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>Milestones:</span> Q1 testnet →
-                      Q2 private beta → Q3 mainnet beta → Q4 governance &amp; broader integrations
+                      <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>Milestones:</span> M0 VM + Proofs (Complete) →
+                      M1 Identity + SDKs (In Progress) → M2 Tokenomics (In Progress) → M3 Production Launch Gates (Blocked)
                     </p>
                     <p
                       className="text-[14px] leading-[1.8]"

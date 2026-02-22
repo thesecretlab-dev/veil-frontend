@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Alerts | VEIL",
-  description: "Set price alerts and market resolution notifications for your favorite prediction markets.",
+  description: "Preview alert and notification mechanics for VEIL prediction markets.",
 }
 
 export default function AlertsLayout({ children }: { children: React.ReactNode }) {

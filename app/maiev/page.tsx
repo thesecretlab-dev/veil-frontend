@@ -127,12 +127,12 @@ const publishedReports = [
     date: "2026-01-15",
     duration: "6 weeks",
     findings: { Critical: 0, High: 1, Medium: 3, Low: 7, Info: 12 },
-    summary: "One high-severity finding in the settlement callback path was identified and remediated prior to mainnet deployment. All medium findings addressed in v2.1.1 patch.",
+    summary: "One high-severity finding in the settlement callback path was identified and remediated in local validation. All medium findings addressed in v2.1.1 patch.",
     status: "Remediated",
   },
   {
     id: "MAIEV-2026-002",
-    title: "ZK Privacy Circuit Audit — Round 1",
+    title: "ZK Privacy Circuit Review — Round 1",
     auditor: "Internal Validation Team",
     date: "2026-01-28",
     duration: "8 weeks",
@@ -200,7 +200,7 @@ const evidenceBundles = [
 const methodology = [
   {
     title: "Scope Definition",
-    description: "Every audit begins with a precise scope document defining contracts, circuits, and systems under review. Scope is published before audit commencement for community review.",
+    description: "Every review begins with a precise scope document defining contracts, circuits, and systems under validation. Scope is published before validation commencement for community review.",
   },
   {
     title: "External Audit Status",
@@ -586,4 +586,5 @@ export default function MaievPage() {
     </div>
   )
 }
+
 

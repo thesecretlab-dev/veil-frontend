@@ -3,10 +3,10 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Leaderboard",
-  description: "Top traders on VEIL prediction markets. See rankings, profits, and trading statistics.",
+  description: "Preview leaderboard and ranking mechanics for VEIL prediction markets.",
   openGraph: {
     title: "Leaderboard - VEIL",
-    description: "Top traders on privacy-first prediction markets.",
+    description: "Preview leaderboard mechanics for VEIL's staged launch.",
   },
 }
 

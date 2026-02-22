@@ -422,8 +422,8 @@ export const GEO_ICON_MAP: Record<string, () => JSX.Element> = {
   "Documentation": GeoDocs,
   "API Docs": GeoApiDocs,
   "MAIEV Home": GeoMaiev,
-  "Audit Closure": GeoAuditClosure,
-  "VM Privacy Audits": GeoPrivacy,
+  "Evidence Closure": GeoAuditClosure,
+  "VM Privacy Evidence": GeoPrivacy,
 }
 
 export function GeoIcon({ name }: { name: string }) {

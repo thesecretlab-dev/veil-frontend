@@ -104,7 +104,7 @@ export function AppFooter() {
                 { label: "API", href: "/app/api-docs" },
                 { label: "DeFi Console", href: "/app/defi" },
                 { label: "Ecosystem", href: "/app/ecosystem" },
-                { label: "MAIEV Audits", href: "/maiev" },
+                { label: "MAIEV Evidence", href: "/maiev" },
                 { label: "Transparency", href: "/app/transparency" },
                 { label: "Support", href: "/app/support" },
                 { label: "Blog", href: "/app/blog" },

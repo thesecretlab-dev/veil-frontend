@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Insights Hub | VEIL",
-  description: "Access delayed market data, API management, and verified receipts. We sell probabilities, not people.",
+  description: "Preview market data surfaces, API management, and data receipt mechanics.",
 }
 
 export default function InsightsLayout({ children }: { children: React.ReactNode }) {

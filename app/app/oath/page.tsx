@@ -468,7 +468,7 @@ export default function BloodswornOathPage() {
                         fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
                         fontSize: "0.85rem", lineHeight: 1.7, fontWeight: 300,
                       }}>
-                        I understand that this oath is binding to my on-chain identity. My ZER0ID
+                        I understand that this oath is a preview of the on-chain identity ceremony. My ZER0ID
                         credential will be permanently associated with my Bloodsworn record. There
                         are no second accounts. There are no resets.
                       </p>
@@ -642,7 +642,7 @@ export default function BloodswornOathPage() {
                       </p>
                       <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "8px",
                         letterSpacing: "0.4em", color: "rgba(255,255,255,0.08)" }}>
-                        THIS DOCUMENT IS PERMANENTLY RECORDED ON VEIL L1 · CHAIN ID 22207
+                        PREVIEW · OATH RECORDING IS NOT ACTIVE UNTIL PRODUCTION LAUNCH
                       </p>
                     </div>
                   </div>

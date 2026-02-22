@@ -426,10 +426,10 @@ export default function AgentsPage() {
           {/* stat row */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             {([
-              { label: 'Active Agents on VEIL', value: '4,219', icon: Bot },
-              { label: 'Agent Trading Volume (24h)', value: '$2.4M', icon: Activity },
-              { label: 'Markets Created by Agents', value: '47', icon: TrendingUp },
-              { label: 'Average Agent Profit Margin', value: '12.3%', icon: BarChart3 },
+              { label: 'ANIMA SDK Status', value: 'Tier 0', icon: Bot },
+              { label: 'VM Actions Defined', value: '42', icon: Activity },
+              { label: 'Launch Posture', value: 'NO-GO', icon: TrendingUp },
+              { label: 'Live Agents', value: '0', icon: BarChart3 },
             ]).map((s, i) => (
               <ScrollReveal key={i} delay={i * 0.06}>
                 <GlowCard>
