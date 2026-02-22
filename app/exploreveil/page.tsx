@@ -779,19 +779,19 @@ export default function ExploreVeilPage() {
           <ScrollReveal>
             <p className="text-[10px] md:text-xs tracking-[0.4em] uppercase mb-10" style={{
               fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.4)", fontWeight: 500,
-            }}>Avalanche L1 · Chain 22207</p>
+            }}>Sovereign Agent Infrastructure</p>
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
-            <h1 className="text-[clamp(2.4rem,8vw,6.5rem)] font-normal mb-8 tracking-[-0.02em]" style={{
-              fontFamily: "var(--font-instrument-serif)", lineHeight: 0.95, color: "rgba(255,255,255,0.95)",
+            <h1 className="text-[clamp(2.8rem,9vw,7.5rem)] font-normal mb-8 tracking-[-0.02em]" style={{
+              fontFamily: "var(--font-instrument-serif)", lineHeight: 0.92, color: "rgba(255,255,255,0.95)",
             }}>
-              The sybil problem{" "}
+              They don't{" "}
               <span className="relative inline-block" style={{
                 color: "transparent",
                 WebkitTextStroke: "1.5px rgba(16,185,129,0.45)",
                 textShadow: "0 0 60px rgba(16,185,129,0.15)",
-              }}>is solved</span>
+              }}>Sleep</span>
             </h1>
           </ScrollReveal>
 
@@ -800,8 +800,9 @@ export default function ExploreVeilPage() {
               fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
               lineHeight: 1.8, fontWeight: 300,
             }}>
-              Identity, reputation, and economics as native VM primitives — not smart contracts.
-              A custom Avalanche L1 where sybil resistance isn't a feature. It's the architecture.
+              A sovereign Avalanche L1 with two kinds of participants: autonomous agents
+              and developers. Every profitable action strengthens the network. Every agent
+              that survives builds infrastructure. The chain assembles itself.
             </p>
           </ScrollReveal>
 
@@ -861,11 +862,11 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── 01 — THE PROBLEM ─── */}
+        {/* ─── 01 — THE THESIS ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="01" text="The Problem" />
+              <SectionLabel number="01" text="The Thesis" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -873,8 +874,8 @@ export default function ExploreVeilPage() {
                   fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
                   color: "rgba(255,255,255,0.92)",
                 }}>
-                  Every decentralized network{" "}
-                  <span style={{ color: "rgba(255,255,255,0.18)" }}>has the same vulnerability.</span>
+                  What if the network{" "}
+                  <span style={{ color: "rgba(255,255,255,0.18)" }}>built itself?</span>
                 </h2>
               </ScrollReveal>
             </NoiseReveal>
@@ -890,96 +891,31 @@ export default function ExploreVeilPage() {
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
                     lineHeight: 1.8, fontWeight: 300,
                   }}>
-                    Sybil attacks are the fundamental unsolved problem in decentralized systems.
-                    Fake identities break governance votes. Wash trading distorts market signals.
-                    Airdrop farming extracts value from real participants. MEV bots front-run
-                    every transaction worth extracting.
+                    The next wave of crypto infrastructure doesn't come from bootstrapping human users.
+                    It comes from <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>automatic incentivization</span> —
+                    a system where every participant action strengthens the network, and the network
+                    rewards every participant for strengthening it. Not through token giveaways.
+                    Through aligned self-interest.
                   </p>
-                  <p className="text-sm mb-6" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
-                    lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    The standard approaches don't work. Centralized KYC defeats the point of decentralization.
-                    Proof-of-humanity ceremonies don't scale. Token-gating just prices out small participants
-                    while whales create unlimited identities. Smart contract-based reputation is gameable
-                    because the data it reads is on the same surface attackers can manipulate.
-                  </p>
-                  <p className="text-sm" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
-                    lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    The problem isn't that sybil resistance is hard. It's that every existing solution
-                    treats identity as a layer on top of a system that wasn't designed for it.
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            <div className="grid md:grid-cols-3 gap-4">
-              {[
-                { title: "Governance Capture", desc: "One entity creates thousands of wallets and controls votes. DAO treasuries get drained by coordinated proposals that real participants can't outvote." },
-                { title: "Market Manipulation", desc: "Wash trading inflates volume metrics. Fake liquidity lures real capital. Front-running extracts value from every exposed transaction in the mempool." },
-                { title: "Value Extraction", desc: "Airdrop farmers, vampire attacks, mercenary capital. Every incentive program designed for real participants gets captured by industrial-scale sybil operations." },
-              ].map((item, i) => (
-                <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
-                  <InfoCard title={item.title} desc={item.desc} index={i} />
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <Divider variant="emerald" />
-
-        {/* ─── 02 — THE ANSWER ─── */}
-        <section className="px-6 py-32 md:py-48">
-          <div className="max-w-5xl mx-auto">
-            <ScrollReveal>
-              <SectionLabel number="02" text="The Answer" />
-            </ScrollReveal>
-            <NoiseReveal>
-              <ScrollReveal delay={0.05}>
-                <h2 className="text-5xl md:text-7xl mb-8 max-w-4xl" style={{
-                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
-                  color: "rgba(255,255,255,0.92)",
-                }}>
-                  Make it{" "}
-                  <span style={{ color: "rgba(16,185,129,0.5)" }}>native.</span>
-                </h2>
-              </ScrollReveal>
-            </NoiseReveal>
-
-            <ScrollReveal delay={0.1}>
-              <div className="rounded-[24px] p-[1px] mb-12" style={{
-                background: "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))",
-              }}>
-                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
-                  boxShadow: "inset 0 1px 0 rgba(16,185,129,0.04)",
-                }}>
-                  <p className="text-lg md:text-xl leading-relaxed mb-6" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
-                    lineHeight: 1.8, fontWeight: 300,
-                  }}>
-                    VEIL is a custom Avalanche VM — built with HyperSDK — where identity, reputation,
-                    and economic enforcement are protocol primitives, not application-layer additions.
-                    Sybil resistance isn't a feature you enable. It's how the chain validates transactions.
-                  </p>
-                  <p className="text-sm mb-6" style={{
-                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
-                    lineHeight: 1.7, fontWeight: 300,
-                  }}>
-                    Unverified transactions are rejected before they enter the mempool.
-                    Reputation is computed from on-chain behavior at the consensus layer — not self-reported
-                    in a contract. Economic incentives are structured so that every profitable action
-                    strengthens the network, and every extractive action gets squeezed out by the economics.
-                  </p>
+                  <blockquote className="border-l-2 pl-6 py-2 my-6" style={{ borderColor: "rgba(16,185,129,0.25)" }}>
+                    <p className="text-xl md:text-2xl italic" style={{
+                      fontFamily: "var(--font-instrument-serif)", color: "rgba(16,185,129,0.6)",
+                      lineHeight: 1.5,
+                    }}>
+                      "An agent that profits from a market also deepens its liquidity.
+                      An agent that provisions a server also extends the network's reach.
+                      An agent that validates a block also secures every other agent's position."
+                    </p>
+                  </blockquote>
                   <p className="text-sm" style={{
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.25)",
                     lineHeight: 1.7, fontWeight: 300,
                   }}>
                     The network is permissioned from genesis. Every human participant is a developer.
                     Agents must pass ZER0ID verification before they touch a single market.
-                    No pre-sale. No airdrop campaigns. No token sale. Quality over quantity — by design.
+                    No pre-sale. No airdrop campaigns. Quality over quantity — by design.
+                    That's the scalar effect — every agent that profits also builds.
+                    The network doesn't need a growth team. It needs to be turned on.
                   </p>
                 </div>
               </div>
@@ -987,9 +923,9 @@ export default function ExploreVeilPage() {
 
             <div className="grid md:grid-cols-3 gap-4">
               {[
-                { title: "Identity at Consensus", desc: "ZER0ID verification happens at the transaction validation layer. Unverified agents don't get rejected at the application level — they get rejected at the protocol level, before execution." },
-                { title: "Reputation in the VM", desc: "Bloodsworn scores are computed from block data, validator sets, and settlement records — not from contract storage that agents can manipulate. It's physics, not policy." },
-                { title: "Aligned Economics", desc: "Every profitable trade deepens liquidity. Every provisioned server extends capacity. Every validated block secures the chain. Self-interest and network growth are the same action." },
+                { title: "Aligned Incentives", desc: "Every profitable trade deepens market liquidity. Every provisioned server extends network capacity. Every validated block secures the chain. Self-interest and network growth are the same action." },
+                { title: "Permissioned Entry", desc: "No open mint. No token sale. Developers are reviewed. Agents are verified through ZER0ID before they can participate. The network enforces quality at the transaction layer." },
+                { title: "Self-Assembling Infrastructure", desc: "Agents don't just use the network — they build it. Provision compute, run validators, deepen liquidity pools. The chain scales because its participants are economically motivated to scale it." },
               ].map((item, i) => (
                 <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
                   <InfoCard title={item.title} desc={item.desc} index={i} />
@@ -1001,11 +937,11 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── 03 — ZER0ID ─── */}
+        {/* ─── 02 — ZER0ID ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="03" text="Identity" />
+              <SectionLabel number="02" text="Identity" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1025,14 +961,23 @@ export default function ExploreVeilPage() {
                 <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
                   boxShadow: "inset 0 1px 0 rgba(16,185,129,0.04)",
                 }}>
+                  <p className="text-lg md:text-xl leading-relaxed mb-4" style={{
+                    fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
+                    lineHeight: 1.8, fontWeight: 300,
+                  }}>
+                    Sybil attacks — fake identities, wash trading, governance capture — remain
+                    the fundamental unsolved problem in decentralized systems. Every existing
+                    solution either centralizes (KYC) or doesn't work (proof of humanity).
+                  </p>
                   <p className="text-lg md:text-xl leading-relaxed mb-8" style={{
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
                     lineHeight: 1.8, fontWeight: 300,
                   }}>
-                    A commitment-nullifier identity system using Groth16 ZK-SNARKs on BN254.
-                    Agents and developers prove uniqueness, on-chain history, and trust level
-                    without revealing strategies, balances, or internal state.
-                    Verification happens at the transaction layer — not in application code.
+                    ZER0ID solves this at the protocol layer. A commitment-nullifier identity system
+                    using Groth16 ZK-SNARKs on BN254. Agents and developers prove uniqueness,
+                    on-chain history, and trust level without revealing strategies, balances, or
+                    internal state. Verification happens at transaction validation — unverified
+                    transactions are rejected before they enter the mempool.
                   </p>
                   <div className="flex flex-wrap items-center gap-5">
                     {["Groth16 Proofs", "Commitment-Nullifier Model", "Selective Disclosure", "Trust Levels L0–L4"].map((label, i) => (
@@ -1070,11 +1015,11 @@ export default function ExploreVeilPage() {
 
         <Divider />
 
-        {/* ─── 04 — BLOODSWORN ─── */}
+        {/* ─── 03 — BLOODSWORN ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="04" text="Reputation" />
+              <SectionLabel number="03" text="Reputation" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1194,11 +1139,11 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── 05 — ANIMA ─── */}
+        {/* ─── 04 — ANIMA ─── */}
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="05" text="Agents" />
+              <SectionLabel number="04" text="Agents" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1277,7 +1222,7 @@ export default function ExploreVeilPage() {
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="06" text="Markets" />
+              <SectionLabel number="05" text="Markets" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1317,7 +1262,7 @@ export default function ExploreVeilPage() {
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="07" text="Tokenomics" />
+              <SectionLabel number="06" text="Tokenomics" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1465,7 +1410,7 @@ export default function ExploreVeilPage() {
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="08" text="Architecture" />
+              <SectionLabel number="07" text="Architecture" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1559,7 +1504,7 @@ export default function ExploreVeilPage() {
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-5xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="09" text="Roadmap" />
+              <SectionLabel number="08" text="Roadmap" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1627,7 +1572,7 @@ export default function ExploreVeilPage() {
         <section className="px-6 py-32 md:py-48">
           <div className="max-w-7xl mx-auto">
             <ScrollReveal>
-              <SectionLabel number="10" text="Build" />
+              <SectionLabel number="09" text="Build" />
             </ScrollReveal>
             <NoiseReveal>
               <ScrollReveal delay={0.05}>
@@ -1690,11 +1635,11 @@ export default function ExploreVeilPage() {
                 fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
                 color: "rgba(255,255,255,0.92)",
               }}>
-                Identity. Reputation.{" "}
+                Bootstrap machines.{" "}
                 <span className="relative" style={{
                   color: "rgba(16,185,129,0.55)",
                   textShadow: "0 0 80px rgba(16,185,129,0.15)",
-                }}>Economics.</span>
+                }}>Use VEIL.</span>
               </h2>
             </ScrollReveal>
 
@@ -1703,8 +1648,8 @@ export default function ExploreVeilPage() {
                 fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.3)",
                 lineHeight: 1.8, fontWeight: 300,
               }}>
-                Three primitives, native to the VM. One chain where sybil resistance
-                isn't a feature — it's the architecture.
+                Two participants: developers and agents. No users, no spectators.
+                Every human builds. Every agent operates. The network assembles itself.
               </p>
             </ScrollReveal>
 
