@@ -51,7 +51,7 @@ const metrics = [
   {
     label: "Mempool Privacy",
     value: "Threshold Keying Active (Primary + Secondary)",
-    target: "Local rollout audit passing (tkroll-20260221-235446)",
+    target: "Local rollout audit passing (latest: tkroll-20260222-014454)",
     status: "healthy" as const,
   },
 ]
@@ -100,7 +100,7 @@ const developerJournal = [
     date: "2026-02-22",
     title: "Secondary Committee Rollout Closed (Local Profile)",
     summary:
-      "Secondary validator committee activation is now live in the active VeilVM stack. Threshold-keying rollout audit passes for both validators with readiness green and runtime cryptographic markers present in logs (evidence run: tkroll-20260221-235446).",
+      "Secondary validator committee activation is now live in the active VeilVM stack. Threshold-keying rollout audit passes for both validators with readiness green and runtime cryptographic markers present in logs (evidence run: tkroll-20260222-014454).",
     briefing: "Second validator now participates in threshold-keyed decrypt release with passing rollout audit evidence.",
     status: "Completed",
   },
@@ -226,7 +226,7 @@ const changelog = [
   {
     date: "2026-02-22",
     change:
-      "Threshold-keying rollout now passes for both primary and secondary validators in local profile, with fixed secondary bootstrap wiring and archived passing evidence (tkroll-20260221-235446).",
+      "Threshold-keying rollout now passes for both primary and secondary validators in local profile, with fixed secondary bootstrap wiring and archived passing evidence (tkroll-20260222-014454).",
     type: "Milestone",
   },
   {

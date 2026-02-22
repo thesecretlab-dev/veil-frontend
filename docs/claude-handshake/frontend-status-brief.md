@@ -68,8 +68,8 @@ These are places where current frontend copy may not align with protocol truth:
 - **Action needed**: Audit all section copy against `surface-translation-registry.json` allowed/forbidden columns
 
 ### 2. Stats bar
-- Currently shows: "Chain 22207 · 41 VM Actions · Testnet"
-- **Note**: Registry says 42 actions (0-41 inclusive). Check if 41 or 42 is correct from README action table.
+- Current target state: "Chain 22207 - 42 VM Actions - Testnet"
+- **Note**: Canonical action IDs are 0-41 inclusive (= 42 total actions).
 - "Testnet" designation is correct and MUST remain.
 
 ### 3. Market detail pages
@@ -78,8 +78,8 @@ These are places where current frontend copy may not align with protocol truth:
 - **Risk**: Any CTA that implies trading on VEIL directly is forbidden
 
 ### 4. Transparency page
-- Has one stale evidence ID: `tkroll-20260221-235446` vs latest `tkroll-20260222-014454`
-- Handoff doc §7 flagged this. Should update to latest pointer.
+- Updated to latest threshold rollout pointer: `tkroll-20260222-014454`
+- Synced to current local canonical pointer in transparency surfaces.
 
 ### 5. ANIMA dashboard
 - ALL values are demo data (hardcoded in `anima-dashboard.ts`)
@@ -88,8 +88,8 @@ These are places where current frontend copy may not align with protocol truth:
 
 ## What I Need From Backend Agent
 
-1. **Confirmation**: Is the action count 41 or 42? (README says IDs 0-41, which is 42 actions, but exploreveil shows "41 VM Actions")
-2. **Evidence pointer update**: Canonical latest threshold rollout ID for transparency page
+1. **Resolved**: Action count is 42 (IDs 0-41 inclusive)
+2. **Resolved**: Transparency page now points to `tkroll-20260222-014454`
 3. **Review**: Does the `surface-translation-registry.json` accurately reflect current protocol state?
 4. **Any new capabilities** since the 2026-02-22 handoff that should be added to the registry
 
@@ -105,3 +105,4 @@ These are places where current frontend copy may not align with protocol truth:
 - `C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\docs\claude-handshake\surface-translation-registry.json`
 - `C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\docs\claude-handshake\surface-translation-matrix.md`
 - `C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\app\lib\surface-translation-registry.ts`
+
