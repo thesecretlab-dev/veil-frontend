@@ -937,29 +937,58 @@ export default function ExploreVeilPage() {
 
         <Divider variant="emerald" />
 
-        {/* ─── 02 — ZER0ID ─── */}
-        <section className="px-6 py-32 md:py-48">
-          <div className="max-w-5xl mx-auto">
+        {/* ─── 02 — ZER0ID (distinct product branding) ─── */}
+        <section className="px-6 py-32 md:py-48 relative">
+          {/* Subtle background shift to ZER0ID color */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background: "radial-gradient(ellipse 60% 40% at 50% 30%, rgba(0,229,176,0.02) 0%, transparent 70%)",
+          }} />
+          <div className="max-w-5xl mx-auto relative">
             <ScrollReveal>
               <SectionLabel number="02" text="Identity" />
             </ScrollReveal>
-            <NoiseReveal>
-              <ScrollReveal delay={0.05}>
-                <h2 className="text-5xl md:text-7xl mb-8 max-w-3xl" style={{
-                  fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
-                  color: "rgba(255,255,255,0.92)",
-                }}>
-                  ZER0ID.
-                </h2>
-              </ScrollReveal>
-            </NoiseReveal>
+
+            {/* ZER0ID branded header with logo */}
+            <ScrollReveal delay={0.05}>
+              <div className="flex items-center gap-5 mb-8">
+                {/* ZER0ID Brandmark: circle + diagonal strike (ø) + proof dot + circuit pins */}
+                <div className="flex-shrink-0">
+                  <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="28" cy="28" r="22" stroke="rgba(0,229,176,0.4)" strokeWidth="1.5" />
+                    {/* diagonal strike */}
+                    <line x1="14" y1="42" x2="42" y2="14" stroke="rgba(0,229,176,0.5)" strokeWidth="1.5" strokeLinecap="round" />
+                    {/* proof dot */}
+                    <circle cx="28" cy="28" r="3" fill="rgba(0,229,176,0.6)" />
+                    {/* circuit pin notches */}
+                    <line x1="28" y1="2" x2="28" y2="8" stroke="rgba(0,229,176,0.25)" strokeWidth="1" strokeLinecap="round" />
+                    <line x1="28" y1="48" x2="28" y2="54" stroke="rgba(0,229,176,0.25)" strokeWidth="1" strokeLinecap="round" />
+                    <line x1="2" y1="28" x2="8" y2="28" stroke="rgba(0,229,176,0.25)" strokeWidth="1" strokeLinecap="round" />
+                    <line x1="48" y1="28" x2="54" y2="28" stroke="rgba(0,229,176,0.25)" strokeWidth="1" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <div>
+                  <NoiseReveal>
+                    <h2 className="text-5xl md:text-7xl" style={{
+                      fontFamily: "var(--font-instrument-serif)", lineHeight: 1.05,
+                      color: "rgba(0,229,176,0.85)",
+                    }}>
+                      ZER0ID
+                    </h2>
+                  </NoiseReveal>
+                  <p className="text-xs tracking-[0.3em] uppercase mt-1" style={{
+                    fontFamily: "var(--font-space-grotesk)", color: "rgba(0,229,176,0.35)",
+                  }}>Privacy-Preserving Identity by TSL</p>
+                </div>
+              </div>
+            </ScrollReveal>
 
             <ScrollReveal delay={0.1}>
               <div className="rounded-[24px] p-[1px] mb-8" style={{
-                background: "linear-gradient(135deg, rgba(16,185,129,0.1), rgba(16,185,129,0.02))",
+                background: "linear-gradient(135deg, rgba(0,229,176,0.12), rgba(0,229,176,0.02))",
               }}>
-                <div className="rounded-[23px] bg-[#0c0c0c] p-8 md:p-10" style={{
-                  boxShadow: "inset 0 1px 0 rgba(16,185,129,0.04)",
+                <div className="rounded-[23px] p-8 md:p-10" style={{
+                  background: "#060b09",
+                  boxShadow: "inset 0 1px 0 rgba(0,229,176,0.04)",
                 }}>
                   <p className="text-lg md:text-xl leading-relaxed mb-4" style={{
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
@@ -967,7 +996,7 @@ export default function ExploreVeilPage() {
                   }}>
                     Sybil attacks — fake identities, wash trading, governance capture — remain
                     the fundamental unsolved problem in decentralized systems. Every existing
-                    solution either centralizes (KYC) or doesn't work (proof of humanity).
+                    solution either centralizes (KYC) or doesn't scale (proof of humanity).
                   </p>
                   <p className="text-lg md:text-xl leading-relaxed mb-8" style={{
                     fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)",
@@ -984,7 +1013,7 @@ export default function ExploreVeilPage() {
                       <motion.div key={label} className="flex items-center gap-2.5"
                         whileHover={{ x: 3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
                         <motion.div className="w-2 h-2 rounded-full"
-                          style={{ background: "rgba(16,185,129,0.35)" }}
+                          style={{ background: "rgba(0,229,176,0.4)" }}
                           animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
                           transition={{ duration: 2, repeat: Infinity, delay: i * 0.5 }}
                         />
@@ -1006,10 +1035,49 @@ export default function ExploreVeilPage() {
                 { title: "Sybil Resistance at Protocol", desc: "Each ZER0ID maps to a unique chain participant. Nullifiers prevent double-registration. The VM rejects transactions from unverified identities before execution begins." },
               ].map((item, i) => (
                 <ScrollReveal key={item.title} delay={0.15 + i * 0.06}>
-                  <InfoCard title={item.title} desc={item.desc} index={i} />
+                  <div className="rounded-[20px] p-6 h-full" style={{
+                    background: "rgba(0,229,176,0.015)",
+                    border: "1px solid rgba(0,229,176,0.06)",
+                    transition: "border-color 0.7s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(0,229,176,0.15)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(0,229,176,0.06)")}>
+                    <div className="w-8 h-8 rounded-lg mb-4 flex items-center justify-center" style={{
+                      background: "rgba(0,229,176,0.06)", border: "1px solid rgba(0,229,176,0.12)",
+                    }}>
+                      <span style={{ color: "rgba(0,229,176,0.5)", fontSize: "14px", fontFamily: "var(--font-space-grotesk)" }}>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </div>
+                    <h4 className="text-lg mb-2" style={{
+                      fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)",
+                    }}>{item.title}</h4>
+                    <p style={{
+                      fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
+                      fontSize: "0.9rem", lineHeight: 1.7, fontWeight: 300,
+                    }}>{item.desc}</p>
+                  </div>
                 </ScrollReveal>
               ))}
             </div>
+
+            {/* ZER0ID product link */}
+            <ScrollReveal delay={0.3}>
+              <div className="mt-8 flex items-center gap-4">
+                <Link href="https://thesecretlab.app/kyc"
+                  className="text-sm tracking-wide transition-all duration-700 flex items-center gap-2 group"
+                  style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(0,229,176,0.6)" }}>
+                  <span className="border-b pb-[2px] group-hover:border-[rgba(0,229,176,0.4)] transition-colors duration-700" style={{ borderColor: "rgba(0,229,176,0.15)" }}>
+                    Learn more about ZER0ID
+                  </span>
+                  <motion.span className="inline-block" whileHover={{ x: 3 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}>→</motion.span>
+                </Link>
+                <span className="text-[10px] tracking-[0.2em] uppercase" style={{
+                  fontFamily: "var(--font-space-grotesk)", color: "rgba(0,229,176,0.25)",
+                }}>thesecretlab.app</span>
+              </div>
+            </ScrollReveal>
           </div>
         </section>
 
