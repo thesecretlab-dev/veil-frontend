@@ -5,6 +5,7 @@ import { motion, useInView, useScroll, useTransform, AnimatePresence, useMotionV
 import Link from "next/link"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
+import { getVmCoverage, getLaunchStatus } from "@/app/lib/surface-translation-registry"
 
 /* ═══════════════════════════════════════════════════════════════════════════
    UTILITIES
@@ -838,8 +839,8 @@ export default function ExploreVeilPage() {
               boxShadow: "0 4px 40px rgba(0,0,0,0.2)",
             }}>
             <AnimatedStat label="Chain ID" value="22207" />
-            <AnimatedStat label="VM Actions" value="42" />
-            <AnimatedStat label="Launch Status" value="Testnet" />
+            <AnimatedStat label="VM Actions" value={String(getVmCoverage().total_actions)} />
+            <AnimatedStat label="Launch Status" value={getLaunchStatus().decision === "NO-GO" ? "Testnet" : "Live"} />
           </div>
         </ScrollReveal>
 

@@ -6,6 +6,7 @@ import { motion, useInView, useScroll, useTransform } from "framer-motion"
 
 import { formatUsdCompact, type PortalStatusResponse } from "@/lib/portal-status"
 import { GeoIcon } from "@/components/geo-3d-icons"
+import { getCtaState, getLaunchStatus } from "@/app/lib/surface-translation-registry"
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TYPES
@@ -281,21 +282,32 @@ export default function EcosystemPage() {
     return () => { cancelled = true }
   }, [])
 
+  // Derive portal statuses from registry CTA states
+  const ctaToPortal = (featureId: string, fallback: "live" | "linked" | "ops" = "ops"): "live" | "linked" | "ops" => {
+    const cta = getCtaState(featureId)
+    if (cta === "enabled") return "live"
+    if (cta === "docs_only" || cta === "waitlist") return "linked"
+    if (cta === "disabled" || cta === "hidden") return "ops"
+    return fallback
+  }
+  const launch = getLaunchStatus()
+  const isNoGo = launch.decision === "NO-GO"
+
   const groups: PortalGroup[] = [
     {
       title: "Core Trading",
       subtitle: "Indexed market and status surfaces.",
       portals: [
-        { name: "Markets", href: "/app/markets", description: "Primary prediction market trading interface.", status: status?.flags.liveMarketsAvailable ? "live" : "ops" },
-        { name: "Market Detail", href: status?.markets.topMarkets[0] ? `/app/market/${status.markets.topMarkets[0].id}` : "/app", description: "Orderbook and trading panel for individual markets.", status: status?.flags.liveMarketsAvailable ? "live" : "ops" },
-        { name: "Insights", href: "/app/insights", description: "Research and strategy dashboards.", status: "linked" },
+        { name: "Markets", href: "/app/markets", description: "Primary prediction market trading interface.", status: status?.flags.liveMarketsAvailable && !isNoGo ? "live" : "ops" },
+        { name: "Market Detail", href: status?.markets.topMarkets[0] ? `/app/market/${status.markets.topMarkets[0].id}` : "/app", description: "Orderbook and trading panel for individual markets.", status: status?.flags.liveMarketsAvailable && !isNoGo ? "live" : "ops" },
+        { name: "Insights", href: "/app/insights", description: "Research and strategy dashboards.", status: ctaToPortal("developer_sdk_docs", "linked") },
       ],
     },
     {
       title: "DeFi + Liquidity",
       subtitle: "Readiness, docs, and portfolio surfaces.",
       portals: [
-        { name: "DeFi Preview", href: "/app/defi", description: "Gated execution lane; docs and readiness only.", status: "ops" },
+        { name: "DeFi Preview", href: "/app/defi", description: "Gated execution lane; docs and readiness only.", status: ctaToPortal("companion_evm_rails") },
         { name: "Portfolio", href: "/app/portfolio", description: "Account positions and risk exposure.", status: "linked" },
         { name: "Rewards", href: "/app/rewards", description: "Reward tracking and operator incentives.", status: "linked" },
         { name: "Leaderboard", href: "/app/leaderboard", description: "Top performers and activity rankings.", status: "linked" },
@@ -305,19 +317,19 @@ export default function EcosystemPage() {
       title: "Governance + Trust",
       subtitle: "Protocol controls, documentation, and policy routes.",
       portals: [
-        { name: "Governance", href: "/app/gov", description: "Governance proposals and voting surfaces.", status: "linked" },
+        { name: "Governance", href: "/app/gov", description: "Governance proposals and voting surfaces.", status: ctaToPortal("governance_validator_ops", "linked") },
         { name: "Transparency", href: "/app/transparency", description: "Operational transparency and reporting.", status: "linked" },
-        { name: "Documentation", href: "/app/docs", description: "Technical docs and economic framework.", status: "linked" },
-        { name: "API Docs", href: "/app/api-docs", description: "Developer integration endpoints.", status: "linked" },
+        { name: "Documentation", href: "/app/docs", description: "Technical docs and economic framework.", status: ctaToPortal("developer_sdk_docs", "linked") },
+        { name: "API Docs", href: "/app/api-docs", description: "Developer integration endpoints.", status: ctaToPortal("developer_sdk_docs", "linked") },
       ],
     },
     {
       title: "Audit + Operations",
       subtitle: "Launch-readiness and audit evidence portals.",
       portals: [
-        { name: "MAIEV Home", href: "/maiev", description: "Audit archive entrypoint.", status: status?.prelaunch.available ? "live" : "ops" },
-        { name: "Audit Closure", href: "/maiev/audit-closure/index.html", description: "Full contract diagnostics and artifacts.", status: status?.prelaunch.available ? "live" : "ops" },
-        { name: "VM Privacy Audits", href: "/maiev/vm-privacy-audit/latest-report.html", description: "VM privacy mechanism audit run.", status: status?.bridge.available ? "live" : "ops" },
+        { name: "MAIEV Home", href: "/maiev", description: "Evidence archive entrypoint.", status: ctaToPortal("launch_gate_status", "linked") },
+        { name: "Evidence Closure", href: "/maiev/audit-closure/index.html", description: "Full contract diagnostics and artifacts.", status: status?.prelaunch.available ? "linked" : "ops" },
+        { name: "VM Privacy Evidence", href: "/maiev/vm-privacy-audit/latest-report.html", description: "VM privacy validation run.", status: ctaToPortal("proof_gated_consensus", "ops") },
       ],
     },
   ]

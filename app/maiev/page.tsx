@@ -4,6 +4,7 @@ import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import Link from "next/link"
 import { ArrowLeft, ExternalLink, Download, Shield, CheckCircle, Clock, AlertTriangle, Lock, FileText, Eye, Server, Coins } from "lucide-react"
+import { getLaunchStatus, getFeature, getBadge } from "@/app/lib/surface-translation-registry"
 
 /* ─── ScrollReveal ─── */
 function ScrollReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -289,7 +290,7 @@ export default function MaievPage() {
               Trust is not declared — it is demonstrated. MAIEV is VEIL&apos;s evidence and validation archive. It tracks local and staged verification artifacts, remediation notes, and launch-gate evidence. External third-party audits are listed only when publicly published.
             </p>
             <p className="mt-4 font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.14em] uppercase text-amber-300/70">
-              Current status: 0 external third-party audits published.
+              Current status: 0 external third-party audits published. Launch posture: {getLaunchStatus().decision} ({getLaunchStatus().gates_passing_local}/{getLaunchStatus().gates_total} gates local PASS).
             </p>
           </motion.div>
 
@@ -301,10 +302,10 @@ export default function MaievPage() {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             {[
-              { label: "Local Reviews Archived", value: "3" },
+              { label: "Gates Passing (Local)", value: `${getLaunchStatus().gates_passing_local}/${getLaunchStatus().gates_total}` },
               { label: "Critical Findings", value: "0" },
               { label: "External Audits Published", value: "0" },
-              { label: "Evidence Bundles", value: "4" },
+              { label: "Launch Decision", value: getLaunchStatus().decision },
             ].map((stat) => (
               <div
                 key={stat.label}
