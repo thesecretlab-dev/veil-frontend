@@ -108,7 +108,7 @@ function HexGrid({ opacity = 0.03 }: { opacity?: number }) {
   )
 }
 
-function ZKHashStream({ active, lines = 8 }: { active: boolean; lines?: number }) {
+function ZKHashStream({ active, lines = 8, color = "16,185,129" }: { active: boolean; lines?: number; color?: string }) {
   const [hashes, setHashes] = useState<string[]>([])
 
   useEffect(() => {
@@ -124,22 +124,22 @@ function ZKHashStream({ active, lines = 8 }: { active: boolean; lines?: number }
   if (!active || hashes.length === 0) return null
 
   return (
-    <div className="font-mono text-[10px] leading-relaxed overflow-hidden" style={{ color: "rgba(16,185,129,0.25)", maxHeight: `${lines * 18}px` }}>
+    <div className="font-mono text-[10px] leading-relaxed overflow-hidden" style={{ color: `rgba(${color},0.25)`, maxHeight: `${lines * 18}px` }}>
       {hashes.map((h, i) => (
         <motion.div key={`${i}-${h}`} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.15 }}>
-          <span style={{ color: "rgba(16,185,129,0.12)" }}>groth16::</span>{h}
+          <span style={{ color: `rgba(${color},0.12)` }}>groth16::</span>{h}
         </motion.div>
       ))}
     </div>
   )
 }
 
-function ProgressBar({ progress, label }: { progress: number; label?: string }) {
+function ProgressBar({ progress, label, color = "16,185,129" }: { progress: number; label?: string; color?: string }) {
   return (
     <div className="w-full">
-      {label && <div className="text-[10px] font-mono mb-1" style={{ color: "rgba(16,185,129,0.5)", letterSpacing: "0.15em" }}>{label}</div>}
+      {label && <div className="text-[10px] font-mono mb-1" style={{ color: `rgba(${color},0.5)`, letterSpacing: "0.15em" }}>{label}</div>}
       <div className="w-full h-[2px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
-        <motion.div className="h-full rounded-full" style={{ background: "linear-gradient(90deg, rgba(16,185,129,0.3), rgba(16,185,129,0.8))" }}
+        <motion.div className="h-full rounded-full" style={{ background: `linear-gradient(90deg, rgba(${color},0.3), rgba(${color},0.8))` }}
           initial={{ width: 0 }} animate={{ width: `${Math.min(progress, 100)}%` }} transition={{ duration: 0.5, ease: "easeOut" }} />
       </div>
     </div>
@@ -191,10 +191,11 @@ function StepIndicator({ current, steps }: { current: OnboardStep; steps: Onboar
 
 function VeilButton({ children, onClick, disabled = false, variant = "primary", className = "" }: {
   children: React.ReactNode; onClick?: () => void; disabled?: boolean
-  variant?: "primary" | "secondary" | "danger"; className?: string
+  variant?: "primary" | "secondary" | "danger" | "zeroid"; className?: string
 }) {
   const colors = {
     primary: { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.3)", text: "rgba(16,185,129,0.9)", hover: "rgba(16,185,129,0.2)" },
+    zeroid: { bg: "rgba(0,229,176,0.12)", border: "rgba(0,229,176,0.3)", text: "rgba(0,229,176,0.9)", hover: "rgba(0,229,176,0.2)" },
     secondary: { bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.1)", text: "rgba(255,255,255,0.5)", hover: "rgba(255,255,255,0.06)" },
     danger: { bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.2)", text: "rgba(239,68,68,0.8)", hover: "rgba(239,68,68,0.15)" },
   }
@@ -530,7 +531,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
         {phase === "level" && (
           <motion.div key="level" className="w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }}>
             <div className="w-full space-y-2 mb-8">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(16,185,129,0.5)" }}>
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(0,229,176,0.5)" }}>
                 SELECT TRUST LEVEL
               </div>
               {TRUST_LEVELS.map(tl => (
@@ -539,15 +540,15 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                   onClick={() => setSelectedLevel(tl.level)}
                   className="w-full text-left px-5 py-4 transition-all"
                   style={{
-                    background: selectedLevel === tl.level ? "rgba(16,185,129,0.06)" : "rgba(255,255,255,0.015)",
-                    border: `1px solid ${selectedLevel === tl.level ? "rgba(16,185,129,0.25)" : "rgba(255,255,255,0.05)"}`,
+                    background: selectedLevel === tl.level ? "rgba(0,229,176,0.06)" : "rgba(255,255,255,0.015)",
+                    border: `1px solid ${selectedLevel === tl.level ? "rgba(0,229,176,0.25)" : "rgba(255,255,255,0.05)"}`,
                     cursor: "pointer",
                   }}
                   whileHover={{ x: 4 }}
                 >
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-3">
-                      <span className="font-mono text-xs" style={{ color: "rgba(16,185,129,0.6)" }}>L{tl.level}</span>
+                      <span className="font-mono text-xs" style={{ color: "rgba(0,229,176,0.6)" }}>L{tl.level}</span>
                       <span className="text-sm font-medium" style={{ color: selectedLevel === tl.level ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.5)" }}>
                         {tl.name}
                       </span>
@@ -559,7 +560,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
               ))}
             </div>
             <div className="text-center">
-              <VeilButton onClick={beginSignature} disabled={selectedLevel === null}>
+              <VeilButton onClick={beginSignature} disabled={selectedLevel === null} variant="zeroid">
                 Continue to Wallet Signature
               </VeilButton>
             </div>
@@ -570,7 +571,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
         {phase === "signature" && (
           <motion.div key="signature" className="w-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <div className="w-full mb-6">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(16,185,129,0.5)" }}>
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(0,229,176,0.5)" }}>
                 SIGNATURE CHALLENGE
               </div>
               {/* Challenge message display */}
@@ -586,11 +587,11 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                   Your wallet will prompt you to sign this message. This proves you control the address
                   without making any transaction or spending gas.
                 </p>
-                <VeilButton onClick={signMessage} disabled={signing}>
+                <VeilButton onClick={signMessage} disabled={signing} variant="zeroid">
                   {signing ? (
                     <span className="flex items-center gap-2">
                       <span className="inline-block w-3 h-3 border border-t-transparent rounded-full"
-                        style={{ borderColor: "rgba(16,185,129,0.6)", borderTopColor: "transparent", animation: "spin 1s linear infinite" }} />
+                        style={{ borderColor: "rgba(0,229,176,0.6)", borderTopColor: "transparent", animation: "spin 1s linear infinite" }} />
                       Awaiting Signature...
                     </span>
                   ) : "Sign Message"}
@@ -600,12 +601,12 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
               <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <svg viewBox="0 0 24 24" className="w-5 h-5">
-                    <path d="M5 13l4 4L19 7" stroke="rgba(16,185,129,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    <path d="M5 13l4 4L19 7" stroke="rgba(0,229,176,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
                   </svg>
-                  <span className="text-sm" style={{ color: "rgba(16,185,129,0.7)" }}>Message Signed</span>
+                  <span className="text-sm" style={{ color: "rgba(0,229,176,0.7)" }}>Message Signed</span>
                 </div>
                 <div className="font-mono text-[10px] px-4 py-2 mb-4 truncate max-w-md mx-auto"
-                  style={{ color: "rgba(16,185,129,0.4)", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.08)" }}>
+                  style={{ color: "rgba(0,229,176,0.4)", background: "rgba(0,229,176,0.03)", border: "1px solid rgba(0,229,176,0.08)" }}>
                   {signature.slice(0, 24)}...{signature.slice(-12)}
                 </div>
                 <div className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.2)" }}>
@@ -620,7 +621,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
         {phase === "puzzle" && puzzle && (
           <motion.div key="puzzle" className="w-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <div className="mb-6">
-              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(16,185,129,0.5)" }}>
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(0,229,176,0.5)" }}>
                 NULLIFIER RECONSTRUCTION
               </div>
               <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
@@ -633,7 +634,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
             <div className="w-full px-4 py-3 mb-6 font-mono text-xs text-center"
               style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.04)" }}>
               <div className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(255,255,255,0.15)" }}>TARGET NULLIFIER</div>
-              <div style={{ color: "rgba(16,185,129,0.6)", letterSpacing: "0.05em" }}>
+              <div style={{ color: "rgba(0,229,176,0.6)", letterSpacing: "0.05em" }}>
                 {puzzle.fullHash}
               </div>
             </div>
@@ -654,14 +655,14 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                       className="h-12 flex items-center justify-center font-mono text-[11px] transition-all relative"
                       style={{
                         background: fragment
-                          ? isCorrect ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.04)"
-                          : draggedFragment !== null ? "rgba(16,185,129,0.03)" : "rgba(255,255,255,0.015)",
+                          ? isCorrect ? "rgba(0,229,176,0.08)" : "rgba(255,255,255,0.04)"
+                          : draggedFragment !== null ? "rgba(0,229,176,0.03)" : "rgba(255,255,255,0.015)",
                         border: `1px ${fragment ? "solid" : "dashed"} ${
-                          isCorrect ? "rgba(16,185,129,0.4)" :
+                          isCorrect ? "rgba(0,229,176,0.4)" :
                           fragment ? "rgba(255,255,255,0.15)" :
-                          draggedFragment !== null ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.06)"
+                          draggedFragment !== null ? "rgba(0,229,176,0.2)" : "rgba(255,255,255,0.06)"
                         }`,
-                        color: fragment ? "rgba(16,185,129,0.7)" : "rgba(255,255,255,0.1)",
+                        color: fragment ? "rgba(0,229,176,0.7)" : "rgba(255,255,255,0.1)",
                         cursor: puzzleSolved ? "default" : "pointer",
                       }}
                     >
@@ -670,9 +671,9 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                       )}
                       {isCorrect && (
                         <motion.div className="absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center"
-                          style={{ background: "rgba(16,185,129,0.3)" }}
+                          style={{ background: "rgba(0,229,176,0.3)" }}
                           initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                          <span style={{ fontSize: "8px", color: "rgba(16,185,129,0.9)" }}>✓</span>
+                          <span style={{ fontSize: "8px", color: "rgba(0,229,176,0.9)" }}>✓</span>
                         </motion.div>
                       )}
                     </button>
@@ -698,11 +699,11 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                         onClick={() => setDraggedFragment(isSelected ? null : frag.id)}
                         className="px-3 py-2 font-mono text-[11px] transition-all"
                         style={{
-                          background: isSelected ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.03)",
-                          border: `1px solid ${isSelected ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.08)"}`,
-                          color: isSelected ? "rgba(16,185,129,0.9)" : "rgba(255,255,255,0.5)",
+                          background: isSelected ? "rgba(0,229,176,0.12)" : "rgba(255,255,255,0.03)",
+                          border: `1px solid ${isSelected ? "rgba(0,229,176,0.4)" : "rgba(255,255,255,0.08)"}`,
+                          color: isSelected ? "rgba(0,229,176,0.9)" : "rgba(255,255,255,0.5)",
                           cursor: "pointer",
-                          boxShadow: isSelected ? "0 0 15px rgba(16,185,129,0.1)" : "none",
+                          boxShadow: isSelected ? "0 0 15px rgba(0,229,176,0.1)" : "none",
                         }}
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
@@ -724,7 +725,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
                     Incorrect sequence. Attempts: {puzzleAttempts}
                   </motion.div>
                 )}
-                <VeilButton onClick={checkPuzzle} disabled={!allSlotsFilled}>
+                <VeilButton onClick={checkPuzzle} disabled={!allSlotsFilled} variant="zeroid">
                   Verify Hash Sequence
                 </VeilButton>
               </div>
@@ -734,9 +735,9 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
               <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <svg viewBox="0 0 24 24" className="w-5 h-5">
-                    <path d="M5 13l4 4L19 7" stroke="rgba(16,185,129,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
+                    <path d="M5 13l4 4L19 7" stroke="rgba(0,229,176,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
                   </svg>
-                  <span className="text-sm" style={{ color: "rgba(16,185,129,0.7)" }}>Nullifier Reconstructed</span>
+                  <span className="text-sm" style={{ color: "rgba(0,229,176,0.7)" }}>Nullifier Reconstructed</span>
                 </div>
                 <div className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.2)" }}>
                   GENERATING ZK PROOF...
@@ -750,7 +751,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
         {phase === "proving" && (
           <motion.div key="proving" className="w-full text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <div className="mb-6">
-              <div className="text-[9px] font-mono uppercase tracking-[0.5em] mb-2" style={{ color: "rgba(16,185,129,0.4)" }}>
+              <div className="text-[9px] font-mono uppercase tracking-[0.5em] mb-2" style={{ color: "rgba(0,229,176,0.4)" }}>
                 COMPUTING ZK-SNARK
               </div>
               <div className="text-xl" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.85)" }}>
@@ -758,7 +759,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
               </div>
             </div>
             <div className="max-w-md mx-auto mb-6">
-              <ProgressBar progress={progress} label={
+              <ProgressBar progress={progress} color="0,229,176" label={
                 progress < 25 ? "BINDING SIGNATURE TO NULLIFIER" :
                 progress < 50 ? "COMPUTING GROTH16 WITNESS" :
                 progress < 75 ? "GENERATING PROOF COMPONENTS" :
@@ -766,7 +767,7 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
               } />
             </div>
             <div className="max-w-sm mx-auto">
-              <ZKHashStream active={proofActive} lines={8} />
+              <ZKHashStream active={proofActive} lines={8} color="0,229,176" />
             </div>
           </motion.div>
         )}
@@ -776,10 +777,10 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
           <motion.div key="verified" className="w-full text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <div className="mb-6">
               <motion.svg viewBox="0 0 24 24" className="w-16 h-16 mx-auto mb-4" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
-                <circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" fill="rgba(16,185,129,0.05)" />
-                <path d="M7 12l3 3 7-7" stroke="rgba(16,185,129,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
+                <circle cx="12" cy="12" r="10" stroke="rgba(0,229,176,0.4)" strokeWidth="1.5" fill="rgba(0,229,176,0.05)" />
+                <path d="M7 12l3 3 7-7" stroke="rgba(0,229,176,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
               </motion.svg>
-              <div className="text-lg font-light mb-2" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.8)" }}>
+              <div className="text-lg font-light mb-2" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(0,229,176,0.8)" }}>
                 Identity Verified
               </div>
               <div className="font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.25)" }}>
@@ -787,30 +788,30 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
               </div>
             </div>
 
-            <div className="text-left px-4 py-3 mb-6 font-mono text-[10px]" style={{ background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.08)" }}>
+            <div className="text-left px-4 py-3 mb-6 font-mono text-[10px]" style={{ background: "rgba(0,229,176,0.03)", border: "1px solid rgba(0,229,176,0.08)" }}>
               <div className="flex justify-between mb-1">
                 <span style={{ color: "rgba(255,255,255,0.2)" }}>nullifier</span>
-                <span style={{ color: "rgba(16,185,129,0.4)" }}>{nullifier.slice(0, 10)}...{nullifier.slice(-8)}</span>
+                <span style={{ color: "rgba(0,229,176,0.4)" }}>{nullifier.slice(0, 10)}...{nullifier.slice(-8)}</span>
               </div>
               <div className="flex justify-between mb-1">
                 <span style={{ color: "rgba(255,255,255,0.2)" }}>signature</span>
-                <span style={{ color: "rgba(16,185,129,0.4)" }}>{signature.slice(0, 10)}...{signature.slice(-8)}</span>
+                <span style={{ color: "rgba(0,229,176,0.4)" }}>{signature.slice(0, 10)}...{signature.slice(-8)}</span>
               </div>
               <div className="flex justify-between mb-1">
                 <span style={{ color: "rgba(255,255,255,0.2)" }}>protocol</span>
-                <span style={{ color: "rgba(16,185,129,0.4)" }}>groth16/bn128</span>
+                <span style={{ color: "rgba(0,229,176,0.4)" }}>groth16/bn128</span>
               </div>
               <div className="flex justify-between mb-1">
                 <span style={{ color: "rgba(255,255,255,0.2)" }}>puzzle_attempts</span>
-                <span style={{ color: "rgba(16,185,129,0.4)" }}>{puzzleAttempts}</span>
+                <span style={{ color: "rgba(0,229,176,0.4)" }}>{puzzleAttempts}</span>
               </div>
               <div className="flex justify-between">
                 <span style={{ color: "rgba(255,255,255,0.2)" }}>trust_level</span>
-                <span style={{ color: "rgba(16,185,129,0.4)" }}>L{selectedLevel}</span>
+                <span style={{ color: "rgba(0,229,176,0.4)" }}>L{selectedLevel}</span>
               </div>
             </div>
 
-            <VeilButton onClick={onNext}>Continue to Deposit</VeilButton>
+            <VeilButton onClick={onNext} variant="zeroid">Continue to Deposit</VeilButton>
           </motion.div>
         )}
       </AnimatePresence>
