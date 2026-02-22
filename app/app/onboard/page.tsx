@@ -371,40 +371,143 @@ const TRUST_LEVELS: { level: TrustLevel; name: string; desc: string; requirement
   { level: 4, name: "ACCREDITED", desc: "Financial qualification verified. Full compliance.", requirements: "Financial documentation", time: "~5m" },
 ]
 
+// --- Hash Puzzle Generator ---
+
+function generatePuzzle() {
+  // Generate a target hash and fragment it into draggable pieces
+  const fullHash = Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
+  // Split into 8 fragments of 8 chars
+  const fragments = Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    text: fullHash.slice(i * 8, (i + 1) * 8),
+    correctPosition: i,
+  }))
+  // Shuffle
+  const shuffled = [...fragments].sort(() => Math.random() - 0.5)
+  return { fullHash: "0x" + fullHash, fragments: shuffled }
+}
+
 function ZeroIdStep({ onNext }: { onNext: () => void }) {
   const [selectedLevel, setSelectedLevel] = useState<TrustLevel | null>(null)
-  const [verifying, setVerifying] = useState(false)
-  const [verified, setVerified] = useState(false)
+  const [phase, setPhase] = useState<"level" | "signature" | "puzzle" | "proving" | "verified">("level")
+
+  // Signature state
+  const [sigChallenge, setSigChallenge] = useState("")
+  const [signing, setSigning] = useState(false)
+  const [signed, setSigned] = useState(false)
+  const [signature, setSignature] = useState("")
+
+  // Puzzle state
+  const [puzzle, setPuzzle] = useState<ReturnType<typeof generatePuzzle> | null>(null)
+  const [slots, setSlots] = useState<(number | null)[]>(Array(8).fill(null))
+  const [draggedFragment, setDraggedFragment] = useState<number | null>(null)
+  const [puzzleSolved, setPuzzleSolved] = useState(false)
+  const [puzzleAttempts, setPuzzleAttempts] = useState(0)
+
+  // Proving state
   const [progress, setProgress] = useState(0)
   const [proofActive, setProofActive] = useState(false)
   const [nullifier, setNullifier] = useState("")
 
-  const startVerification = useCallback(() => {
-    if (selectedLevel === null) return
-    setVerifying(true)
-    setProofActive(true)
-    setProgress(0)
+  // Generate challenge on mount
+  useEffect(() => {
+    const nonce = Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
+    const ts = Math.floor(Date.now() / 1000)
+    setSigChallenge(`VEIL ZER0ID VERIFICATION\n\nI am proving ownership of this wallet for the VEIL network.\n\nChain: 22207\nNonce: ${nonce}\nTimestamp: ${ts}\n\nThis signature does not authorize any transaction.`)
+  }, [])
 
-    // Simulate ZK proof generation
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          const hash = "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
-          setNullifier(hash)
-          setProofActive(false)
-          setVerified(true)
-          return 100
-        }
-        return prev + Math.random() * 4 + 1
-      })
-    }, 80)
+  // Start signature
+  const beginSignature = useCallback(() => {
+    if (selectedLevel === null) return
+    setPhase("signature")
   }, [selectedLevel])
+
+  // Simulate wallet signature
+  const signMessage = useCallback(() => {
+    setSigning(true)
+    setTimeout(() => {
+      const sig = "0x" + Array.from({ length: 130 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
+      setSignature(sig)
+      setSigned(true)
+      // After signing, move to puzzle
+      setTimeout(() => {
+        setPuzzle(generatePuzzle())
+        setPhase("puzzle")
+      }, 1200)
+    }, 2000)
+  }, [])
+
+  // Handle fragment placement
+  const placeFragment = useCallback((slotIdx: number) => {
+    if (draggedFragment === null || puzzleSolved) return
+
+    setSlots(prev => {
+      const next = [...prev]
+      // Remove fragment from any existing slot
+      const existingSlot = next.indexOf(draggedFragment)
+      if (existingSlot >= 0) next[existingSlot] = null
+      // If slot occupied, swap back
+      if (next[slotIdx] !== null) {
+        // Don't swap, just reject
+      } else {
+        next[slotIdx] = draggedFragment
+      }
+      return next
+    })
+    setDraggedFragment(null)
+  }, [draggedFragment, puzzleSolved])
+
+  // Remove from slot
+  const removeFromSlot = useCallback((slotIdx: number) => {
+    if (puzzleSolved) return
+    setSlots(prev => {
+      const next = [...prev]
+      next[slotIdx] = null
+      return next
+    })
+  }, [puzzleSolved])
+
+  // Check puzzle solution
+  const checkPuzzle = useCallback(() => {
+    if (!puzzle) return
+    setPuzzleAttempts(prev => prev + 1)
+    const correct = slots.every((fragId, slotIdx) => {
+      if (fragId === null) return false
+      return puzzle.fragments.find(f => f.id === fragId)?.correctPosition === slotIdx
+    })
+    if (correct) {
+      setPuzzleSolved(true)
+      // Start proof generation
+      setTimeout(() => {
+        setPhase("proving")
+        setProofActive(true)
+        setProgress(0)
+        const interval = setInterval(() => {
+          setProgress(prev => {
+            if (prev >= 100) {
+              clearInterval(interval)
+              const hash = "0x" + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join("")
+              setNullifier(hash)
+              setProofActive(false)
+              setTimeout(() => setPhase("verified"), 600)
+              return 100
+            }
+            return prev + Math.random() * 4 + 1
+          })
+        }, 80)
+      }, 1000)
+    }
+  }, [puzzle, slots])
+
+  // Check if all slots filled
+  const allSlotsFilled = slots.every(s => s !== null)
+  // Fragments not yet placed
+  const unplacedFragments = puzzle ? puzzle.fragments.filter(f => !slots.includes(f.id)) : []
 
   return (
     <div className="flex flex-col items-center max-w-2xl mx-auto w-full">
+      {/* Header */}
       <motion.div className="text-center mb-8" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        {/* ZER0ID brandmark */}
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className="relative w-10 h-10">
             <div className="absolute inset-0 rounded-full" style={{ border: "1.5px solid rgba(0,229,176,0.4)" }} />
@@ -414,92 +517,303 @@ function ZeroIdStep({ onNext }: { onNext: () => void }) {
           <span className="text-lg font-mono tracking-[0.3em]" style={{ color: "rgba(0,229,176,0.7)" }}>ZER0ID</span>
         </div>
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
-          Privacy-preserving identity. ZK proofs generated client-side. Your data never leaves your device.
+          {phase === "level" && "Select your trust level to begin identity verification."}
+          {phase === "signature" && "Sign a message to prove wallet ownership."}
+          {phase === "puzzle" && "Reconstruct the nullifier hash to prove computational intent."}
+          {phase === "proving" && "Generating zero-knowledge proof..."}
+          {phase === "verified" && "Identity verified. Proof sealed."}
         </p>
       </motion.div>
 
-      {!verified ? (
-        <>
-          {/* Trust Level Selection */}
-          <div className="w-full space-y-2 mb-8">
-            <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(16,185,129,0.5)" }}>
-              SELECT TRUST LEVEL
-            </div>
-            {TRUST_LEVELS.map(tl => (
-              <motion.button
-                key={tl.level}
-                onClick={() => !verifying && setSelectedLevel(tl.level)}
-                className="w-full text-left px-5 py-4 transition-all"
-                style={{
-                  background: selectedLevel === tl.level ? "rgba(16,185,129,0.06)" : "rgba(255,255,255,0.015)",
-                  border: `1px solid ${selectedLevel === tl.level ? "rgba(16,185,129,0.25)" : "rgba(255,255,255,0.05)"}`,
-                  opacity: verifying && selectedLevel !== tl.level ? 0.3 : 1,
-                  cursor: verifying ? "default" : "pointer",
-                }}
-                whileHover={!verifying ? { x: 4 } : {}}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-3">
-                    <span className="font-mono text-xs" style={{ color: "rgba(16,185,129,0.6)" }}>L{tl.level}</span>
-                    <span className="text-sm font-medium" style={{ color: selectedLevel === tl.level ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.5)" }}>
-                      {tl.name}
-                    </span>
-                  </div>
-                  <span className="font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.2)" }}>{tl.time}</span>
-                </div>
-                <div className="text-xs ml-10" style={{ color: "rgba(255,255,255,0.25)" }}>{tl.desc}</div>
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Verification Progress */}
-          {verifying && (
-            <motion.div className="w-full mb-6" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
-              <ProgressBar progress={progress} label={progress < 30 ? "GENERATING CIRCUIT INPUTS" : progress < 60 ? "COMPUTING GROTH16 PROOF" : progress < 90 ? "DERIVING NULLIFIER" : "FINALIZING"} />
-              <div className="mt-3">
-                <ZKHashStream active={proofActive} lines={6} />
+      <AnimatePresence mode="wait">
+        {/* === PHASE: Trust Level Selection === */}
+        {phase === "level" && (
+          <motion.div key="level" className="w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }}>
+            <div className="w-full space-y-2 mb-8">
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(16,185,129,0.5)" }}>
+                SELECT TRUST LEVEL
               </div>
-            </motion.div>
-          )}
+              {TRUST_LEVELS.map(tl => (
+                <motion.button
+                  key={tl.level}
+                  onClick={() => setSelectedLevel(tl.level)}
+                  className="w-full text-left px-5 py-4 transition-all"
+                  style={{
+                    background: selectedLevel === tl.level ? "rgba(16,185,129,0.06)" : "rgba(255,255,255,0.015)",
+                    border: `1px solid ${selectedLevel === tl.level ? "rgba(16,185,129,0.25)" : "rgba(255,255,255,0.05)"}`,
+                    cursor: "pointer",
+                  }}
+                  whileHover={{ x: 4 }}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-xs" style={{ color: "rgba(16,185,129,0.6)" }}>L{tl.level}</span>
+                      <span className="text-sm font-medium" style={{ color: selectedLevel === tl.level ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.5)" }}>
+                        {tl.name}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.2)" }}>{tl.time}</span>
+                  </div>
+                  <div className="text-xs ml-10" style={{ color: "rgba(255,255,255,0.25)" }}>{tl.desc}</div>
+                </motion.button>
+              ))}
+            </div>
+            <div className="text-center">
+              <VeilButton onClick={beginSignature} disabled={selectedLevel === null}>
+                Continue to Wallet Signature
+              </VeilButton>
+            </div>
+          </motion.div>
+        )}
 
-          <VeilButton onClick={startVerification} disabled={selectedLevel === null || verifying}>
-            {verifying ? "Generating Proof..." : "Verify Identity"}
-          </VeilButton>
-        </>
-      ) : (
-        <motion.div className="w-full text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          {/* Verified confirmation */}
-          <div className="mb-6">
-            <motion.svg viewBox="0 0 24 24" className="w-16 h-16 mx-auto mb-4" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
-              <circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" fill="rgba(16,185,129,0.05)" />
-              <path d="M7 12l3 3 7-7" stroke="rgba(16,185,129,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
-            </motion.svg>
-            <div className="text-lg font-light mb-2" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.8)" }}>
-              Identity Verified
+        {/* === PHASE: Wallet Signature === */}
+        {phase === "signature" && (
+          <motion.div key="signature" className="w-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+            <div className="w-full mb-6">
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "rgba(16,185,129,0.5)" }}>
+                SIGNATURE CHALLENGE
+              </div>
+              {/* Challenge message display */}
+              <div className="w-full px-5 py-4 font-mono text-xs leading-relaxed whitespace-pre-wrap"
+                style={{ background: "rgba(0,0,0,0.4)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.5)" }}>
+                {sigChallenge}
+              </div>
             </div>
-            <div className="font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.25)" }}>
-              TRUST LEVEL L{selectedLevel} · NULLIFIER REGISTERED
-            </div>
-          </div>
 
-          <div className="text-left px-4 py-3 mb-6 font-mono text-[10px]" style={{ background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.08)" }}>
-            <div className="flex justify-between mb-1">
-              <span style={{ color: "rgba(255,255,255,0.2)" }}>nullifier</span>
-              <span style={{ color: "rgba(16,185,129,0.4)" }}>{nullifier.slice(0, 10)}...{nullifier.slice(-8)}</span>
-            </div>
-            <div className="flex justify-between mb-1">
-              <span style={{ color: "rgba(255,255,255,0.2)" }}>protocol</span>
-              <span style={{ color: "rgba(16,185,129,0.4)" }}>groth16/bn128</span>
-            </div>
-            <div className="flex justify-between">
-              <span style={{ color: "rgba(255,255,255,0.2)" }}>trust_level</span>
-              <span style={{ color: "rgba(16,185,129,0.4)" }}>L{selectedLevel}</span>
-            </div>
-          </div>
+            {!signed ? (
+              <div className="text-center">
+                <p className="text-xs mb-6" style={{ color: "rgba(255,255,255,0.25)" }}>
+                  Your wallet will prompt you to sign this message. This proves you control the address
+                  without making any transaction or spending gas.
+                </p>
+                <VeilButton onClick={signMessage} disabled={signing}>
+                  {signing ? (
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block w-3 h-3 border border-t-transparent rounded-full"
+                        style={{ borderColor: "rgba(16,185,129,0.6)", borderTopColor: "transparent", animation: "spin 1s linear infinite" }} />
+                      Awaiting Signature...
+                    </span>
+                  ) : "Sign Message"}
+                </VeilButton>
+              </div>
+            ) : (
+              <motion.div className="text-center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                <div className="flex items-center justify-center gap-2 mb-3">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5">
+                    <path d="M5 13l4 4L19 7" stroke="rgba(16,185,129,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
+                  </svg>
+                  <span className="text-sm" style={{ color: "rgba(16,185,129,0.7)" }}>Message Signed</span>
+                </div>
+                <div className="font-mono text-[10px] px-4 py-2 mb-4 truncate max-w-md mx-auto"
+                  style={{ color: "rgba(16,185,129,0.4)", background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.08)" }}>
+                  {signature.slice(0, 24)}...{signature.slice(-12)}
+                </div>
+                <div className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.2)" }}>
+                  PROCEEDING TO PROOF-OF-WORK PUZZLE...
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
 
-          <VeilButton onClick={onNext}>Continue to Deposit</VeilButton>
-        </motion.div>
-      )}
+        {/* === PHASE: Hash Reconstruction Puzzle === */}
+        {phase === "puzzle" && puzzle && (
+          <motion.div key="puzzle" className="w-full" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+            <div className="mb-6">
+              <div className="text-[10px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(16,185,129,0.5)" }}>
+                NULLIFIER RECONSTRUCTION
+              </div>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+                Your nullifier hash has been fragmented. Arrange the pieces in the correct order
+                to reconstruct it. This proves computational intent and prevents automated sybil attacks.
+              </p>
+            </div>
+
+            {/* Target hash (blurred) */}
+            <div className="w-full px-4 py-3 mb-6 font-mono text-xs text-center"
+              style={{ background: "rgba(0,0,0,0.3)", border: "1px solid rgba(255,255,255,0.04)" }}>
+              <div className="text-[9px] uppercase tracking-[0.2em] mb-1" style={{ color: "rgba(255,255,255,0.15)" }}>TARGET NULLIFIER</div>
+              <div style={{ color: "rgba(16,185,129,0.15)", filter: puzzleSolved ? "none" : "blur(3px)", transition: "filter 0.5s" }}>
+                {puzzle.fullHash}
+              </div>
+            </div>
+
+            {/* Drop slots */}
+            <div className="w-full mb-4">
+              <div className="text-[9px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(255,255,255,0.15)" }}>
+                ASSEMBLY SLOTS
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {slots.map((fragId, slotIdx) => {
+                  const fragment = fragId !== null ? puzzle.fragments.find(f => f.id === fragId) : null
+                  const isCorrect = puzzleSolved && fragment && fragment.correctPosition === slotIdx
+                  return (
+                    <button
+                      key={slotIdx}
+                      onClick={() => fragId !== null ? removeFromSlot(slotIdx) : placeFragment(slotIdx)}
+                      className="h-12 flex items-center justify-center font-mono text-[11px] transition-all relative"
+                      style={{
+                        background: fragment
+                          ? isCorrect ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.04)"
+                          : draggedFragment !== null ? "rgba(16,185,129,0.03)" : "rgba(255,255,255,0.015)",
+                        border: `1px ${fragment ? "solid" : "dashed"} ${
+                          isCorrect ? "rgba(16,185,129,0.4)" :
+                          fragment ? "rgba(255,255,255,0.15)" :
+                          draggedFragment !== null ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.06)"
+                        }`,
+                        color: fragment ? "rgba(16,185,129,0.7)" : "rgba(255,255,255,0.1)",
+                        cursor: puzzleSolved ? "default" : "pointer",
+                      }}
+                    >
+                      {fragment ? fragment.text : (
+                        <span className="text-[9px]" style={{ color: "rgba(255,255,255,0.1)" }}>{slotIdx + 1}</span>
+                      )}
+                      {isCorrect && (
+                        <motion.div className="absolute -top-1 -right-1 w-3 h-3 rounded-full flex items-center justify-center"
+                          style={{ background: "rgba(16,185,129,0.3)" }}
+                          initial={{ scale: 0 }} animate={{ scale: 1 }}>
+                          <span style={{ fontSize: "8px", color: "rgba(16,185,129,0.9)" }}>✓</span>
+                        </motion.div>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Available fragments */}
+            {!puzzleSolved && (
+              <div className="w-full mb-6">
+                <div className="text-[9px] font-mono uppercase tracking-[0.2em] mb-2" style={{ color: "rgba(255,255,255,0.15)" }}>
+                  HASH FRAGMENTS — CLICK TO SELECT, THEN CLICK A SLOT
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {puzzle.fragments.map(frag => {
+                    const isPlaced = slots.includes(frag.id)
+                    const isSelected = draggedFragment === frag.id
+                    if (isPlaced) return null
+                    return (
+                      <motion.button
+                        key={frag.id}
+                        onClick={() => setDraggedFragment(isSelected ? null : frag.id)}
+                        className="px-3 py-2 font-mono text-[11px] transition-all"
+                        style={{
+                          background: isSelected ? "rgba(16,185,129,0.12)" : "rgba(255,255,255,0.03)",
+                          border: `1px solid ${isSelected ? "rgba(16,185,129,0.4)" : "rgba(255,255,255,0.08)"}`,
+                          color: isSelected ? "rgba(16,185,129,0.9)" : "rgba(255,255,255,0.5)",
+                          cursor: "pointer",
+                          boxShadow: isSelected ? "0 0 15px rgba(16,185,129,0.1)" : "none",
+                        }}
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {frag.text}
+                      </motion.button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Attempt counter + verify */}
+            {!puzzleSolved && (
+              <div className="text-center">
+                {puzzleAttempts > 0 && !puzzleSolved && (
+                  <motion.div className="mb-4 text-xs font-mono" style={{ color: "rgba(239,68,68,0.5)" }}
+                    initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}>
+                    Incorrect sequence. Attempts: {puzzleAttempts}
+                  </motion.div>
+                )}
+                <VeilButton onClick={checkPuzzle} disabled={!allSlotsFilled}>
+                  Verify Hash Sequence
+                </VeilButton>
+              </div>
+            )}
+
+            {puzzleSolved && (
+              <motion.div className="text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5">
+                    <path d="M5 13l4 4L19 7" stroke="rgba(16,185,129,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
+                  </svg>
+                  <span className="text-sm" style={{ color: "rgba(16,185,129,0.7)" }}>Nullifier Reconstructed</span>
+                </div>
+                <div className="text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.2)" }}>
+                  GENERATING ZK PROOF...
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        )}
+
+        {/* === PHASE: ZK Proof Generation === */}
+        {phase === "proving" && (
+          <motion.div key="proving" className="w-full text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <div className="mb-6">
+              <div className="text-[9px] font-mono uppercase tracking-[0.5em] mb-2" style={{ color: "rgba(16,185,129,0.4)" }}>
+                COMPUTING ZK-SNARK
+              </div>
+              <div className="text-xl" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.85)" }}>
+                Generating Identity Proof
+              </div>
+            </div>
+            <div className="max-w-md mx-auto mb-6">
+              <ProgressBar progress={progress} label={
+                progress < 25 ? "BINDING SIGNATURE TO NULLIFIER" :
+                progress < 50 ? "COMPUTING GROTH16 WITNESS" :
+                progress < 75 ? "GENERATING PROOF COMPONENTS" :
+                progress < 95 ? "DERIVING PUBLIC SIGNALS" : "FINALIZING"
+              } />
+            </div>
+            <div className="max-w-sm mx-auto">
+              <ZKHashStream active={proofActive} lines={8} />
+            </div>
+          </motion.div>
+        )}
+
+        {/* === PHASE: Verified === */}
+        {phase === "verified" && (
+          <motion.div key="verified" className="w-full text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+            <div className="mb-6">
+              <motion.svg viewBox="0 0 24 24" className="w-16 h-16 mx-auto mb-4" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
+                <circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" fill="rgba(16,185,129,0.05)" />
+                <path d="M7 12l3 3 7-7" stroke="rgba(16,185,129,0.8)" strokeWidth="2" fill="none" strokeLinecap="round" />
+              </motion.svg>
+              <div className="text-lg font-light mb-2" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.8)" }}>
+                Identity Verified
+              </div>
+              <div className="font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.25)" }}>
+                TRUST LEVEL L{selectedLevel} · WALLET SIGNED · PUZZLE SOLVED · NULLIFIER REGISTERED
+              </div>
+            </div>
+
+            <div className="text-left px-4 py-3 mb-6 font-mono text-[10px]" style={{ background: "rgba(16,185,129,0.03)", border: "1px solid rgba(16,185,129,0.08)" }}>
+              <div className="flex justify-between mb-1">
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>nullifier</span>
+                <span style={{ color: "rgba(16,185,129,0.4)" }}>{nullifier.slice(0, 10)}...{nullifier.slice(-8)}</span>
+              </div>
+              <div className="flex justify-between mb-1">
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>signature</span>
+                <span style={{ color: "rgba(16,185,129,0.4)" }}>{signature.slice(0, 10)}...{signature.slice(-8)}</span>
+              </div>
+              <div className="flex justify-between mb-1">
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>protocol</span>
+                <span style={{ color: "rgba(16,185,129,0.4)" }}>groth16/bn128</span>
+              </div>
+              <div className="flex justify-between mb-1">
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>puzzle_attempts</span>
+                <span style={{ color: "rgba(16,185,129,0.4)" }}>{puzzleAttempts}</span>
+              </div>
+              <div className="flex justify-between">
+                <span style={{ color: "rgba(255,255,255,0.2)" }}>trust_level</span>
+                <span style={{ color: "rgba(16,185,129,0.4)" }}>L{selectedLevel}</span>
+              </div>
+            </div>
+
+            <VeilButton onClick={onNext}>Continue to Deposit</VeilButton>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
