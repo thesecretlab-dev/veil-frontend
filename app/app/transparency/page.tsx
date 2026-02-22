@@ -50,9 +50,9 @@ const metrics = [
   },
   {
     label: "Mempool Privacy",
-    value: "Threshold Keying Active (Primary)",
-    target: "Secondary committee validator rollout pending",
-    status: "neutral" as const,
+    value: "Threshold Keying Active (Primary + Secondary)",
+    target: "Local rollout audit passing (tkroll-20260221-235446)",
+    status: "healthy" as const,
   },
 ]
 
@@ -75,11 +75,18 @@ const principles = [
   {
     title: "Gate-Based Launch Discipline",
     description:
-      "Mainnet launch stays NO-GO until every required gate is PASS with archived evidence, including remaining cryptographic threshold-keying work for mempool privacy.",
+      "Mainnet launch stays NO-GO until every required gate is PASS with archived evidence, including production key custody controls, admin rotation, and full launch rehearsal.",
   },
 ]
 
 const developerJournal = [
+  {
+    date: "2026-02-22",
+    title: "Secondary Committee Rollout Closed (Local Profile)",
+    summary:
+      "Secondary validator committee activation is now live in the active VeilVM stack. Threshold-keying rollout audit passes for both validators with readiness green and runtime cryptographic markers present in logs (evidence run: tkroll-20260221-235446).",
+    status: "Completed",
+  },
   {
     date: "2026-02-21",
     title: "Live Dev Journal Pipeline Verified",
@@ -91,8 +98,8 @@ const developerJournal = [
     date: "2026-02-21",
     title: "Live Runtime Activation Fixed for Threshold Keying",
     summary:
-      "Local VEIL startup now writes per-chain VM config from secret env before AvalancheGo launch, fixing plugin env isolation. Active node now emits the cryptographic threshold-keying runtime marker and passes primary rollout checks; remaining gap is secondary committee validator readiness.",
-    status: "In Progress",
+      "Local VEIL startup now writes per-chain VM config from secret env before AvalancheGo launch, fixing plugin env isolation. The secondary committee rollout gap that remained at this stage is now closed in the active local profile.",
+    status: "Completed",
   },
   {
     date: "2026-02-18",
@@ -147,7 +154,7 @@ const developerJournal = [
     date: "2026-02-21",
     title: "Current Critical Gap",
     summary:
-      "Production activation and evidence remain pending. Cryptographic threshold-keying code path is implemented, but launch claims require validator key ceremony, rollout, and adversarial replay proof in production profile.",
+      "Local activation and rollout evidence are now passing. Remaining critical gap is production-profile validator ceremony/rollout and adversarial evidence proving fallback decrypt mode is not active in production.",
     status: "In Progress",
   },
   {
@@ -174,6 +181,12 @@ const developerJournal = [
 ]
 
 const changelog = [
+  {
+    date: "2026-02-22",
+    change:
+      "Threshold-keying rollout now passes for both primary and secondary validators in local profile, with fixed secondary bootstrap wiring and archived passing evidence (tkroll-20260221-235446).",
+    type: "Milestone",
+  },
   {
     date: "2026-02-21",
     change:
@@ -246,7 +259,7 @@ const launchBlockers = [
   {
     gate: "Cryptographic Threshold Keying",
     detail:
-      "Primary validator runtime activation is verified; remaining blocker is secondary committee validator rollout/readiness, then archive adversarial evidence proving production does not run fallback decrypt mode.",
+      "Local profile is passing on both validators with archived rollout evidence. Remaining blocker is production-profile ceremony rollout and adversarial proof that fallback decrypt mode is not active in production.",
     status: "In Progress",
   },
   {
