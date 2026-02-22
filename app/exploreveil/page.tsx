@@ -838,7 +838,7 @@ export default function ExploreVeilPage() {
               boxShadow: "0 4px 40px rgba(0,0,0,0.2)",
             }}>
             <AnimatedStat label="Chain ID" value="22207" />
-            <AnimatedStat label="VM Actions" value="41" />
+            <AnimatedStat label="VM Actions" value="42" />
             <AnimatedStat label="Launch Status" value="Testnet" />
           </div>
         </ScrollReveal>
@@ -1497,7 +1497,7 @@ export default function ExploreVeilPage() {
                   title: "VeilVM (Custom HyperSDK)",
                   accent: true,
                   items: [
-                    "41 native action types — markets, identity, reputation, staking, bonds, stability",
+                    "42 native action types — markets, identity, reputation, staking, bonds, stability",
                     "ZK proof verification at consensus (Groth16/PLONK, BN254)",
                     "Private-only admission gate — public core actions rejected at consensus",
                     "Threshold-keyed encrypted mempool with committee quorum release",
@@ -1587,7 +1587,7 @@ export default function ExploreVeilPage() {
 
             <div className="space-y-4">
               {[
-                { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 41 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
+                { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 42 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
                 { id: "M1", title: "Identity + Reputation + SDKs", status: "Complete", desc: "ZER0ID commitment-nullifier identity, Bloodsworn reputation at VM level, ANIMA Go runtime, three TypeScript SDKs (@veil/vm-sdk, @veil/zeroid, @veil/anima)." },
                 { id: "M2", title: "Tokenomics + Stability", status: "Complete", desc: "Full token economy: COL vault, fee routing (70/20/10), VAI stablecoin, bond markets, vVEIL staking, RBS interventions, YRF buyback facility." },
                 { id: "M3", title: "Production Launch Gates", status: "In Progress", desc: "Production key ceremony, consolidated evidence bundles, launch-gate audit suite, admin ownership rotation, end-to-end launch rehearsal." },
