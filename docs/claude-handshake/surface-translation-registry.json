@@ -1,0 +1,97 @@
+{
+  "generated_date": "2026-02-22",
+  "owner_note": "Frontend claim/status registry for VEIL surface translation. Update this first before changing UI claims.",
+  "launch": {
+    "decision_state": "NO-GO",
+    "gates": {
+      "pass_local": 6,
+      "in_progress": 4,
+      "fail": 2,
+      "total_required": 12
+    },
+    "authoritative_source": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\VEIL_PRODUCTION_LAUNCH_CHECKLIST.md"
+  },
+  "features": [
+    {
+      "feature_id": "veilvm_private_orderflow_tier0",
+      "surface_label": "Private Native Orderflow (Tier 0)",
+      "implemented": true,
+      "validated_local": true,
+      "production_ready": false,
+      "live": false,
+      "runtime_admitted": true,
+      "privacy_scope": "vm-native-private",
+      "user_claim_allowed": "Local validated baseline only",
+      "evidence_refs": [
+        "ANIMA repo commits: ee0fd4e, 0042494",
+        "Local tests: sdks/veil-vm/test/native-tier0-client.test.ts (24 pass)",
+        "Local tests: sdks/anima/test/native-tier0-agent.test.ts (15 pass, 1 skip)"
+      ],
+      "notes_for_copy": "Do not claim live private agent execution yet. Say local SDK/runtime baseline + harness scaffold."
+    },
+    {
+      "feature_id": "anima_tier0_live_flow",
+      "surface_label": "ANIMA Tier 0 Live Strict-Private Flow",
+      "implemented": "scaffolded",
+      "validated_local": false,
+      "production_ready": false,
+      "live": false,
+      "runtime_admitted": false,
+      "privacy_scope": "vm-native-private",
+      "user_claim_allowed": "Scaffolded / pending",
+      "evidence_refs": [
+        "sdks/anima/test/native-tier0-live.test.ts (harness scaffold)",
+        "sdks/anima/test/fixtures/native-tier0.env.example"
+      ],
+      "notes_for_copy": "Pending real local runtime + proof/reveal/clear artifacts."
+    },
+    {
+      "feature_id": "mempool_threshold_privacy",
+      "surface_label": "Threshold-Keyed Mempool Privacy",
+      "implemented": true,
+      "validated_local": true,
+      "production_ready": false,
+      "live": false,
+      "runtime_admitted": true,
+      "privacy_scope": "vm-native-private",
+      "user_claim_allowed": "Local rollout pass; production ceremony pending",
+      "evidence_refs": [
+        "threshold-keying-rollout latest -> tkroll-20260222-014454",
+        "VEIL launch checklist G2"
+      ],
+      "notes_for_copy": "Do not say fully production-private until G2/G10/G11 close with evidence."
+    },
+    {
+      "feature_id": "companion_evm_rails",
+      "surface_label": "Companion EVM Interop Rails",
+      "implemented": true,
+      "validated_local": true,
+      "production_ready": false,
+      "live": false,
+      "runtime_admitted": true,
+      "privacy_scope": "evm-interop-public",
+      "user_claim_allowed": "Interop rails in progress",
+      "evidence_refs": [
+        "VEIL launch checklist G6"
+      ],
+      "notes_for_copy": "Position as interoperability rails, not the private execution engine."
+    },
+    {
+      "feature_id": "proof_only_core_flow",
+      "surface_label": "Proof-Verified Core Flow Admission",
+      "implemented": true,
+      "validated_local": true,
+      "production_ready": false,
+      "live": false,
+      "runtime_admitted": true,
+      "privacy_scope": "vm-native-private",
+      "user_claim_allowed": "Local enforced / production NO-GO pending remaining gates",
+      "evidence_refs": [
+        "VEIL launch checklist G1/G2/G9",
+        "Frontend transparency journal entries 2026-02-21 and 2026-02-22"
+      ],
+      "notes_for_copy": "Allowed to state enforcement in current local profile; keep production status separate."
+    }
+  ]
+}
+
