@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { WalletConnect } from "./wallet-connect"
 import { BurgerMenu } from "./burger-menu"
-import { Moon, Sun } from "lucide-react"
+import { Moon, Sun, Search } from "lucide-react"
 import { useEffect, useState } from "react"
 import { getCategoryColors } from "@/lib/category-colors"
 
@@ -24,13 +24,13 @@ export function AppNav({
 }: AppNavProps) {
   const [theme, setThemeState] = useState<"light" | "dark">("dark")
   const [mounted, setMounted] = useState(false)
+  const [searchFocused, setSearchFocused] = useState(false)
 
   useEffect(() => {
     setMounted(true)
     const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null
     const initialTheme = savedTheme || "dark"
     setThemeState(initialTheme)
-
     if (initialTheme === "dark") {
       document.documentElement.classList.add("dark")
     } else {
@@ -40,10 +40,8 @@ export function AppNav({
 
   const handleThemeToggle = () => {
     const newTheme = theme === "dark" ? "light" : "dark"
-
     setThemeState(newTheme)
     localStorage.setItem("theme", newTheme)
-
     if (newTheme === "dark") {
       document.documentElement.classList.add("dark")
     } else {
@@ -52,121 +50,126 @@ export function AppNav({
   }
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-white/5 backdrop-blur-xl bg-black/30">
+    <nav
+      className="fixed top-0 left-0 right-0 z-30"
+      style={{
+        background: "rgba(6, 6, 6, 0.8)",
+        backdropFilter: "blur(24px) saturate(1.2)",
+        WebkitBackdropFilter: "blur(24px) saturate(1.2)",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
+      }}
+    >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-8 py-4">
-        <Link href="/" className="group flex items-center gap-3 transition-all duration-[1500ms] hover:scale-[1.02]">
-          {/* Enhanced triangle with better glow and animation */}
+      <div className="flex items-center justify-between px-6 py-4 md:px-10">
+        {/* Left: Logo */}
+        <Link href="/" className="group flex items-center gap-3 transition-all duration-700 hover:scale-[1.02]">
           <div className="relative">
             <svg
-              width="32"
-              height="32"
+              width="28"
+              height="28"
               viewBox="0 0 48 48"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="transition-all duration-[1500ms] group-hover:drop-shadow-[0_0_12px_rgba(16,185,129,0.5)]"
-              style={{
-                filter: "drop-shadow(0 0 10px rgba(16, 185, 129, 0.4))",
-              }}
+              className="transition-all duration-700 group-hover:drop-shadow-[0_0_16px_rgba(16,185,129,0.6)]"
+              style={{ filter: "drop-shadow(0 0 8px rgba(16, 185, 129, 0.35))" }}
             >
               <defs>
-                <linearGradient id="navTriangleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="rgba(192, 192, 192, 0.5)" />
-                  <stop offset="50%" stopColor="rgba(16, 185, 129, 0.45)" />
-                  <stop offset="100%" stopColor="rgba(255, 255, 255, 0.3)" />
+                <linearGradient id="navTriGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stopColor="rgba(16, 185, 129, 0.6)" />
+                  <stop offset="100%" stopColor="rgba(255, 255, 255, 0.25)" />
                 </linearGradient>
               </defs>
               <path
-                d="M24 40 L8 12 L40 12 Z"
-                fill="url(#navTriangleGradient)"
-                stroke="rgba(255, 255, 255, 0.3)"
-                strokeWidth="1.5"
-                className="transition-all duration-[1500ms] group-hover:stroke-emerald-400/50"
+                d="M24 42 L6 8 L42 8 Z"
+                fill="url(#navTriGrad)"
+                stroke="rgba(16, 185, 129, 0.3)"
+                strokeWidth="1"
               />
             </svg>
           </div>
-
-          {/* VEIL | Markets text with improved styling */}
-          <div className="flex items-center gap-2">
-            <span
-              className="text-2xl font-light tracking-wider transition-all duration-[1500ms] group-hover:text-white/50"
-              style={{
-                color: "rgba(255, 255, 255, 0.4)",
-                textShadow: `
-                  0 0 12px rgba(16, 185, 129, 0.35),
-                  0 0 24px rgba(16, 185, 129, 0.2)
-                `,
-              }}
-            >
-              VEIL
-            </span>
-            <span
-              className="text-xl font-extralight transition-all duration-[1500ms]"
-              style={{
-                color: "rgba(255, 255, 255, 0.2)",
-              }}
-            >
-              |
-            </span>
-            <span
-              className="text-lg font-light tracking-wide transition-all duration-[1500ms] group-hover:text-white/50"
-              style={{
-                color: "rgba(255, 255, 255, 0.4)",
-                textShadow: `
-                  0 0 12px rgba(16, 185, 129, 0.35),
-                  0 0 24px rgba(16, 185, 129, 0.2)
-                `,
-              }}
-            >
-              Markets
-            </span>
-          </div>
+          <span
+            className="text-[22px] tracking-[0.2em] transition-all duration-700 group-hover:text-white/70"
+            style={{
+              fontFamily: "var(--font-instrument-serif)",
+              color: "rgba(255, 255, 255, 0.5)",
+              letterSpacing: "0.2em",
+            }}
+          >
+            VEIL
+          </span>
         </Link>
 
-        <div className="flex items-center gap-6">
-          <input
-            type="text"
-            placeholder="Search markets..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-80 rounded-lg border border-white/10 px-4 py-2.5 text-sm font-light backdrop-blur-xl transition-all focus:border-emerald-500/40 focus:outline-none"
+        {/* Center: Search */}
+        <div className="hidden md:flex items-center flex-1 max-w-md mx-12">
+          <div
+            className="relative w-full transition-all duration-500"
             style={{
-              background: "rgba(255, 255, 255, 0.03)",
-              color: "rgba(255, 255, 255, 0.6)",
-            }}
-          />
-
-          <button
-            onClick={onShowTutorial}
-            className="text-sm font-light transition-all hover:text-emerald-400"
-            style={{
-              color: "rgba(255, 255, 255, 0.6)",
-              textShadow: "0 0 10px rgba(16, 185, 129, 0.3)",
+              borderRadius: "12px",
+              border: searchFocused ? "1px solid rgba(16, 185, 129, 0.25)" : "1px solid rgba(255, 255, 255, 0.06)",
+              background: "rgba(255, 255, 255, 0.02)",
             }}
           >
-            How it works
-          </button>
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "rgba(255, 255, 255, 0.25)" }} />
+            <input
+              type="text"
+              placeholder="Search markets..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              className="w-full bg-transparent pl-10 pr-4 py-2.5 text-sm outline-none"
+              style={{
+                fontFamily: "var(--font-figtree)",
+                color: "rgba(255, 255, 255, 0.7)",
+              }}
+            />
+          </div>
+        </div>
 
-          <Link
-            href="/app/insights"
-            className="text-sm font-light transition-all hover:text-emerald-400"
-            style={{
-              color: "rgba(255, 255, 255, 0.6)",
-              textShadow: "0 0 10px rgba(16, 185, 129, 0.3)",
-            }}
-          >
-            Insights
-          </Link>
+        {/* Right: Links + Wallet */}
+        <div className="flex items-center gap-5">
+          {[
+            { label: "How it works", action: onShowTutorial },
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={item.action}
+              className="hidden lg:inline text-[13px] transition-all duration-500 hover:text-emerald-400"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                color: "rgba(255, 255, 255, 0.4)",
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+
+          {[
+            { label: "Insights", href: "/app/insights" },
+            { label: "DeFi", href: "/app/defi" },
+            { label: "Ecosystem", href: "/app/ecosystem" },
+            { label: "MAIEV", href: "/maiev" },
+          ].map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="hidden lg:inline text-[13px] transition-all duration-500 hover:text-emerald-400"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                color: "rgba(255, 255, 255, 0.4)",
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
 
           <button
             onClick={handleThemeToggle}
-            className="rounded-lg p-2 transition-all hover:bg-white/5"
-            style={{
-              color: "rgba(255, 255, 255, 0.6)",
-            }}
+            className="rounded-lg p-2 transition-all duration-500 hover:bg-white/[0.04]"
+            style={{ color: "rgba(255, 255, 255, 0.35)" }}
             aria-label="Toggle theme"
           >
-            {mounted && (theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />)}
+            {mounted && (theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />)}
           </button>
 
           <WalletConnect />
@@ -174,56 +177,52 @@ export function AppNav({
         </div>
       </div>
 
-      {/* Trending + Main Categories */}
-      <div className="flex items-center gap-6 border-t border-white/5 px-8 py-3">
-        {/* Trending section */}
-        <div className="flex items-center gap-3">
-          {["Trending", "Breaking", "New"].map((category, index) => (
+      {/* Category pills */}
+      <div
+        className="flex items-center gap-2 overflow-x-auto px-6 pb-3.5 md:px-10 scrollbar-hide"
+        style={{ borderTop: "1px solid rgba(255, 255, 255, 0.03)" }}
+      >
+        {["All", "Trending", "Breaking", "New"].map((category) => {
+          const isActive = selectedCategory === category
+          return (
             <button
               key={category}
               onClick={() => onCategoryChange(category)}
-              className="text-sm font-light transition-all hover:text-emerald-400"
+              className="whitespace-nowrap px-4 py-1.5 text-[13px] transition-all duration-500"
               style={{
-                color:
-                  selectedCategory === category
-                    ? "rgba(16, 185, 129, 0.8)"
-                    : index === 0
-                      ? "rgba(16, 185, 129, 0.6)"
-                      : "rgba(255, 255, 255, 0.6)",
-                textShadow:
-                  selectedCategory === category
-                    ? "0 0 15px rgba(16, 185, 129, 0.4)"
-                    : "0 0 10px rgba(16, 185, 129, 0.2)",
+                fontFamily: "var(--font-space-grotesk)",
+                borderRadius: "100px",
+                background: isActive ? "rgba(16, 185, 129, 0.12)" : "transparent",
+                border: isActive ? "1px solid rgba(16, 185, 129, 0.25)" : "1px solid transparent",
+                color: isActive ? "rgba(16, 185, 129, 0.9)" : "rgba(255, 255, 255, 0.4)",
               }}
             >
               {category}
             </button>
-          ))}
-        </div>
+          )
+        })}
 
-        <div className="h-4 w-px bg-white/10" />
+        <div className="mx-2 h-4 w-px shrink-0" style={{ background: "rgba(255, 255, 255, 0.06)" }} />
 
-        {/* Main categories */}
-        <div className="flex flex-1 items-center gap-4 overflow-x-auto scrollbar-hide">
-          {["Politics", "Sports", "Crypto", "Earnings", "Tech", "Culture", "World", "Economy"].map((category) => {
-            const colors = getCategoryColors(category)
-            const isSelected = selectedCategory === category
-
-            return (
-              <button
-                key={category}
-                onClick={() => onCategoryChange(category)}
-                className="whitespace-nowrap text-sm font-light transition-all"
-                style={{
-                  color: isSelected ? colors.light : "rgba(255, 255, 255, 0.6)",
-                  textShadow: isSelected ? `0 0 12px ${colors.glow}` : "none",
-                }}
-              >
-                {category}
-              </button>
-            )
-          })}
-        </div>
+        {["Politics", "Sports", "Crypto", "Earnings", "Tech", "Culture", "World", "Economy"].map((category) => {
+          const isActive = selectedCategory === category
+          return (
+            <button
+              key={category}
+              onClick={() => onCategoryChange(category)}
+              className="whitespace-nowrap px-4 py-1.5 text-[13px] transition-all duration-500"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                borderRadius: "100px",
+                background: isActive ? "rgba(16, 185, 129, 0.12)" : "transparent",
+                border: isActive ? "1px solid rgba(16, 185, 129, 0.25)" : "1px solid transparent",
+                color: isActive ? "rgba(16, 185, 129, 0.9)" : "rgba(255, 255, 255, 0.4)",
+              }}
+            >
+              {category}
+            </button>
+          )
+        })}
       </div>
     </nav>
   )

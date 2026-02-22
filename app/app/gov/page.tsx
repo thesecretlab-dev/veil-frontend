@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import {
   Vote,
   Shield,
@@ -9,13 +9,11 @@ import {
   Users,
   ChevronRight,
   X,
-  ExternalLink,
   CheckCircle2,
   AlertCircle,
   Wallet,
   Send,
   MessageSquare,
-  TrendingUp,
   Lock,
   Eye,
   EyeOff,
@@ -23,7 +21,6 @@ import {
   ArrowRight,
   Zap,
   BarChart3,
-  Globe,
   Coins,
   FileText,
   ThumbsUp,
@@ -31,6 +28,24 @@ import {
   Copy,
   Check,
 } from "lucide-react";
+
+/* ───────────────────────── ScrollReveal ───────────────────────── */
+
+function ScrollReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
+      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      transition={{ duration: 1, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 /* ───────────────────────── constants ───────────────────────── */
 
@@ -152,6 +167,25 @@ const STATS = [
   { label: "Treasury Balance", value: "$8.2M", icon: Shield },
 ];
 
+const NAV_LINKS = ["Protocol", "Markets", "Governance", "Docs"];
+
+/* ───────────────────────── status pill helper ───────────────────────── */
+
+function statusPill(status: string) {
+  const map: Record<string, string> = {
+    active: "bg-emerald-500/10 text-emerald-400 border-emerald-500/25",
+    pending: "bg-amber-500/10 text-amber-400 border-amber-500/25",
+    rejected: "bg-red-500/10 text-red-400 border-red-500/25",
+    closed: "bg-white/5 text-white/30 border-white/10",
+  };
+  return map[status] || map.closed;
+}
+
+function statusLabel(status: string) {
+  const map: Record<string, string> = { active: "Voting Active", pending: "Pending", rejected: "Rejected", closed: "Closed" };
+  return map[status] || status;
+}
+
 /* ───────────────────────── component ───────────────────────── */
 
 export default function GovernancePage() {
@@ -193,263 +227,461 @@ export default function GovernancePage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const cardClass = "rounded-xl border border-white/10 backdrop-blur-sm hover:border-emerald-500/30 transition-all duration-300";
-  const cardBg = "rgba(255,255,255,0.03)";
+  /* shared card style */
+  const card = "rounded-[20px] border transition-all duration-700 ease-in-out";
+  const cardBorder = "border-[rgba(255,255,255,0.04)]";
+  const cardHover = "hover:border-emerald-500/20 hover:shadow-[0_0_40px_rgba(16,185,129,0.06)]";
+  const cardBg = "rgba(255,255,255,0.015)";
 
   return (
-    <div className="min-h-screen bg-slate-900/90 text-white">
-      {/* ── Stats Bar ── */}
-      <div className="border-b border-white/10" style={{ background: cardBg }}>
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {STATS.map((s) => (
-              <div key={s.label} className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-emerald-500/10">
-                  <s.icon className="w-4 h-4 text-emerald-500" />
-                </div>
-                <div>
-                  <p className="text-xs text-white/40 uppercase tracking-wider">{s.label}</p>
-                  <p className="text-lg font-mono font-semibold text-white/90">{s.value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+    <div className="relative min-h-screen text-white" style={{ background: "#060606", fontFamily: "var(--font-figtree), sans-serif" }}>
 
-      <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
-        {/* ── Hero ── */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-center space-y-6">
-          <div className="flex items-center justify-center gap-3">
-            <Vote className="w-8 h-8 text-emerald-500" />
-            <h1
-              className="text-5xl font-bold tracking-tight"
-              style={{ textShadow: "0 0 30px rgba(255,255,255,0.4), 0 0 50px rgba(16,185,129,0.25)" }}
-            >
-              Governance
-            </h1>
-          </div>
-          <p className="text-white/60 max-w-2xl mx-auto text-lg">
-            Shape the future of VEIL. Vote on proposals, delegate your veVEIL, and participate in protocol governance with commit-reveal privacy.
-          </p>
+      {/* ─── Film Grain Overlay ─── */}
+      <div
+        className="fixed inset-0 z-[9999] pointer-events-none"
+        style={{
+          opacity: 0.035,
+          mixBlendMode: "overlay",
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "256px 256px",
+        }}
+      />
 
-          <div className="flex items-center justify-center gap-4">
-            {connected ? (
-              <div className={`${cardClass} px-5 py-3 flex items-center gap-3`} style={{ background: cardBg }}>
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-sm text-white/60">Connected</span>
-                <span className="font-mono text-sm text-white/90">0x7a3B...f92E</span>
-                <div className="h-4 w-px bg-white/10" />
-                <span className="text-sm text-emerald-500 font-mono">24,500 veVEIL</span>
-              </div>
-            ) : (
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setWalletOpen(true)}
-                className="px-6 py-3 rounded-xl bg-emerald-500 text-white font-medium flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] transition-shadow"
-              >
-                <Wallet className="w-4 h-4" />
-                Connect Wallet
-              </motion.button>
-            )}
-          </div>
-        </motion.div>
-
-        {/* ── Active Proposals ── */}
-        <section className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <Shield className="w-5 h-5 text-emerald-500" />
-              Active Proposals
-            </h2>
-            <span className="text-sm text-white/40">
-              {PROPOSALS.filter((p) => p.status === "active").length} active
+      {/* ─── Fixed Navbar ─── */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl" style={{ background: "rgba(6,6,6,0.8)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+        <div className="max-w-[1400px] mx-auto px-8 h-[72px] flex items-center justify-between">
+          {/* Logo */}
+          <div className="flex items-center gap-2.5">
+            <svg viewBox="0 0 32 32" fill="none" className="w-7 h-7">
+              <path d="M16 2L4 28h8l4-10 4 10h8L16 2z" fill="rgba(16,185,129,0.9)" />
+            </svg>
+            <span className="text-[15px] font-semibold tracking-[0.12em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+              VEIL
             </span>
           </div>
 
-          <div className="space-y-4">
-            {PROPOSALS.map((p, i) => (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-                className={`${cardClass} p-6 shadow-[0_0_20px_rgba(16,185,129,0.05)]`}
-                style={{ background: cardBg }}
+          {/* Links */}
+          <div className="hidden md:flex items-center gap-10">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link}
+                href="#"
+                className="text-[13px] tracking-[0.06em] transition-colors duration-500"
+                style={{
+                  fontFamily: "var(--font-space-grotesk), monospace",
+                  color: link === "Governance" ? "rgba(16,185,129,0.8)" : "rgba(255,255,255,0.35)",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.92)")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = link === "Governance" ? "rgba(16,185,129,0.8)" : "rgba(255,255,255,0.35)")}
               >
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                  <div className="flex-1 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-sm text-emerald-500 font-semibold">{p.id}</span>
-                      <span
-                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                          p.status === "active"
-                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                            : "bg-white/5 text-white/40 border border-white/10"
-                        }`}
-                      >
-                        {p.status === "active" ? "Voting Active" : "Pending"}
-                      </span>
-                      <div className="flex items-center gap-1 text-xs text-white/40">
-                        <Clock className="w-3 h-3" />
-                        {p.timeLeft}
-                      </div>
-                    </div>
-                    <h3 className="text-lg font-semibold text-white/90">{p.title}</h3>
-                    <p className="text-sm text-white/50 leading-relaxed">{p.description}</p>
-
-                    {p.status === "active" && (
-                      <div className="space-y-2 pt-1">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-emerald-400 flex items-center gap-1">
-                            <ThumbsUp className="w-3 h-3" />
-                            For {p.forPct}% ({p.forVotes} veVEIL)
-                          </span>
-                          <span className="text-red-400 flex items-center gap-1">
-                            Against {p.againstPct}% ({p.againstVotes} veVEIL)
-                            <ThumbsDown className="w-3 h-3" />
-                          </span>
-                        </div>
-                        <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-                          <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400" style={{ width: `${p.forPct}%` }} />
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-white/40">
-                          <span>Quorum: {p.quorum}%</span>
-                          <div className="flex items-center gap-1">
-                            <div className="w-16 h-1 rounded-full bg-white/10 overflow-hidden">
-                              <div className="h-full rounded-full bg-emerald-500/60" style={{ width: `${p.quorum}%` }} />
-                            </div>
-                            {p.quorum >= 66 ? (
-                              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                            ) : (
-                              <AlertCircle className="w-3 h-3 text-yellow-500" />
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-4 text-xs text-white/30 pt-1">
-                      <span>by {p.author}</span>
-                      <span>{p.created}</span>
-                    </div>
-                  </div>
-
-                  {p.status === "active" && (
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => handleVote(p)}
-                      className="px-5 py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-medium hover:bg-emerald-500/20 transition-colors flex items-center gap-2 shrink-0"
-                    >
-                      <Vote className="w-4 h-4" />
-                      Cast Vote
-                    </motion.button>
-                  )}
-                </div>
-              </motion.div>
+                {link}
+              </a>
             ))}
           </div>
-        </section>
 
-        {/* ── Two-column: Forum + Delegation ── */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Forum */}
-          <div className="md:col-span-2 space-y-4">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-emerald-500" />
-              Forum
-            </h2>
-            <div className="space-y-2">
-              {FORUM_THREADS.map((t, i) => (
-                <motion.div
-                  key={t.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + i * 0.05 }}
-                  className={`${cardClass} p-4 cursor-pointer group`}
-                  style={{ background: cardBg }}
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded font-medium uppercase tracking-wider ${
-                            t.tag === "Discussion"
-                              ? "bg-blue-500/15 text-blue-400"
-                              : t.tag === "Research"
-                              ? "bg-purple-500/15 text-purple-400"
-                              : t.tag === "Proposal"
-                              ? "bg-emerald-500/15 text-emerald-400"
-                              : "bg-orange-500/15 text-orange-400"
-                          }`}
-                        >
-                          {t.tag}
-                        </span>
-                        <span className="text-xs text-white/30">{t.lastActive}</span>
-                      </div>
-                      <p className="text-sm text-white/80 truncate group-hover:text-white transition-colors">{t.title}</p>
-                      <p className="text-xs text-white/30 mt-0.5">{t.author}</p>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <div className="flex items-center gap-1 text-xs text-white/40">
-                        <MessageSquare className="w-3 h-3" />
-                        {t.replies}
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-white/20 group-hover:text-emerald-500 transition-colors" />
-                    </div>
+          {/* Launch App */}
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="px-5 py-2 rounded-full text-[12px] font-medium tracking-[0.08em] transition-all duration-700"
+            style={{
+              fontFamily: "var(--font-space-grotesk), monospace",
+              background: "rgba(16,185,129,0.08)",
+              border: "1px solid rgba(16,185,129,0.2)",
+              color: "rgba(16,185,129,0.8)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(16,185,129,0.15)";
+              e.currentTarget.style.borderColor = "rgba(16,185,129,0.4)";
+              e.currentTarget.style.boxShadow = "0 0 30px rgba(16,185,129,0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(16,185,129,0.08)";
+              e.currentTarget.style.borderColor = "rgba(16,185,129,0.2)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          >
+            Launch App
+          </motion.button>
+        </div>
+      </nav>
+
+      {/* ─── Content ─── */}
+      <div className="relative z-10 pt-[72px]">
+
+        {/* ── Stats Bar ── */}
+        <div style={{ background: "rgba(255,255,255,0.01)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+          <div className="max-w-[1400px] mx-auto px-8 py-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {STATS.map((s) => (
+                <div key={s.label} className="flex items-center gap-4">
+                  <div className="p-2.5 rounded-[14px]" style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.08)" }}>
+                    <s.icon className="w-4 h-4" style={{ color: "rgba(16,185,129,0.6)" }} />
                   </div>
-                </motion.div>
+                  <div>
+                    <p className="text-[9px] uppercase tracking-[0.4em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.4)" }}>
+                      {s.label}
+                    </p>
+                    <p className="text-[20px] font-semibold mt-0.5" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.92)" }}>
+                      {s.value}
+                    </p>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
+        </div>
 
-          {/* Delegation */}
-          <div className="space-y-4">
-            <h2 className="text-2xl font-semibold flex items-center gap-2">
-              <Users className="w-5 h-5 text-emerald-500" />
-              Delegate
-            </h2>
-            <div className={`${cardClass} p-5 space-y-4`} style={{ background: cardBg }}>
-              <p className="text-sm text-white/50">Delegate your veVEIL voting power to a trusted address.</p>
-              <div className="space-y-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs text-white/40 uppercase tracking-wider">Delegate Address</label>
-                  <input
-                    type="text"
-                    value={delegateAddr}
-                    onChange={(e) => setDelegateAddr(e.target.value)}
-                    placeholder="0x..."
-                    className="w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm font-mono text-white/90 placeholder:text-white/20 focus:outline-none focus:border-emerald-500/50 transition-colors"
-                  />
-                </div>
-                <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5 space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-white/40">Your veVEIL</span>
-                    <span className="font-mono text-white/70">24,500</span>
+        <div className="max-w-[1400px] mx-auto px-8 py-20 space-y-28">
+
+          {/* ── Hero ── */}
+          <ScrollReveal>
+            <div className="text-center space-y-8 max-w-3xl mx-auto">
+              <p className="text-[9px] uppercase tracking-[0.4em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.4)" }}>
+                01 — GOVERNANCE
+              </p>
+              <h1
+                className="text-6xl md:text-7xl font-medium leading-[1.05] tracking-[-0.02em]"
+                style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}
+              >
+                Shape the Future<br />of VEIL
+              </h1>
+              <p className="text-[17px] leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.35)" }}>
+                Vote on proposals, delegate your veVEIL, and participate in protocol governance with commit-reveal privacy.
+              </p>
+
+              <div className="flex items-center justify-center gap-4 pt-4">
+                {connected ? (
+                  <div
+                    className={`${card} ${cardBorder} px-6 py-3.5 flex items-center gap-4`}
+                    style={{ background: cardBg }}
+                  >
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[12px] tracking-[0.06em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.35)" }}>Connected</span>
+                    <span className="text-[13px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.92)" }}>0x7a3B...f92E</span>
+                    <div className="h-4 w-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+                    <span className="text-[13px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.7)" }}>24,500 veVEIL</span>
                   </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-white/40">Currently delegated</span>
-                    <span className="font-mono text-white/70">0</span>
-                  </div>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  disabled={!delegateAddr || !connected}
-                  className="w-full py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-medium hover:bg-emerald-500/20 transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                  Delegate Votes
-                </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => setWalletOpen(true)}
+                    className="px-8 py-3.5 rounded-full font-medium flex items-center gap-3 transition-all duration-700"
+                    style={{
+                      fontFamily: "var(--font-space-grotesk), monospace",
+                      fontSize: "13px",
+                      letterSpacing: "0.06em",
+                      background: "rgba(16,185,129,0.12)",
+                      border: "1px solid rgba(16,185,129,0.25)",
+                      color: "rgba(16,185,129,0.9)",
+                      boxShadow: "0 0 40px rgba(16,185,129,0.08)",
+                    }}
+                  >
+                    <Wallet className="w-4 h-4" />
+                    Connect Wallet
+                  </motion.button>
+                )}
               </div>
-              {!connected && (
-                <p className="text-xs text-white/30 text-center">Connect wallet to delegate</p>
-              )}
+            </div>
+          </ScrollReveal>
+
+          {/* ── Active Proposals ── */}
+          <section className="space-y-10">
+            <ScrollReveal>
+              <div className="flex items-end justify-between">
+                <div className="space-y-3">
+                  <p className="text-[9px] uppercase tracking-[0.4em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.4)" }}>
+                    02 — PROPOSALS
+                  </p>
+                  <h2 className="text-4xl font-medium tracking-[-0.01em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+                    Active Proposals
+                  </h2>
+                </div>
+                <span className="text-[12px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.2)" }}>
+                  {PROPOSALS.filter((p) => p.status === "active").length} active
+                </span>
+              </div>
+            </ScrollReveal>
+
+            <div className="space-y-5">
+              {PROPOSALS.map((p, i) => (
+                <ScrollReveal key={p.id} delay={i * 0.1}>
+                  <div
+                    className={`${card} ${cardBorder} ${cardHover} p-8 group`}
+                    style={{ background: cardBg }}
+                  >
+                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+                      <div className="flex-1 space-y-4">
+                        <div className="flex items-center gap-4">
+                          <span className="text-[13px] font-semibold" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.7)" }}>
+                            {p.id}
+                          </span>
+                          <span className={`text-[10px] px-3 py-1 rounded-full font-medium uppercase tracking-[0.15em] border ${statusPill(p.status)}`}
+                            style={{ fontFamily: "var(--font-space-grotesk), monospace" }}>
+                            {statusLabel(p.status)}
+                          </span>
+                          <div className="flex items-center gap-1.5 text-[11px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.2)" }}>
+                            <Clock className="w-3 h-3" />
+                            {p.timeLeft}
+                          </div>
+                        </div>
+                        <h3 className="text-[22px] font-medium tracking-[-0.01em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+                          {p.title}
+                        </h3>
+                        <p className="text-[14px] leading-[1.7]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                          {p.description}
+                        </p>
+
+                        {p.status === "active" && (
+                          <div className="space-y-3 pt-2">
+                            <div className="flex items-center justify-between text-[11px]" style={{ fontFamily: "var(--font-space-grotesk), monospace" }}>
+                              <span className="flex items-center gap-1.5" style={{ color: "rgba(16,185,129,0.7)" }}>
+                                <ThumbsUp className="w-3 h-3" />
+                                For {p.forPct}% — {p.forVotes} veVEIL
+                              </span>
+                              <span className="flex items-center gap-1.5" style={{ color: "rgba(239,68,68,0.6)" }}>
+                                Against {p.againstPct}% — {p.againstVotes} veVEIL
+                                <ThumbsDown className="w-3 h-3" />
+                              </span>
+                            </div>
+                            <div className="h-[6px] rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.03)" }}>
+                              <motion.div
+                                className="h-full rounded-full"
+                                style={{ background: "linear-gradient(90deg, rgba(16,185,129,0.6), rgba(16,185,129,0.3))", width: `${p.forPct}%` }}
+                                initial={{ width: 0 }}
+                                whileInView={{ width: `${p.forPct}%` }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 1.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between text-[10px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.2)" }}>
+                              <span>Quorum: {p.quorum}%</span>
+                              <div className="flex items-center gap-2">
+                                <div className="w-20 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.05)" }}>
+                                  <div className="h-full rounded-full" style={{ background: "rgba(16,185,129,0.4)", width: `${p.quorum}%` }} />
+                                </div>
+                                {p.quorum >= 66 ? (
+                                  <CheckCircle2 className="w-3 h-3" style={{ color: "rgba(16,185,129,0.6)" }} />
+                                ) : (
+                                  <AlertCircle className="w-3 h-3" style={{ color: "rgba(245,158,11,0.6)" }} />
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-5 text-[11px] pt-1" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.15)" }}>
+                          <span>by {p.author}</span>
+                          <span>{p.created}</span>
+                        </div>
+                      </div>
+
+                      {p.status === "active" && (
+                        <motion.button
+                          whileHover={{ scale: 1.04 }}
+                          whileTap={{ scale: 0.96 }}
+                          onClick={() => handleVote(p)}
+                          className="px-7 py-3 rounded-full text-[12px] font-medium flex items-center gap-2.5 shrink-0 transition-all duration-700"
+                          style={{
+                            fontFamily: "var(--font-space-grotesk), monospace",
+                            letterSpacing: "0.06em",
+                            background: "rgba(16,185,129,0.06)",
+                            border: "1px solid rgba(16,185,129,0.15)",
+                            color: "rgba(16,185,129,0.8)",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "rgba(16,185,129,0.12)";
+                            e.currentTarget.style.borderColor = "rgba(16,185,129,0.3)";
+                            e.currentTarget.style.boxShadow = "0 0 30px rgba(16,185,129,0.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "rgba(16,185,129,0.06)";
+                            e.currentTarget.style.borderColor = "rgba(16,185,129,0.15)";
+                            e.currentTarget.style.boxShadow = "none";
+                          }}
+                        >
+                          <Vote className="w-3.5 h-3.5" />
+                          Cast Vote
+                        </motion.button>
+                      )}
+                    </div>
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          </section>
+
+          {/* ── Two-column: Forum + Delegation ── */}
+          <div className="grid lg:grid-cols-3 gap-8">
+            {/* Forum */}
+            <div className="lg:col-span-2 space-y-8">
+              <ScrollReveal>
+                <div className="space-y-3">
+                  <p className="text-[9px] uppercase tracking-[0.4em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.4)" }}>
+                    03 — DISCOURSE
+                  </p>
+                  <h2 className="text-4xl font-medium tracking-[-0.01em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+                    Forum
+                  </h2>
+                </div>
+              </ScrollReveal>
+              <div className="space-y-3">
+                {FORUM_THREADS.map((t, i) => (
+                  <ScrollReveal key={t.id} delay={i * 0.06}>
+                    <div
+                      className={`${card} ${cardBorder} ${cardHover} p-5 cursor-pointer group`}
+                      style={{ background: cardBg }}
+                    >
+                      <div className="flex items-center justify-between gap-5">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span
+                              className={`text-[9px] px-2 py-0.5 rounded-full font-medium uppercase tracking-[0.2em] ${
+                                t.tag === "Discussion"
+                                  ? "bg-blue-500/8 text-blue-400/70 border border-blue-500/15"
+                                  : t.tag === "Research"
+                                  ? "bg-purple-500/8 text-purple-400/70 border border-purple-500/15"
+                                  : t.tag === "Proposal"
+                                  ? "bg-emerald-500/8 text-emerald-400/70 border border-emerald-500/15"
+                                  : "bg-orange-500/8 text-orange-400/70 border border-orange-500/15"
+                              }`}
+                              style={{ fontFamily: "var(--font-space-grotesk), monospace" }}
+                            >
+                              {t.tag}
+                            </span>
+                            <span className="text-[10px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.15)" }}>
+                              {t.lastActive}
+                            </span>
+                          </div>
+                          <p className="text-[14px] truncate transition-colors duration-500 group-hover:text-white/90" style={{ color: "rgba(255,255,255,0.55)" }}>
+                            {t.title}
+                          </p>
+                          <p className="text-[11px] mt-1" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.15)" }}>
+                            {t.author}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-4 shrink-0">
+                          <div className="flex items-center gap-1.5 text-[11px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.2)" }}>
+                            <MessageSquare className="w-3 h-3" />
+                            {t.replies}
+                          </div>
+                          <ChevronRight className="w-4 h-4 transition-colors duration-500" style={{ color: "rgba(255,255,255,0.1)" }} />
+                        </div>
+                      </div>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </div>
+
+            {/* Delegation */}
+            <div className="space-y-8">
+              <ScrollReveal delay={0.15}>
+                <div className="space-y-3">
+                  <p className="text-[9px] uppercase tracking-[0.4em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.4)" }}>
+                    04 — DELEGATE
+                  </p>
+                  <h2 className="text-4xl font-medium tracking-[-0.01em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+                    Delegate
+                  </h2>
+                </div>
+              </ScrollReveal>
+              <ScrollReveal delay={0.2}>
+                <div className={`${card} ${cardBorder} ${cardHover} p-7 space-y-5`} style={{ background: cardBg }}>
+                  <p className="text-[14px] leading-[1.7]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                    Delegate your veVEIL voting power to a trusted address.
+                  </p>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-[9px] uppercase tracking-[0.4em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.4)" }}>
+                        Delegate Address
+                      </label>
+                      <input
+                        type="text"
+                        value={delegateAddr}
+                        onChange={(e) => setDelegateAddr(e.target.value)}
+                        placeholder="0x..."
+                        className="w-full px-4 py-3 rounded-[14px] text-[13px] focus:outline-none transition-all duration-500"
+                        style={{
+                          fontFamily: "var(--font-space-grotesk), monospace",
+                          background: "rgba(255,255,255,0.02)",
+                          border: "1px solid rgba(255,255,255,0.06)",
+                          color: "rgba(255,255,255,0.92)",
+                        }}
+                        onFocus={(e) => (e.currentTarget.style.borderColor = "rgba(16,185,129,0.3)")}
+                        onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}
+                      />
+                    </div>
+                    <div className="p-4 rounded-[14px] space-y-2" style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)" }}>
+                      <div className="flex justify-between text-[11px]" style={{ fontFamily: "var(--font-space-grotesk), monospace" }}>
+                        <span style={{ color: "rgba(255,255,255,0.2)" }}>Your veVEIL</span>
+                        <span style={{ color: "rgba(255,255,255,0.55)" }}>24,500</span>
+                      </div>
+                      <div className="flex justify-between text-[11px]" style={{ fontFamily: "var(--font-space-grotesk), monospace" }}>
+                        <span style={{ color: "rgba(255,255,255,0.2)" }}>Currently delegated</span>
+                        <span style={{ color: "rgba(255,255,255,0.55)" }}>0</span>
+                      </div>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      disabled={!delegateAddr || !connected}
+                      className="w-full py-3 rounded-full text-[12px] font-medium flex items-center justify-center gap-2.5 transition-all duration-700 disabled:opacity-20 disabled:cursor-not-allowed"
+                      style={{
+                        fontFamily: "var(--font-space-grotesk), monospace",
+                        letterSpacing: "0.06em",
+                        background: "rgba(16,185,129,0.08)",
+                        border: "1px solid rgba(16,185,129,0.2)",
+                        color: "rgba(16,185,129,0.8)",
+                      }}
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      Delegate Votes
+                    </motion.button>
+                  </div>
+                  {!connected && (
+                    <p className="text-[11px] text-center" style={{ color: "rgba(255,255,255,0.15)" }}>Connect wallet to delegate</p>
+                  )}
+                </div>
+              </ScrollReveal>
             </div>
           </div>
         </div>
+
+        {/* ─── Footer ─── */}
+        <footer style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+          <div className="max-w-[1400px] mx-auto px-8 py-16">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="flex items-center gap-2.5">
+                <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6">
+                  <path d="M16 2L4 28h8l4-10 4 10h8L16 2z" fill="rgba(16,185,129,0.5)" />
+                </svg>
+                <span className="text-[13px] tracking-[0.1em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.3)" }}>
+                  VEIL
+                </span>
+              </div>
+              <div className="flex items-center gap-10">
+                {["Docs", "GitHub", "Discord", "Twitter"].map((link) => (
+                  <a
+                    key={link}
+                    href="#"
+                    className="text-[11px] uppercase tracking-[0.25em] transition-colors duration-500"
+                    style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.2)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(16,185,129,0.6)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.2)")}
+                  >
+                    {link}
+                  </a>
+                ))}
+              </div>
+              <p className="text-[10px]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.1)" }}>
+                © 2026 VEIL Protocol
+              </p>
+            </div>
+          </div>
+        </footer>
       </div>
 
       {/* ─────────── Wallet Connect Modal ─────────── */}
@@ -459,57 +691,84 @@ export default function GovernancePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4"
             onClick={() => setWalletOpen(false)}
           >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md rounded-2xl border border-white/10 p-6 space-y-6 shadow-[0_0_60px_rgba(16,185,129,0.08)]"
-              style={{ background: "linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,0.95))" }}
+              className="relative w-full max-w-md rounded-[24px] p-8 space-y-7"
+              style={{
+                background: "linear-gradient(160deg, rgba(12,12,12,0.98), rgba(6,6,6,0.99))",
+                border: "1px solid rgba(255,255,255,0.04)",
+                boxShadow: "0 0 80px rgba(16,185,129,0.05), 0 40px 80px rgba(0,0,0,0.6)",
+              }}
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-emerald-500" />
+                <h3 className="text-[22px] font-medium flex items-center gap-3" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+                  <Wallet className="w-5 h-5" style={{ color: "rgba(16,185,129,0.6)" }} />
                   Connect Wallet
                 </h3>
-                <button onClick={() => setWalletOpen(false)} className="p-1.5 rounded-lg hover:bg-white/5 transition-colors">
-                  <X className="w-4 h-4 text-white/40" />
+                <button
+                  onClick={() => setWalletOpen(false)}
+                  className="p-2 rounded-full transition-colors duration-300"
+                  style={{ background: "rgba(255,255,255,0.03)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.06)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+                >
+                  <X className="w-4 h-4" style={{ color: "rgba(255,255,255,0.3)" }} />
                 </button>
               </div>
 
-              <p className="text-sm text-white/40">Select a wallet to connect to VEIL Governance.</p>
+              <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.3)" }}>Select a wallet to connect to VEIL Governance.</p>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 {WALLETS.map((w, i) => (
                   <motion.button
                     key={w.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    whileHover={w.status === "ready" ? { scale: 1.03, borderColor: `${w.color}40` } : {}}
+                    transition={{ delay: i * 0.06 }}
+                    whileHover={w.status === "ready" ? { scale: 1.03 } : {}}
                     whileTap={w.status === "ready" ? { scale: 0.97 } : {}}
                     onClick={() => handleConnect(w.id)}
                     disabled={w.status !== "ready"}
-                    className={`relative p-4 rounded-xl border border-white/10 flex flex-col items-center gap-3 transition-all duration-200 ${
-                      w.status === "ready" ? "hover:bg-white/[0.04] cursor-pointer" : "opacity-40 cursor-not-allowed"
+                    className={`relative p-5 rounded-[16px] flex flex-col items-center gap-3.5 transition-all duration-700 ${
+                      w.status === "ready" ? "cursor-pointer" : "opacity-30 cursor-not-allowed"
                     }`}
-                    style={{ background: cardBg }}
+                    style={{
+                      background: "rgba(255,255,255,0.015)",
+                      border: "1px solid rgba(255,255,255,0.04)",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (w.status === "ready") {
+                        e.currentTarget.style.borderColor = `${w.color}30`;
+                        e.currentTarget.style.boxShadow = `0 0 30px ${w.color}08`;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)";
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
                   >
-                    <div className="p-2 rounded-xl" style={{ background: `${w.color}10` }}>
+                    <div className="p-2.5 rounded-[14px]" style={{ background: `${w.color}0a` }}>
                       {w.icon}
                     </div>
-                    <span className="text-sm font-medium text-white/80">{w.name}</span>
+                    <span className="text-[12px] font-medium" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.6)" }}>
+                      {w.name}
+                    </span>
                     <span
-                      className={`absolute top-2 right-2 text-[9px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wider ${
-                        w.status === "ready"
-                          ? "bg-emerald-500/15 text-emerald-400"
-                          : "bg-white/5 text-white/30"
-                      }`}
+                      className="absolute top-3 right-3 text-[8px] px-2 py-0.5 rounded-full font-medium uppercase tracking-[0.2em]"
+                      style={{
+                        fontFamily: "var(--font-space-grotesk), monospace",
+                        ...(w.status === "ready"
+                          ? { background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.5)", border: "1px solid rgba(16,185,129,0.1)" }
+                          : { background: "rgba(255,255,255,0.02)", color: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.04)" }),
+                      }}
                     >
                       {w.status === "ready" ? "Ready" : "Soon"}
                     </span>
@@ -517,9 +776,9 @@ export default function GovernancePage() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-2 text-xs text-white/25 pt-2">
+              <div className="flex items-center gap-2.5 text-[10px] pt-2" style={{ color: "rgba(255,255,255,0.12)" }}>
                 <Lock className="w-3 h-3" />
-                <span>Connections are end-to-end encrypted</span>
+                <span style={{ fontFamily: "var(--font-space-grotesk), monospace" }}>Connections are end-to-end encrypted</span>
               </div>
             </motion.div>
           </motion.div>
@@ -533,82 +792,94 @@ export default function GovernancePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[200] flex items-center justify-center p-4"
             onClick={() => setVoteModal(null)}
           >
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-lg rounded-2xl border border-white/10 p-6 space-y-5 shadow-[0_0_60px_rgba(16,185,129,0.08)]"
-              style={{ background: "linear-gradient(135deg, rgba(15,23,42,0.98), rgba(15,23,42,0.95))" }}
+              className="relative w-full max-w-lg rounded-[24px] p-8 space-y-6"
+              style={{
+                background: "linear-gradient(160deg, rgba(12,12,12,0.98), rgba(6,6,6,0.99))",
+                border: "1px solid rgba(255,255,255,0.04)",
+                boxShadow: "0 0 80px rgba(16,185,129,0.05), 0 40px 80px rgba(0,0,0,0.6)",
+              }}
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Vote className="w-5 h-5 text-emerald-500" />
+                <h3 className="text-[20px] font-medium flex items-center gap-3" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+                  <Vote className="w-5 h-5" style={{ color: "rgba(16,185,129,0.6)" }} />
                   Cast Vote — {voteModal.id}
                 </h3>
-                <button onClick={() => setVoteModal(null)} className="p-1.5 rounded-lg hover:bg-white/5 transition-colors">
-                  <X className="w-4 h-4 text-white/40" />
+                <button
+                  onClick={() => setVoteModal(null)}
+                  className="p-2 rounded-full transition-colors duration-300"
+                  style={{ background: "rgba(255,255,255,0.03)" }}
+                >
+                  <X className="w-4 h-4" style={{ color: "rgba(255,255,255,0.3)" }} />
                 </button>
               </div>
 
-              <p className="text-sm text-white/60">{voteModal.title}</p>
+              <p className="text-[14px]" style={{ color: "rgba(255,255,255,0.4)" }}>{voteModal.title}</p>
 
               {/* Phase indicator */}
-              <div className="flex items-center gap-2 text-xs">
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${votePhase === "choose" ? "bg-emerald-500/15 text-emerald-400" : "bg-white/5 text-white/30"}`}>
-                  <Hash className="w-3 h-3" /> Choose
-                </div>
-                <ArrowRight className="w-3 h-3 text-white/20" />
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${votePhase === "commit" ? "bg-emerald-500/15 text-emerald-400" : "bg-white/5 text-white/30"}`}>
-                  <EyeOff className="w-3 h-3" /> Commit
-                </div>
-                <ArrowRight className="w-3 h-3 text-white/20" />
-                <div className={`flex items-center gap-1 px-2 py-1 rounded-full ${votePhase === "committed" ? "bg-emerald-500/15 text-emerald-400" : "bg-white/5 text-white/30"}`}>
-                  <Eye className="w-3 h-3" /> Reveal
-                </div>
+              <div className="flex items-center gap-3 text-[10px]" style={{ fontFamily: "var(--font-space-grotesk), monospace" }}>
+                {[
+                  { key: "choose", icon: Hash, label: "Choose" },
+                  { key: "commit", icon: EyeOff, label: "Commit" },
+                  { key: "committed", icon: Eye, label: "Reveal" },
+                ].map((phase, idx) => (
+                  <div key={phase.key} className="flex items-center gap-2">
+                    {idx > 0 && <ArrowRight className="w-3 h-3" style={{ color: "rgba(255,255,255,0.08)" }} />}
+                    <div
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                      style={{
+                        background: votePhase === phase.key ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.02)",
+                        border: `1px solid ${votePhase === phase.key ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.04)"}`,
+                        color: votePhase === phase.key ? "rgba(16,185,129,0.7)" : "rgba(255,255,255,0.2)",
+                      }}
+                    >
+                      <phase.icon className="w-3 h-3" /> {phase.label}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {votePhase === "choose" && (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setVoteChoice("for")}
-                      className={`p-4 rounded-xl border text-center transition-all ${
-                        voteChoice === "for"
-                          ? "border-emerald-500/50 bg-emerald-500/10"
-                          : "border-white/10 hover:border-emerald-500/20"
-                      }`}
-                      style={{ background: voteChoice === "for" ? undefined : cardBg }}
-                    >
-                      <ThumbsUp className={`w-5 h-5 mx-auto mb-2 ${voteChoice === "for" ? "text-emerald-400" : "text-white/40"}`} />
-                      <span className={`text-sm font-medium ${voteChoice === "for" ? "text-emerald-400" : "text-white/60"}`}>Vote For</span>
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setVoteChoice("against")}
-                      className={`p-4 rounded-xl border text-center transition-all ${
-                        voteChoice === "against"
-                          ? "border-red-500/50 bg-red-500/10"
-                          : "border-white/10 hover:border-red-500/20"
-                      }`}
-                      style={{ background: voteChoice === "against" ? undefined : cardBg }}
-                    >
-                      <ThumbsDown className={`w-5 h-5 mx-auto mb-2 ${voteChoice === "against" ? "text-red-400" : "text-white/40"}`} />
-                      <span className={`text-sm font-medium ${voteChoice === "against" ? "text-red-400" : "text-white/60"}`}>Vote Against</span>
-                    </motion.button>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    {[
+                      { choice: "for" as const, icon: ThumbsUp, label: "Vote For", activeColor: "16,185,129" },
+                      { choice: "against" as const, icon: ThumbsDown, label: "Vote Against", activeColor: "239,68,68" },
+                    ].map((v) => (
+                      <motion.button
+                        key={v.choice}
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => setVoteChoice(v.choice)}
+                        className="p-5 rounded-[16px] text-center transition-all duration-500"
+                        style={{
+                          background: voteChoice === v.choice ? `rgba(${v.activeColor},0.06)` : "rgba(255,255,255,0.015)",
+                          border: `1px solid ${voteChoice === v.choice ? `rgba(${v.activeColor},0.25)` : "rgba(255,255,255,0.04)"}`,
+                        }}
+                      >
+                        <v.icon className="w-5 h-5 mx-auto mb-2.5" style={{ color: voteChoice === v.choice ? `rgba(${v.activeColor},0.7)` : "rgba(255,255,255,0.2)" }} />
+                        <span className="text-[12px] font-medium" style={{
+                          fontFamily: "var(--font-space-grotesk), monospace",
+                          color: voteChoice === v.choice ? `rgba(${v.activeColor},0.8)` : "rgba(255,255,255,0.35)",
+                        }}>
+                          {v.label}
+                        </span>
+                      </motion.button>
+                    ))}
                   </div>
 
-                  <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5 flex items-start gap-2">
-                    <Lock className="w-3.5 h-3.5 text-emerald-500 mt-0.5 shrink-0" />
-                    <p className="text-xs text-white/40 leading-relaxed">
+                  <div className="p-4 rounded-[14px] flex items-start gap-3" style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)" }}>
+                    <Lock className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: "rgba(16,185,129,0.4)" }} />
+                    <p className="text-[12px] leading-relaxed" style={{ color: "rgba(255,255,255,0.25)" }}>
                       Your vote is private until the reveal phase. A cryptographic hash commitment will be submitted first, then revealed after the voting period ends.
                     </p>
                   </div>
@@ -618,45 +889,70 @@ export default function GovernancePage() {
                     whileTap={{ scale: 0.98 }}
                     disabled={!voteChoice || !connected}
                     onClick={handleCommit}
-                    className="w-full py-3 rounded-xl bg-emerald-500 text-white font-medium shadow-[0_0_20px_rgba(16,185,129,0.2)] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full py-3.5 rounded-full font-medium flex items-center justify-center gap-2.5 transition-all duration-700 disabled:opacity-20 disabled:cursor-not-allowed"
+                    style={{
+                      fontFamily: "var(--font-space-grotesk), monospace",
+                      fontSize: "12px",
+                      letterSpacing: "0.06em",
+                      background: "rgba(16,185,129,0.15)",
+                      border: "1px solid rgba(16,185,129,0.3)",
+                      color: "rgba(16,185,129,0.9)",
+                      boxShadow: "0 0 30px rgba(16,185,129,0.08)",
+                    }}
                   >
                     <Lock className="w-4 h-4" />
                     Submit Commitment
                   </motion.button>
-                  {!connected && <p className="text-xs text-white/30 text-center">Connect wallet to vote</p>}
+                  {!connected && <p className="text-[11px] text-center" style={{ color: "rgba(255,255,255,0.15)" }}>Connect wallet to vote</p>}
                 </div>
               )}
 
               {votePhase === "commit" && (
-                <div className="space-y-4 text-center py-4">
+                <div className="space-y-5 text-center py-6">
                   <motion.div animate={{ rotate: 360 }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}>
-                    <Zap className="w-8 h-8 text-emerald-500 mx-auto" />
+                    <Zap className="w-8 h-8 mx-auto" style={{ color: "rgba(16,185,129,0.6)" }} />
                   </motion.div>
-                  <p className="text-sm text-white/60">Submitting hash commitment...</p>
-                  <p className="text-xs font-mono text-white/30 break-all px-4">{commitHash}</p>
+                  <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.4)" }}>Submitting hash commitment...</p>
+                  <p className="text-[10px] break-all px-6" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.15)" }}>
+                    {commitHash}
+                  </p>
                 </div>
               )}
 
               {votePhase === "committed" && (
-                <div className="space-y-4">
-                  <div className="text-center py-2">
-                    <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                    <p className="text-sm text-white/80 font-medium">Commitment Submitted</p>
-                    <p className="text-xs text-white/40 mt-1">Your vote will be revealed after the voting period ends.</p>
+                <div className="space-y-5">
+                  <div className="text-center py-4">
+                    <CheckCircle2 className="w-8 h-8 mx-auto mb-3" style={{ color: "rgba(16,185,129,0.6)" }} />
+                    <p className="text-[15px] font-medium" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
+                      Commitment Submitted
+                    </p>
+                    <p className="text-[12px] mt-2" style={{ color: "rgba(255,255,255,0.25)" }}>Your vote will be revealed after the voting period ends.</p>
                   </div>
-                  <div className="p-3 rounded-lg bg-white/[0.02] border border-white/5 space-y-2">
+                  <div className="p-4 rounded-[14px] space-y-3" style={{ background: "rgba(255,255,255,0.01)", border: "1px solid rgba(255,255,255,0.03)" }}>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-white/40">Commitment Hash</span>
-                      <button onClick={copyHash} className="flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300">
+                      <span className="text-[10px] uppercase tracking-[0.2em]" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.2)" }}>
+                        Commitment Hash
+                      </span>
+                      <button onClick={copyHash} className="flex items-center gap-1.5 text-[10px] transition-colors duration-300" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(16,185,129,0.5)" }}>
                         {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                         {copied ? "Copied" : "Copy"}
                       </button>
                     </div>
-                    <p className="text-[10px] font-mono text-white/30 break-all">{commitHash}</p>
+                    <p className="text-[9px] break-all" style={{ fontFamily: "var(--font-space-grotesk), monospace", color: "rgba(255,255,255,0.15)" }}>
+                      {commitHash}
+                    </p>
                   </div>
                   <button
                     onClick={() => setVoteModal(null)}
-                    className="w-full py-2.5 rounded-xl border border-white/10 text-sm text-white/60 hover:bg-white/5 transition-colors"
+                    className="w-full py-3 rounded-full text-[12px] transition-all duration-500"
+                    style={{
+                      fontFamily: "var(--font-space-grotesk), monospace",
+                      border: "1px solid rgba(255,255,255,0.06)",
+                      color: "rgba(255,255,255,0.35)",
+                      background: "transparent",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                   >
                     Done
                   </button>

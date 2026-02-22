@@ -126,7 +126,7 @@ export function BurgerMenu() {
               </Link>
 
               <Link
-                href="/app/veil"
+                href="/app/defi"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-white/5"
               >
@@ -142,7 +142,7 @@ export function BurgerMenu() {
                     textShadow: "0 0 10px rgba(16, 185, 129, 0.2)",
                   }}
                 >
-                  VEILfi
+                  DeFi
                 </span>
               </Link>
 
@@ -163,6 +163,51 @@ export function BurgerMenu() {
                   }}
                 >
                   APIs
+                </span>
+              </Link>
+
+              <Link
+                href="/app/ecosystem"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-white/5"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <circle cx="5" cy="10" r="2" fill="rgba(16, 185, 129, 0.65)" />
+                  <circle cx="15" cy="10" r="2" fill="rgba(16, 185, 129, 0.65)" />
+                  <circle cx="10" cy="5" r="2" fill="rgba(16, 185, 129, 0.65)" />
+                  <circle cx="10" cy="15" r="2" fill="rgba(16, 185, 129, 0.65)" />
+                  <path d="M7 10h6M10 7v6" stroke="rgba(16, 185, 129, 0.55)" strokeWidth="1.5" />
+                </svg>
+                <span
+                  className="font-medium"
+                  style={{
+                    color: "rgba(255, 255, 255, 0.7)",
+                    fontFamily: "var(--font-space-grotesk)",
+                    textShadow: "0 0 10px rgba(16, 185, 129, 0.2)",
+                  }}
+                >
+                  Ecosystem
+                </span>
+              </Link>
+
+              <Link
+                href="/maiev"
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-white/5"
+              >
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M4 4h12v12H4z" stroke="rgba(16, 185, 129, 0.6)" strokeWidth="1.5" />
+                  <path d="M7 8h6M7 11h6M7 14h4" stroke="rgba(16, 185, 129, 0.6)" strokeWidth="1.3" strokeLinecap="round" />
+                </svg>
+                <span
+                  className="font-medium"
+                  style={{
+                    color: "rgba(255, 255, 255, 0.7)",
+                    fontFamily: "var(--font-space-grotesk)",
+                    textShadow: "0 0 10px rgba(16, 185, 129, 0.2)",
+                  }}
+                >
+                  MAIEV Audits
                 </span>
               </Link>
             </div>

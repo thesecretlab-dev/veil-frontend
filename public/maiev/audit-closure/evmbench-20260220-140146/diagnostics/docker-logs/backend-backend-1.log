@@ -1,0 +1,1 @@
+Exception while capturing docker logs for backend-backend-1: INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.

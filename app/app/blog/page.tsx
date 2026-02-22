@@ -1,112 +1,222 @@
-import { LegalPageLayout } from "@/components/legal-page-layout"
+"use client"
+
 import Link from "next/link"
+import { useRef } from "react"
+import { motion, useInView } from "framer-motion"
+
+function ScrollReveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: "-40px" })
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
+      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], delay }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+const posts = [
+  {
+    title: "On Privacy-Native Prediction Markets: A Systems Engineer's Musing on VEIL",
+    date: "April 1, 2024",
+    author: "Relic",
+    excerpt:
+      "A comprehensive technical deep-dive into VEIL's architecture: sealed order flow, batch auctions, shielded ledgers, chain-owned liquidity as a native mixer, and the engineering discipline required to ship privacy-first prediction markets at scale.",
+    slug: "privacy-native-prediction-markets",
+  },
+  {
+    title: "Introducing VEIL: Privacy-Native Prediction Markets",
+    date: "March 15, 2024",
+    author: "Relic",
+    excerpt:
+      "Today we're excited to announce VEIL, a new prediction market platform built on Avalanche with privacy at its core. Learn about our vision for censorship-resistant, anonymous trading on real-world events.",
+    slug: "introducing-veil",
+  },
+  {
+    title: "How Zero-Knowledge Proofs Enable Private Trading",
+    date: "March 10, 2024",
+    author: "Relic",
+    excerpt:
+      "Deep dive into the cryptographic techniques that power VEIL's privacy features and protect trader anonymity while maintaining market integrity and auditability.",
+    slug: "zero-knowledge-proofs",
+  },
+  {
+    title: "VEIL Token Airdrop: Whitelist Now Open",
+    date: "March 5, 2024",
+    author: "Relic",
+    excerpt:
+      "Early users can now whitelist their wallets for the upcoming VEIL token airdrop. Learn how to participate and what benefits token holders will receive.",
+    slug: "token-airdrop",
+  },
+  {
+    title: "Building on Avalanche: Why We Chose Subnets",
+    date: "February 28, 2024",
+    author: "Relic",
+    excerpt:
+      "Explore the technical reasons behind our choice of Avalanche subnets for VEIL's infrastructure, including scalability, privacy, and customization benefits.",
+    slug: "avalanche-subnets",
+  },
+  {
+    title: "Market Resolution: How VEIL Ensures Fair Outcomes",
+    date: "February 20, 2024",
+    author: "Relic",
+    excerpt:
+      "Understanding VEIL's decentralized oracle system and how we ensure accurate, tamper-proof market resolutions through validator consensus.",
+    slug: "market-resolution",
+  },
+]
 
 export default function BlogPage() {
-  const posts = [
-    {
-      title: "On Privacy-Native Prediction Markets: A Systems Engineer's Musing on VEIL",
-      date: "April 1, 2024",
-      author: "Relic",
-      excerpt:
-        "A comprehensive technical deep-dive into VEIL's architecture: sealed order flow, batch auctions, shielded ledgers, protocol-owned liquidity as a native mixer, and the engineering discipline required to ship privacy-first prediction markets at scale.",
-      slug: "privacy-native-prediction-markets",
-    },
-    {
-      title: "Introducing VEIL: Privacy-Native Prediction Markets",
-      date: "March 15, 2024",
-      author: "Relic",
-      excerpt:
-        "Today we're excited to announce VEIL, a new prediction market platform built on Avalanche with privacy at its core. Learn about our vision for censorship-resistant, anonymous trading on real-world events.",
-      slug: "introducing-veil",
-    },
-    {
-      title: "How Zero-Knowledge Proofs Enable Private Trading",
-      date: "March 10, 2024",
-      author: "Relic",
-      excerpt:
-        "Deep dive into the cryptographic techniques that power VEIL's privacy features and protect trader anonymity while maintaining market integrity and auditability.",
-      slug: "zero-knowledge-proofs",
-    },
-    {
-      title: "VEIL Token Airdrop: Whitelist Now Open",
-      date: "March 5, 2024",
-      author: "Relic",
-      excerpt:
-        "Early users can now whitelist their wallets for the upcoming VEIL token airdrop. Learn how to participate and what benefits token holders will receive.",
-      slug: "token-airdrop",
-    },
-    {
-      title: "Building on Avalanche: Why We Chose Subnets",
-      date: "February 28, 2024",
-      author: "Relic",
-      excerpt:
-        "Explore the technical reasons behind our choice of Avalanche subnets for VEIL's infrastructure, including scalability, privacy, and customization benefits.",
-      slug: "avalanche-subnets",
-    },
-    {
-      title: "Market Resolution: How VEIL Ensures Fair Outcomes",
-      date: "February 20, 2024",
-      author: "Relic",
-      excerpt:
-        "Understanding VEIL's decentralized oracle system and how we ensure accurate, tamper-proof market resolutions through validator consensus.",
-      slug: "market-resolution",
-    },
-  ]
-
   return (
-    <LegalPageLayout title="Blog">
-      <div className="space-y-8">
-        {posts.map((post, i) => (
-          <article
-            key={i}
-            className="rounded-xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all hover:border-emerald-500/30 hover:bg-white/[0.07]"
-          >
-            <h2
-              className="mb-3 text-2xl font-semibold"
+    <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      {/* Film Grain */}
+      <div
+        className="pointer-events-none fixed inset-0 z-[9999]"
+        style={{
+          opacity: 0.035,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
+      {/* Nav */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 border-b"
+        style={{
+          background: "rgba(6,6,6,0.85)",
+          backdropFilter: "blur(20px)",
+          borderColor: "rgba(255,255,255,0.04)",
+        }}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
+          <Link href="/app" style={{ fontFamily: "var(--font-instrument-serif)", fontSize: "1.5rem", color: "rgba(255,255,255,0.9)", letterSpacing: "-0.02em" }}>
+            VEIL
+          </Link>
+          <div className="flex items-center gap-8">
+            {[
+              { label: "Protocol", href: "/app/veil" },
+              { label: "Markets", href: "/app/markets" },
+              { label: "Governance", href: "/app/gov" },
+              { label: "Docs", href: "/app/docs" },
+              { label: "MAIEV", href: "/maiev" },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="transition-colors hover:text-white"
+                style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "0.85rem", color: "rgba(255,255,255,0.45)", letterSpacing: "0.05em", textTransform: "uppercase" as const }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      {/* Content */}
+      <div className="relative z-10 mx-auto max-w-4xl px-8 pt-36 pb-32">
+        <ScrollReveal>
+          <div className="mb-20">
+            <span
+              className="mb-6 inline-block text-xs tracking-[0.3em] uppercase"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.6)" }}
+            >
+              01 — Journal
+            </span>
+            <h1
+              className="text-6xl leading-[1.05]"
               style={{
-                fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255, 255, 255, 0.7)",
-                textShadow: "0 0 15px rgba(16, 185, 129, 0.2)",
-                filter: "blur(0.3px)",
+                fontFamily: "var(--font-instrument-serif)",
+                color: "rgba(255,255,255,0.9)",
+                letterSpacing: "-0.03em",
               }}
             >
-              {post.title}
-            </h2>
+              Blog
+            </h1>
             <p
-              className="mb-2 text-sm"
-              style={{
-                color: "rgba(255, 255, 255, 0.4)",
-                fontFamily: "var(--font-space-grotesk)",
-                filter: "blur(0.3px)",
-              }}
+              className="mt-5 max-w-lg text-lg leading-relaxed"
+              style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.4)" }}
             >
-              {post.date} • By {post.author}
+              Dispatches from the frontier of privacy-native prediction markets.
             </p>
-            <p
-              className="mb-4 leading-relaxed"
-              style={{
-                color: "rgba(255, 255, 255, 0.5)",
-                fontFamily: "var(--font-space-grotesk)",
-                filter: "blur(0.3px)",
-              }}
-            >
-              {post.excerpt}
-            </p>
-            <Link
-              href={`/app/blog/${post.slug}`}
-              className="inline-block text-sm font-semibold transition-all hover:text-emerald-300"
-              style={{
-                color: "rgba(16, 185, 129, 0.8)",
-                fontFamily: "var(--font-space-grotesk)",
-                textShadow: "0 0 10px rgba(16, 185, 129, 0.3)",
-                filter: "blur(0.3px)",
-              }}
-            >
-              Read more →
-            </Link>
-          </article>
-        ))}
+          </div>
+        </ScrollReveal>
+
+        <div className="space-y-6">
+          {posts.map((post, i) => (
+            <ScrollReveal key={i} delay={i * 0.08}>
+              <Link href={`/app/blog/${post.slug}`} className="block group">
+                <article
+                  className="rounded-[20px] p-8 transition-all duration-500 group-hover:border-emerald-500/20"
+                  style={{
+                    background: "rgba(255,255,255,0.015)",
+                    border: "1px solid rgba(255,255,255,0.04)",
+                  }}
+                >
+                  <div className="mb-3 flex items-center gap-3">
+                    <span
+                      className="text-xs tracking-[0.15em] uppercase"
+                      style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.5)" }}
+                    >
+                      {post.author}
+                    </span>
+                    <span style={{ color: "rgba(255,255,255,0.15)" }}>·</span>
+                    <span
+                      className="text-xs"
+                      style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.3)" }}
+                    >
+                      {post.date}
+                    </span>
+                  </div>
+                  <h2
+                    className="mb-3 text-2xl transition-colors duration-300 group-hover:text-white"
+                    style={{
+                      fontFamily: "var(--font-instrument-serif)",
+                      color: "rgba(255,255,255,0.75)",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {post.title}
+                  </h2>
+                  <p
+                    className="mb-5 leading-[1.7] max-w-2xl"
+                    style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)", fontSize: "0.95rem" }}
+                  >
+                    {post.excerpt}
+                  </p>
+                  <span
+                    className="inline-flex items-center gap-2 text-sm transition-all duration-300 group-hover:gap-3"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.7)" }}
+                  >
+                    Read article
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </article>
+              </Link>
+            </ScrollReveal>
+          ))}
+        </div>
       </div>
-    </LegalPageLayout>
+
+      {/* Footer */}
+      <footer
+        className="border-t px-8 py-10"
+        style={{ borderColor: "rgba(255,255,255,0.04)", background: "rgba(6,6,6,0.9)" }}
+      >
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <span style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.25)", fontSize: "1.1rem" }}>
+            VEIL
+          </span>
+          <span style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.2)", fontSize: "0.75rem", letterSpacing: "0.05em" }}>
+            © 2024 VEIL PROTOCOL
+          </span>
+        </div>
+      </footer>
+    </div>
   )
 }

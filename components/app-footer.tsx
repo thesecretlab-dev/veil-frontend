@@ -11,128 +11,77 @@ export function AppFooter() {
   }
 
   return (
-    <footer className="relative z-10 mt-20 border-t border-white/5 backdrop-blur-xl bg-black/20">
-      <div className="mx-auto max-w-7xl px-8 py-12">
-        <div className="grid grid-cols-4 gap-12">
+    <footer
+      className="relative z-10 mt-24"
+      style={{
+        background: "rgba(6, 6, 6, 0.9)",
+        borderTop: "1px solid rgba(255, 255, 255, 0.04)",
+      }}
+    >
+      <div className="mx-auto max-w-[1440px] px-8 py-16 md:px-10">
+        <div className="grid grid-cols-2 gap-12 md:grid-cols-4">
           {/* Brand */}
-          <div className="col-span-1">
-            <Link href="/app" className="flex items-center gap-3 mb-4 group cursor-pointer">
-              <div className="relative">
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="transition-all duration-[1500ms] group-hover:scale-110"
-                  style={{
-                    filter: "drop-shadow(0 0 8px rgba(16, 185, 129, 0.4))",
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="footerTriangleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="rgba(192, 192, 192, 0.4)" />
-                      <stop offset="50%" stopColor="rgba(16, 185, 129, 0.4)" />
-                      <stop offset="100%" stopColor="rgba(255, 255, 255, 0.2)" />
-                    </linearGradient>
-                  </defs>
-                  <path
-                    d="M24 40 L8 12 L40 12 Z"
-                    fill="url(#footerTriangleGradient)"
-                    stroke="rgba(255, 255, 255, 0.2)"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className="text-xl font-light tracking-wider transition-all duration-[1500ms] group-hover:text-white"
-                  style={{
-                    fontFamily: "var(--font-space-grotesk)",
-                    color: "rgba(255, 255, 255, 0.3)",
-                    textShadow: "0 0 20px rgba(16, 185, 129, 0.4)",
-                  }}
-                >
-                  VEIL
-                </span>
-                <span
-                  className="text-xl font-light tracking-wide"
-                  style={{
-                    fontFamily: "var(--font-space-grotesk)",
-                    color: "rgba(255, 255, 255, 0.15)",
-                  }}
-                >
-                  |
-                </span>
-                <span
-                  className="text-xl font-light tracking-wide transition-all duration-[1500ms] group-hover:text-white"
-                  style={{
-                    fontFamily: "var(--font-space-grotesk)",
-                    color: "rgba(255, 255, 255, 0.3)",
-                    textShadow: "0 0 20px rgba(16, 185, 129, 0.4)",
-                  }}
-                >
-                  Markets
-                </span>
-              </div>
-            </Link>
-            <a
-              href="https://x.com/veilmarkets"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 mb-3 text-xs transition-all duration-[1500ms] hover:text-emerald-400 group"
-              style={{
-                color: "rgba(255, 255, 255, 0.25)",
-                fontFamily: "var(--font-space-grotesk)",
-                textShadow: "0 0 8px rgba(16, 185, 129, 0.12)",
-              }}
-            >
+          <div>
+            <Link href="/app" className="group mb-6 inline-flex items-center gap-3">
               <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                className="transition-all duration-[1500ms] group-hover:scale-110"
-                style={{
-                  filter: "drop-shadow(0 0 4px rgba(16, 185, 129, 0.3))",
-                }}
+                width="24"
+                height="24"
+                viewBox="0 0 48 48"
+                fill="none"
+                style={{ filter: "drop-shadow(0 0 6px rgba(16, 185, 129, 0.3))" }}
               >
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                <defs>
+                  <linearGradient id="ftGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="rgba(16, 185, 129, 0.5)" />
+                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.2)" />
+                  </linearGradient>
+                </defs>
+                <path d="M24 42 L6 8 L42 8 Z" fill="url(#ftGrad)" stroke="rgba(16, 185, 129, 0.2)" strokeWidth="1" />
               </svg>
-              @veilmarkets
-            </a>
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-FDaDKFuNb2e1U80XVrXFIkUK2qSvaB.png"
-              alt="Powered by Avalanche"
-              className="h-7 opacity-30 transition-all duration-[1500ms] hover:opacity-60 hover:scale-[1.02]"
-              style={{
-                filter: "drop-shadow(0 0 8px rgba(16, 185, 129, 0.15))",
-              }}
-            />
+              <span
+                className="text-lg tracking-[0.2em] transition-all duration-700 group-hover:text-white/50"
+                style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.3)" }}
+              >
+                VEIL
+              </span>
+            </Link>
+            <div className="mt-4">
+              <a
+                href="https://x.com/veilmarkets"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-[12px] transition-all duration-500 hover:text-emerald-400"
+                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                @veilmarkets
+              </a>
+            </div>
+            <span
+              className="mt-4 inline-block text-[9px] uppercase tracking-[0.2em] transition-opacity duration-500 hover:opacity-40"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.15)" }}
+            >
+              Powered by Avalanche
+            </span>
           </div>
 
           {/* Markets */}
           <div>
             <h3
-              className="mb-4 text-sm font-semibold"
-              style={{
-                color: "rgba(255, 255, 255, 0.4)",
-                fontFamily: "var(--font-space-grotesk)",
-                textShadow: "0 0 10px rgba(16, 185, 129, 0.2)",
-              }}
+              className="mb-5 text-[11px] uppercase tracking-[0.15em]"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}
             >
               Markets
             </h3>
-            <ul className="space-y-2">
+            <ul className="space-y-2.5">
               {["Politics", "Sports", "Crypto", "Tech", "Economy"].map((item) => (
                 <li key={item}>
                   <button
                     onClick={() => handleCategoryClick(item)}
-                    className="text-xs transition-all hover:text-emerald-400 cursor-pointer"
-                    style={{
-                      color: "rgba(255, 255, 255, 0.25)",
-                      fontFamily: "var(--font-space-grotesk)",
-                    }}
+                    className="text-[12px] transition-all duration-500 hover:text-emerald-400"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
                   >
                     {item}
                   </button>
@@ -144,142 +93,82 @@ export function AppFooter() {
           {/* Resources */}
           <div>
             <h3
-              className="mb-4 text-sm font-semibold"
-              style={{
-                color: "rgba(255, 255, 255, 0.4)",
-                fontFamily: "var(--font-space-grotesk)",
-                textShadow: "0 0 10px rgba(16, 185, 129, 0.2)",
-              }}
+              className="mb-5 text-[11px] uppercase tracking-[0.15em]"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}
             >
               Resources
             </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/app/docs"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Documentation
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/app/api-docs"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  API
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/app/transparency"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Transparency
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/app/support"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Support
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/app/blog"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Blog
-                </Link>
-              </li>
+            <ul className="space-y-2.5">
+              {[
+                { label: "Documentation", href: "/app/docs" },
+                { label: "API", href: "/app/api-docs" },
+                { label: "DeFi Console", href: "/app/defi" },
+                { label: "Ecosystem", href: "/app/ecosystem" },
+                { label: "MAIEV Audits", href: "/maiev" },
+                { label: "Transparency", href: "/app/transparency" },
+                { label: "Support", href: "/app/support" },
+                { label: "Blog", href: "/app/blog" },
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-[12px] transition-all duration-500 hover:text-emerald-400"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Legal */}
           <div>
             <h3
-              className="mb-4 text-sm font-semibold"
-              style={{
-                color: "rgba(255, 255, 255, 0.4)",
-                fontFamily: "var(--font-space-grotesk)",
-                textShadow: "0 0 10px rgba(16, 185, 129, 0.2)",
-              }}
+              className="mb-5 text-[11px] uppercase tracking-[0.15em]"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}
             >
               Legal
             </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/app/terms"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/app/privacy"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/app/risk"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Risk Disclosure
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/app/compliance"
-                  className="text-xs transition-all hover:text-emerald-400"
-                  style={{
-                    color: "rgba(255, 255, 255, 0.25)",
-                    fontFamily: "var(--font-space-grotesk)",
-                  }}
-                >
-                  Compliance
-                </Link>
-              </li>
+            <ul className="space-y-2.5">
+              {[
+                { label: "Terms of Service", href: "/app/terms" },
+                { label: "Privacy Policy", href: "/app/privacy" },
+                { label: "Risk Disclosure", href: "/app/risk" },
+                { label: "Compliance", href: "/app/compliance" },
+              ].map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-[12px] transition-all duration-500 hover:text-emerald-400"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
+        </div>
+
+        {/* Bottom line */}
+        <div
+          className="mt-14 flex items-center justify-between pt-6 text-[11px]"
+          style={{
+            borderTop: "1px solid rgba(255, 255, 255, 0.04)",
+            fontFamily: "var(--font-space-grotesk)",
+            color: "rgba(255, 255, 255, 0.15)",
+          }}
+        >
+          <span>© {new Date().getFullYear()} VEIL · TSL — No users. Only developers.</span>
+          <a href="https://thesecretlab.app" target="_blank" rel="noopener noreferrer"
+            className="group flex items-center gap-2 transition-opacity duration-700 hover:opacity-80">
+            <span style={{ fontSize: "8px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.08)", textTransform: "uppercase" as const }}>Built by</span>
+            <span style={{ fontSize: "10px", letterSpacing: "0.15em", color: "rgba(255,255,255,0.18)", fontWeight: 600 }}
+              className="group-hover:text-white/30 transition-colors duration-700">THE SECRET LAB</span>
+            <span style={{ fontSize: "8px", color: "rgba(16,185,129,0.3)" }}>⬡</span>
+          </a>
+          <span>Built on Avalanche</span>
         </div>
       </div>
     </footer>

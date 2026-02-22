@@ -1,0 +1,13 @@
+docker.exe : 2026-02-20 19:03:50.015 | INFO     | __main__:main:253 - Requesting bundle...
+At C:\Users\Josh\hypersdk\examples\veilvm\scripts\evmbench-audit.ps1:63 char:17
++ ...    $content = (& docker logs --tail $tail $containerName 2>&1 | Out-S ...
++                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (2026-02-20 19:0...sting bundle...:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+2026-02-20 19:03:50.244 | INFO     | __main__:main:262 - Got 20480 bytes of bundle, extracting..
+2026-02-20 19:03:50.250 | INFO     | __main__:main:280 - Extracted the bundle, running detect-only agent...
+2026-02-20 19:06:36.646 | INFO     | __main__:main:291 - audit.md validated successfully
+2026-02-20 19:06:36.647 | INFO     | __main__:main:300 - report_payload={'job_id': 
+'4800e4e6-e431-4966-b85f-885e4e16b41d', 'status': 'succeeded', 'report': '```json\n{\n  "vulnerabilities": 
+[]\n}\n```\n'}

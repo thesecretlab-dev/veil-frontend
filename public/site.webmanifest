@@ -1,7 +1,7 @@
 {
   "name": "VEIL - Privacy-First Prediction Markets",
   "short_name": "VEIL",
-  "description": "Trade on future events with complete privacy",
+  "description": "Trade with privacy-scoped execution across VEIL VM and companion EVM rails",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",

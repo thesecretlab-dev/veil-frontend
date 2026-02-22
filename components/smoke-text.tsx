@@ -31,12 +31,12 @@ export default function SmokeText({ text, author }: SmokeTextProps) {
           }
           60% {
             opacity: 1;
-            filter: blur(0.5px);
+            filter: blur(0.2px);
           }
           100% {
             opacity: 1;
             transform: translate(0, 0) scale(1);
-            filter: blur(0.3px);
+            filter: blur(0px);
           }
         }
 
@@ -44,7 +44,7 @@ export default function SmokeText({ text, author }: SmokeTextProps) {
           0% {
             opacity: 1;
             transform: translate(0, 0) scale(1);
-            filter: blur(0.3px);
+            filter: blur(0px);
           }
           100% {
             opacity: 0;
@@ -108,13 +108,13 @@ export default function SmokeText({ text, author }: SmokeTextProps) {
                     "--y-start": yStart,
                     "--x-end": xEnd,
                     "--y-end": yEnd,
-                    color: "rgba(255, 255, 255, 0.32)",
+                    color: "rgba(255, 255, 255, 0.66)",
                     textShadow: `
-                    0 0 10px rgba(16, 185, 129, 0.2),
-                    0 0 20px rgba(16, 185, 129, 0.1),
-                    2px 2px 4px rgba(0, 0, 0, 0.3)
+                    0 0 10px rgba(16, 185, 129, 0.22),
+                    0 0 20px rgba(16, 185, 129, 0.12),
+                    2px 2px 6px rgba(0, 0, 0, 0.45)
                   `,
-                    WebkitTextStroke: "0.5px rgba(255, 255, 255, 0.15)",
+                    WebkitTextStroke: "0.35px rgba(255, 255, 255, 0.22)",
                   } as React.CSSProperties
                 }
               >
@@ -141,10 +141,10 @@ export default function SmokeText({ text, author }: SmokeTextProps) {
                     "--y-start": yStart,
                     "--x-end": xEnd,
                     "--y-end": yEnd,
-                    color: "rgba(255, 255, 255, 0.30)",
+                    color: "rgba(255, 255, 255, 0.55)",
                     textShadow: `
                     0 0 8px rgba(16, 185, 129, 0.15),
-                    2px 2px 3px rgba(0, 0, 0, 0.3)
+                    2px 2px 5px rgba(0, 0, 0, 0.45)
                   `,
                   } as React.CSSProperties
                 }

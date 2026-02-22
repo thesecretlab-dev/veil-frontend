@@ -15,15 +15,15 @@ export default function Footer() {
           >
             <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"
               style={{ filter: "drop-shadow(0 0 6px rgba(16,185,129,0.15))" }}>
-              <path d="M24 40 L8 12 L40 12 Z" fill="rgba(16,185,129,0.15)" stroke="rgba(255,255,255,0.17)" strokeWidth="1" />
+              <path d="M24 42 L6 8 L42 8 Z" fill="rgba(16,185,129,0.15)" stroke="rgba(255,255,255,0.17)" strokeWidth="1" />
             </svg>
             <span style={{
               fontSize: "12px",
               letterSpacing: "0.3em",
-              color: "rgba(255,255,255,0.23)",
+              color: "rgba(255,255,255,0.45)",
               fontFamily: "var(--font-space-grotesk)",
               fontWeight: 600,
-              textShadow: "0 0 10px rgba(16,185,129,0.1)",
+              textShadow: "0 0 14px rgba(16,185,129,0.18)",
             }}>VEIL</span>
           </motion.div>
 
@@ -32,12 +32,13 @@ export default function Footer() {
             {[
               { href: "/app", label: "APP" },
               { href: "/app/docs", label: "DOCS" },
+              { href: "/", label: "HOME" },
             ].map((link, i) => (
               <motion.a
                 key={link.label}
                 href={link.href}
                 style={{
-                  fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.30)",
+                  fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.56)",
                   fontFamily: "var(--font-space-grotesk)",
                 }}
                 whileHover={{
@@ -47,12 +48,12 @@ export default function Footer() {
                   transition: { duration: 0.3 },
                 }}
               >
-                {i > 0 && <span style={{ color: "rgba(255,255,255,0.30)", marginRight: "24px" }}>{"\u00B7"}</span>}
+                {i > 0 && <span style={{ color: "rgba(255,255,255,0.42)", marginRight: "24px" }}>{"\u00B7"}</span>}
                 {link.label}
               </motion.a>
             ))}
 
-            <span style={{ color: "rgba(255,255,255,0.30)" }}>{"\u00B7"}</span>
+            <span style={{ color: "rgba(255,255,255,0.42)" }}>{"\u00B7"}</span>
 
             <motion.a
               href="https://x.com/veilmarkets"
@@ -60,7 +61,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5"
               style={{
-                fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.30)",
+                fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.56)",
                 fontFamily: "var(--font-space-grotesk)",
               }}
               whileHover={{
@@ -87,15 +88,15 @@ export default function Footer() {
           {/* Built by + Avalanche */}
           <div className="flex flex-col items-center gap-3">
             <p style={{
-              fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.23)",
+              fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.44)",
               fontFamily: "var(--font-space-grotesk)",
             }}>
               BUILT BY{" "}
               <motion.a
-                href="https://maestro.veil.markets/lab"
-                style={{ color: "rgba(255,255,255,0.33)" }}
+                href="https://thesecretlab.app"
+                style={{ color: "rgba(255,255,255,0.56)" }}
                 whileHover={{
-                  color: "rgba(16,185,129,0.6)",
+                  color: "rgba(16,185,129,0.78)",
                   textShadow: "0 0 10px rgba(16,185,129,0.3)",
                   transition: { duration: 0.4 },
                 }}
@@ -105,12 +106,12 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-2">
               <span style={{
-                fontSize: "8px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.17)",
+                fontSize: "8px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.36)",
                 fontFamily: "var(--font-space-grotesk)",
               }}>POWERED BY AVALANCHE</span>
             </div>
             <span style={{
-              fontSize: "8px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.30)",
+              fontSize: "8px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.44)",
               fontFamily: "var(--font-space-grotesk)",
             }}>{"\u00A9"} 2026 VEIL PROTOCOL</span>
           </div>

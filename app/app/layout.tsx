@@ -1,14 +1,13 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { ViolaChat } from "@/components/viola-chat"
 
 export const metadata: Metadata = {
   title: "Markets",
   description:
-    "Browse and trade on privacy-first prediction markets. Explore crypto, politics, sports, and more with complete anonymity.",
+    "Browse and trade on privacy-scoped prediction markets with shielded VM lanes and transparent companion EVM rails.",
   openGraph: {
-    title: "VEIL Markets - Trade Anonymously",
-    description: "Browse and trade on privacy-first prediction markets with zero-knowledge proofs.",
+    title: "VEIL Markets - Privacy-Scoped Trading",
+    description: "Browse and trade with route-level privacy guarantees and transparent EVM companion rails.",
   },
 }
 
@@ -17,10 +16,5 @@ export default function AppLayout({
 }: {
   children: React.ReactNode
 }) {
-  return (
-    <>
-      {children}
-      <ViolaChat />
-    </>
-  )
+  return <>{children}</>
 }

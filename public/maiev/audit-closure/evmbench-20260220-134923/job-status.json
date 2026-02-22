@@ -1,0 +1,17 @@
+{
+    "job_id":  "36cda7a8-3531-48a3-8ab6-8f4d63af04c6",
+    "status":  "succeeded",
+    "result":  {
+                   "vulnerabilities":  [
+
+                                       ]
+               },
+    "error":  null,
+    "model":  "codex-gpt-5.2",
+    "file_name":  "contracts.zip",
+    "public":  false,
+    "created_at":  "2026-02-20T18:49:23.527625Z",
+    "started_at":  "2026-02-20T18:49:23.834726Z",
+    "finished_at":  "2026-02-20T18:51:35.995370Z",
+    "queue_position":  null
+}

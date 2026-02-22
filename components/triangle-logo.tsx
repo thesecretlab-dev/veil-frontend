@@ -92,7 +92,7 @@ export function TriangleLogo({ size }: { size?: number } = {}) {
           </linearGradient>
         </defs>
         <path
-          d="M24 40 L8 12 L40 12 Z"
+          d="M24 42 L6 8 L42 8 Z"
           fill="url(#triangleGradient)"
           stroke={isHovered ? "rgba(16, 185, 129, 0.6)" : "rgba(255, 255, 255, 0.15)"}
           strokeWidth={isHovered ? "1.5" : "1"}

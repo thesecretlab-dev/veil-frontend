@@ -35,13 +35,13 @@ export const metadata: Metadata = {
     template: "%s | VEIL",
   },
   description:
-    "Trade on future events with complete privacy. VEIL combines zero-knowledge proofs with prediction markets for anonymous, trustless trading.",
+    "Trade on future events with privacy-scoped execution. VEIL combines shielded VM lanes with transparent companion EVM rails.",
   keywords: [
     "prediction markets",
     "privacy",
     "zero-knowledge",
     "blockchain",
-    "anonymous trading",
+    "privacy-scoped execution",
     "decentralized",
     "crypto",
     "web3",
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     url: "https://veil.markets",
     title: "VEIL - Privacy-First Prediction Markets",
     description:
-      "Trade on future events with complete privacy. VEIL combines zero-knowledge proofs with prediction markets for anonymous, trustless trading.",
+      "Trade on future events with privacy-scoped execution across shielded VM lanes and transparent companion EVM rails.",
     siteName: "VEIL",
     images: [
       {
@@ -74,7 +74,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "VEIL - Privacy-First Prediction Markets",
-    description: "Trade on future events with complete privacy. Zero-knowledge proofs meet prediction markets.",
+    description: "Privacy-scoped prediction markets with shielded VM lanes and transparent companion EVM rails.",
     images: ["/og-image.jpg"],
     creator: "@veilmarkets",
   },

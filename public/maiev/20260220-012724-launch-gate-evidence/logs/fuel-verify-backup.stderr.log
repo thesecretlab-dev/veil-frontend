@@ -1,0 +1,1 @@
+bench failed: startup preflight insufficient bench fee balance: have=4969000 need=5000001 deficit=31001 (addr=0x00e7c0852913093eb95db39e5e0e2f2a9552e07e5c1a81a37e1bfd4fb0c2ea9e0c2d4787d8). set REFUEL_PRIVATE_KEY or fund this address

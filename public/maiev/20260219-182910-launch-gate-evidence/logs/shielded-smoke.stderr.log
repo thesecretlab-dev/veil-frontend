@@ -1,0 +1,2 @@
+bench failed: network: received status code: 404 404 page not found
+ http://host.docker.internal:9650/ext/bc/2n1YXbk3hMJbhnnxC8fb2qC8SmmPzWWNUk2CPHH5cdKKPcunYQ/coreapi

@@ -1,2530 +1,852 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useEffect, useMemo, useRef } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ResponsiveContainer, YAxis, AreaChart, Area, Tooltip, LineChart, Line } from "recharts"
-import { CheckCircle, X, ArrowDownUp, ChevronDown, Settings, Copy, Bell } from "lucide-react"
-import TriangleLogo from "@/components/triangle-logo"
-import { InfoTooltip } from "@/components/info-tooltip"
-import { BalanceHero } from "@/components/balance-hero"
 import Link from "next/link"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { motion, useInView, AnimatePresence } from "framer-motion"
 
-type OperatorRole = "encryption" | "oracle" | "keeper" | null
-type RewardsTab = "staking" | "veveil" | "lp"
-type VoteChoice = "for" | "against" | "abstain" | null
-type SwapPair = "wVEIL/USDC" | "wVEIL/wAVAX" | "wAVAX/USDC" | "USDC/wVEIL" | "wAVAX/wVEIL" | "USDC/wAVAX"
+import type { PortalStatusResponse } from "@/lib/portal-status"
 
-interface KPIs {
-  polTvl: number
-  weeklyBuyback: number
-  msrbNotional: number
-  fees7d: number
-  sla: number
+/* ─── Types ─── */
+type ActionTab = "swap" | "stake" | "bond"
+type Token = "VEIL" | "wVEIL" | "VAI" | "USDC"
+type BondAsset = "VEIL-USDC LP" | "wVEIL-VAI LP" | "AVAX-VAI LP"
+
+type Position = {
+  token: Token | "LP" | "vVEIL" | "gVEIL"
+  amount: string
 }
 
-function useAnimatedCounter(target: number, duration = 2000) {
-  const [count, setCount] = useState(target)
-  const animationRef = useRef<number | null>(null)
-  const startTimeRef = useRef<number | null>(null)
-  const startValueRef = useRef(target)
-
-  useEffect(() => {
-    // Cancel any existing animation
-    if (animationRef.current !== null) {
-      cancelAnimationFrame(animationRef.current)
-    }
-
-    // Reset start time and value for new animation
-    startTimeRef.current = null
-    startValueRef.current = count
-
-    const animate = (currentTime: number) => {
-      if (startTimeRef.current === null) {
-        startTimeRef.current = currentTime
-      }
-
-      const elapsed = currentTime - startTimeRef.current
-      const progress = Math.min(elapsed / duration, 1)
-
-      // Easing function for smooth animation
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4)
-      const newCount = Math.floor(startValueRef.current + (target - startValueRef.current) * easeOutQuart)
-
-      setCount(newCount)
-
-      if (progress < 1) {
-        animationRef.current = requestAnimationFrame(animate)
-      } else {
-        animationRef.current = null
-      }
-    }
-
-    animationRef.current = requestAnimationFrame(animate)
-
-    return () => {
-      if (animationRef.current !== null) {
-        cancelAnimationFrame(animationRef.current)
-        animationRef.current = null
-      }
-    }
-  }, [target, duration])
-
-  return count
+type LiquidityDepthPolicy = {
+  recommendedApyPct: number
+  recommendedEpochRebasePct: number
+  formula: string
 }
 
-export default function VEILfiPage() {
-  const [walletConnected, setWalletConnected] = useState(false)
-  const [wrongNetwork, setWrongNetwork] = useState(false)
-  const [stakeAmount, setStakeAmount] = useState("")
-  const [lockAmount, setLockAmount] = useState("")
-  const [lockMonths, setLockMonths] = useState(12)
-  const [selectedRole, setSelectedRole] = useState<OperatorRole>(null)
-  const [activeRewardsTab, setActiveRewardsTab] = useState<RewardsTab>("staking")
-  const [voteChoice, setVoteChoice] = useState<Record<number, VoteChoice>>({})
-  const [commitHash, setCommitHash] = useState<Record<number, string>>({})
-  const [mounted, setMounted] = useState(false)
-  const [isStaking, setIsStaking] = useState(false)
-  const [isLocking, setIsLocking] = useState(false)
-  const [isClaiming, setIsClaiming] = useState(false)
-  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null)
-  const [stakedBalance, setStakedBalance] = useState(25000)
-  const [lockedBalance, setLockedBalance] = useState(50000)
-  const [lockEndDate, setLockEndDate] = useState<Date | null>(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000))
-  const [claimableRewards, setClaimableRewards] = useState(12450)
-  const [rewardsBySource, setRewardsBySource] = useState({
-    staking: 8200,
-    veveil: 2850,
-    lp: 1400,
-  })
+type LiquidityDepthTarget = {
+  targetReserveVai: number
+  targetSlippagePct: number
+  referenceTradeVai: number
+}
 
-  const [pendingRewards, setPendingRewards] = useState({
-    staking: 450,
-    veveil: 180,
-    lp: 95,
-  })
+type LiquidityDepthObserved = {
+  reserveVai: number
+  impactAtReferencePct: number
+  targetMet: boolean
+}
 
-  const [nextRewardUpdate, setNextRewardUpdate] = useState(3600) // seconds until next epoch
-  const [rewardHistory, setRewardHistory] = useState([
-    { date: "Jan 12", source: "staking", amount: 8200, usd: 3444, tx: "0xabc...def" },
-    { date: "Jan 12", source: "veveil", amount: 2850, usd: 1197, tx: "0xdef...ghi" },
-    { date: "Jan 5", source: "staking", amount: 7950, usd: 3339, tx: "0xghi...jkl" },
-    { date: "Jan 5", source: "lp", amount: 1400, usd: 588, tx: "0xjkl...mno" },
-    { date: "Dec 29", source: "staking", amount: 7680, usd: 3226, tx: "0xmno...pqr" },
+type LiquidityDepthGap = {
+  pct: number
+  ratio: number
+  deficitReserveVai: number
+}
+
+type LiquidityDepthResponse = {
+  available: boolean
+  generatedAt: string | null
+  target: LiquidityDepthTarget
+  observed: LiquidityDepthObserved
+  gap: LiquidityDepthGap
+  policy: LiquidityDepthPolicy
+}
+
+/* ─── Constants ─── */
+const TABS: Array<{ id: ActionTab; label: string; helper: string }> = [
+  { id: "swap", label: "Swap", helper: "Trade between supported assets." },
+  { id: "stake", label: "Stake", helper: "Mint rebasing vVEIL; wrap to gVEIL for non-rebasing governance units." },
+  { id: "bond", label: "Bond", helper: "Bond LP assets into treasury flow." },
+]
+
+const POOLS: Array<{ pair: string; status: string; mode: string }> = [
+  { pair: "wVEIL / VAI", status: "Active", mode: "Testnet pilot" },
+  { pair: "VEIL / USDC", status: "Active", mode: "Testnet pilot" },
+  { pair: "AVAX / VAI", status: "Pending", mode: "Awaiting depth bootstrap" },
+]
+
+const CHECKLIST: Array<{ id: string; label: string }> = [
+  { id: "marketFeed", label: "Market feed online" },
+  { id: "bridge", label: "Bridge snapshot passing" },
+  { id: "chainlink", label: "Chainlink feeds fresh" },
+  { id: "router", label: "Order router reachable" },
+  { id: "prelaunch", label: "Prelaunch gates passing" },
+]
+
+const TOKEN_ROLES: Array<{ token: string; role: string }> = [
+  { token: "VEIL", role: "Base utility + staking asset." },
+  { token: "wVEIL", role: "Liquid wrapper used in swaps and LP routes." },
+  { token: "vVEIL", role: "Rebasing staked balance (VEIL-native emission lane)." },
+  { token: "gVEIL", role: "Non-rebasing wrapper + governance units backed by vVEIL index." },
+  { token: "VAI", role: "Stable execution and treasury routing rail." },
+]
+
+const ECOSYSTEM_FLOW: Array<{ step: string; detail: string }> = [
+  { step: "1. Swap In", detail: "Users enter VEIL rails through VEIL, wVEIL, and VAI pools." },
+  { step: "2. Stake", detail: "Staking mints rebasing vVEIL." },
+  { step: "3. Rebase", detail: "vVEIL APY is raised or cooled by liquidity target gap monitoring." },
+  { step: "4. Wrap", detail: "gVEIL wraps rebasing value into non-rebasing governance units." },
+  { step: "5. Bond", detail: "LP positions can be bonded into chain-owned liquidity lanes." },
+  { step: "6. Execute", detail: "Keepers and governance-approved jobs run treasury and market operations." },
+]
+
+/* ─── Helpers ─── */
+function shortAddress(value: string): string {
+  if (value.length < 12) return value
+  return `${value.slice(0, 6)}...${value.slice(-4)}`
+}
+
+function statusTone(ok: boolean | null): string {
+  if (ok === null) return "border-white/10 bg-white/5 text-white/50"
+  if (ok) return "border-emerald-500/30 bg-emerald-500/8 text-emerald-400"
+  return "border-amber-500/30 bg-amber-500/8 text-amber-300"
+}
+
+function statusText(ok: boolean | null): string {
+  if (ok === null) return "unknown"
+  return ok ? "ready" : "attention"
+}
+
+function inferEnvironment(status: PortalStatusResponse | null): "testnet" | "mainnet" | "unknown" {
+  const chainId = status?.bridge.chainId
+  if (!chainId) return "unknown"
+  if (chainId === 43114) return "mainnet"
+  return "testnet"
+}
+
+function isMainnet(status: PortalStatusResponse | null): boolean {
+  return inferEnvironment(status) === "mainnet"
+}
+
+declare global {
+  interface Window {
+    ethereum?: any
+  }
+}
+
+/* ─── ScrollReveal wrapper ─── */
+function ScrollReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const isInView = useInView(ref, { once: true, margin: "-60px" })
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
+      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+/* ─── Section label ─── */
+function SectionLabel({ number, title, sub }: { number: string; title: string; sub?: string }) {
+  return (
+    <div className="mb-6 flex items-end gap-4">
+      <span className="font-[var(--font-instrument-serif)] text-[clamp(2rem,4vw,3.5rem)] leading-none text-emerald-500/20">{number}</span>
+      <div>
+        <h2 className="font-[var(--font-space-grotesk)] text-lg font-medium tracking-tight text-white/90">{title}</h2>
+        {sub && <p className="mt-0.5 font-[var(--font-figtree)] text-xs text-white/40">{sub}</p>}
+      </div>
+    </div>
+  )
+}
+
+/* ─── Card shell ─── */
+function Card({ children, className = "", glow = false }: { children: React.ReactNode; className?: string; glow?: boolean }) {
+  return (
+    <div
+      className={`rounded-[20px] border border-white/[0.06] bg-white/[0.02] backdrop-blur-2xl ${
+        glow ? "shadow-[0_0_80px_rgba(16,185,129,0.06)]" : ""
+      } ${className}`}
+    >
+      {children}
+    </div>
+  )
+}
+
+/* ─── Film grain overlay ─── */
+function FilmGrain() {
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-[9999] opacity-[0.035]"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        backgroundRepeat: "repeat",
+        backgroundSize: "128px 128px",
+      }}
+    />
+  )
+}
+
+/* ─── Styled input ─── */
+function LuxInput({ value, onChange, placeholder, className = "" }: { value: string; onChange: (v: string) => void; placeholder?: string; className?: string }) {
+  return (
+    <input
+      className={`w-full rounded-[14px] border border-white/[0.06] bg-white/[0.03] px-4 py-3 font-[var(--font-space-grotesk)] text-sm text-white/90 outline-none transition-colors placeholder:text-white/25 focus:border-emerald-500/30 focus:bg-white/[0.04] ${className}`}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+    />
+  )
+}
+
+function LuxSelect({ value, onChange, options }: { value: string; onChange: (v: string) => void; options: string[] }) {
+  return (
+    <select
+      className="w-full rounded-[14px] border border-white/[0.06] bg-white/[0.03] px-4 py-3 font-[var(--font-space-grotesk)] text-sm text-white/90 outline-none transition-colors focus:border-emerald-500/30"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+    >
+      {options.map((o) => (
+        <option key={o} value={o}>{o}</option>
+      ))}
+    </select>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MAIN PAGE
+   ═══════════════════════════════════════════════════════════════════ */
+export default function VeilDeFiPage() {
+  const [status, setStatus] = useState<PortalStatusResponse | null>(null)
+  const [isStatusLoading, setIsStatusLoading] = useState(true)
+  const [liquidityDepth, setLiquidityDepth] = useState<LiquidityDepthResponse | null>(null)
+  const [isLiquidityLoading, setIsLiquidityLoading] = useState(true)
+
+  const [activeTab, setActiveTab] = useState<ActionTab>("swap")
+  const [toast, setToast] = useState("")
+
+  const [walletAddress, setWalletAddress] = useState("")
+  const [walletError, setWalletError] = useState("")
+  const [isWalletConnecting, setIsWalletConnecting] = useState(false)
+
+  const [swapFromToken, setSwapFromToken] = useState<Token>("wVEIL")
+  const [swapToToken, setSwapToToken] = useState<Token>("VAI")
+  const [swapAmount, setSwapAmount] = useState("100")
+  const [swapSlippage, setSwapSlippage] = useState("0.50")
+
+  const [stakeAmount, setStakeAmount] = useState("1000")
+  const [stakeDurationDays, setStakeDurationDays] = useState("30")
+  const [autoCompound, setAutoCompound] = useState(true)
+
+  const [bondAsset, setBondAsset] = useState<BondAsset>("wVEIL-VAI LP")
+  const [bondAmount, setBondAmount] = useState("50")
+  const [bondVestDays, setBondVestDays] = useState("7")
+
+  const [positions, setPositions] = useState<Position[]>([
+    { token: "VEIL", amount: "0.00" },
+    { token: "wVEIL", amount: "0.00" },
+    { token: "vVEIL", amount: "0.00" },
+    { token: "gVEIL", amount: "0.00" },
+    { token: "VAI", amount: "0.00" },
+    { token: "USDC", amount: "0.00" },
+    { token: "LP", amount: "0.00" },
   ])
 
-  const [historyFilter, setHistoryFilter] = useState<"all" | "staking" | "veveil" | "lp">("all")
-
-  const [selectedPair, setSelectedPair] = useState<SwapPair>("wVEIL/USDC")
-  const [swapFromAmount, setSwapFromAmount] = useState("")
-  const [swapToAmount, setSwapToAmount] = useState("")
-  const [showSlippage, setShowSlippage] = useState(false)
-  const [slippage, setSlippage] = useState(0.5)
-  const [isSwapping, setIsSwapping] = useState(false)
-
-  const [showActivityFeed, setShowActivityFeed] = useState(false)
-  const [hasNewActivity, setHasNewActivity] = useState(true)
-
-  const recentActivity = [
-    { type: "stake", amount: 5000, timestamp: "2 min ago", txHash: "0x1a2b3c..." },
-    { type: "claim", amount: 125.5, source: "Staking", timestamp: "15 min ago", txHash: "0x4d5e6f..." },
-    { type: "swap", from: "USDC", to: "wVEIL", amount: 1000, timestamp: "1 hour ago", txHash: "0x7g8h9i..." },
-    { type: "lock", amount: 10000, duration: "12 months", timestamp: "3 hours ago", txHash: "0xj1k2l3..." },
-    { type: "vote", proposal: "Increase MSRB Cap", timestamp: "1 day ago", txHash: "0xm4n5o6..." },
-  ]
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" })
-    }
-  }
-
-  const baseSwapPrices: Record<string, number> = {
-    "wVEIL/USDC": 0.42,
-    "wVEIL/wAVAX": 0.012,
-    "wAVAX/USDC": 35.0,
-  }
-
-  const getSwapPrice = (pair: SwapPair): number => {
-    if (pair in baseSwapPrices) {
-      return baseSwapPrices[pair]
-    }
-    // For reversed pairs, return 1/price
-    const [token1, token2] = pair.split("/")
-    const reversedPair = `${token2}/${token1}`
-    if (reversedPair in baseSwapPrices) {
-      return 1 / baseSwapPrices[reversedPair]
-    }
-    return 1 // fallback
-  }
-
-  const basePairData: Record<
-    string,
-    { liquidity: number; volume24h: number; priceChange24h: number; priceHistory: { time: string; price: number }[] }
-  > = {
-    "wVEIL/USDC": {
-      liquidity: 2450000,
-      volume24h: 485000,
-      priceChange24h: 2.4,
-      priceHistory: [
-        { time: "00:00", price: 0.41 },
-        { time: "04:00", price: 0.405 },
-        { time: "08:00", price: 0.415 },
-        { time: "12:00", price: 0.42 },
-        { time: "16:00", price: 0.425 },
-        { time: "20:00", price: 0.42 },
-      ],
-    },
-    "wVEIL/wAVAX": {
-      liquidity: 1850000,
-      volume24h: 325000,
-      priceChange24h: -1.2,
-      priceHistory: [
-        { time: "00:00", price: 0.0122 },
-        { time: "04:00", price: 0.0121 },
-        { time: "08:00", price: 0.012 },
-        { time: "12:00", price: 0.012 },
-        { time: "16:00", price: 0.0119 },
-        { time: "20:00", price: 0.012 },
-      ],
-    },
-    "wAVAX/USDC": {
-      liquidity: 3200000,
-      volume24h: 680000,
-      priceChange24h: 0.8,
-      priceHistory: [
-        { time: "00:00", price: 34.8 },
-        { time: "04:00", price: 34.5 },
-        { time: "08:00", price: 35.2 },
-        { time: "12:00", price: 35.0 },
-        { time: "16:00", price: 35.3 },
-        { time: "20:00", price: 35.0 },
-      ],
-    },
-  }
-
-  const getPairData = (
-    pair: SwapPair,
-  ): {
-    liquidity: number
-    volume24h: number
-    priceChange24h: number
-    priceHistory: { time: string; price: number }[]
-  } => {
-    if (pair in basePairData) {
-      return basePairData[pair]
-    }
-    // For reversed pairs, use the same data but invert price history
-    const [token1, token2] = pair.split("/")
-    const reversedPair = `${token2}/${token1}`
-    if (reversedPair in basePairData) {
-      const data = basePairData[reversedPair]
-      return {
-        ...data,
-        priceChange24h: -data.priceChange24h, // Invert price change
-        priceHistory: data.priceHistory.map((point) => ({
-          time: point.time,
-          price: 1 / point.price, // Invert prices
-        })),
+  /* ─── Data fetching (unchanged logic) ─── */
+  useEffect(() => {
+    let cancelled = false
+    const loadStatus = async () => {
+      try {
+        const response = await fetch("/api/portal-status", { cache: "no-store" })
+        if (!response.ok) throw new Error("portal-status unavailable")
+        const payload = (await response.json()) as PortalStatusResponse
+        if (!cancelled) setStatus(payload)
+      } catch {
+        if (!cancelled) setStatus(null)
+      } finally {
+        if (!cancelled) setIsStatusLoading(false)
       }
     }
-    // Fallback
-    return {
-      liquidity: 0,
-      volume24h: 0,
-      priceChange24h: 0,
-      priceHistory: [],
-    }
-  }
-
-  const [activeStakeLockTab, setActiveStakeLockTab] = useState<"stake" | "lock">("stake")
-
-  const [tokenBalances, setTokenBalances] = useState<Record<string, number>>({
-    wVEIL: 125000,
-    USDC: 52500,
-    wAVAX: 1500,
-  })
-
-  const tokenColors: Record<string, string> = {
-    wVEIL: "rgba(16, 185, 129, 0.8)", // emerald
-    USDC: "rgba(59, 130, 246, 0.8)", // blue
-    wAVAX: "rgba(239, 68, 68, 0.8)", // red
-  }
-
-  const tokenIcons: Record<string, React.ReactElement> = {
-    wVEIL: (
-      <div
-        className="w-6 h-6 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(16, 185, 129, 0.2)", border: "1px solid rgba(16, 185, 129, 0.4)" }}
-      >
-        <span className="text-xs font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-          V
-        </span>
-      </div>
-    ),
-    USDC: (
-      <div
-        className="w-6 h-6 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(59, 130, 246, 0.2)", border: "1px solid rgba(59, 130, 246, 0.4)" }}
-      >
-        <span className="text-xs font-bold" style={{ color: "rgba(59, 130, 246, 0.9)" }}>
-          $
-        </span>
-      </div>
-    ),
-    wAVAX: (
-      <div
-        className="w-6 h-6 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(239, 68, 68, 0.2)", border: "1px solid rgba(239, 68, 68, 0.4)" }}
-      >
-        <span className="text-xs font-bold" style={{ color: "rgba(239, 68, 68, 0.9)" }}>
-          A
-        </span>
-      </div>
-    ),
-  }
-
-  const [lastRewardGain, setLastRewardGain] = useState(0)
-
-  useEffect(() => {
-    setMounted(true)
+    void loadStatus()
+    return () => { cancelled = true }
   }, [])
 
   useEffect(() => {
-    if (!mounted) return
-    const interval = setInterval(() => {
-      setNextRewardUpdate((prev) => (prev > 0 ? prev - 1 : 3600))
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [mounted])
+    let cancelled = false
+    const loadLiquidityDepth = async () => {
+      try {
+        const response = await fetch("/api/liquidity-depth", { cache: "no-store" })
+        if (!response.ok) throw new Error("liquidity-depth unavailable")
+        const payload = (await response.json()) as LiquidityDepthResponse
+        if (!cancelled && payload.available) setLiquidityDepth(payload)
+      } catch {
+        if (!cancelled) setLiquidityDepth(null)
+      } finally {
+        if (!cancelled) setIsLiquidityLoading(false)
+      }
+    }
+    void loadLiquidityDepth()
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
-    const updateInterval = setInterval(() => {
-      // Calculate APR growth per 10 seconds
-      const stakingAPR = 0.125 // 12.5%
-      const lockBonus = (lockMonths / 48) * 0.08 // Up to 8% bonus
-      const lockAPR = 0.125 + lockBonus
-
-      // Calculate rewards per 10 seconds
-      const secondsPerYear = 365 * 24 * 60 * 60
-      const stakingRewards = (stakedBalance * stakingAPR * 10) / secondsPerYear
-      const lockRewards = (lockedBalance * lockAPR * 10) / secondsPerYear
-      const totalRewards = stakingRewards + lockRewards
-
-      if (totalRewards > 0) {
-        setTokenBalances((prev) => ({
-          ...prev,
-          wVEIL: prev.wVEIL + totalRewards,
-        }))
-        setLastRewardGain(totalRewards)
-
-        setClaimableRewards((prev) => prev + totalRewards)
-      }
-    }, 10000) // Update every 10 seconds
-
-    return () => clearInterval(updateInterval)
-  }, [stakedBalance, lockedBalance, lockMonths])
-
-  const showToast = (message: string, type: "success" | "error") => {
-    setToast({ message, type })
-    setTimeout(() => setToast(null), 3000)
-  }
-
-  const handleStake = async () => {
-    if (!walletConnected) {
-      showToast("Please connect your wallet first", "error")
-      return
-    }
-    if (!stakeAmount || Number.parseFloat(stakeAmount) <= 0) {
-      showToast("Please enter a valid amount", "error")
-      return
-    }
-
-    const amount = Number.parseFloat(stakeAmount)
-    if (amount > tokenBalances.wVEIL) {
-      showToast(
-        `Insufficient balance. Available: ${tokenBalances.wVEIL.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} wVEIL`,
-        "error",
-      )
-      return
-    }
-
-    setIsStaking(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    setTokenBalances((prev) => ({
-      ...prev,
-      wVEIL: prev.wVEIL - amount,
-    }))
-
-    setStakedBalance(stakedBalance + amount)
-    showToast(`Successfully staked ${stakeAmount} VEIL`, "success")
-    setStakeAmount("")
-    setIsStaking(false)
-  }
-
-  const handleLock = async () => {
-    if (!walletConnected) {
-      showToast("Please connect your wallet first", "error")
-      return
-    }
-    if (!lockAmount || Number.parseFloat(lockAmount) <= 0) {
-      showToast("Please enter a valid amount", "error")
-      return
-    }
-
-    const amount = Number.parseFloat(lockAmount)
-    if (amount > tokenBalances.wVEIL) {
-      showToast(
-        `Insufficient balance. Available: ${tokenBalances.wVEIL.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} wVEIL`,
-        "error",
-      )
-      return
-    }
-
-    setIsLocking(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    setTokenBalances((prev) => ({
-      ...prev,
-      wVEIL: prev.wVEIL - amount,
-    }))
-
-    setLockedBalance(lockedBalance + amount)
-    showToast(`Successfully locked ${lockAmount} VEIL for ${lockMonths} months`, "success")
-    setLockAmount("")
-    setIsLocking(false)
-  }
-
-  const handleClaim = async () => {
-    if (!walletConnected) {
-      showToast("Please connect your wallet first", "error")
-      return
-    }
-    if (claimableRewards <= 0) {
-      showToast("No rewards to claim", "error")
-      return
-    }
-
-    setIsClaiming(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    setTokenBalances((prev) => ({
-      ...prev,
-      wVEIL: prev.wVEIL + claimableRewards,
-    }))
-
-    showToast(
-      `Successfully claimed ${claimableRewards.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} VEIL`,
-      "success",
-    )
-    setClaimableRewards(0)
-    setRewardsBySource({ staking: 0, veveil: 0, lp: 0 })
-    setIsClaiming(false)
-  }
-
-  const handleClaimSource = async (source: "staking" | "veveil" | "lp") => {
-    if (!walletConnected) {
-      showToast("Please connect your wallet first", "error")
-      return
-    }
-    if (rewardsBySource[source] <= 0) {
-      showToast("No rewards to claim from this source", "error")
-      return
-    }
-
-    setIsClaiming(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    const amount = rewardsBySource[source]
-
-    setTokenBalances((prev) => ({
-      ...prev,
-      wVEIL: prev.wVEIL + amount,
-    }))
-
-    showToast(
-      `Successfully claimed ${amount.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} VEIL from ${source}`,
-      "success",
-    )
-    setRewardsBySource({ ...rewardsBySource, [source]: 0 })
-    setClaimableRewards(claimableRewards - amount)
-    setIsClaiming(false)
-  }
-
-  const swapPrices: Record<SwapPair, number> = {
-    "wVEIL/USDC": 0.42,
-    "wVEIL/wAVAX": 0.012,
-    "wAVAX/USDC": 35.0,
-    "USDC/wVEIL": 1 / 0.42,
-    "wAVAX/wVEIL": 1 / 0.012,
-    "USDC/wAVAX": 1 / 35.0,
-  }
-
-  const calculatePriceImpact = (amount: number, pair: SwapPair): number => {
-    const liquidity = getPairData(pair).liquidity // Use helper function
-    const impact = (amount / liquidity) * 100
-    return impact
-  }
-
-  const priceImpact = swapFromAmount
-    ? calculatePriceImpact(Number.parseFloat(swapFromAmount) * getSwapPrice(selectedPair), selectedPair) // Use helper function
-    : 0
-
-  const handleSwapAmountChange = (value: string, isFrom: boolean) => {
-    if (isFrom) {
-      setSwapFromAmount(value)
-      if (value && !isNaN(Number(value))) {
-        const calculated = Number(value) * getSwapPrice(selectedPair) // Use helper function
-        setSwapToAmount(calculated.toFixed(6))
-      } else {
-        setSwapToAmount("")
-      }
-    } else {
-      setSwapToAmount(value)
-      if (value && !isNaN(Number(value))) {
-        const calculated = Number(value) / getSwapPrice(selectedPair) // Use helper function
-        setSwapFromAmount(calculated.toFixed(6))
-      } else {
-        setSwapFromAmount("")
+    if (typeof window === "undefined" || typeof window.ethereum === "undefined") return
+    let mounted = true
+    const syncAccounts = async () => {
+      try {
+        const accounts = await window.ethereum?.request({ method: "eth_accounts" })
+        if (!mounted) return
+        if (Array.isArray(accounts) && accounts.length > 0) {
+          setWalletAddress(String(accounts[0]))
+          setPositions([
+            { token: "VEIL", amount: "12,500.00" },
+            { token: "wVEIL", amount: "11,200.00" },
+            { token: "vVEIL", amount: "8,400.00" },
+            { token: "gVEIL", amount: "5,950.00" },
+            { token: "VAI", amount: "4,120.50" },
+            { token: "USDC", amount: "3,890.00" },
+            { token: "LP", amount: "245.77" },
+          ])
+        } else {
+          setWalletAddress("")
+        }
+      } catch {
+        if (mounted) setWalletAddress("")
       }
     }
-  }
-
-  const handleSwap = async () => {
-    if (!walletConnected) {
-      showToast("Please connect your wallet first", "error")
-      return
+    const onAccountsChanged = (accounts: string[]) => {
+      if (!mounted) return
+      const next = Array.isArray(accounts) && accounts.length > 0 ? String(accounts[0]) : ""
+      setWalletAddress(next)
+      if (!next) {
+        setPositions([
+          { token: "VEIL", amount: "0.00" }, { token: "wVEIL", amount: "0.00" },
+          { token: "vVEIL", amount: "0.00" }, { token: "gVEIL", amount: "0.00" },
+          { token: "VAI", amount: "0.00" }, { token: "USDC", amount: "0.00" },
+          { token: "LP", amount: "0.00" },
+        ])
+      }
     }
-    if (!swapFromAmount || Number.parseFloat(swapFromAmount) <= 0) {
-      showToast("Please enter a valid amount", "error")
-      return
-    }
+    void syncAccounts()
+    window.ethereum.on?.("accountsChanged", onAccountsChanged)
+    return () => { mounted = false; window.ethereum?.removeListener?.("accountsChanged", onAccountsChanged) }
+  }, [])
 
-    const [fromToken, toToken] = getPairTokens(selectedPair)
-    const fromAmount = Number.parseFloat(swapFromAmount)
-    const toAmount = Number.parseFloat(swapToAmount)
+  useEffect(() => {
+    if (!toast) return
+    const timeout = setTimeout(() => setToast(""), 2800)
+    return () => clearTimeout(timeout)
+  }, [toast])
 
-    if (tokenBalances[fromToken] < fromAmount) {
-      showToast(`Insufficient ${fromToken} balance`, "error")
-      return
-    }
+  /* ─── Derived ─── */
+  const env = inferEnvironment(status)
+  const showTestnetBanner = !isMainnet(status)
 
-    setIsSwapping(true)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+  const summaryCards = useMemo(() => {
+    const dynamicApy = liquidityDepth?.policy.recommendedApyPct ?? 0
+    const gapPct = liquidityDepth?.gap.pct ?? 0
+    return [
+      { label: "Environment", value: env === "mainnet" ? "Mainnet" : env === "testnet" ? "Testnet" : "Unknown", helper: status?.bridge.chainId ? `Chain ID ${status.bridge.chainId}` : "Chain not detected" },
+      { label: "Active Markets", value: isStatusLoading ? "..." : `${status?.markets.active ?? 0}`, helper: `${status?.markets.total ?? 0} tracked` },
+      { label: "Router", value: status?.orderRouter.configured ? (status.orderRouter.reachable ? "Online" : "Offline") : "Unconfigured", helper: status?.orderRouter.configured ? `HTTP ${status.orderRouter.statusCode ?? "n/a"}` : "VEIL_ORDER_API_BASE missing" },
+      { label: "Dynamic vVEIL APY", value: isLiquidityLoading ? "..." : `${dynamicApy.toFixed(2)}%`, helper: isLiquidityLoading ? "Liquidity model loading" : `Target gap ${gapPct.toFixed(2)}%` },
+      { label: "Open Gates", value: isStatusLoading ? "..." : `${status?.prelaunch.failingGateCount ?? 0}`, helper: "Readiness checklist" },
+    ]
+  }, [env, isLiquidityLoading, isStatusLoading, liquidityDepth, status])
 
-    setTokenBalances((prev) => ({
-      ...prev,
-      [fromToken]: prev[fromToken] - fromAmount,
-      [toToken]: prev[toToken] + toAmount,
-    }))
-
-    showToast(`Successfully swapped ${swapFromAmount} ${fromToken} for ${swapToAmount} ${toToken}`, "success")
-    setSwapFromAmount("")
-    setSwapToAmount("")
-    setIsSwapping(false)
-  }
-
-  const getPairTokens = (pair: SwapPair): [string, string] => {
-    return pair.split("/") as [string, string]
-  }
-
-  const kpis = useMemo(
-    () => ({
-      polTvl: 8250000,
-      weeklyBuyback: 125000,
-      msrbNotional: 2400000,
-      fees7d: 48500,
-      sla: 99.2,
-    }),
-    [],
-  )
-
-  const animatedPolTvl = useAnimatedCounter(kpis.polTvl, 2000)
-  const animatedBuyback = useAnimatedCounter(kpis.weeklyBuyback, 2000)
-  const animatedMsrb = useAnimatedCounter(kpis.msrbNotional, 2000)
-  const animatedFees = useAnimatedCounter(kpis.fees7d, 2000)
-
-  const buybackLogs = [
-    { date: "2025-01-13", wveil: 125000, vwap: 0.42, pair: "WVEIL/USDC.e", lpShares: 45200 },
-    { date: "2025-01-06", wveil: 118000, vwap: 0.39, pair: "WVEIL/USDC.e", lpShares: 42800 },
-    { date: "2024-12-30", wveil: 112000, vwap: 0.38, pair: "WVEIL/AVAX", lpShares: 38900 },
-  ]
-
-  const msrbTiers = [
-    { tier: "Flagship", targetB: 500000, utilization: 68, spreadBps: 8, nextTopup: "2h 15m", activeMarkets: 12 },
-    { tier: "Standard", targetB: 250000, utilization: 52, spreadBps: 12, nextTopup: "5h 30m", activeMarkets: 34 },
-    { tier: "Emerging", targetB: 100000, utilization: 41, spreadBps: 18, nextTopup: "8h 45m", activeMarkets: 67 },
-  ]
-
-  const proposals = [
-    {
-      id: 1,
-      title: "Increase MSRB depth for Flagship markets",
-      scope: "MSRB Cap",
-      endTs: "2025-01-20",
-      votingPower: 0,
-      quorum: 4000000,
-      forVotes: 2800000,
-      againstVotes: 450000,
-      abstainVotes: 120000,
-      status: "active" as const,
-      commitPhase: true,
-    },
-    {
-      id: 2,
-      title: "Adjust fee band to 50-70 bps",
-      scope: "Fee Band",
-      endTs: "2025-01-18",
-      votingPower: 0,
-      quorum: 4000000,
-      forVotes: 3200000,
-      againstVotes: 280000,
-      abstainVotes: 95000,
-      status: "active" as const,
-      commitPhase: false,
-    },
-  ]
-
-  const polTvlData = [
-    { date: "Dec 1", value: 8200000 },
-    { date: "Dec 8", value: 9100000 },
-    { date: "Dec 15", value: 9800000 },
-    { date: "Dec 22", value: 10500000 },
-    { date: "Dec 29", value: 11200000 },
-    { date: "Jan 5", value: 11900000 },
-    { date: "Jan 12", value: 12450000 },
-  ]
-
-  const aprHistoryData = [
-    { date: "Dec 1", staking: 11.8, veveil: 18.5 },
-    { date: "Dec 8", staking: 12.1, veveil: 19.2 },
-    { date: "Dec 15", staking: 12.3, veveil: 19.8 },
-    { date: "Dec 22", staking: 12.5, veveil: 20.3 },
-    { date: "Dec 29", staking: 12.4, veveil: 20.1 },
-    { date: "Jan 5", staking: 12.6, veveil: 20.5 },
-    { date: "Jan 12", staking: 12.5, veveil: 20.7 },
-  ]
-
-  const vePower = Math.floor((lockMonths / 48) * 100)
-
-  const calculateEstimatedRewards = (amount: number, months = 0) => {
-    const baseAPR = 0.125
-    const lockBonus = months > 0 ? (months / 48) * 0.08 : 0
-    const totalAPR = baseAPR + lockBonus
-    const dailyRewards = (amount * totalAPR) / 365
+  const readinessRows = useMemo(() => {
+    if (!status) return { marketFeed: null, bridge: null, chainlink: null, router: null, prelaunch: null } as Record<string, boolean | null>
     return {
-      daily: dailyRewards,
-      weekly: dailyRewards * 7,
-      monthly: dailyRewards * 30,
-      yearly: amount * totalAPR,
+      marketFeed: status.flags.liveMarketsAvailable,
+      bridge: status.bridge.overallPass,
+      chainlink: status.flags.chainlinkFresh,
+      router: status.orderRouter.configured ? status.orderRouter.reachable : null,
+      prelaunch: status.prelaunch.overallPass,
+    } as Record<string, boolean | null>
+  }, [status])
+
+  const swapPreview = useMemo(() => {
+    const amount = Number.parseFloat(swapAmount || "0")
+    const slip = Number.parseFloat(swapSlippage || "0")
+    if (!Number.isFinite(amount) || amount <= 0) return "Enter amount to preview."
+    if (!Number.isFinite(slip) || slip < 0) return "Invalid slippage."
+    return `Swap ${amount.toLocaleString()} ${swapFromToken} → ${swapToToken} with max slippage ${slip.toFixed(2)}%.`
+  }, [swapAmount, swapFromToken, swapToToken, swapSlippage])
+
+  const stakePreview = useMemo(() => {
+    const amount = Number.parseFloat(stakeAmount || "0")
+    const duration = Number.parseInt(stakeDurationDays || "0", 10)
+    if (!Number.isFinite(amount) || amount <= 0) return "Enter amount to preview."
+    if (!Number.isFinite(duration) || duration <= 0) return "Set projection horizon."
+    return `Stake ${amount.toLocaleString()} into rebasing vVEIL for ${duration} days${autoCompound ? " with auto-compound." : "."}`
+  }, [autoCompound, stakeAmount, stakeDurationDays])
+
+  const stakeModel = useMemo(() => {
+    const amount = Number.parseFloat(stakeAmount || "0")
+    const duration = Number.parseInt(stakeDurationDays || "0", 10)
+    const apyPct = liquidityDepth?.policy.recommendedApyPct ?? 12.5
+    const epochRebasePct = liquidityDepth?.policy.recommendedEpochRebasePct ?? 0.032
+    const currentIndex = 1
+    if (!Number.isFinite(amount) || amount <= 0 || !Number.isFinite(duration) || duration <= 0) {
+      return { vVeilNow: "0.00", projectedVVeil: "0.00", gVeilWrapped: "0.00", apyPct: "0.00", epochRebasePct: "0.0000" }
+    }
+    const cappedDays = Math.min(Math.max(duration, 1), 1460)
+    const projectedGrowthFactor = Math.pow(1 + apyPct / 100, cappedDays / 365)
+    const vVeilNow = amount
+    const projectedVVeil = amount * projectedGrowthFactor
+    const gVeilWrapped = amount / currentIndex
+    return {
+      vVeilNow: vVeilNow.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      projectedVVeil: projectedVVeil.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      gVeilWrapped: gVeilWrapped.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      apyPct: apyPct.toFixed(2),
+      epochRebasePct: epochRebasePct.toFixed(4),
+    }
+  }, [liquidityDepth, stakeAmount, stakeDurationDays])
+
+  const bondPreview = useMemo(() => {
+    const amount = Number.parseFloat(bondAmount || "0")
+    const vest = Number.parseInt(bondVestDays || "0", 10)
+    if (!Number.isFinite(amount) || amount <= 0) return "Enter amount to preview."
+    if (!Number.isFinite(vest) || vest <= 0) return "Set vesting days."
+    return `Bond ${amount.toLocaleString()} ${bondAsset} with ${vest} day vesting.`
+  }, [bondAmount, bondAsset, bondVestDays])
+
+  /* ─── Wallet ─── */
+  const connectWallet = async () => {
+    if (typeof window === "undefined" || typeof window.ethereum === "undefined") {
+      setWalletError("No injected wallet found. Install VEIL Wallet or MetaMask.")
+      return
+    }
+    setIsWalletConnecting(true)
+    setWalletError("")
+    try {
+      const accounts = await window.ethereum.request({ method: "eth_requestAccounts" })
+      if (!Array.isArray(accounts) || accounts.length === 0) { setWalletError("No account returned from wallet."); return }
+      setWalletAddress(String(accounts[0]))
+      setPositions([
+        { token: "VEIL", amount: "12,500.00" }, { token: "wVEIL", amount: "11,200.00" },
+        { token: "vVEIL", amount: "8,400.00" }, { token: "gVEIL", amount: "5,950.00" },
+        { token: "VAI", amount: "4,120.50" }, { token: "USDC", amount: "3,890.00" },
+        { token: "LP", amount: "245.77" },
+      ])
+    } catch (error: any) {
+      if (error?.code === 4001) setWalletError("Wallet connection rejected.")
+      else setWalletError("Failed to connect wallet.")
+    } finally {
+      setIsWalletConnecting(false)
     }
   }
 
-  const setAmountPreset = (percentage: number, isLock: boolean) => {
-    const amount = Math.floor((tokenBalances.wVEIL * percentage) / 100)
-    if (isLock) {
-      setLockAmount(amount.toString())
-    } else {
-      setStakeAmount(amount.toString())
-    }
+  const executeAction = () => {
+    if (!walletAddress) { setWalletError("Connect wallet first."); return }
+    if (activeTab === "swap") { setToast("Swap request queued in testnet execution lane."); return }
+    if (activeTab === "stake") { setToast("Stake request queued. vVEIL rebases by dynamic APY; gVEIL wrapper index updates each epoch."); return }
+    setToast("Bond request queued in testnet execution lane.")
   }
 
-  const setLockDurationPreset = (months: number) => {
-    setLockMonths(months)
-  }
-
-  const calculateUnlockDate = (months: number) => {
-    const date = new Date()
-    date.setMonth(date.getMonth() + months)
-    return date
-  }
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-  }
-
-  const estimatedStakeRewards = stakeAmount ? calculateEstimatedRewards(Number.parseFloat(stakeAmount)) : null
-  const estimatedLockRewards = lockAmount ? calculateEstimatedRewards(Number.parseFloat(lockAmount), lockMonths) : null
-
-  const roleDescriptions = {
-    encryption: {
-      title: "Encryption Node",
-      bond: "50,000 VEIL",
-      apr: "15-22%",
-      description: "Secure TEE-based order encryption and decryption",
-      sla: "99.9% uptime",
-    },
-    oracle: {
-      title: "Oracle Attestor",
-      bond: "25,000 VEIL",
-      apr: "12-18%",
-      description: "Sign outcome results after dispute window",
-      sla: "100% accuracy",
-    },
-    keeper: {
-      title: "Keeper Operator",
-      bond: "15,000 VEIL",
-      apr: "10-16%",
-      description: "Balance one-sided windows within VaR limits",
-      sla: "98% fill rate",
-    },
-  }
-
-  const handleCommitVote = (proposalId: number) => {
-    if (!voteChoice[proposalId]) return
-    const randomHash = `0x${Math.random().toString(16).slice(2, 10)}...`
-    setCommitHash({ ...commitHash, [proposalId]: randomHash })
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
-    },
-  }
-
-  const formatTimeRemaining = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${hours}h ${minutes}m ${secs}s`
-  }
-
-  const handleSwapDirection = () => {
-    // Swap the amounts
-    const tempAmount = swapFromAmount
-    setSwapFromAmount(swapToAmount)
-    setSwapToAmount(tempAmount)
-
-    // Reverse the pair
-    const [token1, token2] = getPairTokens(selectedPair)
-    const reversedPair = `${token2}/${token1}` as SwapPair
-    setSelectedPair(reversedPair)
-  }
-
-  return (
-    <div className="min-h-screen" style={{ background: "#000000" }}>
-      {/* Toast Notifications */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: -50, x: "-50%" }}
-            animate={{ opacity: 1, y: 0, x: "-50%" }}
-            exit={{ opacity: 0, y: -50, x: "-50%" }}
-            className="fixed top-4 left-1/2 z-50 rounded-lg px-4 py-3 backdrop-blur-xl shadow-lg"
-            style={{
-              background: toast.type === "success" ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
-              border: `1px solid ${toast.type === "success" ? "rgba(16, 185, 129, 0.3)" : "rgba(239, 68, 68, 0.3)"}`,
-            }}
-          >
-            <div className="flex items-center gap-2">
-              {toast.type === "success" ? (
-                <CheckCircle className="w-4 h-4" style={{ color: "rgba(16, 185, 129, 0.9)" }} />
-              ) : (
-                <X className="w-4 h-4" style={{ color: "rgba(239, 68, 68, 0.9)" }} />
-              )}
-              <span className="text-sm" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                {toast.message}
-              </span>
+  /* ─── Action panels ─── */
+  const renderActionPanel = () => {
+    if (activeTab === "swap") {
+      return (
+        <div className="space-y-5">
+          <div>
+            <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">From</p>
+            <div className="grid grid-cols-[1fr_auto] gap-3">
+              <LuxInput value={swapAmount} onChange={setSwapAmount} placeholder="0.00" />
+              <LuxSelect value={swapFromToken} onChange={(v) => setSwapFromToken(v as Token)} options={["VEIL", "wVEIL", "VAI", "USDC"]} />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+          <div>
+            <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">To</p>
+            <LuxSelect value={swapToToken} onChange={(v) => setSwapToToken(v as Token)} options={["VEIL", "wVEIL", "VAI", "USDC"]} />
+          </div>
+          <div>
+            <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">Slippage (%)</p>
+            <LuxInput value={swapSlippage} onChange={setSwapSlippage} placeholder="0.50" />
+          </div>
+          <div className="rounded-[14px] border border-white/[0.04] bg-white/[0.02] px-4 py-3 font-[var(--font-figtree)] text-sm text-white/60">{swapPreview}</div>
+        </div>
+      )
+    }
 
-      {/* Header with Logo, Title, KPIs, and Activity Feed */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="sticky top-0 z-40 backdrop-blur-xl border-b"
-        style={{
-          background: "rgba(0, 0, 0, 0.8)",
-          borderColor: "rgba(255, 255, 255, 0.1)",
-        }}
+    if (activeTab === "stake") {
+      return (
+        <div className="space-y-5">
+          <div>
+            <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">Stake Amount (wVEIL)</p>
+            <LuxInput value={stakeAmount} onChange={setStakeAmount} placeholder="0.00" />
+          </div>
+          <div>
+            <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">Projection Horizon (days, max 1460)</p>
+            <LuxInput value={stakeDurationDays} onChange={setStakeDurationDays} placeholder="30" />
+          </div>
+          <label className="flex cursor-pointer items-center gap-3 rounded-[14px] border border-white/[0.04] bg-white/[0.02] px-4 py-3 font-[var(--font-figtree)] text-sm text-white/70 transition-colors hover:bg-white/[0.03]">
+            <input type="checkbox" checked={autoCompound} onChange={(e) => setAutoCompound(e.target.checked)} className="h-4 w-4 accent-emerald-500" />
+            Auto-wrap rebases to gVEIL
+          </label>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {[
+              { label: "vVEIL Now", value: stakeModel.vVeilNow, sub: "Rebasing staking balance." },
+              { label: "Projected vVEIL", value: stakeModel.projectedVVeil, sub: "At current dynamic APY." },
+              { label: "gVEIL Wrapped", value: stakeModel.gVeilWrapped, sub: "Non-rebasing governance wrapper units." },
+              { label: "Epoch Rebase", value: `${stakeModel.epochRebasePct}%`, sub: `Target APY ${stakeModel.apyPct}%.` },
+            ].map((card) => (
+              <div key={card.label} className="rounded-[14px] border border-white/[0.04] bg-white/[0.02] px-4 py-3">
+                <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.14em] text-white/35">{card.label}</p>
+                <p className="mt-1.5 font-[var(--font-space-grotesk)] text-base text-white/85">{card.value}</p>
+                <p className="mt-0.5 font-[var(--font-figtree)] text-[10px] text-white/30">{card.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-[14px] border border-white/[0.04] bg-white/[0.02] px-4 py-3 font-[var(--font-figtree)] text-sm text-white/60">{stakePreview}</div>
+          <p className="font-[var(--font-figtree)] text-[11px] text-white/30">Model: VEIL-native rebase. vVEIL rebases each epoch; gVEIL stays non-rebasing via index wrapper.</p>
+          <p className="font-[var(--font-figtree)] text-[11px] text-white/30">
+            Dynamic APY is algorithmically controlled from liquidity target gap
+            {liquidityDepth ? ` (current gap ${liquidityDepth.gap.pct.toFixed(2)}%).` : "."}
+          </p>
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-5">
+        <div>
+          <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">Bond Asset</p>
+          <LuxSelect value={bondAsset} onChange={(v) => setBondAsset(v as BondAsset)} options={["wVEIL-VAI LP", "VEIL-USDC LP", "AVAX-VAI LP"]} />
+        </div>
+        <div>
+          <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">Amount</p>
+          <LuxInput value={bondAmount} onChange={setBondAmount} placeholder="0.00" />
+        </div>
+        <div>
+          <p className="mb-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.16em] text-white/40">Vesting (days)</p>
+          <LuxInput value={bondVestDays} onChange={setBondVestDays} placeholder="7" />
+        </div>
+        <div className="rounded-[14px] border border-white/[0.04] bg-white/[0.02] px-4 py-3 font-[var(--font-figtree)] text-sm text-white/60">{bondPreview}</div>
+      </div>
+    )
+  }
+
+  /* ═══ RENDER ═══ */
+  return (
+    <>
+      <FilmGrain />
+
+      {/* ─── Fixed Nav ─── */}
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-0 right-0 left-0 z-50 border-b border-white/[0.04] bg-[#060606]/80 backdrop-blur-2xl"
       >
-        <div className="flex items-center justify-between px-6 py-3">
-          {/* Left: Title */}
-          <motion.h1
-            className="text-2xl font-bold cursor-default tracking-wide"
-            style={{
-              color: "rgba(255, 255, 255, 0.25)",
-              textShadow: `
-                0 0 10px rgba(16, 185, 129, 0.3),
-                0 0 20px rgba(16, 185, 129, 0.2),
-                0 0 30px rgba(16, 185, 129, 0.1)
-              `,
-              WebkitTextStroke: "1px rgba(255, 255, 255, 0.1)",
-              filter: "blur(0.5px)",
-            }}
-            whileHover={{
-              color: "rgba(255, 255, 255, 0.5)",
-              textShadow: `
-                0 0 20px rgba(16, 185, 129, 0.8),
-                0 0 40px rgba(16, 185, 129, 0.6),
-                0 0 60px rgba(16, 185, 129, 0.4)
-              `,
-              filter: "blur(0.3px) brightness(1.5)",
-            }}
-          >
-            VEILfi
-          </motion.h1>
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)]" />
+            <span className="font-[var(--font-instrument-serif)] text-lg tracking-tight text-white/90">VEIL</span>
+            <span className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.2em] text-white/25">DeFi Console</span>
+          </div>
+          <div className="flex items-center gap-1">
+            {[
+              { label: "Markets", href: "/app/markets" },
+              { label: "Ecosystem", href: "/app/ecosystem" },
+              { label: "MAIEV", href: "/maiev" },
+            ].map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="rounded-full px-4 py-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.14em] text-white/45 transition-colors hover:bg-white/[0.04] hover:text-emerald-400"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </motion.nav>
 
-          {/* Center: Clickable Logo */}
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2">
-            <motion.div className="scale-90 cursor-pointer" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <TriangleLogo />
-            </motion.div>
-          </Link>
+      <main className="min-h-screen bg-[#060606] pt-16 text-white">
+        {/* Ambient glow */}
+        <div className="pointer-events-none fixed top-0 left-1/2 h-[600px] w-[800px] -translate-x-1/2 rounded-full bg-emerald-500/[0.03] blur-[160px]" />
 
-          {/* Right: KPIs and Activity Feed */}
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-6">
-              {[
-                {
-                  label: "POL TVL",
-                  value: `$${(animatedPolTvl / 1000000).toFixed(2)}M`,
-                  tooltip: "Protocol-Owned Liquidity Total Value Locked",
-                  section: "pol-section",
-                },
-                {
-                  label: "Weekly Buyback",
-                  value: `${(animatedBuyback / 1000).toFixed(0)}K VEIL`,
-                  tooltip: "VEIL purchased this week via buyback-and-make",
-                  section: "pol-section",
-                },
-                {
-                  label: "MSRB Depth",
-                  value: `$${(animatedMsrb / 1000000).toFixed(2)}M`,
-                  tooltip: "Market Stability Reserve Bank total capital",
-                  section: "msrb-section",
-                },
-                {
-                  label: "7d Fees",
-                  value: `$${(animatedFees / 1000).toFixed(0)}K`,
-                  tooltip: "Protocol fees collected in the last 7 days",
-                  section: "pol-section",
-                },
-                {
-                  label: "SLA",
-                  value: `${kpis.sla}%`,
-                  tooltip: "Service Level Agreement: % of windows cleared on time",
-                  section: "system-status",
-                },
-              ].map((kpi, i) => (
-                <motion.button
-                  key={i}
-                  onClick={() => scrollToSection(kpi.section)}
-                  className="flex items-center gap-2 cursor-pointer group"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
+        <div className="mx-auto w-full max-w-7xl px-6 py-12">
+
+          {/* ─── Hero Header ─── */}
+          <ScrollReveal>
+            <header className="mb-16 text-center">
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="mb-4 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.3em] text-emerald-500/60"
+              >
+                Protocol Console
+              </motion.p>
+              <h1 className="font-[var(--font-instrument-serif)] text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.05] tracking-tight text-white/95">
+                Swap, Stake, Bond
+              </h1>
+              <p className="mx-auto mt-4 max-w-xl font-[var(--font-figtree)] text-sm leading-relaxed text-white/35">
+                Traditional DeFi console with VEIL-native vVEIL rebasing and gVEIL governance wrapping.
+              </p>
+            </header>
+          </ScrollReveal>
+
+          {/* ─── Testnet Banner ─── */}
+          {showTestnetBanner && (
+            <ScrollReveal>
+              <div className="mb-10 rounded-[16px] border border-amber-500/20 bg-amber-500/[0.04] px-5 py-3.5 text-center font-[var(--font-figtree)] text-sm text-amber-200/70">
+                Testnet mode active. Financial outcomes are non-production and should not be treated as live market performance.
+              </div>
+            </ScrollReveal>
+          )}
+
+          {/* ─── 01 · Summary Cards ─── */}
+          <ScrollReveal>
+            <SectionLabel number="01" title="Overview" sub="Protocol health at a glance" />
+            <div className="mb-16 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+              {summaryCards.map((card, i) => (
+                <motion.div
+                  key={card.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * i, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  <div>
-                    <div
-                      className="text-xs mb-0.5 flex items-center gap-1"
-                      style={{ color: "rgba(255, 255, 255, 0.5)" }}
-                    >
-                      {kpi.label}
-                      <InfoTooltip content={kpi.tooltip} />
-                    </div>
-                    <div
-                      className="font-mono text-sm font-bold group-hover:text-shadow-glow transition-all"
-                      style={{ color: "rgba(16, 185, 129, 0.9)" }}
-                    >
-                      {kpi.value}
-                    </div>
-                  </div>
-                </motion.button>
+                  <Card className="p-5">
+                    <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.16em] text-white/30">{card.label}</p>
+                    <p className="mt-3 font-[var(--font-space-grotesk)] text-2xl font-light tracking-tight text-white/90">{card.value}</p>
+                    <p className="mt-1 font-[var(--font-figtree)] text-[11px] text-white/25">{card.helper}</p>
+                  </Card>
+                </motion.div>
               ))}
             </div>
+          </ScrollReveal>
 
-            <div className="relative">
-              <motion.button
-                onClick={() => {
-                  setShowActivityFeed(!showActivityFeed)
-                  setHasNewActivity(false)
-                }}
-                className="relative p-2 rounded-lg backdrop-blur-xl"
-                style={{
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                }}
-                whileHover={{
-                  background: "rgba(16, 185, 129, 0.1)",
-                  borderColor: "rgba(16, 185, 129, 0.3)",
-                  scale: 1.05,
-                }}
-              >
-                <Bell className="w-4 h-4" style={{ color: "rgba(255, 255, 255, 0.7)" }} />
-                {hasNewActivity && (
-                  <motion.div
-                    className="absolute top-1 right-1 w-2 h-2 rounded-full"
-                    style={{ background: "rgba(16, 185, 129, 0.9)" }}
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                  />
-                )}
-              </motion.button>
-
-              <AnimatePresence>
-                {showActivityFeed && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 w-80 rounded-xl backdrop-blur-xl shadow-2xl overflow-hidden"
-                    style={{
-                      background: "rgba(0, 0, 0, 0.95)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
-                    }}
-                  >
-                    <div className="p-3 border-b" style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}>
-                      <h3 className="text-sm font-semibold" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                        Recent Activity
-                      </h3>
-                    </div>
-                    <div className="max-h-96 overflow-y-auto">
-                      {recentActivity.map((activity, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.05 }}
-                          className="p-3 border-b hover:bg-white/5 transition-colors"
-                          style={{ borderColor: "rgba(255, 255, 255, 0.05)" }}
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <span
-                                  className="px-2 py-0.5 rounded text-xs font-medium"
-                                  style={{
-                                    background:
-                                      activity.type === "stake"
-                                        ? "rgba(16, 185, 129, 0.15)"
-                                        : activity.type === "claim"
-                                          ? "rgba(59, 130, 246, 0.15)"
-                                          : activity.type === "swap"
-                                            ? "rgba(168, 85, 247, 0.15)"
-                                            : activity.type === "lock"
-                                              ? "rgba(251, 191, 36, 0.15)"
-                                              : "rgba(239, 68, 68, 0.15)",
-                                    color:
-                                      activity.type === "stake"
-                                        ? "rgba(16, 185, 129, 0.9)"
-                                        : activity.type === "claim"
-                                          ? "rgba(59, 130, 246, 0.9)"
-                                          : activity.type === "swap"
-                                            ? "rgba(168, 85, 247, 0.9)"
-                                            : activity.type === "lock"
-                                              ? "rgba(251, 191, 36, 0.9)"
-                                              : "rgba(239, 68, 68, 0.9)",
-                                  }}
-                                >
-                                  {activity.type.toUpperCase()}
-                                </span>
-                                <span className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                                  {activity.timestamp}
-                                </span>
-                              </div>
-                              <div className="text-sm" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                                {activity.type === "stake" &&
-                                  `Staked ${activity.amount.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} VEIL`}
-                                {activity.type === "claim" && `Claimed ${activity.amount} VEIL from ${activity.source}`}
-                                {activity.type === "swap" &&
-                                  `Swapped ${activity.amount} ${activity.from} → ${activity.to}`}
-                                {activity.type === "lock" &&
-                                  `Locked ${activity.amount.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} VEIL for ${activity.duration}`}
-                                {activity.type === "vote" && `Voted on "${activity.proposal}"`}
-                              </div>
-                              <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(activity.txHash)
-                                  showToast("Transaction hash copied", "success")
-                                }}
-                                className="flex items-center gap-1 text-xs hover:text-emerald-400 transition-colors"
-                                style={{ color: "rgba(255, 255, 255, 0.5)" }}
-                              >
-                                <span className="font-mono">{activity.txHash}</span>
-                                <Copy className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
-
-        {/* Contextual CTA Bar */}
-        <div
-          className="px-6 py-2 border-t"
-          style={{ borderColor: "rgba(255, 255, 255, 0.1)", background: "rgba(16, 185, 129, 0.03)" }}
-        >
-          <div className="flex items-center justify-between">
-            <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-              {!walletConnected && "Connect your wallet to start earning"}
-              {walletConnected &&
-                claimableRewards > 0 &&
-                `You have ${claimableRewards.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} VEIL ready to claim`}
-              {walletConnected &&
-                claimableRewards === 0 &&
-                stakedBalance === 0 &&
-                "Start staking or locking VEIL to earn rewards"}
-              {walletConnected &&
-                claimableRewards === 0 &&
-                stakedBalance > 0 &&
-                "Your positions are active and earning rewards"}
-            </div>
-            <div className="flex items-center gap-2">
-              {!walletConnected && (
-                <motion.button
-                  onClick={() => setWalletConnected(true)}
-                  className="rounded-lg px-6 py-2 text-sm font-semibold backdrop-blur-xl"
-                  style={{
-                    background: "rgba(16, 185, 129, 0.15)",
-                    border: "1px solid rgba(16, 185, 129, 0.3)",
-                    color: "rgba(255, 255, 255, 0.95)",
-                  }}
-                  whileHover={{
-                    scale: 1.05,
-                    background: "rgba(16, 185, 129, 0.25)",
-                    boxShadow: "0 0 20px rgba(16, 185, 129, 0.4)",
-                  }}
-                >
-                  Connect Wallet
-                </motion.button>
-              )}
-              {walletConnected && claimableRewards > 0 && (
-                <motion.button
-                  onClick={handleClaim}
-                  disabled={isClaiming}
-                  className="rounded-lg px-6 py-2 text-sm font-semibold backdrop-blur-xl"
-                  style={{
-                    background: "rgba(16, 185, 129, 0.15)",
-                    border: "1px solid rgba(16, 185, 129, 0.3)",
-                    color: "rgba(255, 255, 255, 0.95)",
-                    opacity: isClaiming ? 0.6 : 1,
-                  }}
-                  whileHover={{
-                    scale: isClaiming ? 1 : 1.05,
-                    background: "rgba(16, 185, 129, 0.25)",
-                    boxShadow: "0 0 20px rgba(16, 185, 129, 0.4)",
-                  }}
-                >
-                  {isClaiming ? "Claiming..." : "Claim All Rewards"}
-                </motion.button>
-              )}
-              {walletConnected && claimableRewards === 0 && stakedBalance === 0 && (
-                <>
-                  <motion.button
-                    onClick={() => setActiveStakeLockTab("stake")}
-                    className="rounded-lg px-4 py-2 text-sm font-medium backdrop-blur-xl"
-                    style={{
-                      background: "rgba(16, 185, 129, 0.1)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
-                      color: "rgba(255, 255, 255, 0.9)",
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    Stake VEIL
-                  </motion.button>
-                  <motion.button
-                    onClick={() => setActiveStakeLockTab("lock")}
-                    className="rounded-lg px-4 py-2 text-sm font-medium backdrop-blur-xl"
-                    style={{
-                      background: "rgba(16, 185, 129, 0.1)",
-                      border: "1px solid rgba(16, 185, 129, 0.2)",
-                      color: "rgba(255, 255, 255, 0.9)",
-                    }}
-                    whileHover={{ scale: 1.05 }}
-                  >
-                    Lock for veVEIL
-                  </motion.button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Dopamine-generating balance hero display */}
-      <div className="px-6 pt-4">
-        <BalanceHero
-          balance={tokenBalances.wVEIL + stakedBalance + lockedBalance}
-          usdValue={(tokenBalances.wVEIL + stakedBalance + lockedBalance) * 0.42}
-          change24h={8.5}
-          stakedBalance={stakedBalance}
-          lockedBalance={lockedBalance}
-          lockMonths={lockMonths}
-          rewardGain={lastRewardGain}
-        />
-      </div>
-
-      <div className="h-[calc(100vh-180px)] overflow-y-auto px-6 py-4 scrollbar-thin scrollbar-thumb-emerald-500/20 scrollbar-track-transparent">
-        <div className="grid grid-cols-3 gap-4">
-          {/* Column 1: ACT (Stake/Lock/Swap) */}
-          <div className="col-span-1 space-y-4">
-            <motion.div
-              className="rounded-xl p-4 backdrop-blur-xl"
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-              }}
-              whileHover={{
-                borderColor: "rgba(16, 185, 129, 0.3)",
-                boxShadow: "0 0 20px rgba(16, 185, 129, 0.1)",
-              }}
-            >
-              {/* Shared Balance Header */}
-              <div className="mb-4 pb-3 border-b" style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}>
-                <div className="flex items-center justify-between mb-1">
-                  <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                    VEIL Balance
-                  </div>
-                  <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                    Staked:{" "}
-                    {stakedBalance.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })} |
-                    Locked:{" "}
-                    {lockedBalance.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
-                  </div>
-                </div>
-                <div className="font-mono text-xl font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                  {tokenBalances.wVEIL.toLocaleString(undefined, {
-                    minimumFractionDigits: 4,
-                    maximumFractionDigits: 4,
-                  })}
-                </div>
-              </div>
-
-              {/* Tabs */}
-              <div className="flex gap-1 mb-4 rounded-lg p-1" style={{ background: "rgba(255, 255, 255, 0.05)" }}>
-                <button
-                  onClick={() => setActiveStakeLockTab("stake")}
-                  className="flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-                  style={{
-                    background: activeStakeLockTab === "stake" ? "rgba(16, 185, 129, 0.15)" : "transparent",
-                    color: activeStakeLockTab === "stake" ? "rgba(16, 185, 129, 0.9)" : "rgba(255, 255, 255, 0.6)",
-                    border: `1px solid ${activeStakeLockTab === "stake" ? "rgba(16, 185, 129, 0.3)" : "transparent"}`,
-                  }}
-                >
-                  Stake
-                </button>
-                <button
-                  onClick={() => setActiveStakeLockTab("lock")}
-                  className="flex-1 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-                  style={{
-                    background: activeStakeLockTab === "lock" ? "rgba(16, 185, 129, 0.15)" : "transparent",
-                    color: activeStakeLockTab === "lock" ? "rgba(16, 185, 129, 0.9)" : "rgba(255, 255, 255, 0.6)",
-                    border: `1px solid ${activeStakeLockTab === "lock" ? "rgba(16, 185, 129, 0.3)" : "transparent"}`,
-                  }}
-                >
-                  Lock
-                </button>
-              </div>
-
-              {/* Stake Tab Content */}
-              {activeStakeLockTab === "stake" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
-                  <div className="mb-3 flex items-center gap-2">
-                    <p className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                      Base APR: 12.5%
-                    </p>
-                    <InfoTooltip content="Annual Percentage Rate from staking rewards. Actual APR may vary based on total staked amount and protocol performance. Rewards update every epoch (24 hours)." />
-                  </div>
-
-                  <div className="mb-2">
-                    <input
-                      type="text"
-                      value={stakeAmount}
-                      onChange={(e) => setStakeAmount(e.target.value)}
-                      placeholder="0.00"
-                      disabled={isStaking}
-                      className="w-full rounded-lg bg-transparent px-3 py-2 text-sm font-mono outline-none"
-                      style={{
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                        color: "rgba(255, 255, 255, 0.9)",
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex gap-1 mb-3">
-                    {[25, 50, 75, 100].map((percent) => (
-                      <button
-                        key={percent}
-                        onClick={() => setAmountPreset(percent, false)}
-                        disabled={isStaking}
-                        className="flex-1 rounded px-2 py-1 text-xs font-medium"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.05)",
-                          border: "1px solid rgba(255, 255, 255, 0.1)",
-                          color: "rgba(255, 255, 255, 0.6)",
-                        }}
-                      >
-                        {percent}%
-                      </button>
-                    ))}
-                  </div>
-
-                  {estimatedStakeRewards && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="rounded-lg p-2 mb-3"
-                      style={{
-                        background: "rgba(16, 185, 129, 0.05)",
-                        border: "1px solid rgba(16, 185, 129, 0.2)",
-                      }}
+          {/* ─── 02 · Action Console + Sidebar ─── */}
+          <ScrollReveal>
+            <SectionLabel number="02" title="Console" sub="Execute protocol operations" />
+          </ScrollReveal>
+          <div className="mb-16 grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
+            <ScrollReveal>
+              <Card className="p-6" glow>
+                {/* Tab bar */}
+                <div className="mb-5 flex gap-2">
+                  {TABS.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`rounded-full px-5 py-2.5 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.14em] transition-all ${
+                        activeTab === tab.id
+                          ? "border border-emerald-500/25 bg-emerald-500/10 text-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.08)]"
+                          : "border border-white/[0.04] text-white/40 hover:border-white/[0.08] hover:text-white/60"
+                      }`}
                     >
-                      <div className="text-xs mb-1" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                        Estimated Rewards
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-xs">
-                        <div>
-                          <div style={{ color: "rgba(255, 255, 255, 0.4)" }}>Daily</div>
-                          <div className="font-mono font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {estimatedStakeRewards.daily.toFixed(2)}
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ color: "rgba(255, 255, 255, 0.4)" }}>Weekly</div>
-                          <div className="font-mono font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {estimatedStakeRewards.weekly.toFixed(0)}
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ color: "rgba(255, 255, 255, 0.4)" }}>Yearly</div>
-                          <div className="font-mono font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {estimatedStakeRewards.yearly.toFixed(0)}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  <motion.button
-                    onClick={handleStake}
-                    disabled={isStaking}
-                    className="w-full rounded-lg px-4 py-2 text-sm font-medium backdrop-blur-xl"
-                    style={{
-                      background: "rgba(16, 185, 129, 0.08)",
-                      border: "1px solid rgba(16, 185, 129, 0.15)",
-                      color: "rgba(255, 255, 255, 0.9)",
-                      opacity: isStaking ? 0.6 : 1,
-                    }}
-                    whileHover={{
-                      scale: isStaking ? 1 : 1.02,
-                      background: "rgba(16, 185, 129, 0.15)",
-                      borderColor: "rgba(16, 185, 129, 0.3)",
-                      boxShadow: "0 0 15px rgba(16, 185, 129, 0.3)",
-                    }}
-                  >
-                    {isStaking ? "Staking..." : "Stake"}
-                  </motion.button>
-
-                  {stakedBalance > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="mt-3 pt-3 border-t"
-                      style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
-                    >
-                      <div className="text-xs mb-2" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                        Your Staked Position
-                      </div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <div className="font-mono text-lg font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {stakedBalance.toLocaleString(undefined, {
-                              minimumFractionDigits: 4,
-                              maximumFractionDigits: 4,
-                            })}
-                          </div>
-                          <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                            ≈ $
-                            {(stakedBalance * 0.42).toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}{" "}
-                            USD
-                          </div>
-                        </div>
-                        <motion.button
-                          className="rounded px-3 py-1 text-xs font-medium"
-                          style={{
-                            background: "rgba(239, 68, 68, 0.1)",
-                            border: "1px solid rgba(239, 68, 68, 0.3)",
-                            color: "rgba(239, 68, 68, 0.9)",
-                          }}
-                          whileHover={{ scale: 1.05 }}
-                        >
-                          Unstake
-                        </motion.button>
-                      </div>
-                      <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                        No cooldown period • Unstake anytime
-                      </div>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
-
-              {/* Lock Tab Content */}
-              {activeStakeLockTab === "lock" && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}>
-                  <div className="mb-2">
-                    <input
-                      type="text"
-                      value={lockAmount}
-                      onChange={(e) => setLockAmount(e.target.value)}
-                      placeholder="0.00"
-                      disabled={isLocking}
-                      className="w-full rounded-lg border bg-transparent px-3 py-2 text-sm font-mono outline-none"
-                      style={{
-                        borderColor: "rgba(255, 255, 255, 0.1)",
-                        color: "rgba(255, 255, 255, 0.9)",
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex gap-1 mb-3">
-                    {[25, 50, 75, 100].map((percent) => (
-                      <button
-                        key={percent}
-                        onClick={() => setAmountPreset(percent, true)}
-                        disabled={isLocking}
-                        className="flex-1 rounded px-2 py-1 text-xs font-medium"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.05)",
-                          border: "1px solid rgba(255, 255, 255, 0.1)",
-                          color: "rgba(255, 255, 255, 0.6)",
-                        }}
-                      >
-                        {percent}%
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="mb-2">
-                    <div className="text-xs mb-1" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                      Lock Duration: {lockMonths} months
-                    </div>
-                    <div className="flex gap-1 mb-2">
-                      {[3, 6, 12, 24, 48].map((months) => (
-                        <button
-                          key={months}
-                          onClick={() => setLockDurationPreset(months)}
-                          disabled={isLocking}
-                          className="flex-1 rounded px-2 py-1 text-xs font-medium"
-                          style={{
-                            background:
-                              lockMonths === months ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)",
-                            border: `1px solid ${lockMonths === months ? "rgba(16, 185, 129, 0.3)" : "rgba(255, 255, 255, 0.1)"}`,
-                            color: lockMonths === months ? "rgba(16, 185, 129, 0.9)" : "rgba(255, 255, 255, 0.6)",
-                          }}
-                        >
-                          {months}mo
-                        </button>
-                      ))}
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="48"
-                      value={lockMonths}
-                      onChange={(e) => setLockMonths(Number(e.target.value))}
-                      disabled={isLocking}
-                      className="w-full"
-                      style={{ accentColor: "rgba(16, 185, 129, 0.8)" }}
-                    />
-                  </div>
-
-                  <div
-                    className="mb-3 rounded-lg border p-2"
-                    style={{ background: "rgba(16, 185, 129, 0.05)", borderColor: "rgba(16, 185, 129, 0.2)" }}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1">
-                        <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                          vePower
-                        </div>
-                        <InfoTooltip content="Vote-escrowed power: Your governance voting weight. Longer locks = more power. Max 100% at 48 months. Non-transferable." />
-                      </div>
-                      <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                        Unlocks: {formatDate(calculateUnlockDate(lockMonths))}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="font-mono text-xl font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                        {vePower}%
-                      </div>
-                      <div className="flex-1">
-                        <div
-                          className="h-2 rounded-full overflow-hidden"
-                          style={{ background: "rgba(255, 255, 255, 0.1)" }}
-                        >
-                          <motion.div
-                            className="h-full rounded-full"
-                            initial={{ width: 0 }}
-                            animate={{ width: `${vePower}%` }}
-                            style={{ background: "rgba(16, 185, 129, 0.8)" }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {estimatedLockRewards && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="rounded-lg p-2 mb-3"
-                      style={{
-                        background: "rgba(16, 185, 129, 0.05)",
-                        border: "1px solid rgba(16, 185, 129, 0.2)",
-                      }}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                          Estimated Rewards (with lock bonus)
-                        </div>
-                        <div className="text-xs font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                          APR: {(12.5 + (lockMonths / 48) * 8).toFixed(1)}%
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-xs">
-                        <div>
-                          <div style={{ color: "rgba(255, 255, 255, 0.4)" }}>Daily</div>
-                          <div className="font-mono font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {estimatedLockRewards.daily.toFixed(2)}
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ color: "rgba(255, 255, 255, 0.4)" }}>Weekly</div>
-                          <div className="font-mono font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {estimatedLockRewards.weekly.toFixed(0)}
-                          </div>
-                        </div>
-                        <div>
-                          <div style={{ color: "rgba(255, 255, 255, 0.4)" }}>Yearly</div>
-                          <div className="font-mono font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {estimatedLockRewards.yearly.toFixed(0)}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  <motion.button
-                    onClick={handleLock}
-                    disabled={isLocking}
-                    className="w-full rounded-lg border px-4 py-2 text-sm font-medium"
-                    style={{
-                      background: "rgba(16, 185, 129, 0.1)",
-                      borderColor: "rgba(16, 185, 129, 0.3)",
-                      color: "rgba(255, 255, 255, 0.9)",
-                      opacity: isLocking ? 0.6 : 1,
-                    }}
-                    whileHover={{ scale: isLocking ? 1 : 1.02 }}
-                  >
-                    {isLocking ? "Locking..." : "Lock"}
-                  </motion.button>
-
-                  {lockedBalance > 0 && lockEndDate && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="mt-3 pt-3 border-t"
-                      style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
-                    >
-                      <div className="text-xs mb-2" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                        Your Locked Position
-                      </div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div>
-                          <div className="font-mono text-lg font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {lockedBalance.toLocaleString()}
-                          </div>
-                          <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                            ≈ $
-                            {(lockedBalance * 0.42).toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })}{" "}
-                            USD
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                            Unlocks
-                          </div>
-                          <div className="text-xs font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                            {formatDate(lockEndDate)}
-                          </div>
-                        </div>
-                      </div>
-                      <div
-                        className="rounded p-2 text-xs"
-                        style={{ background: "rgba(251, 191, 36, 0.1)", border: "1px solid rgba(251, 191, 36, 0.3)" }}
-                      >
-                        <div className="font-medium mb-1" style={{ color: "rgba(251, 191, 36, 0.9)" }}>
-                          Early Withdrawal Penalty
-                        </div>
-                        <div style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                          Unlocking before {formatDate(lockEndDate)} incurs a 50% penalty. Penalty decreases linearly
-                          over time.
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </motion.div>
-              )}
-            </motion.div>
-
-            {/* Swap Card */}
-            <motion.div
-              className="rounded-xl p-4 backdrop-blur-xl"
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                border: "1px solid rgba(255, 255, 255, 0.1)",
-              }}
-              whileHover={{
-                borderColor: "rgba(16, 185, 129, 0.3)",
-                boxShadow: "0 0 20px rgba(16, 185, 129, 0.1)",
-              }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-1">
-                  <h3
-                    className="text-sm font-bold"
-                    style={{
-                      color: "rgba(255, 255, 255, 0.25)",
-                      textShadow: "0 0 10px rgba(16, 185, 129, 0.15)",
-                    }}
-                  >
-                    Swap
-                  </h3>
-                  <InfoTooltip content="Trade tokens using protocol-owned liquidity. Swaps are executed against POL pools with minimal slippage." />
-                </div>
-                <motion.button
-                  onClick={() => setShowSlippage(!showSlippage)}
-                  className="p-1 rounded-lg"
-                  style={{
-                    background: showSlippage ? "rgba(16, 185, 129, 0.1)" : "transparent",
-                    border: `1px solid ${showSlippage ? "rgba(16, 185, 129, 0.3)" : "rgba(255, 255, 255, 0.1)"}`,
-                  }}
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <Settings className="h-3.5 w-3.5" style={{ color: "rgba(255, 255, 255, 0.6)" }} />
-                </motion.button>
-              </div>
-
-              <div className="relative mb-3">
-                <select
-                  value={selectedPair}
-                  onChange={(e) => {
-                    setSelectedPair(e.target.value as SwapPair)
-                    setSwapFromAmount("")
-                    setSwapToAmount("")
-                  }}
-                  disabled={isSwapping}
-                  className="w-full rounded-lg bg-transparent px-3 py-2.5 text-sm font-semibold outline-none appearance-none cursor-pointer"
-                  style={{
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                    color: "rgba(255, 255, 255, 0.95)",
-                    background: "rgba(255, 255, 255, 0.05)",
-                  }}
-                >
-                  <option value="wVEIL/USDC" style={{ background: "#0A0A0A" }}>
-                    wVEIL → USDC
-                  </option>
-                  <option value="USDC/wVEIL" style={{ background: "#0A0A0A" }}>
-                    USDC → wVEIL
-                  </option>
-                  <option value="wVEIL/wAVAX" style={{ background: "#0A0A0A" }}>
-                    wVEIL → wAVAX
-                  </option>
-                  <option value="wAVAX/wVEIL" style={{ background: "#0A0A0A" }}>
-                    wAVAX → wVEIL
-                  </option>
-                  <option value="wAVAX/USDC" style={{ background: "#0A0A0A" }}>
-                    wAVAX → USDC
-                  </option>
-                  <option value="USDC/wAVAX" style={{ background: "#0A0A0A" }}>
-                    USDC → wAVAX
-                  </option>
-                </select>
-                <ChevronDown
-                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none"
-                  style={{ color: "rgba(255, 255, 255, 0.5)" }}
-                />
-              </div>
-
-              {/* Liquidity & Volume Stats */}
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                <div
-                  className="rounded-lg p-2"
-                  style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-                >
-                  <div className="text-xs mb-0.5" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                    Liquidity
-                  </div>
-                  <div className="font-mono text-xs font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                    ${(getPairData(selectedPair).liquidity / 1000000).toFixed(2)}M
-                  </div>
-                </div>
-                <div
-                  className="rounded-lg p-2"
-                  style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-                >
-                  <div className="text-xs mb-0.5" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                    24h Volume
-                  </div>
-                  <div className="font-mono text-xs font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                    ${(getPairData(selectedPair).volume24h / 1000).toFixed(0)}K
-                  </div>
-                </div>
-                <div
-                  className="rounded-lg p-2"
-                  style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-                >
-                  <div className="text-xs mb-0.5" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                    24h Change
-                  </div>
-                  <div
-                    className="font-mono text-xs font-bold"
-                    style={{
-                      color:
-                        getPairData(selectedPair).priceChange24h > 0
-                          ? "rgba(16, 185, 129, 0.9)"
-                          : "rgba(239, 68, 68, 0.9)",
-                    }}
-                  >
-                    {getPairData(selectedPair).priceChange24h > 0 ? "+" : ""}
-                    {getPairData(selectedPair).priceChange24h.toFixed(1)}%
-                  </div>
-                </div>
-              </div>
-
-              {/* Mini Price Chart */}
-              <div
-                className="rounded-lg p-3 mb-4"
-                style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-              >
-                <div className="h-16">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={getPairData(selectedPair).priceHistory}>
-                      <Line
-                        type="monotone"
-                        dataKey="price"
-                        stroke="rgba(16, 185, 129, 0.8)"
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              {/* Slippage Settings */}
-              <AnimatePresence>
-                {showSlippage && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="mb-3 overflow-hidden"
-                  >
-                    <div
-                      className="rounded-lg p-2"
-                      style={{ background: "rgba(255, 255, 255, 0.05)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-                    >
-                      <div className="flex items-center gap-1 mb-2">
-                        <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                          Slippage Tolerance: {slippage}%
-                        </div>
-                        <InfoTooltip content="Maximum price movement you'll accept. Higher slippage = more likely to execute but worse price. Lower = better price but may fail." />
-                      </div>
-                      <div className="flex gap-1">
-                        {[0.1, 0.5, 1.0].map((value) => (
-                          <button
-                            key={value}
-                            onClick={() => setSlippage(value)}
-                            className="flex-1 rounded px-2 py-1 text-xs"
-                            style={{
-                              background: slippage === value ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)",
-                              border: `1px solid ${slippage === value ? "rgba(16, 185, 129, 0.3)" : "rgba(255, 255, 255, 0.1)"}`,
-                              color: slippage === value ? "rgba(16, 185, 129, 0.9)" : "rgba(255, 255, 255, 0.6)",
-                            }}
-                          >
-                            {value}%
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <div
-                className="rounded-lg p-3 mb-2"
-                style={{
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: `1.5px solid ${tokenColors[getPairTokens(selectedPair)[0]]}40`,
-                }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                    From
-                  </span>
-                  <span className="text-xs font-mono" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                    Balance:{" "}
-                    {tokenBalances[getPairTokens(selectedPair)[0]].toLocaleString(undefined, {
-                      minimumFractionDigits: 4,
-                      maximumFractionDigits: 4,
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="text"
-                    value={swapFromAmount}
-                    onChange={(e) => handleSwapAmountChange(e.target.value, true)}
-                    placeholder="0.00"
-                    disabled={isSwapping}
-                    className="flex-1 bg-transparent text-xl font-mono font-bold outline-none"
-                    style={{ color: "rgba(255, 255, 255, 0.95)" }}
-                  />
-                  <div
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.05)",
-                      border: `1px solid ${tokenColors[getPairTokens(selectedPair)[0]]}60`,
-                    }}
-                  >
-                    {tokenIcons[getPairTokens(selectedPair)[0]]}
-                    <span className="text-sm font-bold" style={{ color: tokenColors[getPairTokens(selectedPair)[0]] }}>
-                      {getPairTokens(selectedPair)[0]}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Swap Direction Icon */}
-              <div className="flex justify-center -my-1 relative z-10">
-                <motion.button
-                  onClick={handleSwapDirection}
-                  disabled={isSwapping}
-                  className="rounded-full p-2 cursor-pointer"
-                  style={{
-                    background: "rgba(255, 255, 255, 0.08)",
-                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                  }}
-                  whileHover={{ rotate: 180, scale: 1.15 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ArrowDownUp className="h-4 w-4" style={{ color: "rgba(16, 185, 129, 0.9)" }} />
-                </motion.button>
-              </div>
-
-              <div
-                className="rounded-lg p-3 mb-3"
-                style={{
-                  background: "rgba(255, 255, 255, 0.05)",
-                  border: `1.5px solid ${tokenColors[getPairTokens(selectedPair)[1]]}40`,
-                }}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                    To
-                  </span>
-                  <span className="text-xs font-mono" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                    Balance:{" "}
-                    {tokenBalances[getPairTokens(selectedPair)[1]].toLocaleString(undefined, {
-                      minimumFractionDigits: 4,
-                      maximumFractionDigits: 4,
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="text"
-                    value={swapToAmount}
-                    onChange={(e) => handleSwapAmountChange(e.target.value, false)}
-                    placeholder="0.00"
-                    disabled={isSwapping}
-                    className="flex-1 bg-transparent text-xl font-mono font-bold outline-none"
-                    style={{ color: "rgba(255, 255, 255, 0.95)" }}
-                  />
-                  <div
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                    style={{
-                      background: "rgba(255, 255, 255, 0.05)",
-                      border: `1px solid ${tokenColors[getPairTokens(selectedPair)[1]]}60`,
-                    }}
-                  >
-                    {tokenIcons[getPairTokens(selectedPair)[1]]}
-                    <span className="text-sm font-bold" style={{ color: tokenColors[getPairTokens(selectedPair)[1]] }}>
-                      {getPairTokens(selectedPair)[1]}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {swapFromAmount && (
-                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-2 mb-3">
-                  <div
-                    className="rounded-lg p-2"
-                    style={{ background: "rgba(255, 255, 255, 0.03)", border: "1px solid rgba(255, 255, 255, 0.1)" }}
-                  >
-                    <div className="flex justify-between items-center">
-                      <span className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                        Exchange Rate
-                      </span>
-                      <span className="font-mono text-xs font-medium" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                        1 {getPairTokens(selectedPair)[0]} = {getSwapPrice(selectedPair).toFixed(6)}{" "}
-                        {getPairTokens(selectedPair)[1]}
-                      </span>
-                    </div>
-                  </div>
-
-                  {priceImpact > 0 && (
-                    <div
-                      className="rounded-lg p-2"
-                      style={{
-                        background:
-                          priceImpact > 5
-                            ? "rgba(239, 68, 68, 0.1)"
-                            : priceImpact > 1
-                              ? "rgba(251, 191, 36, 0.1)"
-                              : "rgba(255, 255, 255, 0.03)",
-                        border: `1px solid ${priceImpact > 5 ? "rgba(239, 68, 68, 0.3)" : priceImpact > 1 ? "rgba(251, 191, 36, 0.3)" : "rgba(255, 255, 255, 0.1)"}`,
-                      }}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-1">
-                          <span className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                            Price Impact
-                          </span>
-                          <InfoTooltip content="How much your trade will move the market price. Large impacts mean you'll get a worse rate." />
-                        </div>
-                        <span
-                          className="font-mono text-xs font-bold"
-                          style={{
-                            color:
-                              priceImpact > 5
-                                ? "rgba(239, 68, 68, 0.9)"
-                                : priceImpact > 1
-                                  ? "rgba(251, 191, 36, 0.9)"
-                                  : "rgba(16, 185, 129, 0.9)",
-                          }}
-                        >
-                          {priceImpact.toFixed(2)}%
-                        </span>
-                      </div>
-                      {priceImpact > 5 && (
-                        <div className="mt-1 text-xs" style={{ color: "rgba(239, 68, 68, 0.8)" }}>
-                          High price impact! Consider reducing swap amount.
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </motion.div>
-              )}
-
-              {/* Swap Button */}
-              <motion.button
-                onClick={handleSwap}
-                disabled={isSwapping || priceImpact > 10}
-                className="w-full rounded-lg px-4 py-3 text-sm font-semibold backdrop-blur-xl"
-                style={{
-                  background: priceImpact > 10 ? "rgba(239, 68, 68, 0.12)" : "rgba(16, 185, 129, 0.12)",
-                  border: `1px solid ${priceImpact > 10 ? "rgba(239, 68, 68, 0.25)" : "rgba(16, 185, 129, 0.25)"}`,
-                  color: "rgba(255, 255, 255, 0.95)",
-                  opacity: isSwapping || priceImpact > 10 ? 0.6 : 1,
-                }}
-                whileHover={{
-                  scale: isSwapping || priceImpact > 10 ? 1 : 1.02,
-                  background: priceImpact > 10 ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)",
-                  borderColor: priceImpact > 10 ? "rgba(239, 68, 68, 0.4)" : "rgba(16, 185, 129, 0.4)",
-                  boxShadow: priceImpact > 10 ? "0 0 20px rgba(239, 68, 68, 0.3)" : "0 0 20px rgba(16, 185, 129, 0.3)",
-                }}
-              >
-                {isSwapping ? "Swapping..." : priceImpact > 10 ? "Price Impact Too High" : "Swap Tokens"}
-              </motion.button>
-
-              <div className="mt-3 pt-3 border-t" style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}>
-                <div className="text-xs font-medium mb-2" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                  Recent Swaps
-                </div>
-                <div className="space-y-2">
-                  {[
-                    { from: "1,250", fromToken: "wVEIL", to: "525", toToken: "USDC", time: "2m ago" },
-                    { from: "850", fromToken: "wVEIL", to: "10.2", toToken: "wAVAX", time: "15m ago" },
-                  ].map((swap, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between text-xs rounded-lg p-2"
-                      style={{ background: "rgba(255, 255, 255, 0.03)" }}
-                    >
-                      <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>{swap.time}</span>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          <span className="font-mono font-medium" style={{ color: tokenColors[swap.fromToken] }}>
-                            {swap.from}
-                          </span>
-                          <span className="text-xs" style={{ color: tokenColors[swap.fromToken] }}>
-                            {swap.fromToken}
-                          </span>
-                        </div>
-                        <ArrowDownUp className="h-3 w-3" style={{ color: "rgba(255, 255, 255, 0.3)" }} />
-                        <div className="flex items-center gap-1">
-                          <span className="font-mono font-medium" style={{ color: tokenColors[swap.toToken] }}>
-                            {swap.to}
-                          </span>
-                          <span className="text-xs" style={{ color: tokenColors[swap.toToken] }}>
-                            {swap.toToken}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                      {tab.label}
+                    </button>
                   ))}
                 </div>
-              </div>
-            </motion.div>
 
-            {/* Risk Status */}
-            <motion.div
-              className="rounded-xl border p-4 backdrop-blur-xl"
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                borderColor: "rgba(255, 255, 255, 0.1)",
-              }}
-            >
-              <div className="flex items-center gap-1 mb-3">
-                <h3 className="text-sm font-bold" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                  System Status
-                </h3>
-                <InfoTooltip content="Real-time health of critical infrastructure nodes. All systems must be operational for trading." />
-              </div>
-              <div className="space-y-2">
-                {[
-                  {
-                    label: "Encryption",
-                    status: "green",
-                    tooltip: "TEE-based order encryption nodes securing trade data",
-                  },
-                  {
-                    label: "Oracle",
-                    status: "green",
-                    tooltip: "Attestors signing outcome results after dispute windows",
-                  },
-                  {
-                    label: "Keeper",
-                    status: "green",
-                    tooltip: "Operators balancing one-sided windows within VaR limits",
-                  },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <motion.div
-                      className="h-2 w-2 rounded-full"
-                      style={{ background: "rgba(16, 185, 129, 0.8)" }}
-                      animate={{
-                        boxShadow: [
-                          "0 0 5px rgba(16, 185, 129, 0.5)",
-                          "0 0 10px rgba(16, 185, 129, 0.7)",
-                          "0 0 5px rgba(16, 185, 129, 0.5)",
-                        ],
-                      }}
-                      transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
-                    />
-                    <span className="text-xs flex-1" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                      {item.label}
-                    </span>
-                    <InfoTooltip content={item.tooltip} side="left" />
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+                <p className="mb-5 font-[var(--font-figtree)] text-sm text-white/35">{TABS.find((t) => t.id === activeTab)?.helper}</p>
 
-          {/* Column 2: UNDERSTAND (POL, MSRB, Governance) */}
-          <div className="col-span-1 space-y-4">
-            {/* POL Section */}
-            <div id="pol-section" className="rounded-xl border p-4 backdrop-blur-xl space-y-3">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                  Chain-Owned Liquidity
-                </h3>
-                <InfoTooltip content="Protocol-owned liquidity ensures permanent market depth and stability" />
-              </div>
-              <div className="h-32 mb-3">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={polTvlData}>
-                    <defs>
-                      <linearGradient id="polGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(16, 185, 129, 0.3)" />
-                        <stop offset="100%" stopColor="rgba(16, 185, 129, 0.0)" />
-                      </linearGradient>
-                    </defs>
-                    <YAxis hide />
-                    <Tooltip
-                      contentStyle={{
-                        background: "rgba(0, 0, 0, 0.9)",
-                        border: "1px solid rgba(16, 185, 129, 0.3)",
-                        borderRadius: "8px",
-                        fontSize: "12px",
-                      }}
-                      formatter={(value: number) => [`$${(value / 1000000).toFixed(2)}M`, "POL TVL"]}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="value"
-                      stroke="rgba(16, 185, 129, 0.8)"
-                      strokeWidth={2}
-                      fill="url(#polGradient)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex items-center gap-1 text-xs" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                Recent Buybacks
-                <InfoTooltip content="Automated weekly purchases of VEIL using protocol revenue. Tokens are paired and added to POL forever." />
-              </div>
-              <div className="space-y-1 mt-2">
-                {buybackLogs.slice(0, 2).map((log, i) => (
-                  <div key={i} className="flex justify-between text-xs">
-                    <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>{log.date}</span>
-                    <span className="font-mono" style={{ color: "rgba(16, 185, 129, 0.8)" }}>
-                      {(log.wveil / 1000).toFixed(0)}K @ ${log.vwap}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* MSRB Section */}
-            <div id="msrb-section" className="rounded-xl border p-4 backdrop-blur-xl space-y-3">
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm font-medium" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                  MSRB Depth Bank
-                </h3>
-                <InfoTooltip content="Market Stability Reserve Bank provides capital to stabilize prices across market tiers" />
-              </div>
-              <div className="space-y-3">
-                {msrbTiers.map((tier, i) => (
-                  <div key={i}>
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-medium" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
-                          {tier.tier}
-                        </span>
-                        <InfoTooltip
-                          content={`${tier.tier} markets: ${tier.activeMarkets} active markets with ${tier.spreadBps}bps spread. Next capital top-up in ${tier.nextTopup}.`}
-                        />
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono" style={{ color: "rgba(16, 185, 129, 0.8)" }}>
-                          ${(tier.targetB / 1000).toFixed(0)}K
-                        </span>
-                        <span className="text-xs font-mono" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                          {tier.utilization}%
-                        </span>
-                      </div>
-                    </div>
-                    <div
-                      className="h-2 rounded-full overflow-hidden relative"
-                      style={{ background: "rgba(255, 255, 255, 0.1)" }}
-                    >
-                      <motion.div
-                        className="h-full rounded-full relative"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${tier.utilization}%` }}
-                        style={{
-                          background:
-                            tier.utilization > 80
-                              ? "linear-gradient(90deg, rgba(251, 191, 36, 0.6) 0%, rgba(239, 68, 68, 0.6) 100%)"
-                              : tier.utilization > 60
-                                ? "linear-gradient(90deg, rgba(16, 185, 129, 0.6) 0%, rgba(251, 191, 36, 0.6) 100%)"
-                                : "rgba(16, 185, 129, 0.6)",
-                        }}
-                      >
-                        {/* Threshold markers */}
-                        <div
-                          className="absolute top-0 bottom-0 w-px"
-                          style={{ left: "60%", background: "rgba(255, 255, 255, 0.3)" }}
-                        />
-                        <div
-                          className="absolute top-0 bottom-0 w-px"
-                          style={{ left: "80%", background: "rgba(255, 255, 255, 0.3)" }}
-                        />
-                      </motion.div>
-                    </div>
-                    <div className="flex justify-between text-xs mt-1" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                      <span>{tier.activeMarkets} markets</span>
-                      <span>{tier.spreadBps}bps spread</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <motion.div
-              className="rounded-xl border p-4 backdrop-blur-xl"
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                borderColor: "rgba(255, 255, 255, 0.1)",
-              }}
-            >
-              <div className="flex items-center gap-1 mb-3">
-                <h3 className="text-sm font-bold" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                  APR Trends
-                </h3>
-                <InfoTooltip content="Historical APR rates for staking and veVEIL. Rates adjust based on protocol performance and total staked amount." />
-              </div>
-              <div className="h-32 mb-2">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={aprHistoryData}>
-                    <defs>
-                      <linearGradient id="stakingGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(16, 185, 129, 0.3)" />
-                        <stop offset="100%" stopColor="rgba(16, 185, 129, 0.0)" />
-                      </linearGradient>
-                      <linearGradient id="veveilGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="rgba(59, 130, 246, 0.3)" />
-                        <stop offset="100%" stopColor="rgba(59, 130, 246, 0.0)" />
-                      </linearGradient>
-                    </defs>
-                    <YAxis hide domain={[10, 22]} />
-                    <Tooltip
-                      contentStyle={{
-                        background: "rgba(0, 0, 0, 0.9)",
-                        border: "1px solid rgba(16, 185, 129, 0.3)",
-                        borderRadius: "8px",
-                        fontSize: "12px",
-                      }}
-                      formatter={(value: number, name: string) => [
-                        `${value.toFixed(1)}%`,
-                        name === "staking" ? "Staking APR" : "veVEIL APR",
-                      ]}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="staking"
-                      stroke="rgba(16, 185, 129, 0.8)"
-                      strokeWidth={2}
-                      fill="url(#stakingGradient)"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="veveil"
-                      stroke="rgba(59, 130, 246, 0.8)"
-                      strokeWidth={2}
-                      fill="url(#veveilGradient)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="flex items-center justify-center gap-4 text-xs">
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-1 rounded" style={{ background: "rgba(16, 185, 129, 0.8)" }} />
-                  <span style={{ color: "rgba(255, 255, 255, 0.6)" }}>Staking</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <div className="w-3 h-1 rounded" style={{ background: "rgba(59, 130, 246, 0.8)" }} />
-                  <span style={{ color: "rgba(255, 255, 255, 0.6)" }}>veVEIL</span>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Governance */}
-            <motion.div
-              className="rounded-xl border p-4 backdrop-blur-xl"
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                borderColor: "rgba(255, 255, 255, 0.1)",
-              }}
-            >
-              <div className="flex items-center gap-1 mb-3">
-                <h3 className="text-sm font-bold" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                  Active Proposals
-                </h3>
-                <InfoTooltip content="veVEIL holders vote on protocol parameters. Commit-reveal voting prevents manipulation. Quorum required to pass." />
-              </div>
-              <div className="space-y-3">
-                {proposals.slice(0, 2).map((proposal) => (
-                  <div
-                    key={proposal.id}
-                    className="rounded-lg border p-3"
-                    style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, x: 12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -12 }}
+                    transition={{ duration: 0.25 }}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="text-xs font-medium" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                        {proposal.title}
-                      </div>
-                      <span
-                        className="text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: "rgba(16, 185, 129, 0.1)", color: "rgba(16, 185, 129, 0.9)" }}
-                      >
-                        {proposal.scope}
-                      </span>
-                    </div>
-                    <div
-                      className="h-1.5 rounded-full overflow-hidden mb-2"
-                      style={{ background: "rgba(255, 255, 255, 0.1)" }}
-                    >
-                      <div className="flex h-full">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(proposal.forVotes / proposal.quorum) * 100}%` }}
-                          style={{ background: "rgba(16, 185, 129, 0.8)" }}
-                        />
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${(proposal.againstVotes / proposal.quorum) * 100}%` }}
-                          style={{ background: "rgba(239, 68, 68, 0.8)" }}
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>Ends: {proposal.endTs}</span>
-                      <span className="font-mono" style={{ color: "rgba(16, 185, 129, 0.7)" }}>
-                        {((proposal.forVotes / proposal.quorum) * 100).toFixed(0)}% For
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+                    {renderActionPanel()}
+                  </motion.div>
+                </AnimatePresence>
 
-          {/* Column 3: GET PAID (Rewards & Claims) */}
-          <div className="col-span-1">
-            <motion.div
-              className="rounded-xl border p-4 backdrop-blur-xl h-full overflow-auto"
-              style={{
-                background: "rgba(255, 255, 255, 0.03)",
-                borderColor: "rgba(255, 255, 255, 0.1)",
-              }}
-            >
-              <div className="flex items-center gap-1 mb-3">
-                <h3 className="text-sm font-bold" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                  Rewards & Claims
-                </h3>
-                <InfoTooltip content="Earn rewards from staking, veVEIL governance, and LP provision. Rewards accrue continuously and can be claimed anytime." />
-              </div>
-
-              {/* Tabs */}
-              <div className="flex gap-1 mb-4 rounded-lg p-1" style={{ background: "rgba(255, 255, 255, 0.05)" }}>
-                {(["staking", "veveil", "lp"] as const).map((tab) => (
+                <div className="mt-6 flex flex-wrap gap-3">
                   <button
-                    key={tab}
-                    onClick={() => setActiveRewardsTab(tab)}
-                    className="flex-1 rounded-md px-2 py-1 text-xs font-medium transition-all"
-                    style={{
-                      background: activeRewardsTab === tab ? "rgba(16, 185, 129, 0.15)" : "transparent",
-                      color: activeRewardsTab === tab ? "rgba(16, 185, 129, 0.9)" : "rgba(255, 255, 255, 0.6)",
-                      borderColor: activeRewardsTab === tab ? "rgba(16, 185, 129, 0.3)" : "transparent",
-                    }}
+                    onClick={executeAction}
+                    className="group relative overflow-hidden rounded-[14px] border border-emerald-500/25 bg-emerald-500/10 px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400 transition-all hover:bg-emerald-500/15 hover:shadow-[0_0_30px_rgba(16,185,129,0.12)]"
                   >
-                    {tab === "staking" ? "Staking" : tab === "veveil" ? "veVEIL" : "LP"}
+                    <span className="relative z-10">Execute {activeTab}</span>
                   </button>
-                ))}
-              </div>
-
-              <div className="space-y-3">
-                {/* Total Claimable */}
-                <div
-                  className="rounded-lg border p-3"
-                  style={{ background: "rgba(16, 185, 129, 0.05)", borderColor: "rgba(16, 185, 129, 0.2)" }}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-1">
-                      <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                        Total Claimable
-                      </div>
-                      <InfoTooltip content="Total rewards ready to claim across all sources. Claiming is gas-efficient and batched." />
-                    </div>
-                    <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                      Next update: {formatTimeRemaining(nextRewardUpdate)}
-                    </div>
-                  </div>
-                  <div className="font-mono text-2xl font-bold mb-1" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                    {claimableRewards.toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}
-                  </div>
-                  <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                    ≈ $
-                    {(claimableRewards * 0.42).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    USD
-                  </div>
+                  <button
+                    onClick={() => setToast("Preview refreshed.")}
+                    className="rounded-[14px] border border-white/[0.06] px-5 py-3 font-[var(--font-figtree)] text-sm text-white/40 transition-colors hover:border-white/[0.1] hover:text-white/60"
+                  >
+                    Refresh Preview
+                  </button>
                 </div>
+              </Card>
+            </ScrollReveal>
 
-                {/* Claim All Button */}
-                <motion.button
-                  onClick={handleClaim}
-                  disabled={isClaiming || claimableRewards === 0}
-                  className="w-full rounded-lg border px-4 py-2.5 text-sm font-semibold"
-                  style={{
-                    background: "rgba(16, 185, 129, 0.15)",
-                    borderColor: "rgba(16, 185, 129, 0.3)",
-                    color: "rgba(255, 255, 255, 0.95)",
-                    opacity: isClaiming || claimableRewards === 0 ? 0.6 : 1,
-                  }}
-                  whileHover={{
-                    scale: isClaiming || claimableRewards === 0 ? 1 : 1.02,
-                    boxShadow: "0 0 20px rgba(16, 185, 129, 0.3)",
-                  }}
-                >
-                  {isClaiming ? "Claiming..." : "Claim All Rewards"}
-                </motion.button>
-
-                {/* Individual Source Breakdown */}
-                <div className="pt-3 border-t" style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}>
-                  <div className="text-xs mb-2 font-medium" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                    By Source
+            {/* ─── Sidebar ─── */}
+            <div className="space-y-5">
+              {/* Wallet */}
+              <ScrollReveal delay={0.1}>
+                <Card className="p-5">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="font-[var(--font-space-grotesk)] text-sm font-medium text-white/80">Wallet</h3>
+                    {walletAddress ? (
+                      <span className="rounded-full border border-emerald-500/20 bg-emerald-500/8 px-2.5 py-1 font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.1em] text-emerald-400">Connected</span>
+                    ) : (
+                      <span className="rounded-full border border-white/[0.06] px-2.5 py-1 font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.1em] text-white/30">Not connected</span>
+                    )}
                   </div>
-                  <div className="space-y-2">
-                    {(["staking", "veveil", "lp"] as const).map((source) => (
-                      <div
-                        key={source}
-                        className="rounded-lg p-2"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.03)",
-                          border: "1px solid rgba(255, 255, 255, 0.1)",
-                        }}
-                      >
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="text-xs font-medium capitalize"
-                              style={{ color: "rgba(255, 255, 255, 0.7)" }}
-                            >
-                              {source === "veveil" ? "veVEIL" : source === "lp" ? "LP" : "Staking"}
-                            </span>
-                            {pendingRewards[source] > 0 && (
-                              <span
-                                className="text-xs px-1.5 py-0.5 rounded"
-                                style={{ background: "rgba(251, 191, 36, 0.15)", color: "rgba(251, 191, 36, 0.9)" }}
-                              >
-                                +{pendingRewards[source]} pending
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-right">
-                            <div className="font-mono text-sm font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                              {rewardsBySource[source].toLocaleString(undefined, {
-                                minimumFractionDigits: 4,
-                                maximumFractionDigits: 4,
-                              })}
-                            </div>
-                            <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                              ${(rewardsBySource[source] * 0.42).toFixed(2)}
-                            </div>
-                          </div>
-                        </div>
-                        <motion.button
-                          onClick={() => handleClaimSource(source)}
-                          disabled={isClaiming || rewardsBySource[source] === 0}
-                          className="w-full rounded px-2 py-1 text-xs font-medium mt-1"
-                          style={{
-                            background: "rgba(16, 185, 129, 0.08)",
-                            border: "1px solid rgba(16, 185, 129, 0.2)",
-                            color: "rgba(255, 255, 255, 0.8)",
-                            opacity: isClaiming || rewardsBySource[source] === 0 ? 0.5 : 1,
-                          }}
-                          whileHover={{
-                            scale: isClaiming || rewardsBySource[source] === 0 ? 1 : 1.02,
-                            background: "rgba(16, 185, 129, 0.12)",
-                          }}
-                        >
-                          {isClaiming ? "Claiming..." : "Claim"}
-                        </motion.button>
+                  {walletAddress ? (
+                    <p className="mb-4 font-mono text-xs text-white/50">{shortAddress(walletAddress)}</p>
+                  ) : (
+                    <button
+                      onClick={connectWallet}
+                      disabled={isWalletConnecting}
+                      className="mb-4 w-full rounded-[14px] border border-emerald-500/20 bg-emerald-500/8 px-4 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400 transition-all hover:bg-emerald-500/12 disabled:opacity-50"
+                    >
+                      {isWalletConnecting ? "Connecting..." : "Connect Wallet"}
+                    </button>
+                  )}
+                  {walletError && <p className="mb-3 font-[var(--font-figtree)] text-xs text-amber-300/80">{walletError}</p>}
+                  <div className="space-y-1.5">
+                    {positions.map((p) => (
+                      <div key={p.token} className="flex items-center justify-between rounded-[12px] border border-white/[0.03] bg-white/[0.015] px-4 py-2.5">
+                        <span className="font-[var(--font-space-grotesk)] text-[11px] uppercase tracking-[0.12em] text-white/35">{p.token}</span>
+                        <span className="font-[var(--font-space-grotesk)] text-sm text-white/75">{p.amount}</span>
                       </div>
                     ))}
                   </div>
-                </div>
+                  <p className="mt-3 font-[var(--font-figtree)] text-[10px] text-white/20">Balances shown are wallet-snapshot placeholders in testnet mode.</p>
+                </Card>
+              </ScrollReveal>
 
-                {/* Reward History with Filters */}
-                <div className="pt-3 border-t" style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                      Claim History
-                    </div>
-                    <select
-                      value={historyFilter}
-                      onChange={(e) => setHistoryFilter(e.target.value as typeof historyFilter)}
-                      className="text-xs rounded px-2 py-1 bg-transparent outline-none cursor-pointer"
-                      style={{
-                        border: "1px solid rgba(255, 255, 255, 0.1)",
-                        color: "rgba(255, 255, 255, 0.7)",
-                      }}
-                    >
-                      <option value="all" style={{ background: "#0A0A0A" }}>
-                        All
-                      </option>
-                      <option value="staking" style={{ background: "#0A0A0A" }}>
-                        Staking
-                      </option>
-                      <option value="veveil" style={{ background: "#0A0A0A" }}>
-                        veVEIL
-                      </option>
-                      <option value="lp" style={{ background: "#0A0A0A" }}>
-                        LP
-                      </option>
-                    </select>
+              {/* Launch Checklist */}
+              <ScrollReveal delay={0.15}>
+                <Card className="p-5">
+                  <h3 className="mb-4 font-[var(--font-space-grotesk)] text-sm font-medium text-white/80">Launch Checklist</h3>
+                  <div className="space-y-1.5">
+                    {CHECKLIST.map((check) => (
+                      <div key={check.id} className="flex items-center justify-between rounded-[12px] border border-white/[0.03] bg-white/[0.015] px-4 py-2.5">
+                        <span className="font-[var(--font-figtree)] text-xs text-white/50">{check.label}</span>
+                        <span className={`rounded-full border px-2 py-0.5 font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.1em] ${statusTone(readinessRows[check.id])}`}>
+                          {statusText(readinessRows[check.id])}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="space-y-2 max-h-48 overflow-auto">
-                    {rewardHistory
-                      .filter((claim) => historyFilter === "all" || claim.source === historyFilter)
-                      .map((claim, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between text-xs rounded-lg p-2"
-                          style={{ background: "rgba(255, 255, 255, 0.03)" }}
-                        >
-                          <div>
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>{claim.date}</span>
-                              <span
-                                className="px-1.5 py-0.5 rounded text-xs capitalize"
-                                style={{
-                                  background: "rgba(16, 185, 129, 0.1)",
-                                  color: "rgba(16, 185, 129, 0.8)",
-                                }}
-                              >
-                                {claim.source === "veveil" ? "veVEIL" : claim.source === "lp" ? "LP" : claim.source}
-                              </span>
-                            </div>
-                            <div className="font-mono text-xs" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                              {claim.tx}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-mono text-sm font-bold" style={{ color: "rgba(16, 185, 129, 0.8)" }}>
-                              {claim.amount.toLocaleString(undefined, {
-                                minimumFractionDigits: 4,
-                                maximumFractionDigits: 4,
-                              })}
-                            </div>
-                            <div style={{ color: "rgba(255, 255, 255, 0.4)" }}>
-                              $
-                              {claim.usd.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
-                              })}
-                            </div>
-                          </div>
+                </Card>
+              </ScrollReveal>
+
+              {/* Emission Controller */}
+              <ScrollReveal delay={0.2}>
+                <Card className="p-5">
+                  <h3 className="mb-4 font-[var(--font-space-grotesk)] text-sm font-medium text-white/80">vVEIL Emission Controller</h3>
+                  {isLiquidityLoading || !liquidityDepth ? (
+                    <p className="font-[var(--font-figtree)] text-xs text-white/30">Loading liquidity controller snapshot...</p>
+                  ) : (
+                    <div className="space-y-1.5">
+                      {[
+                        { label: "Target Reserve (VAI)", value: liquidityDepth.target.targetReserveVai.toFixed(2) },
+                        { label: "Observed Reserve (VAI)", value: liquidityDepth.observed.reserveVai.toFixed(2) },
+                        { label: "Target Gap", value: `${liquidityDepth.gap.pct.toFixed(2)}%` },
+                      ].map((row) => (
+                        <div key={row.label} className="rounded-[12px] border border-white/[0.03] bg-white/[0.015] px-4 py-3">
+                          <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.14em] text-white/30">{row.label}</p>
+                          <p className="mt-1 font-[var(--font-space-grotesk)] text-sm text-white/75">{row.value}</p>
                         </div>
                       ))}
-                  </div>
-                </div>
-
-                {/* APR Breakdown */}
-                <div className="pt-3 border-t" style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}>
-                  <div className="flex items-center gap-1 mb-2">
-                    <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                      APR Breakdown
-                    </div>
-                    <InfoTooltip content="Your total Annual Percentage Rate from all sources. Base rate + bonuses from operator roles and veVEIL boosts." />
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <div className="flex items-center gap-1">
-                        <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>Base</span>
-                        <InfoTooltip content="Standard staking rewards from protocol emissions" side="right" />
+                      <div className="rounded-[12px] border border-emerald-500/15 bg-emerald-500/[0.04] px-4 py-3">
+                        <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.14em] text-emerald-400/70">Recommended APY</p>
+                        <p className="mt-1 font-[var(--font-space-grotesk)] text-sm text-emerald-300">{liquidityDepth.policy.recommendedApyPct.toFixed(2)}%</p>
+                        <p className="mt-0.5 font-[var(--font-figtree)] text-[10px] text-emerald-300/40">Epoch rebase {liquidityDepth.policy.recommendedEpochRebasePct.toFixed(4)}%</p>
                       </div>
-                      <span className="font-mono" style={{ color: "rgba(16, 185, 129, 0.8)" }}>
-                        12.5%
-                      </span>
                     </div>
-                    <div className="flex justify-between text-xs">
-                      <div className="flex items-center gap-1">
-                        <span style={{ color: "rgba(255, 255, 255, 0.5)" }}>Operator Bonus</span>
-                        <InfoTooltip
-                          content="Additional rewards for running infrastructure nodes (encryption, oracle, keeper)"
-                          side="right"
-                        />
-                      </div>
-                      <span className="font-mono" style={{ color: "rgba(16, 185, 129, 0.8)" }}>
-                        +8.2%
-                      </span>
-                    </div>
-                    <div
-                      className="flex justify-between text-xs font-medium pt-1 border-t"
-                      style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}
-                    >
-                      <span style={{ color: "rgba(255, 255, 255, 0.7)" }}>Total APR</span>
-                      <span className="font-mono" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                        20.7%
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                  )}
+                  <p className="mt-3 font-[var(--font-figtree)] text-[10px] text-white/20">Formula: gap-aware APY with floor/cap and growth bias to push liquidity expansion.</p>
+                </Card>
+              </ScrollReveal>
 
-                {/* Estimated Future Rewards */}
-                <div className="pt-3 border-t" style={{ borderColor: "rgba(255, 255, 255, 0.1)" }}>
-                  <div className="flex items-center gap-1 mb-2">
-                    <div className="text-xs" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
-                      Projected Earnings
-                    </div>
-                    <InfoTooltip content="Estimated future rewards based on your current stake and APR. Actual rewards may vary." />
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    {[
-                      { period: "7 days", amount: 1250 },
-                      { period: "30 days", amount: 5350 },
-                      { period: "1 year", amount: 65200 },
-                    ].map((projection, i) => (
-                      <div
-                        key={i}
-                        className="rounded-lg p-2 text-center"
-                        style={{
-                          background: "rgba(255, 255, 255, 0.03)",
-                          border: "1px solid rgba(255, 255, 255, 0.1)",
-                        }}
-                      >
-                        <div className="text-xs mb-1" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
-                          {projection.period}
-                        </div>
-                        <div className="font-mono text-sm font-bold" style={{ color: "rgba(16, 185, 129, 0.9)" }}>
-                          {projection.amount.toLocaleString(undefined, {
-                            minimumFractionDigits: 4,
-                            maximumFractionDigits: 4,
-                          })}
-                        </div>
+              {/* Token Roles */}
+              <ScrollReveal delay={0.25}>
+                <Card className="p-5">
+                  <h3 className="mb-4 font-[var(--font-space-grotesk)] text-sm font-medium text-white/80">Token Roles</h3>
+                  <div className="space-y-1.5">
+                    {TOKEN_ROLES.map((row) => (
+                      <div key={row.token} className="rounded-[12px] border border-white/[0.03] bg-white/[0.015] px-4 py-3">
+                        <p className="font-[var(--font-space-grotesk)] text-[11px] uppercase tracking-[0.12em] text-emerald-400/60">{row.token}</p>
+                        <p className="mt-1 font-[var(--font-figtree)] text-xs leading-relaxed text-white/45">{row.role}</p>
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
-            </motion.div>
+                </Card>
+              </ScrollReveal>
+            </div>
           </div>
+
+          {/* ─── 03 · Ecosystem Mechanics ─── */}
+          <ScrollReveal>
+            <SectionLabel number="03" title="Ecosystem Mechanics" sub="How value moves through VEIL" />
+            <Card className="mb-16 p-6">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {ECOSYSTEM_FLOW.map((item, i) => (
+                  <ScrollReveal key={item.step} delay={0.05 * i}>
+                    <div className="rounded-[14px] border border-white/[0.03] bg-white/[0.015] p-4">
+                      <p className="font-[var(--font-space-grotesk)] text-[11px] uppercase tracking-[0.12em] text-emerald-400/60">{item.step}</p>
+                      <p className="mt-2 font-[var(--font-figtree)] text-xs leading-relaxed text-white/45">{item.detail}</p>
+                    </div>
+                  </ScrollReveal>
+                ))}
+              </div>
+            </Card>
+          </ScrollReveal>
+
+          {/* ─── 04 · Pools ─── */}
+          <ScrollReveal>
+            <SectionLabel number="04" title="Pools" sub="Traditional DeFi table" />
+            <Card className="mb-16 overflow-hidden p-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-separate border-spacing-y-1.5">
+                  <thead>
+                    <tr>
+                      {["Pair", "Status", "Mode", "Action"].map((h) => (
+                        <th key={h} className="px-4 py-2 text-left font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.16em] text-white/25">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {POOLS.map((pool) => (
+                      <tr key={pool.pair}>
+                        <td className="rounded-l-[12px] border border-r-0 border-white/[0.03] bg-white/[0.015] px-4 py-3 font-[var(--font-space-grotesk)] text-sm text-white/75">{pool.pair}</td>
+                        <td className="border-y border-white/[0.03] bg-white/[0.015] px-4 py-3 font-[var(--font-figtree)] text-sm text-white/50">{pool.status}</td>
+                        <td className="border-y border-white/[0.03] bg-white/[0.015] px-4 py-3 font-[var(--font-figtree)] text-sm text-white/50">{pool.mode}</td>
+                        <td className="rounded-r-[12px] border border-l-0 border-white/[0.03] bg-white/[0.015] px-4 py-3">
+                          <button className="rounded-[10px] border border-emerald-500/15 bg-emerald-500/[0.06] px-4 py-2 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.1em] text-emerald-400 transition-all hover:bg-emerald-500/10">
+                            Manage
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </ScrollReveal>
         </div>
-      </div>
-    </div>
+
+        {/* ─── Fixed Footer ─── */}
+        <footer className="fixed right-0 bottom-0 left-0 z-50 border-t border-white/[0.04] bg-[#060606]/80 backdrop-blur-2xl">
+          <div className="mx-auto flex h-12 max-w-7xl items-center justify-between px-6">
+            <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.2em] text-white/20">VEIL Protocol © 2026</p>
+            <div className="flex items-center gap-3">
+              <div className={`h-1.5 w-1.5 rounded-full ${status ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-white/20"}`} />
+              <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.2em] text-white/20">
+                {isStatusLoading ? "Connecting" : status ? "Systems Nominal" : "Offline"}
+              </p>
+            </div>
+          </div>
+        </footer>
+
+        {/* ─── Toast ─── */}
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.95 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="fixed right-6 bottom-20 z-[60] rounded-[16px] border border-emerald-500/20 bg-[#0a0a0a]/95 px-5 py-3.5 font-[var(--font-figtree)] text-sm text-emerald-400 shadow-[0_8px_60px_rgba(16,185,129,0.15)] backdrop-blur-2xl"
+            >
+              {toast}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+    </>
   )
 }

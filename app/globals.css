@@ -164,7 +164,7 @@ section button, section a {
 
 /* Ghost all headings slightly more */
 section h2 {
-  filter: blur(0.3px);
+  filter: none;
 }
 
 /* Tame the hover:scale-105 — too jumpy, make it subtler */
@@ -246,8 +246,8 @@ section:hover .stealth-text {
 
 /* Launch App button — stealth pill */
 .veil-launch-btn {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(12px);
   transition: all 1.5s ease;
 }
@@ -274,7 +274,7 @@ section:hover .stealth-text {
   font-size: 11px;
   letter-spacing: 0.2em;
   font-family: var(--font-space-grotesk);
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255, 255, 255, 0.68);
   transition: all 1.5s ease;
 }
 .veil-launch-btn:hover .veil-launch-text {
@@ -301,11 +301,11 @@ section:hover .stealth-text {
 /* ── Adaptive text: shifts color against shader background ── */
 /* Applied to the main content z-10 layer on the landing page */
 .veil-adaptive-text {
-  mix-blend-mode: exclusion;
+  mix-blend-mode: normal;
 }
 /* Hero title gets difference for maximum contrast punch */
 .veil-adaptive-text--hero {
-  mix-blend-mode: difference;
+  mix-blend-mode: normal;
 }
 /* Ensure cards/bordered elements don't get washed out by blend */
 .veil-adaptive-text [class*="border"],
@@ -321,4 +321,30 @@ section:hover .stealth-text {
 }
 body > * {
   animation: page-enter 0.6s ease-out;
+}
+
+/* Landing readability pass while keeping stealth tone */
+.landing-readable .veil-readability-scrim {
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.2) 45%, rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.18) 30%, rgba(0, 0, 0, 0.34));
+}
+
+.landing-readable section h2,
+.landing-readable section h3,
+.landing-readable section h4 {
+  color: rgba(243, 249, 246, 0.78) !important;
+  filter: none !important;
+  text-shadow: 0 0 16px rgba(16, 185, 129, 0.2), 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+.landing-readable section p,
+.landing-readable section li,
+.landing-readable section cite {
+  color: rgba(232, 238, 235, 0.76) !important;
+  filter: none !important;
+}
+
+.landing-readable blockquote span {
+  filter: none !important;
 }

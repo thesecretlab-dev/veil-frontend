@@ -13,20 +13,26 @@ export default function MarketDetailPage({ params }: { params: Promise<{ id: str
   const [category, setCategory] = useState("all")
 
   return (
-    <div className="min-h-screen relative">
+    <div className="min-h-screen relative" style={{ background: "#060606" }}>
       <AppShaderBackground />
 
-      <div className="relative z-10 flex h-screen">
-        {/* Left Sidebar - Sport Categories */}
-        <MarketSidebar selectedCategory={category} onCategoryChange={setCategory} />
+      {/* Film grain */}
+      <div className="pointer-events-none fixed inset-0 z-50">
+        <svg className="h-full w-full opacity-[0.035]">
+          <filter id="grain-detail">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#grain-detail)" />
+        </svg>
+      </div>
 
-        {/* Main Content - Order Book & Market Info */}
+      <div className="relative z-10 flex h-screen">
+        <MarketSidebar selectedCategory={category} onCategoryChange={setCategory} />
         <div className="flex-1 overflow-y-auto">
           <MarketHeader marketId={id} />
           <MarketContent marketId={id} />
         </div>
-
-        {/* Right Panel - Trading Interface */}
         <TradingPanel marketId={id} />
       </div>
     </div>

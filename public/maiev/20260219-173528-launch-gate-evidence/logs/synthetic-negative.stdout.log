@@ -1,0 +1,3 @@
+Fee preflight: planned_txs=6 max_fee=5000000 safety_bps=13000 reserve=250000 required=39250000 balance=44033242
+Proof mode: synthetic
+Running batch size 8 (1 windows)

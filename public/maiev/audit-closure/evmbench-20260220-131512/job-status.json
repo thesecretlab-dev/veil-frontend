@@ -1,0 +1,13 @@
+﻿{
+    "job_id":  "df930943-0789-4a85-85f9-0e509fa78af2",
+    "status":  "failed",
+    "result":  null,
+    "error":  "Codex runner failed with code=1:\n",
+    "model":  "codex-gpt-5.2",
+    "file_name":  "contracts.zip",
+    "public":  false,
+    "created_at":  "2026-02-20T18:15:13.296997Z",
+    "started_at":  "2026-02-20T18:15:13.630090Z",
+    "finished_at":  "2026-02-20T18:15:16.156286Z",
+    "queue_position":  null
+}

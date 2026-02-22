@@ -29,7 +29,7 @@ export default function VeilPreloader({ onComplete }: { onComplete: () => void }
             transition={{ duration: 0.5 }}
           >
             <motion.path
-              d="M24 6 L42 40 L6 40 Z"
+              d="M24 42 L6 8 L42 8 Z"
               stroke="rgba(16, 185, 129, 0.6)"
               strokeWidth="1"
               fill="none"
@@ -38,7 +38,7 @@ export default function VeilPreloader({ onComplete }: { onComplete: () => void }
               transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             />
             <motion.path
-              d="M24 6 L42 40 L6 40 Z"
+              d="M24 42 L6 8 L42 8 Z"
               fill="rgba(16, 185, 129, 0.08)"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

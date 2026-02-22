@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-02-20T20:00:46.801Z",
+  "runDir": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\admin-rotation\\rotation-20260220-150046",
+  "execute": false,
+  "nextOwner": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+  "adminSigner": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+  "expectedTempAdmin": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+  "overallPass": true,
+  "contracts": [
+    {
+      "name": "VAI",
+      "address": "0x05e0c44ce9944E16730e49e724e01c730c1FF2Eb",
+      "ownerBefore": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+      "ownerAfter": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+      "action": "already-rotated",
+      "txHash": ""
+    },
+    {
+      "name": "VeilTreasury",
+      "address": "0x93789412A4b682D397f9B485c324BbaAabf8EED6",
+      "ownerBefore": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+      "ownerAfter": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+      "action": "already-rotated",
+      "txHash": ""
+    },
+    {
+      "name": "VeilKeep3r",
+      "address": "0xc093Cb259B2322fb709F7096eD5D1f25121eBbFc",
+      "ownerBefore": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+      "ownerAfter": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+      "action": "already-rotated",
+      "txHash": ""
+    }
+  ]
+}

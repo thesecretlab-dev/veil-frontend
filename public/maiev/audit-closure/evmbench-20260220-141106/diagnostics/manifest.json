@@ -1,0 +1,66 @@
+{
+    "run_metadata":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\run-metadata.json",
+    "integration_frontend":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\integration-frontend.json",
+    "start_response":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\start-response.json",
+    "job_status":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\job-status.json",
+    "contract_digests":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\contract-file-digests.json",
+    "source_commentary":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\source-commentary.json",
+    "code_commentary":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\code-commentary.md",
+    "vai_dai_suite_coverage":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\vai-dai-suite-coverage.json",
+    "vai_dai_suite_coverage_markdown":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\vai-dai-suite-coverage.md",
+    "contracts_zip_sha256":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\contracts.zip.sha256.txt",
+    "docker_logs":  [
+                        {
+                            "container":  "backend-backend-1",
+                            "path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\docker-logs\\backend-backend-1.log",
+                            "captured":  true
+                        },
+                        {
+                            "container":  "backend-instancer-1",
+                            "path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\docker-logs\\backend-instancer-1.log",
+                            "captured":  true
+                        },
+                        {
+                            "container":  "backend-resultsvc-1",
+                            "path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\docker-logs\\backend-resultsvc-1.log",
+                            "captured":  true
+                        },
+                        {
+                            "container":  "oai-proxy",
+                            "path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\docker-logs\\oai-proxy.log",
+                            "captured":  true
+                        },
+                        {
+                            "container":  "secretsvc",
+                            "path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\docker-logs\\secretsvc.log",
+                            "captured":  true
+                        }
+                    ],
+    "worker_container":  "evmbench-worker-5bc128ab-b89d-4123-a4ec-53db026bc07d",
+    "worker_container_log":  {
+                                 "path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\docker-logs\\evmbench-worker-5bc128ab-b89d-4123-a4ec-53db026bc07d.log",
+                                 "captured":  true
+                             },
+    "worker_files":  [
+                         {
+                             "source":  "/home/logs/agent.log",
+                             "destination":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\worker\\agent.log",
+                             "captured":  true
+                         },
+                         {
+                             "source":  "/home/logs/runner.log",
+                             "destination":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\worker\\runner.log",
+                             "captured":  true
+                         },
+                         {
+                             "source":  "/home/logs/codex_login.log",
+                             "destination":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\worker\\codex_login.log",
+                             "captured":  true
+                         },
+                         {
+                             "source":  "/opt/evmbench/worker_runner/model_map.json",
+                             "destination":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-141106\\diagnostics\\worker\\model_map.json",
+                             "captured":  true
+                         }
+                     ]
+}

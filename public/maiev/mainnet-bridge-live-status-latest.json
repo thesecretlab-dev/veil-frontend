@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-02-20T17:49:03.070Z",
+  "configPath": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\scripts\\mainnet-bridge.config.template.json",
+  "rpc": {
+    "url": "https://api.avax.network/ext/bc/C/rpc",
+    "chainId": 43114,
+    "expectedChainId": 43114,
+    "latestBlock": 78561920
+  },
+  "teleporter": {
+    "registry": {
+      "label": "teleporterRegistry",
+      "address": "0x7C43605E14F391720e1b37E49C78C4b03A488d98",
+      "hasCode": true,
+      "codeBytes": 2793
+    },
+    "messenger": {
+      "label": "teleporterMessenger",
+      "address": "0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf",
+      "hasCode": true,
+      "codeBytes": 13013
+    }
+  },
+  "chainlink": {
+    "maxStalenessSeconds": 3600,
+    "feeds": [
+      {
+        "feedName": "AVAX_USD",
+        "address": "0x0A77230d17318075983913bC2145DB16C7366156",
+        "description": "AVAX / USD",
+        "decimals": 8,
+        "answerRaw": "908297010",
+        "answerFormatted": "9.0829701",
+        "updatedAtUnix": 1771609635,
+        "updatedAtISO": "2026-02-20T17:47:15.000Z",
+        "ageSeconds": 107,
+        "stale": false
+      },
+      {
+        "feedName": "ETH_USD",
+        "address": "0x976B3D034E162d8bD72D6b9C989d545b839003b0",
+        "description": "ETH / USD",
+        "decimals": 8,
+        "answerRaw": "195618000000",
+        "answerFormatted": "1956.18",
+        "updatedAtUnix": 1771609680,
+        "updatedAtISO": "2026-02-20T17:48:00.000Z",
+        "ageSeconds": 62,
+        "stale": false
+      }
+    ]
+  },
+  "localBridge": {
+    "companionPath": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\scripts\\companion-evm.addresses.json",
+    "companionFound": true,
+    "teleporterRegistry": "0xa02273447368fB5dE67337D71C3584a9560c020B",
+    "teleporterMessenger": "0x253b2784c75e510dD0fF1da844684a1aC0aa5fcf",
+    "notesContainPlaceholder": false
+  },
+  "relayer": {
+    "provided": true,
+    "address": "0x7deFD0ea7934bFA6a3C2D638e6A6f215dE8FAd53",
+    "balanceAvax": "0.15",
+    "balanceWei": "150000000000000000",
+    "minimumRequiredAvax": "0.05",
+    "meetsMinimum": true
+  },
+  "overallPass": true,
+  "issues": []
+}
