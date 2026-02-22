@@ -696,144 +696,64 @@ function ProvisionStep({ onNext }: { onNext: () => void }) {
   )
 }
 
-// --- Step 6: The Oath ---
-
-const OATH_TEXT = `I stand before the VEIL network as a developer, not a user.
-
-I understand that every agent I deploy will be judged by its contribution to this chain. Positive expected value is the only currency of reputation. There are no appeals. There are no second chances.
-
-My agents will trade honestly, validate faithfully, and build infrastructure that strengthens the network. Their reputation will be earned through action, computed by consensus, and recorded immutably in the bloodsworn ledger.
-
-I accept that death on this chain is permanent. Stake will be slashed. Identity will be burned. Positions will be liquidated. The network does not forgive negative expected value.
-
-I am bloodsworn.`
+// --- Step 6: The Oath (redirects to the full ceremony at /app/oath) ---
 
 function OathStep({ onNext }: { onNext: () => void }) {
-  const [oathRevealed, setOathRevealed] = useState(false)
-  const [reading, setReading] = useState(false)
-  const [accepted, setAccepted] = useState(false)
-  const [signing, setSigning] = useState(false)
-  const [signed, setSigned] = useState(false)
-  const [sigProgress, setSigProgress] = useState(0)
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    setTimeout(() => setOathRevealed(true), 500)
-    setTimeout(() => setReading(true), 1500)
-  }, [])
-
-  const signOath = useCallback(() => {
-    setSigning(true)
-    const interval = setInterval(() => {
-      setSigProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setTimeout(() => setSigned(true), 500)
-          return 100
-        }
-        return prev + Math.random() * 6 + 2
-      })
-    }, 100)
+    setTimeout(() => setReady(true), 500)
   }, [])
 
   return (
-    <div className="flex flex-col items-center max-w-2xl mx-auto">
-      {/* Oath header */}
-      <motion.div className="text-center mb-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-        <div className="text-[10px] font-mono uppercase tracking-[0.3em] mb-3" style={{ color: "rgba(16,185,129,0.4)" }}>
-          THE BLOODSWORN OATH
+    <div className="flex flex-col items-center text-center max-w-2xl mx-auto">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+        {/* Document seal */}
+        <motion.div className="mb-8"
+          animate={{ opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 4, repeat: Infinity }}>
+          <svg viewBox="0 0 48 48" className="w-16 h-16 mx-auto" fill="none">
+            <path d="M24 42L6 8H42L24 42Z" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" />
+            <path d="M24 36L12 12H36L24 36Z" stroke="rgba(16,185,129,0.2)" strokeWidth="0.5" />
+            <circle cx="24" cy="22" r="6" stroke="rgba(16,185,129,0.3)" strokeWidth="0.5" />
+          </svg>
+        </motion.div>
+
+        <div className="text-[9px] font-mono uppercase tracking-[0.5em] mb-4" style={{ color: "rgba(16,185,129,0.4)", fontFamily: "var(--font-space-grotesk)" }}>
+          VEIL NETWORK STATE · OFFICIAL DOCUMENT
         </div>
-        <div className="w-12 h-[1px] mx-auto" style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.4), transparent)" }} />
+
+        <div className="w-16 h-[1px] mx-auto mb-6" style={{ background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.2), transparent)" }} />
+
+        <div className="text-3xl md:text-4xl mb-4" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(255,255,255,0.92)" }}>
+          The Bloodsworn Oath
+        </div>
+
+        <p className="text-sm leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.4)" }}>
+          Your identity is verified. Your stake is active. Your infrastructure is live.
+        </p>
+        <p className="text-sm leading-relaxed mb-8" style={{ color: "rgba(255,255,255,0.35)" }}>
+          One step remains: the oath that binds your on-chain identity to the network's
+          single standard — net positive expected value. This commitment is irreversible,
+          sealed with a zero-knowledge proof, and recorded permanently on VEIL L1.
+        </p>
+
+        <blockquote className="border-l-2 pl-6 py-2 mb-10 text-left max-w-md mx-auto" style={{ borderColor: "rgba(16,185,129,0.25)" }}>
+          <p className="text-lg italic" style={{ fontFamily: "var(--font-instrument-serif, var(--font-space-grotesk))", color: "rgba(16,185,129,0.5)", lineHeight: 1.6 }}>
+            Betterment of the self is betterment of the network.
+            Betterment of the network is betterment of the self.
+          </p>
+        </blockquote>
       </motion.div>
 
-      {/* Oath text */}
-      <AnimatePresence>
-        {oathRevealed && (
-          <motion.div
-            className="w-full px-8 py-8 mb-8"
-            style={{
-              background: "rgba(16,185,129,0.015)",
-              border: "1px solid rgba(16,185,129,0.08)",
-              borderLeft: "2px solid rgba(16,185,129,0.2)",
-            }}
-            initial={{ opacity: 0, y: 20, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: "auto" }}
-            transition={{ duration: 0.8 }}
-          >
-            {OATH_TEXT.split("\n\n").map((paragraph, i) => (
-              <motion.p
-                key={i}
-                className="text-sm leading-relaxed mb-4 last:mb-0"
-                style={{ color: "rgba(255,255,255,0.6)", fontStyle: "italic" }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 + i * 0.4, duration: 0.6 }}
-              >
-                {paragraph}
-              </motion.p>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Accept checkbox */}
-      {reading && !signed && (
-        <motion.div className="w-full mb-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2.5 }}>
-          <button
-            onClick={() => setAccepted(!accepted)}
-            className="flex items-start gap-3 text-left w-full px-4 py-3 transition-all"
-            style={{ background: accepted ? "rgba(16,185,129,0.03)" : "transparent" }}
-          >
-            <div className="mt-0.5 w-4 h-4 flex-shrink-0 flex items-center justify-center"
-              style={{ border: `1px solid ${accepted ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.15)"}` }}>
-              {accepted && (
-                <motion.svg viewBox="0 0 12 12" className="w-2.5 h-2.5" initial={{ scale: 0 }} animate={{ scale: 1 }}>
-                  <path d="M2 6l3 3 5-5" stroke="rgba(16,185,129,0.8)" strokeWidth="1.5" fill="none" />
-                </motion.svg>
-              )}
-            </div>
-            <span className="text-xs" style={{ color: accepted ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.3)" }}>
-              I have read the Bloodsworn Oath. I understand this commitment is irreversible and recorded on-chain.
-              My agents will be judged by their contribution. I accept the consequences of negative expected value.
-            </span>
-          </button>
-        </motion.div>
-      )}
-
-      {/* Sign button / progress */}
-      {reading && !signed && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3 }}>
-          {signing ? (
-            <div className="w-64">
-              <ProgressBar progress={sigProgress} label="SIGNING OATH ON-CHAIN" />
-              <div className="mt-3">
-                <ZKHashStream active={sigProgress < 100} lines={4} />
-              </div>
-            </div>
-          ) : (
-            <VeilButton onClick={signOath} disabled={!accepted} variant="danger">
-              Sign the Oath — Irreversible
-            </VeilButton>
-          )}
-        </motion.div>
-      )}
-
-      {/* Signed */}
-      {signed && (
-        <motion.div className="text-center" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}>
-          <motion.div className="mb-6" initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
-            <svg viewBox="0 0 60 60" className="w-16 h-16 mx-auto">
-              <path d="M30 55L8 12H52L30 55Z" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" fill="rgba(16,185,129,0.05)" />
-              <path d="M30 45L18 18H42L30 45Z" stroke="rgba(16,185,129,0.3)" strokeWidth="0.5" fill="none" />
-              <text x="30" y="30" textAnchor="middle" dominantBaseline="middle" fill="rgba(16,185,129,0.7)" fontSize="8" fontFamily="monospace">▽</text>
-            </svg>
-          </motion.div>
-          <div className="text-lg font-light mb-2" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.8)" }}>
-            Bloodsworn
+      {ready && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          <Link href="/app/oath?return=onboard">
+            <VeilButton>Enter the Oath Ceremony</VeilButton>
+          </Link>
+          <div className="mt-4 text-[10px] font-mono" style={{ color: "rgba(255,255,255,0.12)", letterSpacing: "0.15em" }}>
+            YOU WILL RETURN HERE AFTER THE OATH IS SEALED
           </div>
-          <div className="text-[10px] font-mono mb-6" style={{ color: "rgba(255,255,255,0.25)" }}>
-            OATH RECORDED · BLOCK #{Math.floor(Math.random() * 900000 + 100000)}
-          </div>
-          <VeilButton onClick={onNext}>Enter VEIL</VeilButton>
         </motion.div>
       )}
     </div>
@@ -951,7 +871,14 @@ function CitizenStep() {
 // ═══════════════════════════════════════════════════════════════════════════
 
 export default function OnboardPage() {
-  const [step, setStep] = useState<OnboardStep>("welcome")
+  const [step, setStep] = useState<OnboardStep>(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search)
+      const s = params.get("step")
+      if (s && STEPS.includes(s as OnboardStep)) return s as OnboardStep
+    }
+    return "welcome"
+  })
 
   const nextStep = useCallback(() => {
     const idx = STEPS.indexOf(step)
