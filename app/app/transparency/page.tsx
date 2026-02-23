@@ -31,28 +31,28 @@ function ScrollReveal({
 
 const metrics = [
   {
-    label: "Launch Gates Passing (Local)",
+    label: "Launch Gate Snapshot",
     value: "13 / 13",
-    target: "All required gates are PASS / PASS (local)",
-    status: "healthy" as const,
+    target: "11 PASS (local), 2 PASS (G10/G11)",
+    status: "warning" as const,
   },
   {
     label: "Production Decision",
     value: "GO FOR PRODUCTION",
-    target: "Sign-off sheet is 6 / 6 PASS (2026-02-22)",
+    target: "Authority: launch checklist decision line (2026-02-22)",
     status: "healthy" as const,
   },
   {
     label: "Private Admission Path",
     value: "Enforced",
-    target: "Proof-verified actions only",
+    target: "Proof-verified actions only (consensus rule)",
     status: "healthy" as const,
   },
   {
     label: "Mempool Privacy",
     value: "Threshold Keying Active (Primary + Secondary)",
-    target: "Local rollout audit passing (latest: tkroll-20260222-190103)",
-    status: "healthy" as const,
+    target: "PASS (local): tkroll-20260222-190103",
+    status: "warning" as const,
   },
 ]
 
@@ -338,25 +338,25 @@ const launchBlockers = [
     gate: "Cryptographic Threshold Keying",
     detail:
       "PASS (local): threshold-gated encrypted gossip and fail-closed keying are active, with latest rollout audit pointer at tkroll-20260222-190103 and archived adversarial/smoke evidence.",
-    status: "Completed",
+    status: "PASS (local)",
   },
   {
     gate: "Key Ceremony and Admin Key Rotation",
     detail:
       "PASS: key ceremony and ownership rotation are archived (`ceremony-20260221-184909`, `rotation-20260222-045726`) and reflected in checklist snapshot.",
-    status: "Completed",
+    status: "PASS",
   },
   {
     gate: "End-to-End Launch Rehearsal",
     detail:
       "PASS: full rehearsal packet is archived (`rehearsal-20260222-095753`) with signature verification complete.",
-    status: "Completed",
+    status: "PASS",
   },
   {
     gate: "ANIMA Runtime Readiness",
     detail:
       "PASS (local): readiness bundle pointer (`anima-20260222-143834`) reports strict-private fixture coverage and overall pass in the current checklist.",
-    status: "Completed",
+    status: "PASS (local)",
   },
 ]
 
@@ -649,8 +649,14 @@ export default function TransparencyPage() {
                 className="text-3xl font-light"
                 style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.85)", letterSpacing: "-0.02em" }}
               >
-                Remaining Launch Blockers
+                Launch Gate Snapshot
               </h2>
+              <p
+                className="text-xs font-light"
+                style={{ color: "rgba(255, 255, 255, 0.35)", fontFamily: "var(--font-space-grotesk)" }}
+              >
+                PASS (local) = validated local evidence profile. PASS = checklist gate closed.
+              </p>
             </div>
           </ScrollReveal>
 
@@ -672,9 +678,30 @@ export default function TransparencyPage() {
                     <span
                       className="px-3 py-1 rounded-lg text-xs font-light whitespace-nowrap"
                       style={{
-                        background: item.status === "In Progress" ? "rgba(234, 179, 8, 0.08)" : "rgba(255, 255, 255, 0.05)",
-                        border: item.status === "In Progress" ? "1px solid rgba(234, 179, 8, 0.2)" : "1px solid rgba(255, 255, 255, 0.12)",
-                        color: item.status === "In Progress" ? "rgba(234, 179, 8, 0.9)" : "rgba(255, 255, 255, 0.72)",
+                        background:
+                          item.status === "PASS"
+                            ? "rgba(16, 185, 129, 0.08)"
+                            : item.status === "PASS (local)"
+                              ? "rgba(59, 130, 246, 0.08)"
+                              : item.status === "In Progress"
+                                ? "rgba(234, 179, 8, 0.08)"
+                                : "rgba(255, 255, 255, 0.05)",
+                        border:
+                          item.status === "PASS"
+                            ? "1px solid rgba(16, 185, 129, 0.2)"
+                            : item.status === "PASS (local)"
+                              ? "1px solid rgba(59, 130, 246, 0.2)"
+                              : item.status === "In Progress"
+                                ? "1px solid rgba(234, 179, 8, 0.2)"
+                                : "1px solid rgba(255, 255, 255, 0.12)",
+                        color:
+                          item.status === "PASS"
+                            ? "rgba(16, 185, 129, 0.9)"
+                            : item.status === "PASS (local)"
+                              ? "rgba(59, 130, 246, 0.9)"
+                              : item.status === "In Progress"
+                                ? "rgba(234, 179, 8, 0.9)"
+                                : "rgba(255, 255, 255, 0.72)",
                         fontFamily: "var(--font-space-grotesk)",
                       }}
                     >
