@@ -649,7 +649,7 @@ export default function TransparencyPage() {
                 className="text-3xl font-light"
                 style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.85)", letterSpacing: "-0.02em" }}
               >
-                Launch Gate Status (Current Cycle)
+                Remaining Launch Blockers
               </h2>
             </div>
           </ScrollReveal>
@@ -672,24 +672,9 @@ export default function TransparencyPage() {
                     <span
                       className="px-3 py-1 rounded-lg text-xs font-light whitespace-nowrap"
                       style={{
-                        background:
-                          item.status === "Completed"
-                            ? "rgba(16, 185, 129, 0.08)"
-                            : item.status === "In Progress"
-                              ? "rgba(234, 179, 8, 0.08)"
-                              : "rgba(255, 255, 255, 0.05)",
-                        border:
-                          item.status === "Completed"
-                            ? "1px solid rgba(16, 185, 129, 0.2)"
-                            : item.status === "In Progress"
-                              ? "1px solid rgba(234, 179, 8, 0.2)"
-                              : "1px solid rgba(255, 255, 255, 0.12)",
-                        color:
-                          item.status === "Completed"
-                            ? "rgba(16, 185, 129, 0.9)"
-                            : item.status === "In Progress"
-                              ? "rgba(234, 179, 8, 0.9)"
-                              : "rgba(255, 255, 255, 0.72)",
+                        background: item.status === "In Progress" ? "rgba(234, 179, 8, 0.08)" : "rgba(255, 255, 255, 0.05)",
+                        border: item.status === "In Progress" ? "1px solid rgba(234, 179, 8, 0.2)" : "1px solid rgba(255, 255, 255, 0.12)",
+                        color: item.status === "In Progress" ? "rgba(234, 179, 8, 0.9)" : "rgba(255, 255, 255, 0.72)",
                         fontFamily: "var(--font-space-grotesk)",
                       }}
                     >
