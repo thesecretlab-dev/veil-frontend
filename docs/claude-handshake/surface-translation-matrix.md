@@ -2,7 +2,7 @@
 
 Protocol reality -> UI surface -> allowed wording -> forbidden wording
 
-Updated: 2026-02-22  
+Updated: 2026-02-23  
 Machine-readable source: `surface-translation-registry.json` (same folder, schema `v2`)
 
 ## How To Use This
@@ -26,7 +26,7 @@ Use these terms consistently:
 - `In Progress`
 - `Scaffolded`
 - `Preview`
-- `NO-GO`
+- `GO FOR PRODUCTION`
 - `Interop Rail`
 - `Strict-Private`
 
@@ -41,29 +41,30 @@ Avoid vague hype terms:
 
 | Surface | Protocol Reality | Allowed Wording | Forbidden Wording |
 |---|---|---|---|
-| Launch banner / status badge | Launch is `NO-GO`, 6/12 local gates pass | `NO-GO for production. Gate-based progress is public.` | `Launching now`, `Mainnet ready`, `Almost launched` |
-| Rehearsal status | `G11` FAIL | `Full launch rehearsal is still pending.` | `Launch rehearsal complete` |
-| Key ceremony / admin rotation | `G10` FAIL | `Production key ceremony and admin rotation remain blockers.` | `Validator set finalized`, `Admin rotation complete` |
+| Launch banner / status badge | Launch is `GO FOR PRODUCTION`; snapshot is `13 PASS (PASS/PASS local) / 0 IN PROGRESS / 0 FAIL` across `G0..G12` | `GO FOR PRODUCTION (2026-02-22). Gate evidence is public.` | `Fully live across every route`, `All features unrestricted` |
+| Rehearsal status | `G11` PASS | `Launch rehearsal gate is complete and archived.` | `Unsigned launch packet` |
+| Key ceremony / admin rotation | `G10` PASS (local evidence) | `Key ceremony and admin rotation gate is closed locally.` | `All launch blockers removed` |
+| ANIMA runtime readiness | `G12` PASS (local evidence) | `ANIMA runtime readiness is passing in local launch evidence; rollout remains route-gated.` | `All agent routes are live private by default` |
 
 ## Privacy Surfaces (Highest Sensitivity)
 
 | Surface | Protocol Reality | Allowed Wording | Forbidden Wording |
 |---|---|---|---|
 | Proof-gated consensus | `G1` PASS (local) | `Proof-gated consensus enforced in local VEIL profile.` | `Production private consensus live` |
-| Mempool privacy | `G2` IN PROGRESS, local rollout pass | `Threshold-keyed mempool privacy is locally validated; production rollout evidence pending.` | `Mempool is private`, `No one can see your transactions` |
+| Mempool privacy | `G2` PASS (local evidence) | `Threshold-keyed mempool privacy is implemented and locally validated; staged rollout qualifiers still apply.` | `Mempool is private`, `No one can see your transactions` |
 | ZK circuit scope | `G3` PASS (local) | `Shielded-ledger-v1 circuit assurance is archived locally.` | `ZK-protected mainnet` |
-| Overall privacy claim | Mixed local + pending production gates | `Privacy primitives are implemented and tested locally; production rollout remains gated.` | `Fully private chain`, `Private by default on mainnet` |
+| Overall privacy claim | Core privacy gates pass locally with route-scoped rollout policy | `Privacy primitives are implemented and locally validated; route-level rollout qualifiers remain mandatory.` | `Fully private chain`, `Private by default on mainnet` |
 
 Rule:
 
-- Do not use unqualified privacy claims until launch-critical privacy gates are closed with production evidence (`G2`, plus operational blockers impacting launch readiness like `G10`, `G11`).
+- Keep privacy claims route-scoped even when launch gates are closed in checklist evidence.
 
 ## Interop / EVM / Wallet Surfaces
 
 | Surface | Protocol Reality | Allowed Wording | Forbidden Wording |
 |---|---|---|---|
 | Companion EVM | Interoperability rail, not private engine | `Companion EVM interoperability rails` | `Private EVM`, `EVM privacy layer` |
-| Bridge / round-trip | `G6` IN PROGRESS | `Bridge readiness is in progress; round-trip closure pending.` | `Bridge is live`, `Cross-chain transfers work` |
+| Bridge / round-trip | `G6` PASS (local evidence) | `Bridge/relay readiness checks are passing in current launch evidence; operator rollout still stages public activation.` | `Bridge private by default` |
 | Wallet compatibility | Design + in-progress rails | `Designed for EVM wallet interoperability through companion rails.` | `Connect and trade privately now` |
 | Intent relays | Wired paths, not production-complete | `Intent relay paths are wired for interoperability testing.` | `Intents execute live in production` |
 
@@ -71,24 +72,25 @@ Rule:
 
 | Surface | Protocol Reality | Allowed Wording | Forbidden Wording |
 |---|---|---|---|
-| Tokenomics / flywheel | Design + validation in progress | `Economic flywheel design is under staged validation.` | `Flywheel is live`, `Treasury is accruing value on mainnet` |
-| COL / treasury controls | `G4` IN PROGRESS | `Treasury/COL controls are implemented, with production freeze pending.` | `COL locks are live`, `Treasury controls active on mainnet` |
-| VAI risk controls | `G5` IN PROGRESS | `VAI risk controls exist; production validation is pending.` | `Stable`, `Pegged`, `Backed stablecoin is live` |
+| Tokenomics / flywheel | Runtime + gate validation pass locally | `Economic flywheel and treasury controls pass current launch checklist local evidence.` | `Guaranteed returns`, `Risk-free yields` |
+| COL / treasury controls | `G4` PASS (local evidence) | `Treasury/COL controls are implemented with passing launch-gate evidence.` | `Unrestricted treasury operations live` |
+| VAI risk controls | `G5` PASS (local evidence) | `VAI risk controls are implemented with passing launch-gate evidence.` | `Permanent peg guarantee` |
 
 ## ANIMA / ZER0ID / Dev Surfaces
 
 | Surface | Protocol Reality | Allowed Wording | Forbidden Wording |
 |---|---|---|---|
-| ANIMA Tier 0 SDK/runtime | Local milestone shipped and tested | `ANIMA Tier 0 native SDK/runtime baseline implemented with local tests.` | `Agents live on mainnet`, `Agents trade privately on VEIL` |
-| ANIMA Tier 0 live flow | Harness scaffold only (LB-11 pending) | `Live Tier 0 strict-private harness is scaffolded and pending runtime/proof fixtures.` | `Live private agent flow running` |
-| ZER0ID SDK / identity | SDK/dev work in progress | `ZER0ID SDK and identity tooling are in active development.` | `Live private identity verification` |
+| ANIMA Tier 0 SDK/runtime | Local baseline shipped and tested | `ANIMA Tier 0 native SDK/runtime baseline implemented with local tests.` | `Agents live on mainnet`, `Agents trade privately on VEIL` |
+| ANIMA runtime hardening controls | Local hardening active (wallet encryption, idempotent commit retries, encrypted order envelope, log redaction guards) | `ANIMA runtime hardening controls are enabled for local strict-private development and evidence capture.` | `Production-hardened live gateway`, `Externally audited production runtime` |
+| ANIMA Tier 0 live flow | Readiness bundle PASS (local evidence) | `Tier 0 strict-private readiness is passing in local evidence; staged rollout policy still applies.` | `Every agent route is fully live private by default` |
+| ZER0ID SDK / identity | SDK/dev workstream active | `ZER0ID SDK and identity tooling are in active development with staged rollout.` | `Universal live identity verification` |
 | Developer SDK docs | Preview docs/maps available | `Developer SDKs and action maps are available in preview.` | `Stable API`, `Mainnet-ready dev platform` |
 
 ## Governance / Validator Operator Surfaces
 
 | Surface | Protocol Reality | Allowed Wording | Forbidden Wording |
 |---|---|---|---|
-| Validator operator status | Ops blockers remain (`G10`) | `Operator readiness depends on key ceremony and admin rotation completion.` | `Validators ready for production launch` |
+| Validator operator status | `G10` PASS in current evidence | `Key ceremony and admin rotation are complete in current launch evidence; operator rollout still stages activation.` | `Validators ready for production launch` |
 | Governance controls | Governance-facing surfaces are not production-live | `Governance/operator controls are under staged rollout.` | `Governance live on mainnet` |
 
 ## CTA / Button Policy (Use Registry `ui_action_policy`)
@@ -104,7 +106,7 @@ Preferred CTA states:
 Examples:
 
 - Polymarket external route: `enabled` (external)
-- Companion bridge transfer: `disabled` (G6 pending)
+- Companion bridge transfer: `disabled` (operator staged, not public default)
 - Native private trading CTA: `hidden` (not operational user flow)
 - ANIMA docs CTA: `docs_only`
 

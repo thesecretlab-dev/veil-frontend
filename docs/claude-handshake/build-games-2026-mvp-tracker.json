@@ -1,0 +1,147 @@
+{
+  "_meta": {
+    "schema": "veil.build-games-mvp-tracker.v1",
+    "updated": "2026-02-23T22:42:04.395Z",
+    "target_minutes": 20,
+    "status": "complete",
+    "last_run_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T22-42-04-396Z.json",
+    "last_run_duration_ms": 23834
+  },
+  "mvp_definition": "User sends $100 in AVAX, gets a live cloud server + Codex access + ANIMA agent validating the VEIL network and working live in under 20 minutes.",
+  "milestones": [
+    {
+      "id": "M1_PAYMENT",
+      "name": "Detect $100 AVAX payment",
+      "owner": "codex",
+      "status": "complete",
+      "budget_minutes": 2,
+      "evidence_required": [
+        "payment_tx_hash",
+        "payment_timestamp",
+        "payment_value_snapshot"
+      ],
+      "last_duration_ms": 241,
+      "last_updated": "2026-02-23T22:42:04.395Z",
+      "error": null
+    },
+    {
+      "id": "M2_PROVISION",
+      "name": "Provision live cloud server",
+      "owner": "codex",
+      "status": "complete",
+      "budget_minutes": 7,
+      "evidence_required": [
+        "instance_id",
+        "instance_endpoint",
+        "provision_log_path"
+      ],
+      "last_duration_ms": 7477,
+      "last_updated": "2026-02-23T22:42:04.395Z",
+      "error": null
+    },
+    {
+      "id": "M3_CODEX_ACCESS",
+      "name": "Confirm Codex command access on new server",
+      "owner": "codex",
+      "status": "complete",
+      "budget_minutes": 3,
+      "evidence_required": [
+        "bootstrap_command_output",
+        "environment_fingerprint"
+      ],
+      "last_duration_ms": 8728,
+      "last_updated": "2026-02-23T22:42:04.395Z",
+      "error": null
+    },
+    {
+      "id": "M4_ANIMA_VALIDATE_VEIL",
+      "name": "Run ANIMA VEIL validation",
+      "owner": "codex",
+      "status": "complete",
+      "budget_minutes": 7,
+      "evidence_required": [
+        "veil_readiness_response",
+        "chain_validation_output",
+        "anima_validation_log"
+      ],
+      "last_duration_ms": 7387,
+      "last_updated": "2026-02-23T22:42:04.395Z",
+      "error": null
+    },
+    {
+      "id": "M5_SURFACE_STATUS",
+      "name": "Publish MVP result to UI status surface",
+      "owner": "claude",
+      "status": "complete",
+      "budget_minutes": 1,
+      "evidence_required": [
+        "mvp_run_json_path",
+        "ui_status_rendered"
+      ],
+      "evidence": {
+        "mvp_run_json_path": "C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\public\\maiev\\mvp-run-latest.json",
+        "ui_status_rendered": "maiev-surface-published",
+        "source_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T22-42-04-396Z.json"
+      },
+      "last_duration_ms": 0,
+      "last_updated": "2026-02-23T22:42:04.395Z",
+      "error": null
+    }
+  ],
+  "success_criteria": [
+    "All milestones complete within 20 minutes",
+    "Evidence present for each milestone",
+    "No claim of completion without artifact references"
+  ],
+  "failure_conditions": [
+    "total_elapsed_minutes > 20",
+    "payment_detected_but_provision_failed",
+    "provisioned_but_codex_unreachable",
+    "codex_reachable_but_anima_validation_failed",
+    "ui_claims_success_without_artifacts"
+  ],
+  "last_run": {
+    "started_at": "2026-02-23T22:41:40.561Z",
+    "ended_at": "2026-02-23T22:42:04.395Z",
+    "total_duration_ms": 23834,
+    "passed": true,
+    "artifact_path": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T22-42-04-396Z.json",
+    "steps": [
+      {
+        "id": "M1_PAYMENT",
+        "name": "Detect and verify AVAX payment",
+        "status": "passed",
+        "duration_ms": 241,
+        "error": null
+      },
+      {
+        "id": "M2_PROVISION",
+        "name": "Provision live cloud server",
+        "status": "passed",
+        "duration_ms": 7477,
+        "error": null
+      },
+      {
+        "id": "M3_CODEX_ACCESS",
+        "name": "Validate Codex command access on provisioned server",
+        "status": "passed",
+        "duration_ms": 8728,
+        "error": null
+      },
+      {
+        "id": "M4_ANIMA_VALIDATE_VEIL",
+        "name": "Run ANIMA VEIL validation probe from server and operator",
+        "status": "passed",
+        "duration_ms": 7387,
+        "error": null
+      },
+      {
+        "id": "M5_ARTIFACT",
+        "name": "Write MVP evidence artifact",
+        "status": "passed",
+        "duration_ms": 0,
+        "error": null
+      }
+    ]
+  }
+}

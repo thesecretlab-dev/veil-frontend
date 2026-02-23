@@ -1,0 +1,14 @@
+
+> my-v0-project@0.1.0 dev
+> next dev --webpack
+
+▲ Next.js 16.1.6 (webpack)
+- Local:         http://localhost:3001
+- Network:       http://100.101.241.42:3001
+
+✓ Starting...
+✓ Ready in 1607ms
+○ Compiling /app/docs ...
+ GET /app/docs 200 in 5.4s (compile: 5.1s, proxy.ts: 13ms, render: 270ms)
+ GET /app/docs 200 in 71ms (compile: 5ms, proxy.ts: 9ms, render: 57ms)
+[?25h

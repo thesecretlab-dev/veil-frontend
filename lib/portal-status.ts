@@ -41,6 +41,27 @@ export type PortalStatusResponse = {
     }>
     timestamp: string | null
   }
+  mvp: {
+    available: boolean
+    passed: boolean | null
+    targetMinutes: number | null
+    totalDurationMs: number | null
+    totalDurationMinutes: number | null
+    startedAt: string | null
+    endedAt: string | null
+    stepCount: number
+    passedStepCount: number
+    failedStepCount: number
+    failedSteps: Array<{
+      id: string
+      name: string
+      error: string | null
+    }>
+    artifactPath: string | null
+    trackerStatus: string | null
+    trackerUpdated: string | null
+    trackerLastArtifact: string | null
+  }
   orderRouter: {
     configured: boolean
     baseUrl: string | null
@@ -52,6 +73,7 @@ export type PortalStatusResponse = {
     bridgeReady: boolean
     chainlinkFresh: boolean
     prelaunchReady: boolean
+    mvpReady: boolean
     orderRouterReady: boolean
   }
 }

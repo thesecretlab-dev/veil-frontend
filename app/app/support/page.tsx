@@ -43,7 +43,7 @@ const channels = [
 const faqs = [
   {
     q: "How do I get started on VEIL?",
-    a: "Connect a compatible wallet for preview access, review launch status, and follow onboarding steps. Live market trading remains gated until launch checklist closure.",
+    a: "Connect a compatible wallet, review launch status, and follow onboarding steps. Launch authority is GO FOR PRODUCTION, while market enablement is still staged by operator rollout policy.",
   },
   {
     q: "What wallets are supported?",

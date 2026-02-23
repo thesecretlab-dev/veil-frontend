@@ -33,8 +33,8 @@ const metrics = [
   {
     label: "Launch Gate Snapshot",
     value: "13 / 13",
-    target: "11 PASS (local), 2 PASS (G10/G11)",
-    status: "warning" as const,
+    target: "All checklist gates are PASS or PASS (local)",
+    status: "healthy" as const,
   },
   {
     label: "Production Decision",
@@ -202,9 +202,9 @@ const developerJournal = [
   },
   {
     date: "2026-02-21",
-    title: "Critical Gap Closure (Historical)",
+    title: "Historical Launch Gap Closure",
     summary:
-      "The previously tracked critical gap (ceremony/rollout and launch-rehearsal closure) is now closed in the current launch snapshot, with checklist gates marked PASS or PASS (local).",
+      "The previously tracked launch gap (ceremony/rollout and launch-rehearsal closure) is now closed in the current launch snapshot, with checklist gates marked PASS or PASS (local).",
     briefing: "This item is retained for timeline continuity; it is no longer an active blocker in the current cycle.",
     status: "Completed",
   },

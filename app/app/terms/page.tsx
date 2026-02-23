@@ -166,8 +166,8 @@ export default function TermsPage() {
 
           <Section number="03" title="Market Participation and Trading" delay={0.05}>
             <p>
-              VEIL is currently in staged launch mode. Trading surfaces shown in this frontend may be preview-only until
-              launch gates are fully closed and production activation is announced.
+              Launch authority is GO FOR PRODUCTION (2026-02-22). Trading surfaces shown in this frontend may still be
+              staged by operator rollout policy before broad activation is announced.
             </p>
             <p>
               Market outcomes are determined by decentralized oracle consensus. VEIL does not control or manipulate market
@@ -182,8 +182,8 @@ export default function TermsPage() {
 
           <Section number="04" title="Privacy and Zero-Knowledge Technology" delay={0.05}>
             <p>
-              VEIL implements privacy primitives with local validation coverage. Production privacy guarantees remain gated
-              pending final launch criteria and operational controls.
+              VEIL implements privacy primitives with passing local validation evidence. Privacy guarantees are
+              route-dependent: VeilVM proof-gated lanes are shielded, while companion EVM rails remain transparent.
             </p>
             <p>
               Some transaction metadata may be visible on public infrastructure depending on route and environment. Review

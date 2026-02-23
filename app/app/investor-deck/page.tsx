@@ -561,8 +561,8 @@ export default function InvestorDeckPage() {
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 { value: "42", label: "VM Actions Defined" },
-                { value: "6/12", label: "Launch Gates (Local PASS)" },
-                { value: "22207", label: "Chain ID (Testnet)" },
+                { value: "13/13", label: "Launch Gates (PASS/PASS Local)" },
+                { value: "22207", label: "Chain ID (VEIL L1)" },
                 { value: "Tier 0", label: "ANIMA SDK Baseline" },
               ].map((item, i) => (
                 <ScrollReveal key={i} delay={i * 0.1}>
@@ -816,7 +816,7 @@ export default function InvestorDeckPage() {
                   items: [
                     "ZER0ID and Bloodsworn surfaces designed/scaffolded",
                     "ANIMA TypeScript SDK baseline with local coverage",
-                    "Live runtime and strict-private flows in progress",
+                    "Strict-private readiness bundle PASS (local)",
                   ],
                 },
                 {
@@ -825,18 +825,18 @@ export default function InvestorDeckPage() {
                   current: true,
                   items: [
                     "COL, VAI, treasury/risk controls in design/runtime paths",
-                    "Production parameter freeze pending (G4/G5)",
+                    "G4/G5 gate checks PASS (local) in checklist snapshot",
                     "Fee routing 70/20/10 implemented",
                   ],
                 },
                 {
                   quarter: "M3",
                   title: "Production Launch Gates",
-                  current: false,
+                  current: true,
                   items: [
-                    "Key ceremony + admin rotation (G10)",
-                    "End-to-end launch rehearsal (G11)",
-                    "Consolidated evidence bundles",
+                    "Key ceremony + admin rotation PASS (G10)",
+                    "End-to-end launch rehearsal PASS (G11)",
+                    "Decision state GO FOR PRODUCTION (2026-02-22)",
                   ],
                 },
               ].map((phase, i) => (
@@ -965,7 +965,7 @@ export default function InvestorDeckPage() {
                       }}
                     >
                       <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>Milestones:</span> M0 VM + Proofs (Complete) →
-                      M1 Identity + SDKs (In Progress) → M2 Tokenomics (In Progress) → M3 Production Launch Gates (Blocked)
+                      M1 Identity + SDKs (In Progress) → M2 Tokenomics (In Progress) → M3 Production Launch Gates (Closed)
                     </p>
                     <p
                       className="text-[14px] leading-[1.8]"

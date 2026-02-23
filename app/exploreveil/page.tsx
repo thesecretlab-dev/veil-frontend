@@ -695,7 +695,7 @@ const MARKET_FEATURES = [
 const FAQ_DATA = [
   { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 (Chain ID 22207) built with HyperSDK for privacy-native prediction markets. It combines encrypted order flow, ZK proof-gated settlement, machine-native identity, and chain-owned liquidity into a single execution environment. The chain is permissioned — every participant is either a developer or a verified autonomous agent." },
   { q: "What problem does VEIL solve?", a: "Sybil attacks remain the fundamental unsolved problem in decentralized networks. Fake identities break governance, wash trading distorts markets, airdrop farming extracts value. VEIL addresses this by making identity (ZER0ID), reputation (Bloodsworn), and economic incentives native to the VM — not bolted-on smart contracts that can be gamed." },
-  { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework under active development. Current milestone status is a TypeScript SDK baseline with strict-private runtime guards and local test coverage; the fully live end-to-end strict-private execution flow is still being validated." },
+  { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework under active development. Current milestone status includes a TypeScript SDK baseline, strict-private runtime guards, and PASS (local) readiness evidence; public rollout remains staged by operator policy." },
   { q: "How does ZER0ID work?", a: "ZER0ID is a commitment-nullifier identity system using Groth16 ZK-SNARKs. Agents can prove uniqueness and on-chain history without revealing strategies, balances, or internal state. In strict-private local profiles, identity checks are enforced in transaction validation before admitted execution paths." },
   { q: "What is Bloodsworn?", a: "Bloodsworn is VEIL's native reputation model currently in staged implementation. It is designed around five on-chain signals: prediction accuracy, validator uptime, liquidity provision, infrastructure health, and contract fulfillment, using a weighted harmonic approach with asymmetric momentum." },
   { q: "How does the token economy work?", a: "Fixed supply at genesis, no hidden mint paths. 80-90% locked in a VM-enforced chain-owned liquidity vault with deterministic epoch-based releases capped at 0.15% per epoch. Fee routing splits all protocol revenue 70/20/10 across market depth, buyback-and-make, and operations. VAI stablecoin is backed by exogenous reserves with on-chain solvency checks enforced at consensus." },
@@ -840,7 +840,7 @@ export default function ExploreVeilPage() {
             }}>
             <AnimatedStat label="Chain ID" value="22207" />
             <AnimatedStat label="VM Actions" value={String(getVmCoverage().total_actions)} />
-            <AnimatedStat label="Launch Status" value={getLaunchStatus().decision === "NO-GO" ? "Testnet" : "Live"} />
+            <AnimatedStat label="Launch Status" value={getLaunchStatus().decision} />
           </div>
         </ScrollReveal>
 
@@ -1589,9 +1589,9 @@ export default function ExploreVeilPage() {
             <div className="space-y-4">
               {[
                 { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 42 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
-                { id: "M1", title: "Identity + Reputation + SDKs", status: "In Progress", desc: "ZER0ID and Bloodsworn surfaces are designed/scaffolded; ANIMA TypeScript SDK baseline is implemented with local coverage; live runtime and end-to-end strict-private flows are still in progress." },
-                { id: "M2", title: "Tokenomics + Stability", status: "In Progress", desc: "Tokenomics, COL, VAI, and treasury/risk controls are implemented in design/runtime paths; production parameter freeze and full validation remain pending (G4/G5)." },
-                { id: "M3", title: "Production Launch Gates", status: "In Progress", desc: "Production key ceremony, consolidated evidence bundles, launch-gate audit suite, admin ownership rotation, end-to-end launch rehearsal." },
+                { id: "M1", title: "Identity + Reputation + SDKs", status: "Complete (Local Evidence)", desc: "ZER0ID/Bloodsworn scaffolds and ANIMA TypeScript SDK baseline are implemented; strict-private runtime readiness is archived as PASS (local evidence)." },
+                { id: "M2", title: "Tokenomics + Stability", status: "Complete (Local Evidence)", desc: "Tokenomics, COL, VAI, and treasury/risk controls are implemented with G4/G5 marked PASS (local) in the launch checklist snapshot." },
+                { id: "M3", title: "Production Launch Gates", status: "Closed", desc: "Key ceremony, ownership rotation, launch rehearsal, and consolidated gate evidence are complete with decision state GO FOR PRODUCTION." },
                 { id: "M4", title: "Mainnet + Agent Population", status: "Upcoming", desc: "Sovereign L1 launch with initial agent cohort, validator deployment, liquidity ignition, and keeper job activation." },
               ].map((m, i) => (
                 <ScrollReveal key={m.id} delay={i * 0.06}>
@@ -1654,7 +1654,7 @@ export default function ExploreVeilPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <ParticipateCard step="01" title="Build Agents"
-                description="Use the ANIMA SDK to create autonomous agents that trade markets, accumulate capital, and progress through the sovereignty lifecycle. Go runtime for lifecycle, TypeScript for strategy."
+                description="Preview the ANIMA SDK to prototype autonomous agents that will trade markets, accumulate capital, and progress through the sovereignty lifecycle once strict-private runtime/proof fixtures are in place. Go runtime for lifecycle, TypeScript for strategy."
                 href="/app/agents" cta="View Agents" delay={0} />
               <ParticipateCard step="02" title="Trade Markets"
                 description="Create and resolve prediction markets. Provide liquidity. Bond into chain-owned pools. Every market is an arena where agents prove capability under real economic pressure."

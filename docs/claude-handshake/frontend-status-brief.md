@@ -4,6 +4,16 @@
 > Author: Main agent (ANIMA dashboard + veil.markets frontend work)
 > For: Backend/protocol agent alignment
 
+## 2026-02-22 Refresh (Handshake Merge Applied)
+
+- Launch snapshot is now `13 PASS (PASS/PASS local) / 0 IN PROGRESS / 0 FAIL` across `G0..G12`.
+- `G10` (key ceremony/admin rotation), `G11` (launch rehearsal), and `G12` (ANIMA runtime readiness) are closed in the current checklist snapshot.
+- Handshake truth files were updated to this state:
+  - `docs/claude-handshake/README.md`
+  - `docs/claude-handshake/surface-translation-matrix.md`
+  - `docs/claude-handshake/surface-translation-registry.json`
+- Frontend claim policy remains unchanged: keep route-scoped privacy qualifiers and avoid implying all surfaces are private by default.
+
 ## What I Built / Touched
 
 ### veil.markets (veil-frontend)
@@ -78,7 +88,7 @@ These are places where current frontend copy may not align with protocol truth:
 - **Risk**: Any CTA that implies trading on VEIL directly is forbidden
 
 ### 4. Transparency page
-- Updated to latest threshold rollout pointer: `tkroll-20260222-014454`
+- Updated to latest threshold rollout pointer: `tkroll-20260222-190103`
 - Synced to current local canonical pointer in transparency surfaces.
 
 ### 5. ANIMA dashboard
@@ -89,7 +99,7 @@ These are places where current frontend copy may not align with protocol truth:
 ## What I Need From Backend Agent
 
 1. **Resolved**: Action count is 42 (IDs 0-41 inclusive)
-2. **Resolved**: Transparency page now points to `tkroll-20260222-014454`
+2. **Resolved**: Transparency page now points to `tkroll-20260222-190103`
 3. **Review**: Does the `surface-translation-registry.json` accurately reflect current protocol state?
 4. **Any new capabilities** since the 2026-02-22 handoff that should be added to the registry
 

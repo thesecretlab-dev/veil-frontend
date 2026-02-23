@@ -224,6 +224,10 @@ export default function DocsPage() {
 
         {/* main content */}
         <main className="min-w-0 flex-1 max-w-3xl">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-emerald-300/85" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+            ANIMA · ZER0ID · BLOODSWORN · VAI · KEEP3R
+          </div>
+
           {/* Hero */}
           <ScrollReveal>
             <div className="mb-14">
@@ -245,7 +249,8 @@ export default function DocsPage() {
                 className="text-lg text-white/35 max-w-xl leading-relaxed"
                 style={{ fontFamily: "var(--font-figtree)" }}
               >
-                Privacy-native prediction markets on an Avalanche L1 Subnet. Technical architecture & token economics.
+                Privacy-first execution infrastructure for sovereign agents on a custom Avalanche L1, including ANIMA runtime,
+                ZER0ID identity, Bloodsworn reputation rails, and market/liquidity architecture across the full VEIL ecosystem.
               </motion.p>
             </div>
           </ScrollReveal>
@@ -278,6 +283,21 @@ export default function DocsPage() {
             </div>
           </ScrollReveal>
 
+          <ScrollReveal>
+            <div className="mb-16 rounded-[20px] border border-white/[0.08] bg-white/[0.015] p-6 md:p-8">
+              <h2 className="mb-3 text-base font-semibold text-white/75" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+                Ecosystem Scope — 2026
+              </h2>
+              <ul className="space-y-2 text-[14px] leading-relaxed text-white/45" style={{ fontFamily: "var(--font-figtree)" }}>
+                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> VeilVM core: 42 native actions with proof-gated settlement, encrypted batch flow, and shielded state transitions.</li>
+                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Market layer: privacy-scoped prediction markets with batch auctions, oracle/dispute logic, and chain-owned liquidity support.</li>
+                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Companion EVM rails: intent relay, token interoperability, and external integration surfaces where transparency is expected.</li>
+                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Agent layer: ZER0ID identity, Bloodsworn reputation scaffolds, and ANIMA SDK/runtime for autonomous operations.</li>
+                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Economic layer: treasury locks, risk controls, and fee routing for durable market depth and protocol-owned liquidity.</li>
+              </ul>
+            </div>
+          </ScrollReveal>
+
           {/* ═══════════════════ PART I ═══════════════════ */}
           <ScrollReveal>
             <div className="mb-14 mt-8">
@@ -285,7 +305,7 @@ export default function DocsPage() {
               <h1 className="text-4xl md:text-5xl font-normal text-white/90 mb-3" style={{ fontFamily: "var(--font-instrument-serif)" }}>
                 Technical Architecture
               </h1>
-              <p className="text-base text-white/30" style={{ fontFamily: "var(--font-figtree)" }}>Privacy-Native Prediction Markets on an Avalanche L1 Subnet</p>
+              <p className="text-base text-white/30" style={{ fontFamily: "var(--font-figtree)" }}>Privacy-first execution architecture for agents, markets, and interoperable rails</p>
             </div>
           </ScrollReveal>
 
@@ -295,7 +315,7 @@ export default function DocsPage() {
               <SectionHeading title="Abstract" id="tech-abstract" />
               <Prose>
                 <p>
-                  VEIL is a privacy-native prediction market running on a dedicated Avalanche L1 Subnet. It combines an{" "}
+                  VEIL is a privacy-first execution network running on a dedicated Avalanche L1. Its first production module is prediction markets, but the protocol scope now spans agent identity, execution, and ecosystem interoperability. The stack combines an{" "}
                   <strong className="text-white/75">encrypted mempool</strong> (threshold-encrypted transactions), a{" "}
                   <strong className="text-white/75">shielded ledger</strong> (commitment-nullifier model with ZK-SNARKs),
                   and <strong className="text-white/75">uniform batch auctions</strong> to prevent order leakage and
@@ -305,8 +325,10 @@ export default function DocsPage() {
                   The system achieves <strong className="text-white/75">sub-second finality</strong> via Avalanche
                   consensus, <strong className="text-white/75">deterministic replay</strong> for audits, and{" "}
                   <strong className="text-white/75">objective slashing</strong> for misbehaving operators. This document
-                  specifies the cryptographic primitives, VM implementation (HyperSDK), oracle resolution with VRF-selected
-                  committees, and service-level objectives (SLOs) that govern market quality.
+                  specifies the cryptographic primitives, VM implementation (HyperSDK), companion-rail interoperability,
+                  ANIMA runtime boundaries, ZER0ID identity commitments, Bloodsworn reputation scaffolds, oracle
+                  resolution with VRF-selected committees, and service-level objectives (SLOs) that govern market and
+                  protocol quality.
                 </p>
               </Prose>
             </section>
@@ -318,13 +340,14 @@ export default function DocsPage() {
               <SectionHeading number="01" title="Introduction" id="introduction" />
               <Prose>
                 <p>
-                  Prediction markets aggregate dispersed information into a single price, but existing designs leak order
-                  flow to validators, searchers, and competing traders. This{" "}
+                  VEIL is an execution network for sovereign agents. Information markets are the first live workload
+                  because they stress private execution, fair price formation, and dispute resolution. Existing market
+                  designs still leak order flow to validators, searchers, and competing traders. This{" "}
                   <strong className="text-white/75">alpha leakage</strong> discourages informed participation and degrades
                   price discovery.
                 </p>
                 <p>
-                  VEIL solves this by running on a <strong className="text-white/75">privacy-first Avalanche Subnet</strong>{" "}
+                  VEIL addresses this with a <strong className="text-white/75">privacy-first Avalanche L1</strong>{" "}
                   where:
                 </p>
                 <ul className="space-y-2 ml-1">
@@ -341,9 +364,15 @@ export default function DocsPage() {
                 <p>
                   VEIL operates a <strong className="text-white/75">dual market engine</strong>: orders can be routed through
                   Polymarket's deep liquidity pools for a <strong className="text-white/75">0.03% routing fee</strong>,
-                  giving traders access to the world's most liquid prediction markets with a privacy layer on top.
+                  giving traders access to deep external liquidity with a privacy-preserving strategy layer on top.
                   Alternatively, users can trade <strong className="text-white/75">VEIL-native markets</strong> directly
                   on-chain and earn VEIL token rewards for providing liquidity and volume.
+                </p>
+                <p>
+                  Since the original whitepaper draft, VEIL has expanded with explicit agent and ecosystem rails:
+                  <strong className="text-white/75"> ANIMA</strong> runtime/SDK, <strong className="text-white/75">ZER0ID</strong>
+                  identity, <strong className="text-white/75">Bloodsworn</strong> reputation scaffolding, companion EVM
+                  intent/liquidity relays, and treasury risk controls across COL locks, VAI limits, and Keep3r operations.
                 </p>
               </Prose>
             </section>
@@ -449,7 +478,7 @@ export default function DocsPage() {
             <section id="system-overview" className="scroll-mt-28 mb-14">
               <SectionHeading number="04" title="System Overview" id="system-overview" />
               <Prose>
-                <p>VEIL's architecture consists of four layers:</p>
+                <p>VEIL's architecture consists of five layers:</p>
               </Prose>
               <div className="grid sm:grid-cols-2 gap-4 my-8">
                 <InfoCard title="1 · Encrypted Mempool">
@@ -464,12 +493,19 @@ export default function DocsPage() {
                 <InfoCard title="4 · Oracle Resolution">
                   Financial markets use VRF-selected committees with BLS signatures. Social, political, and non-financial markets are resolved by Grok 4.2 (xAI) with on-chain query commitment and cryptographic attestation
                 </InfoCard>
+                <InfoCard title="5 - Agent Runtime & Identity">
+                  ANIMA orchestrates autonomous execution while ZER0ID and Bloodsworn primitives provide identity and reputation rails for machine-native participation
+                </InfoCard>
               </div>
               <Prose>
                 <p>
                   The system runs on a dedicated Avalanche Subnet with custom HyperSDK VM optimized for batch clearing and
                   ZK verification. Validators post slashable bonds and are subject to objective penalties for rule
                   violations.
+                </p>
+                <p>
+                  Post-whitepaper scope also includes companion EVM intent gateways, route-scoped privacy policy surfaces,
+                  and treasury/risk controls that keep liquidity and stablecoin behavior inside auditable protocol limits.
                 </p>
               </Prose>
             </section>
@@ -530,9 +566,10 @@ export default function DocsPage() {
               <SectionHeading number="07" title="Markets & Matching" id="markets-matching" />
               <Prose>
                 <p>
-                  VEIL supports prediction markets where users can bet on future events. The core matching engine operates
-                  via uniform batch auctions, clearing all orders within a specified time window (e.g., 2 seconds) at a
-                  single, volume-weighted average price.
+                  The market layer is VEIL's first production module. It supports prediction markets where users express
+                  positions on future events, while reusing the same private execution primitives that secure the wider
+                  ecosystem. The core matching engine operates via uniform batch auctions, clearing all orders within a
+                  specified time window (e.g., 2 seconds) at a single, volume-weighted average price.
                 </p>
                 <p>
                   <strong className="text-white/75">Order types</strong> include limit and market orders.{" "}
@@ -634,6 +671,11 @@ export default function DocsPage() {
                   threshold encryption and Groth16 for ZK-SNARK proofs.
                 </p>
                 <p>
+                  <strong className="text-white/75">Agent runtime integration</strong> is provided through ANIMA services,
+                  while ZER0ID and Bloodsworn data paths are anchored to protocol state for machine identity and
+                  performance-linked reputation.
+                </p>
+                <p>
                   <strong className="text-white/75">Subnet validators</strong> are responsible for transaction validation,
                   block production, and consensus, inheriting Avalanche's robust security guarantees.
                 </p>
@@ -693,14 +735,14 @@ export default function DocsPage() {
               <SectionHeading number="14" title="Conclusion" id="tech-conclusion" />
               <Prose>
                 <p>
-                  VEIL represents a significant advancement in prediction market technology, addressing the fundamental
-                  problem of alpha leakage through a novel combination of privacy-preserving primitives and efficient batch
-                  clearing on a dedicated Avalanche Subnet.
+                  VEIL represents a significant advancement in private, agent-native execution infrastructure. It addresses
+                  alpha leakage through privacy-preserving primitives, proof-gated consensus paths, and efficient batch
+                  clearing on a dedicated Avalanche L1.
                 </p>
                 <p>
-                  By prioritizing order and balance privacy, fair execution, and robust resolution mechanisms, VEIL unlocks
-                  new possibilities for professional participation, information aggregation, and regulatory compliance in
-                  the decentralized prediction market landscape.
+                  By combining order and balance privacy, fair execution, interoperable companion rails, and programmable
+                  agent infrastructure, VEIL supports a broader ecosystem where markets are the first module rather than
+                  the total product boundary.
                 </p>
               </Prose>
             </section>
@@ -766,6 +808,7 @@ export default function DocsPage() {
                 <p>The VEIL ecosystem involves several key economic actors:</p>
                 <ul className="space-y-2 ml-1">
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Traders:</strong> Participate in markets by placing buy/sell orders.</span></li>
+                  <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Autonomous Agents (ANIMA):</strong> Execute strategies, manage capital, and eventually provision sovereign infrastructure and validator participation.</span></li>
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Operators:</strong> Run validator nodes, provide liquidity, and participate in oracle committees. They stake VEIL tokens and are subject to slashing.</span></li>
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Protocol:</strong> The smart contracts and logic that govern market creation, clearing, and fee distribution. It accrues chain-owned liquidity (POL).</span></li>
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Governance Participants:</strong> VEIL token holders who vote on protocol parameters and upgrades.</span></li>
@@ -813,8 +856,8 @@ export default function DocsPage() {
               <SectionHeading number="05" title="Market Quality SLOs" id="market-quality" />
               <Prose>
                 <p>
-                  The protocol's success hinges on delivering high-quality prediction markets. Key SLOs define acceptable
-                  market performance:
+                  The protocol's success hinges on high-quality private execution and deep market performance. Key SLOs
+                  define acceptable outcomes for the market layer:
                 </p>
                 <ul className="space-y-2 ml-1">
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Tight Spreads:</strong> For the top 10 markets, the average bid-ask spread should remain below 0.5%.</span></li>
@@ -904,7 +947,7 @@ export default function DocsPage() {
                 </p>
                 <p>
                   This approach creates sustainable value for VEIL token holders and ensures the long-term health and
-                  resilience of the prediction market.
+                  resilience of the broader VEIL economy.
                 </p>
               </Prose>
             </section>
@@ -990,7 +1033,7 @@ export default function DocsPage() {
                 </p>
                 <p>
                   This economic framework, combined with robust technical design, positions VEIL as a leading platform for
-                  private and efficient prediction markets.
+                  private and efficient agent-native market infrastructure.
                 </p>
               </Prose>
             </section>

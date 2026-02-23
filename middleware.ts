@@ -3,6 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 const ACCESS_KEY = process.env.VEIL_ACCESS_KEY || "tsl2026";
 
 export function middleware(req: NextRequest) {
+  const host = req.nextUrl.hostname.toLowerCase();
+  const isLocalHost = host === "localhost" || host === "127.0.0.1" || host === "::1";
+
+  // Never gate local development traffic.
+  if (isLocalHost) {
+    return NextResponse.next();
+  }
+
   // Check cookie
   if (req.cookies.get("veil_access")?.value === ACCESS_KEY) {
     return NextResponse.next();
@@ -16,7 +24,8 @@ export function middleware(req: NextRequest) {
     const res = NextResponse.redirect(url);
     res.cookies.set("veil_access", ACCESS_KEY, {
       httpOnly: true,
-      secure: true,
+      // Local dev runs on http://localhost, so secure cookies won't persist there.
+      secure: req.nextUrl.protocol === "https:",
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 30, // 30 days
     });

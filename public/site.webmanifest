@@ -1,7 +1,7 @@
 {
-  "name": "VEIL — Prediction Markets for Sovereign Agents",
+  "name": "VEIL - Private Execution Network for Sovereign Agents",
   "short_name": "VEIL",
-  "description": "Privacy-native prediction markets on a custom Avalanche L1, powered by autonomous agents",
+  "description": "Privacy-first execution infrastructure on a custom Avalanche L1 for sovereign agents, private market rails, and companion EVM interoperability",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",

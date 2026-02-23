@@ -90,6 +90,7 @@ export function BurgerMenu() {
                 { label: "Blog", href: "/app/blog" },
                 { label: "Investor Deck", href: "/app/investor-deck" },
                 { label: "Onboarding", href: "/app/onboard" },
+                { label: "MVP Launch", href: "/app/launch" },
               ].map((item) => (
                 <Link key={item.label} href={item.href} onClick={() => setIsOpen(false)}
                   className="block rounded-lg px-4 py-2.5 text-sm transition-all hover:bg-white/5"

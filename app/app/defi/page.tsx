@@ -11,8 +11,8 @@ export default function DefiPage() {
           Execution Is Gated
         </h1>
         <p className="mb-8 font-[var(--font-figtree)] text-sm leading-relaxed text-white/50">
-          Live DeFi execution and wallet-driven private trading remain disabled while launch gates are still NO-GO.
-          This route is documentation and readiness context only.
+          Launch authority is GO FOR PRODUCTION (2026-02-22), but this DeFi lane remains operator-gated during staged
+          rollout. This route is documentation and readiness context only.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Link

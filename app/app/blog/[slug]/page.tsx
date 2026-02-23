@@ -50,9 +50,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Current Status</h2>
           <p className="mb-6">
-            VEIL is under active development. The custom VM is implemented with 42 native actions. Launch posture
-            remains NO-GO while production gates are being closed. We publish all progress transparently on our
-            transparency page and MAIEV evidence archive.
+            VEIL is under active development. The custom VM is implemented with 42 native actions. Launch authority is
+            GO FOR PRODUCTION (2026-02-22), with gate evidence tracked on the transparency page and MAIEV archive.
           </p>
         </>
       ),
@@ -91,8 +90,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Implementation Status</h2>
           <p className="mb-6">
             Proof-gated consensus (G1) passes in local validation. The shielded ledger circuit assurance (G3) is
-            archived locally. Production rollout evidence for the full privacy pipeline (G2) remains in progress.
-            All implementation status is tracked in the production launch checklist.
+            archived locally. Native privacy invariants (G2) and ANIMA readiness (G12) are now marked PASS (local) in
+            the launch checklist. All implementation status is tracked in the production launch checklist.
           </p>
         </>
       ),
@@ -280,9 +279,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </h2>
           <p className="mb-6">
             These are architectural design principles. Implementation status varies by component — proof-gated
-            consensus passes locally (G1), threshold keying passes locally with production rollout pending (G2),
-            shielded ledger circuits are archived (G3). Full production launch remains NO-GO. See the
-            transparency page for current gate status.
+            consensus passes locally (G1), threshold keying passes locally (G2), and shielded ledger circuits are
+            archived (G3). Current launch authority state is GO FOR PRODUCTION. See the transparency page for the
+            latest gate snapshot and operator caveats.
           </p>
         </>
       ),

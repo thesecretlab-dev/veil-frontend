@@ -142,7 +142,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               We use zero-knowledge proofs and cryptographic techniques in staged and local environments. Privacy behavior
-              is route-dependent and production rollout remains gated.
+              is route-dependent; VeilVM proof-gated lanes are shielded while companion EVM rails remain transparent.
             </p>
           </Section>
 

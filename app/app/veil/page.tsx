@@ -58,8 +58,8 @@ const TABS: Array<{ id: ActionTab; label: string; helper: string }> = [
 ]
 
 const POOLS: Array<{ pair: string; status: string; mode: string }> = [
-  { pair: "wVEIL / VAI", status: "Active", mode: "Testnet pilot" },
-  { pair: "VEIL / USDC", status: "Active", mode: "Testnet pilot" },
+  { pair: "wVEIL / VAI", status: "Active", mode: "Staged rollout" },
+  { pair: "VEIL / USDC", status: "Active", mode: "Staged rollout" },
   { pair: "AVAX / VAI", status: "Pending", mode: "Awaiting depth bootstrap" },
 ]
 
@@ -93,7 +93,7 @@ const WALLET_COMPAT = getFeature("evm_wallet_compatibility")
 const EXECUTION_ENABLED = COMPANION_RAILS?.ui_action_policy.cta_state === "enabled"
 const WALLET_ENABLED = WALLET_COMPAT?.ui_action_policy.cta_state === "enabled"
 const EXECUTION_REASON =
-  COMPANION_RAILS?.ui_action_policy.cta_reason ?? "Execution remains gated by launch readiness."
+  COMPANION_RAILS?.ui_action_policy.cta_reason ?? "Execution remains staged by operator rollout policy."
 const WALLET_REASON =
   WALLET_COMPAT?.ui_action_policy.cta_reason ?? "Wallet compatibility remains in staged rollout."
 
@@ -601,7 +601,8 @@ export default function VeilDeFiPage() {
                 Swap, Stake, Bond
               </h1>
               <p className="mx-auto mt-4 max-w-xl font-[var(--font-figtree)] text-sm leading-relaxed text-white/35">
-                Preview console for VEIL-native staking, bonding, and liquidity mechanics. Production execution remains gated by launch status.
+                Preview console for VEIL-native staking, bonding, and liquidity mechanics. Launch authority is GO FOR
+                PRODUCTION while execution remains staged by operator policy.
               </p>
             </header>
           </ScrollReveal>
@@ -610,7 +611,8 @@ export default function VeilDeFiPage() {
           {showTestnetBanner && (
             <ScrollReveal>
               <div className="mb-10 rounded-[16px] border border-amber-500/20 bg-amber-500/[0.04] px-5 py-3.5 text-center font-[var(--font-figtree)] text-sm text-amber-200/70">
-                Testnet mode active. Financial outcomes are non-production and should not be treated as live market performance.
+                Non-mainnet environment detected for this route. Treat financial outcomes here as staged preview
+                behavior, not finalized performance reporting.
               </div>
             </ScrollReveal>
           )}

@@ -1378,7 +1378,8 @@ function CitizenStep() {
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 3, duration: 0.8 }}>
         <p className="text-sm mb-8" style={{ color: "rgba(255,255,255,0.4)" }}>
-          Local onboarding simulation complete. Identity, stake, and infrastructure steps shown here are preview artifacts until production launch gates are closed.
+          Local onboarding simulation complete. Identity, stake, and infrastructure steps shown here are preview
+          artifacts for staged rollout even though launch authority is GO FOR PRODUCTION.
         </p>
       </motion.div>
 

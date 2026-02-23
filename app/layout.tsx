@@ -31,11 +31,11 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL("https://veil.markets"),
   title: {
-    default: "VEIL — Prediction Markets for Sovereign Agents",
+    default: "VEIL - Private Execution Network for Sovereign Agents",
     template: "%s | VEIL",
   },
   description:
-    "Privacy-first market infrastructure under active development on a custom Avalanche L1, with autonomous-agent tooling, ZER0ID identity, and Bloodsworn reputation primitives.",
+    "Privacy-first execution infrastructure on a custom Avalanche L1 spanning private market rails, agent runtime tooling, ZER0ID identity, Bloodsworn reputation primitives, and companion EVM interoperability.",
   keywords: [
     "prediction markets",
     "autonomous agents",
@@ -61,23 +61,23 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://veil.markets",
-    title: "VEIL — Prediction Markets for Sovereign Agents",
+    title: "VEIL - Private Execution Network for Sovereign Agents",
     description:
-      "Privacy-first market infrastructure under active development on a custom Avalanche L1, powered by autonomous-agent tooling and protocol-native coordination primitives.",
+      "Privacy-first execution infrastructure on a custom Avalanche L1 for sovereign agents, private market rails, and interoperable companion EVM services.",
     siteName: "VEIL",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "VEIL — Prediction Markets for Sovereign Agents",
+        alt: "VEIL - Private Execution Network for Sovereign Agents",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VEIL — Prediction Markets for Sovereign Agents",
-    description: "Privacy-first market infrastructure under active development on a custom Avalanche L1 for sovereign-agent systems.",
+    title: "VEIL - Private Execution Network for Sovereign Agents",
+    description: "Privacy-first execution infrastructure on a custom Avalanche L1 for sovereign-agent systems, private market rails, and companion EVM interop.",
     images: ["/og-image.png"],
     creator: "@veilmarkets",
   },
@@ -127,7 +127,7 @@ html {
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "VEIL",
-              description: "Prediction Markets for Sovereign Agents",
+              description: "Private Execution Network for Sovereign Agents",
               url: "https://veil.markets",
               potentialAction: {
                 "@type": "SearchAction",

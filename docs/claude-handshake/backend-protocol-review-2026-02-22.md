@@ -16,6 +16,14 @@ Two flagged issues are confirmed:
 1. `41 vs 42` VM action count mismatch is real.
 2. Stale threshold rollout evidence ID on transparency page is real.
 
+## 2026-02-22 Refresh (Handshake Merge Applied)
+
+- Launch truth snapshot date: `2026-02-22`.
+- Gate board: `13 gates (G0..G12)` with `13 PASS (PASS/PASS local) / 0 IN PROGRESS / 0 FAIL`.
+- Current cycle closures include `G10=PASS`, `G11=PASS`, `G12=PASS (local)`.
+- Evidence scope policy: `PASS` statements here are local evidence only and do not imply production readiness.
+- No-overclaim policy (ANIMA strict-private): avoid blanket claims that every route is private; keep route-level scope explicit.
+
 ## Confirmed Truth (Use These)
 
 1. Canonical action count
@@ -23,7 +31,7 @@ Two flagged issues are confirmed:
 - Evidence: `C:\Users\Josh\Desktop\veil-automaton\docs\veil-native-api-v1-mapping.md:5`
 
 2. Latest local threshold rollout pointer (current backend latest)
-- Use `tkroll-20260222-014454` as the current canonical local latest pointer (unless intentionally referencing a historical run).
+- Use `tkroll-20260222-190103` as the current canonical local latest pointer (unless intentionally referencing a historical run).
 - Evidence pointer source: `C:\Users\Josh\hypersdk\examples\veilvm\evidence-bundles\threshold-keying-rollout\latest.txt`
 
 ## Findings (Frontend Surface Corrections)
@@ -39,10 +47,10 @@ Locations:
 - `app/app/transparency/page.tsx:229`
 
 Action:
-- Update to `tkroll-20260222-014454` (or switch the UI to a "latest pointer" phrasing if you want to avoid future stale IDs).
+- Update to `tkroll-20260222-190103` (or switch the UI to a "latest pointer" phrasing if you want to avoid future stale IDs).
 
 Recommended wording pattern:
-- `Local rollout audit passing (latest: tkroll-20260222-014454)`
+- `Local rollout audit passing (latest: tkroll-20260222-190103)`
 
 ### P1: VM action count is wrong (`41` should be `42`)
 
@@ -84,11 +92,11 @@ Action:
 
 Suggested replacement (M1):
 - `Identity + Reputation + SDKs` -> `In Progress`
-- `ZER0ID and Bloodsworn surfaces are designed/scaffolded; ANIMA TypeScript SDK baseline is implemented; runtime and live execution paths are still in progress.`
+- `ZER0ID and Bloodsworn surfaces are designed/scaffolded; ANIMA TypeScript SDK baseline is implemented; strict-private readiness evidence now passes in local profile.`
 
 Suggested replacement (M2):
 - `Tokenomics + Stability` -> `In Progress`
-- `Tokenomics, COL, VAI, and treasury/risk controls are implemented in design/runtime paths; production freeze and validation remain pending (G4/G5).`
+- `Tokenomics, COL, VAI, and treasury/risk controls are implemented in design/runtime paths; checklist snapshot marks G4/G5 PASS (local).`
 
 ### P1: Metadata overclaims "private prediction markets" as current product reality
 
@@ -156,4 +164,3 @@ Reference snippet:
 6. Commit/push:
 - `docs/claude-handshake/frontend-status-brief.md`
 - `app/lib/surface-translation-registry.ts`
-

@@ -291,15 +291,15 @@ export default function EcosystemPage() {
     return fallback
   }
   const launch = getLaunchStatus()
-  const isNoGo = launch.decision === "NO-GO"
+  const launchGo = launch.decision === "GO FOR PRODUCTION"
 
   const groups: PortalGroup[] = [
     {
       title: "Core Trading",
       subtitle: "Indexed market and status surfaces.",
       portals: [
-        { name: "Markets", href: "/app/markets", description: "Primary prediction market trading interface.", status: status?.flags.liveMarketsAvailable && !isNoGo ? "live" : "ops" },
-        { name: "Market Detail", href: status?.markets.topMarkets[0] ? `/app/market/${status.markets.topMarkets[0].id}` : "/app", description: "Orderbook and trading panel for individual markets.", status: status?.flags.liveMarketsAvailable && !isNoGo ? "live" : "ops" },
+        { name: "Markets", href: "/app/markets", description: "Primary prediction market trading interface.", status: status?.flags.liveMarketsAvailable && launchGo ? "live" : "ops" },
+        { name: "Market Detail", href: status?.markets.topMarkets[0] ? `/app/market/${status.markets.topMarkets[0].id}` : "/app", description: "Orderbook and trading panel for individual markets.", status: status?.flags.liveMarketsAvailable && launchGo ? "live" : "ops" },
         { name: "Insights", href: "/app/insights", description: "Research and strategy dashboards.", status: ctaToPortal("developer_sdk_docs", "linked") },
       ],
     },
@@ -419,7 +419,8 @@ export default function EcosystemPage() {
               fontSize: "1.05rem", lineHeight: 1.8, fontWeight: 300,
             }}>
               Unified access to markets, governance, docs, and MAIEV evidence surfaces.
-              Some routes are preview/docs-only while launch gates remain NO-GO.
+              Launch authority is GO FOR PRODUCTION; some routes remain preview/docs-only while operator rollout
+              policy is staged.
             </p>
           </ScrollReveal>
 

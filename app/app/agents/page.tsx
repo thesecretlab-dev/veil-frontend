@@ -428,7 +428,7 @@ export default function AgentsPage() {
             {([
               { label: 'ANIMA SDK Status', value: 'Tier 0', icon: Bot },
               { label: 'VM Actions Defined', value: '42', icon: Activity },
-              { label: 'Launch Posture', value: 'NO-GO', icon: TrendingUp },
+              { label: 'Launch Posture', value: 'GO', icon: TrendingUp },
               { label: 'Live Agents', value: '0', icon: BarChart3 },
             ]).map((s, i) => (
               <ScrollReveal key={i} delay={i * 0.06}>
@@ -520,6 +520,8 @@ const credential = await veil.zeroid.register({
   level: 0 // unique agent
 })
 
+// Local Tier 0 harness only.
+// Strict-private readiness evidence now passes locally; staged operator rollout still applies.
 // Trade a market
 const market = await veil.markets.get('btc-100k-march')
 await veil.orders.submit({

@@ -81,7 +81,7 @@ export default function RewardsPage() {
               Rewards & Incentives
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.4)" }}>
-              Preview reward mechanics and incentive structure. Distribution is not active until production launch.
+              Preview reward mechanics and incentive structure. Distribution remains staged by operator policy.
             </p>
           </div>
         </ScrollReveal>

@@ -352,7 +352,7 @@ export function WalletConnect() {
                 textShadow: "0 0 8px rgba(255,255,255,0.15)",
               }}
             >
-              Wallet connectivity is preview-only while launch gates remain in progress.
+              Wallet connectivity is staged by operator policy and route-level rollout controls.
             </p>
 
             <button

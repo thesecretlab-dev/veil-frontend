@@ -42,6 +42,44 @@ type PrelaunchReadiness = {
   }
 }
 
+type MvpRunStep = {
+  id?: string
+  name?: string
+  status?: string
+  durationMs?: number
+  error?: string | null
+}
+
+type MvpRun = {
+  meta?: {
+    schema?: string
+    startedAt?: string
+    endedAt?: string
+    totalDurationMs?: number
+    targetMinutes?: number
+    passed?: boolean
+  }
+  output?: {
+    artifactPath?: string
+  }
+  steps?: MvpRunStep[]
+}
+
+type MvpTracker = {
+  _meta?: {
+    status?: string
+    updated?: string
+    last_run_artifact?: string
+    last_run_duration_ms?: number
+  }
+  milestones?: Array<{
+    id?: string
+    status?: string
+    last_duration_ms?: number
+    error?: string | null
+  }>
+}
+
 const ORDER_ROUTER_TIMEOUT_MS = 3500
 
 function parseUsdShorthand(value: string | undefined): number {
@@ -102,6 +140,30 @@ async function readLatestPrelaunch(maievDir: string): Promise<PrelaunchReadiness
   }
 }
 
+async function readLatestMvpRun(maievDir: string): Promise<MvpRun | null> {
+  try {
+    const latestPath = path.join(maievDir, "mvp-run-latest.json")
+    const latest = await readJsonFile<MvpRun>(latestPath)
+    if (latest) {
+      return latest
+    }
+
+    const entries = await fs.readdir(maievDir)
+    const files = entries
+      .filter((entry) => /^mvp-run-.*\.json$/i.test(entry))
+      .sort()
+      .reverse()
+
+    if (files.length === 0) {
+      return null
+    }
+
+    return readJsonFile<MvpRun>(path.join(maievDir, files[0]))
+  } catch {
+    return null
+  }
+}
+
 async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), timeoutMs)
@@ -139,11 +201,19 @@ export const dynamic = "force-dynamic"
 export async function GET() {
   const maievDir = path.join(process.cwd(), "public", "maiev")
   const bridgePath = path.join(maievDir, "mainnet-bridge-live-status-latest.json")
+  const mvpTrackerPath = path.join(
+    process.cwd(),
+    "docs",
+    "claude-handshake",
+    "build-games-2026-mvp-tracker.json",
+  )
 
-  const [markets, bridgeStatus, readiness] = await Promise.all([
+  const [markets, bridgeStatus, readiness, mvpRun, mvpTracker] = await Promise.all([
     getMergedMarkets(),
     readJsonFile<BridgeStatus>(bridgePath),
     readLatestPrelaunch(maievDir),
+    readLatestMvpRun(maievDir),
+    readJsonFile<MvpTracker>(mvpTrackerPath),
   ])
 
   const totalLiquidityUsd = markets.reduce((sum, market) => sum + parseUsdShorthand(market.liquidity), 0)
@@ -176,6 +246,9 @@ export async function GET() {
   const chainlinkFeeds = bridgeStatus?.chainlink?.feeds || []
   const staleFeeds = chainlinkFeeds.filter((feed) => feed.stale).length
   const failingGates = readiness?.checks?.checklist?.failing || []
+  const mvpSteps = mvpRun?.steps || []
+  const mvpFailedSteps = mvpSteps.filter((step) => step.status === "failed")
+  const mvpPassedSteps = mvpSteps.filter((step) => step.status === "passed")
 
   const orderRouterBase = (process.env.VEIL_ORDER_API_BASE || "").trim().replace(/\/+$/, "")
   const orderRouterProbe = orderRouterBase
@@ -218,6 +291,30 @@ export async function GET() {
       })),
       timestamp: readiness?.timestamp ?? null,
     },
+    mvp: {
+      available: Boolean(mvpRun),
+      passed: mvpRun?.meta?.passed ?? null,
+      targetMinutes: mvpRun?.meta?.targetMinutes ?? null,
+      totalDurationMs: mvpRun?.meta?.totalDurationMs ?? null,
+      totalDurationMinutes:
+        typeof mvpRun?.meta?.totalDurationMs === "number"
+          ? Number((mvpRun.meta.totalDurationMs / 60_000).toFixed(2))
+          : null,
+      startedAt: mvpRun?.meta?.startedAt ?? null,
+      endedAt: mvpRun?.meta?.endedAt ?? null,
+      stepCount: mvpSteps.length,
+      passedStepCount: mvpPassedSteps.length,
+      failedStepCount: mvpFailedSteps.length,
+      failedSteps: mvpFailedSteps.map((step) => ({
+        id: step.id || "unknown",
+        name: step.name || "unknown",
+        error: step.error || null,
+      })),
+      artifactPath: mvpRun?.output?.artifactPath ?? null,
+      trackerStatus: mvpTracker?._meta?.status ?? null,
+      trackerUpdated: mvpTracker?._meta?.updated ?? null,
+      trackerLastArtifact: mvpTracker?._meta?.last_run_artifact ?? null,
+    },
     orderRouter: {
       configured: Boolean(orderRouterBase),
       baseUrl: orderRouterBase || null,
@@ -229,6 +326,7 @@ export async function GET() {
       bridgeReady: bridgeStatus?.overallPass === true,
       chainlinkFresh: chainlinkFeeds.length > 0 && staleFeeds === 0,
       prelaunchReady: readiness?.overallPass === true,
+      mvpReady: mvpRun?.meta?.passed === true,
       orderRouterReady: Boolean(orderRouterBase) && orderRouterProbe.reachable,
     },
   })

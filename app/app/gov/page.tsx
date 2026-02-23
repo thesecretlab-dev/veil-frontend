@@ -348,7 +348,8 @@ export default function GovernancePage() {
                 Shape the Future<br />of VEIL
               </h1>
               <p className="text-[17px] leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.35)" }}>
-                Governance interface preview for staged rollout. Voting and delegation remain gated until launch readiness is closed.
+                Governance interface preview for staged rollout. Launch authority is GO FOR PRODUCTION, while voting
+                and delegation remain feature-gated by operator policy.
               </p>
 
               <div className="flex items-center justify-center gap-4 pt-4">

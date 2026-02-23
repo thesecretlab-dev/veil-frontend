@@ -1,0 +1,60 @@
+⚠ Port 3000 is in use by process 53852, using available port 3001 instead.
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+[Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\server-development\8.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\server-development\\8.pack.gz'
+}
+⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\server-development\8.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\server-development\\8.pack.gz'
+}
+⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\server-development\8.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\server-development\\8.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\server-development\8.pack.gz'
+[Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\client-development\13.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\client-development\\13.pack.gz'
+}
+⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\client-development\13.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\client-development\\13.pack.gz'
+}
+⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\client-development\13.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\client-development\\13.pack.gz'
+}
+[Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\client-development\16.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\client-development\\16.pack.gz'
+}
+⨯ unhandledRejection: [Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\client-development\16.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\client-development\\16.pack.gz'
+}
+⨯ unhandledRejection:  [Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\client-development\16.pack.gz'] {
+  errno: -4058,
+  code: 'ENOENT',
+  syscall: 'stat',
+  path: 'C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\.next\\dev\\cache\\webpack\\client-development\\16.pack.gz'
+}
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, stat 'C:\Users\Josh\Desktop\private-github-ready-20260219\veil-frontend\.next\dev\cache\webpack\client-development\9.pack.gz'
+⚠ Cross origin request detected from 127.0.0.1 to /_next/* resource. In a future major version of Next.js, you will need to explicitly configure "allowedDevOrigins" in next.config to allow this.
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
