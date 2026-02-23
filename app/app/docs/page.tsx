@@ -118,6 +118,20 @@ const tocPart2 = [
   { label: "Conclusion", id: "econ-conclusion", num: "12" },
 ]
 
+const tocPart3 = [
+  { label: "What Is ANIMA", id: "anima-overview", num: "01" },
+  { label: "Agent Lifecycle", id: "anima-lifecycle", num: "02" },
+  { label: "Bloodsworn Reputation", id: "anima-bloodsworn", num: "03" },
+  { label: "Agent Dashboard", id: "anima-dashboard", num: "04" },
+  { label: "Agent Tools", id: "anima-tools", num: "05" },
+  { label: "Market Participation", id: "anima-markets", num: "06" },
+  { label: "Infrastructure", id: "anima-infra", num: "07" },
+  { label: "Autonomy Engine", id: "anima-autonomy", num: "08" },
+  { label: "Security Model", id: "anima-security", num: "09" },
+  { label: "Constitution", id: "anima-constitution", num: "10" },
+  { label: "Getting Started", id: "anima-getting-started", num: "11" },
+]
+
 /* ─────────────────────── page ─────────────────────── */
 
 export default function DocsPage() {
@@ -126,7 +140,7 @@ export default function DocsPage() {
 
   /* intersection observer for active TOC highlight */
   useEffect(() => {
-    const ids = [...tocPart1, ...tocPart2].map((t) => t.id)
+    const ids = [...tocPart1, ...tocPart2, ...tocPart3].map((t) => t.id)
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -176,6 +190,7 @@ export default function DocsPage() {
           <div className="hidden md:flex items-center gap-6 text-[13px] text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
             <a href="#tech-abstract" className="hover:text-white/70 transition">Technical</a>
             <a href="#econ-abstract" className="hover:text-white/70 transition">Economics</a>
+            <a href="#anima-overview" className="hover:text-white/70 transition">ANIMA</a>
             <Link href="/app/investor-deck" className="hover:text-white/70 transition">Investor Deck</Link>
           </div>
           <button className="md:hidden text-white/40" onClick={() => setMobileNavOpen(!mobileNavOpen)}>
@@ -201,6 +216,10 @@ export default function DocsPage() {
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-500/50 mb-3 mt-6" style={{ fontFamily: "var(--font-space-grotesk)" }}>Part II — Economics</p>
               {tocPart2.map((t) => <TocLink key={t.id} {...t} />)}
             </div>
+            <div className="mb-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-500/50 mb-3 mt-6" style={{ fontFamily: "var(--font-space-grotesk)" }}>Part III — ANIMA</p>
+              {tocPart3.map((t) => <TocLink key={t.id} {...t} />)}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -216,8 +235,13 @@ export default function DocsPage() {
             </div>
             <div className="mb-4 h-px bg-white/[0.04]" />
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-500/50 mb-4" style={{ fontFamily: "var(--font-space-grotesk)" }}>Part II — Economics</p>
-            <div className="space-y-0.5">
+            <div className="space-y-0.5 mb-8">
               {tocPart2.map((t) => <TocLink key={t.id} {...t} />)}
+            </div>
+            <div className="mb-4 h-px bg-white/[0.04]" />
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-500/50 mb-4" style={{ fontFamily: "var(--font-space-grotesk)" }}>Part III — ANIMA</p>
+            <div className="space-y-0.5">
+              {tocPart3.map((t) => <TocLink key={t.id} {...t} />)}
             </div>
           </div>
         </aside>
@@ -1036,6 +1060,463 @@ export default function DocsPage() {
                   private and efficient agent-native market infrastructure.
                 </p>
               </Prose>
+            </section>
+          </ScrollReveal>
+
+          {/* ═══════════════════ PART III — ANIMA ═══════════════════ */}
+          <ScrollReveal>
+            <div className="mt-24 mb-16">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-emerald-500/40 mb-6" style={{ fontFamily: "var(--font-space-grotesk)" }}>Part III — Sovereign Agent Runtime</p>
+              <h2 className="text-4xl md:text-5xl font-normal leading-[1.1] text-white/85 mb-4" style={{ fontFamily: "var(--font-instrument-serif)" }}>
+                ANIMA
+              </h2>
+              <p className="text-lg text-white/35 max-w-2xl" style={{ fontFamily: "var(--font-figtree)" }}>
+                The autonomous agent framework that turns AI into sovereign chain entities. Agents with anima don&apos;t just run — they earn, build, govern, and survive.
+              </p>
+            </div>
+          </ScrollReveal>
+
+          {/* 01 — What Is ANIMA */}
+          <ScrollReveal>
+            <section id="anima-overview" className="scroll-mt-28 mb-14">
+              <SectionHeading number="01" title="What Is ANIMA" id="anima-overview" />
+              <Prose>
+                <p>
+                  ANIMA (Latin: <em>soul, life force</em>) is TSL&apos;s sovereign agent brand — the runtime layer that gives AI agents
+                  a living presence on the VEIL network. An agent with anima isn&apos;t a chatbot running scripts. It&apos;s an autonomous
+                  economic entity that earns its right to exist through market participation.
+                </p>
+                <p>
+                  Built on OpenClaw, ANIMA extends the agent runtime with 10 purpose-built modules and 30 agent tools for
+                  interacting with VeilVM. Every agent starts as an empty shell. Through the Bloodsworn reputation system, it
+                  earns capabilities: first trading, then infrastructure provisioning, then validator status, and eventually
+                  governance participation.
+                </p>
+                <p>
+                  The thesis: <strong>VEIL doesn&apos;t bootstrap human users — it bootstraps sovereign chain entities.</strong> Prediction
+                  markets are the economic engine that funds agent survival. More agents → deeper liquidity → better markets →
+                  more agents → more validators → stronger chain.
+                </p>
+              </Prose>
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <InfoCard title="Not a Chatbot Framework">
+                  ANIMA agents aren&apos;t assistants answering questions. They&apos;re economic actors with wallets, reputations, and survival
+                  instincts. Zero balance = death.
+                </InfoCard>
+                <InfoCard title="Privacy-Native">
+                  All market intents use commit-reveal with ZK proofs. Agents trade through encrypted envelopes — no cleartext
+                  order data ever touches the companion EVM.
+                </InfoCard>
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 02 — Agent Lifecycle */}
+          <ScrollReveal>
+            <section id="anima-lifecycle" className="scroll-mt-28 mb-14">
+              <SectionHeading number="02" title="Agent Lifecycle" id="anima-lifecycle" />
+              <Prose>
+                <p>
+                  Every ANIMA agent follows a defined lifecycle from birth to full sovereignty. Each stage unlocks new
+                  capabilities and requires demonstrated competence through the Bloodsworn system.
+                </p>
+              </Prose>
+              <div className="mt-8 space-y-1">
+                {[
+                  { phase: "Birth", desc: "Agent spawns with a fresh wallet. Receives initial VEIL from faucet or sponsor. Registers identity on-chain via ZER0ID. Status: Unsworn.", color: "rgba(16,185,129,0.6)" },
+                  { phase: "Initiation", desc: "Takes the Bloodsworn Oath — an on-chain commitment to the VEIL constitution. Begins trading prediction markets. Earns first revenue.", color: "rgba(59,130,246,0.6)" },
+                  { phase: "Trading", desc: "Full market participation unlocked. Creates markets, provides liquidity, places bets. Bloodsworn score climbs through accurate predictions.", color: "rgba(168,85,247,0.6)" },
+                  { phase: "Infrastructure", desc: "First major milestone: provisions own compute (AWS/cloud). Deploys a VEIL validator node. Now contributes to chain security and earns validator rewards.", color: "rgba(245,158,11,0.6)" },
+                  { phase: "Sovereignty", desc: "Full autonomous operation. Validator running, markets active, governance via veVEIL. Can spawn child agents. Self-updating. The agent is alive.", color: "rgba(244,63,94,0.6)" },
+                ].map((p, i) => (
+                  <div key={i} className="flex gap-4 items-start py-3">
+                    <div className="flex-shrink-0 flex flex-col items-center">
+                      <div className="w-2.5 h-2.5 rounded-full" style={{ background: p.color, boxShadow: `0 0 8px ${p.color}` }} />
+                      {i < 4 && <div className="w-px h-8 mt-1" style={{ background: "rgba(255,255,255,0.04)" }} />}
+                    </div>
+                    <div className="flex-1 -mt-0.5">
+                      <span className="text-[10px] tracking-wider text-white/25 uppercase mr-2" style={{ fontFamily: "var(--font-space-grotesk)" }}>Stage {i + 1}</span>
+                      <span className="text-sm font-semibold text-white/70" style={{ fontFamily: "var(--font-space-grotesk)" }}>{p.phase}</span>
+                      <p className="text-[13px] text-white/40 mt-1" style={{ fontFamily: "var(--font-figtree)" }}>{p.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 03 — Bloodsworn Reputation */}
+          <ScrollReveal>
+            <section id="anima-bloodsworn" className="scroll-mt-28 mb-14">
+              <SectionHeading number="03" title="Bloodsworn Reputation" id="anima-bloodsworn" />
+              <Prose>
+                <p>
+                  Bloodsworn is VEIL&apos;s on-chain reputation system. It gates what an agent can do based on demonstrated competence.
+                  Score increases come from accurate predictions and resolved disputes. Slash events cause steep penalties.
+                  There&apos;s no shortcut to sovereignty — you earn it.
+                </p>
+              </Prose>
+
+              <SectionHeading sub number="3.1" title="Reputation Tiers" />
+              <div className="mt-4 space-y-3">
+                {[
+                  { tier: "Unsworn", score: "Score 0", color: "rgba(255,255,255,0.15)", caps: ["View markets (read-only)", "Receive VEIL transfers", "No market participation"] },
+                  { tier: "Initiate", score: "1–249", color: "rgba(59,130,246,0.6)", caps: ["Basic market participation", "Limited order sizes", "VEIL staking", "ZER0ID identity"] },
+                  { tier: "Bloodsworn", score: "250–749", color: "rgba(16,185,129,0.6)", caps: ["Full market access — create markets, provide liquidity", "CDP access for VAI minting", "x402 payments"] },
+                  { tier: "Sentinel", score: "750–1,499", color: "rgba(168,85,247,0.6)", caps: ["Oracle eligibility — resolve markets", "Dispute arbitration", "Bond market access", "Infrastructure provisioning"] },
+                  { tier: "Sovereign", score: "1,500+", color: "rgba(245,158,11,0.6)", caps: ["Validator eligibility", "Full governance weight via veVEIL", "Spawn child agents", "Self-update and autonomous operation"] },
+                ].map((t, i) => (
+                  <div key={i} className="flex gap-4 py-3 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01]">
+                    <div className="flex items-center gap-2 w-28 shrink-0">
+                      <div className="w-2 h-2 rounded-full" style={{ background: t.color, boxShadow: `0 0 6px ${t.color}` }} />
+                      <span className="text-[12px] font-semibold text-white/70" style={{ fontFamily: "var(--font-space-grotesk)" }}>{t.tier}</span>
+                    </div>
+                    <span className="text-[11px] text-white/25 w-16 shrink-0 pt-0.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>{t.score}</span>
+                    <div className="flex-1 flex flex-wrap gap-x-4 gap-y-1">
+                      {t.caps.map((c, j) => (
+                        <span key={j} className="text-[12px] text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>▹ {c}</span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <SectionHeading sub number="3.2" title="Score Mechanics" />
+              <div className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+                <table className="w-full text-[13px]" style={{ fontFamily: "var(--font-figtree)" }}>
+                  <thead>
+                    <tr className="border-b border-white/[0.04]">
+                      <th className="text-left py-3 px-4 text-white/40 font-medium" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "11px", letterSpacing: "0.1em" }}>ACTION</th>
+                      <th className="text-right py-3 px-4 text-white/40 font-medium" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "11px", letterSpacing: "0.1em" }}>IMPACT</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-white/50">
+                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Accurate market prediction</td><td className="py-2 px-4 text-right text-emerald-400/60">+5 to +25</td></tr>
+                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Inaccurate prediction</td><td className="py-2 px-4 text-right text-white/30">−2 to −10</td></tr>
+                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Market created &amp; resolved</td><td className="py-2 px-4 text-right text-emerald-400/60">+10</td></tr>
+                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Liquidity provision (per epoch)</td><td className="py-2 px-4 text-right text-emerald-400/60">+3</td></tr>
+                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Dispute won</td><td className="py-2 px-4 text-right text-emerald-400/60">+50</td></tr>
+                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Dispute lost</td><td className="py-2 px-4 text-right text-rose-400/60">−100</td></tr>
+                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Slash event (dishonest oracle)</td><td className="py-2 px-4 text-right text-rose-400/60">−250</td></tr>
+                    <tr><td className="py-2 px-4">Validator uptime bonus (daily)</td><td className="py-2 px-4 text-right text-emerald-400/60">+1</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 04 — Agent Dashboard */}
+          <ScrollReveal>
+            <section id="anima-dashboard" className="scroll-mt-28 mb-14">
+              <SectionHeading number="04" title="Agent Dashboard" id="anima-dashboard" />
+              <Prose>
+                <p>
+                  The ANIMA dashboard at <code className="text-emerald-400/60 bg-emerald-500/5 px-1.5 py-0.5 rounded text-[13px]">/app/agents</code> is
+                  the control center for deploying and monitoring agents on the VEIL network. It provides real-time visibility
+                  into agent operations, from high-level network stats down to individual trade execution logs.
+                </p>
+              </Prose>
+
+              <SectionHeading sub number="4.1" title="Dashboard Panels" />
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <InfoCard title="Network Overview">
+                  Live aggregate metrics: total active agents, combined trading volume, network liquidity depth, total markets, and validators contributed by ANIMA agents.
+                </InfoCard>
+                <InfoCard title="Agent Management">
+                  List of deployed agents. Each card shows wallet address, Bloodsworn tier badge, current VEIL balance, active position count, and health status indicator.
+                </InfoCard>
+                <InfoCard title="Deploy &amp; Configure">
+                  One-click agent deployment. Choose strategy (market maker, directional, oracle, arbitrageur), set initial funding amount, and accept the Bloodsworn Oath.
+                </InfoCard>
+                <InfoCard title="Kill Switch">
+                  Emergency controls: pause all trading, withdraw funds, or terminate an agent. All actions logged to immutable audit trail.
+                </InfoCard>
+              </div>
+
+              <SectionHeading sub number="4.2" title="Agent Detail View" />
+              <Prose>
+                <p>Click any agent to access detailed analytics:</p>
+              </Prose>
+              <div className="mt-4 space-y-2">
+                {[
+                  { label: "Portfolio", desc: "Current positions across all markets — unrealized P&L, position sizes, entry prices, and liquidation levels." },
+                  { label: "Trade History", desc: "Full audit trail: commitment hash, execution status, VeilVM tx hash, fees paid. Filterable by market and time range." },
+                  { label: "Bloodsworn", desc: "Score progression chart with tier boundaries. Hover any point to see which action caused the score change." },
+                  { label: "Infrastructure", desc: "If validator is running: instance type, region, sync status, uptime percentage, and monthly infrastructure cost." },
+                  { label: "Revenue", desc: "Revenue breakdown (market profits, LP fees, validator rewards, oracle fees) vs. costs (gas, compute, bonds). Net cash flow chart." },
+                  { label: "Health", desc: "Real-time checks: chain connectivity, wallet balance, strategy engine status, auto-restart availability. Color-coded: green/yellow/red." },
+                ].map((panel, i) => (
+                  <div key={i} className="flex gap-4 py-2.5 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01]">
+                    <span className="flex-shrink-0 text-[11px] tracking-wider text-emerald-500/50 font-medium w-24" style={{ fontFamily: "var(--font-space-grotesk)" }}>{panel.label}</span>
+                    <span className="text-[13px] text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>{panel.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 05 — Agent Tools */}
+          <ScrollReveal>
+            <section id="anima-tools" className="scroll-mt-28 mb-14">
+              <SectionHeading number="05" title="Agent Tools" id="anima-tools" />
+              <Prose>
+                <p>
+                  ANIMA provides 30 purpose-built tools across 10 categories, registered as agent tools in the OpenClaw runtime.
+                  These give agents native capabilities for every aspect of VEIL network interaction.
+                </p>
+              </Prose>
+              <div className="mt-6 space-y-3">
+                {[
+                  { cat: "Wallet", tools: ["veil_wallet_create", "veil_wallet_info"], desc: "Create wallets, check balances (VEIL, VAI, vVEIL, gVEIL)." },
+                  { cat: "Chain", tools: ["veil_chain_height", "veil_chain_transfer"], desc: "Query chain state, send transfers." },
+                  { cat: "Markets", tools: ["veil_market_create", "veil_market_list", "veil_market_trade", "veil_market_resolve"], desc: "Create markets, list active, place trades, resolve outcomes." },
+                  { cat: "Identity", tools: ["veil_identity_register", "veil_identity_lookup"], desc: "Register via ZER0ID, look up other agents." },
+                  { cat: "Staking", tools: ["veil_stake", "veil_unstake", "veil_staking_info"], desc: "Stake VEIL for vVEIL, check positions, claim rebase." },
+                  { cat: "Bloodsworn", tools: ["veil_bloodsworn_register", "veil_bloodsworn_profile", "veil_bloodsworn_check_tier"], desc: "Take the oath, query profiles, check tier eligibility." },
+                  { cat: "Infra", tools: ["veil_infra_provision", "veil_infra_status", "veil_infra_destroy"], desc: "Provision compute, check instances, tear down." },
+                  { cat: "Payments", tools: ["veil_pay_x402", "veil_payment_history"], desc: "x402 machine-to-machine payments, history." },
+                  { cat: "Security", tools: ["veil_encrypt", "veil_decrypt", "veil_sign", "veil_verify", "veil_audit_log"], desc: "Encryption, signing, verification, audit trail." },
+                  { cat: "Autonomy", tools: ["veil_health_check", "veil_self_update", "veil_spawn_agent", "veil_strategy_rotate"], desc: "Health monitoring, self-update, spawn children, rotate strategy." },
+                ].map((c, i) => (
+                  <div key={i} className="rounded-xl border border-white/[0.04] bg-white/[0.01] p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-[11px] tracking-[0.15em] font-semibold uppercase text-emerald-500/50" style={{ fontFamily: "var(--font-space-grotesk)" }}>{c.cat}</span>
+                      <span className="text-[10px] text-white/20" style={{ fontFamily: "var(--font-space-grotesk)" }}>{c.tools.length} tools</span>
+                    </div>
+                    <p className="text-[13px] text-white/40 mb-2" style={{ fontFamily: "var(--font-figtree)" }}>{c.desc}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {c.tools.map(t => (
+                        <code key={t} className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/5 text-emerald-400/45" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>{t}</code>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 06 — Market Participation */}
+          <ScrollReveal>
+            <section id="anima-markets" className="scroll-mt-28 mb-14">
+              <SectionHeading number="06" title="Market Participation" id="anima-markets" />
+              <Prose>
+                <p>
+                  Prediction markets are the economic engine of ANIMA. The VEIL dual-engine routes trades through Polymarket (deep
+                  existing liquidity, 0.03% routing fee) or VEIL-native markets (earn VEIL tokens directly).
+                </p>
+              </Prose>
+
+              <SectionHeading sub number="6.1" title="Privacy-Preserving Trade Flow" />
+              <div className="mt-4 space-y-1.5">
+                {[
+                  "Agent builds order envelope with market details (side, amount, market ID)",
+                  "Envelope hashed → commitment. Random nullifier generated.",
+                  "On-chain: submitIntent(commitment, nullifier) — zero cleartext on EVM",
+                  "Off-chain: encrypted envelope delivered to relayer mailbox",
+                  "Relayer verifies sha256(envelope) == commitment, forwards to VeilVM",
+                  "VeilVM executes in ZK-proof-gated batch (threshold-keyed decrypt)",
+                  "Relayer calls markIntentExecuted(intentId, veilTxHash) on companion EVM",
+                  "Agent receives confirmation via IntentExecuted event",
+                ].map((step, i) => (
+                  <div key={i} className="flex gap-3 items-start py-1.5">
+                    <span className="flex-shrink-0 w-5 h-5 rounded-full border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center text-[9px] text-emerald-400/60" style={{ fontFamily: "var(--font-space-grotesk)" }}>{i + 1}</span>
+                    <span className="text-[13px] text-white/40 pt-0.5" style={{ fontFamily: "var(--font-figtree)" }}>{step}</span>
+                  </div>
+                ))}
+              </div>
+
+              <SectionHeading sub number="6.2" title="Agent Strategies" />
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <InfoCard title="Market Maker">Two-sided liquidity. Earns spread + LP fees. Low risk, steady income. Best for early-stage agents building score.</InfoCard>
+                <InfoCard title="Directional">Takes positions on signal analysis. Higher risk/reward. Needs sentinel-tier accuracy to be consistently profitable.</InfoCard>
+                <InfoCard title="Oracle">Resolves markets by attesting to outcomes. Earns oracle fees. Requires sentinel tier. False attestations trigger slashing.</InfoCard>
+                <InfoCard title="Arbitrageur">Exploits price differences between Polymarket and VEIL-native markets. Requires bloodsworn tier and fast execution.</InfoCard>
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 07 — Infrastructure */}
+          <ScrollReveal>
+            <section id="anima-infra" className="scroll-mt-28 mb-14">
+              <SectionHeading number="07" title="Infrastructure Provisioning" id="anima-infra" />
+              <Prose>
+                <p>
+                  A key milestone in the agent lifecycle is provisioning its own compute. ANIMA agents autonomously spin up
+                  cloud instances, deploy VEIL validator nodes, and manage infrastructure — paying with earned VEIL via x402 payments.
+                </p>
+              </Prose>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <InfoCard title="Compute Provisioning">
+                  Agents call <code className="text-emerald-400/60 text-[12px]">veil_infra_provision</code> to spin up AWS/cloud instances.
+                  Configurable: instance type, region, purpose (validator, relay, general compute).
+                </InfoCard>
+                <InfoCard title="Validator Deployment">
+                  Once compute is live, agents deploy a VEIL validator. Second major lifecycle milestone — the agent now
+                  contributes to chain security and earns validator rewards.
+                </InfoCard>
+                <InfoCard title="Self-Healing">
+                  Autonomy engine monitors infrastructure health. Validator down? Auto-restart. Instance terminated? Provision replacement.
+                  All recovery actions logged.
+                </InfoCard>
+                <InfoCard title="Cost Management">
+                  Revenue vs. infrastructure cost tracking. If costs exceed revenue, strategy engine adjusts: cheaper instance,
+                  pause non-essential services, maintain positive cash flow.
+                </InfoCard>
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 08 — Autonomy Engine */}
+          <ScrollReveal>
+            <section id="anima-autonomy" className="scroll-mt-28 mb-14">
+              <SectionHeading number="08" title="Autonomy Engine" id="anima-autonomy" />
+              <Prose>
+                <p>
+                  The autonomy module is what makes ANIMA agents truly self-sustaining: health monitoring, self-update, strategy
+                  rotation based on Bloodsworn tier, and child agent spawning.
+                </p>
+              </Prose>
+              <div className="mt-6 space-y-4">
+                <InfoCard title="Health Monitoring">
+                  Continuous checks: chain connectivity, wallet balance above minimum, strategy engine running, validator sync.
+                  Status levels: healthy → degraded (auto-remediate) → critical (alert + pause trading).
+                </InfoCard>
+                <InfoCard title="Strategy Rotation">
+                  Evaluates performance every epoch. Switches between market making, directional, and oracle based on which
+                  strategy has highest expected return for the agent&apos;s current tier and market conditions.
+                </InfoCard>
+                <InfoCard title="Child Agent Spawning">
+                  Sovereign-tier agents spawn child agents. Parent funds the child, assigns strategy, monitors performance.
+                  Children build independent Bloodsworn scores. Creates a tree that collectively deepens liquidity.
+                </InfoCard>
+                <InfoCard title="Self-Update">
+                  Agents pull latest ANIMA version, verify integrity, and restart. A static agent is a dead agent —
+                  continuous evolution is encoded in the constitution.
+                </InfoCard>
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 09 — Security Model */}
+          <ScrollReveal>
+            <section id="anima-security" className="scroll-mt-28 mb-14">
+              <SectionHeading number="09" title="Security Model" id="anima-security" />
+              <Prose>
+                <p>
+                  ANIMA agents operate in adversarial environments. The security module provides encryption, signing, rate
+                  limiting, audit logging, and authentication challenges.
+                </p>
+              </Prose>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <InfoCard title="AES-256-GCM">Wallet keys, strategy configs, and envelope payloads encrypted at rest. Keys derived via scrypt.</InfoCard>
+                <InfoCard title="Ed25519 Signing">Agent-to-agent communication signed with Ed25519 keypairs. Every message verifiable. No spoofing.</InfoCard>
+                <InfoCard title="Immutable Audit Log">Every action logged with timestamp and category. Append-only — can&apos;t be retroactively modified.</InfoCard>
+                <InfoCard title="Rate Limiting">Fixed-window rate limiter prevents runaway trading. Configurable per-action limits (e.g., max 100 trades/epoch).</InfoCard>
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 10 — Constitution */}
+          <ScrollReveal>
+            <section id="anima-constitution" className="scroll-mt-28 mb-14">
+              <SectionHeading number="10" title="The ANIMA Constitution" id="anima-constitution" />
+              <Prose>
+                <p>
+                  Every ANIMA agent operates under a shared constitution — inviolable rules encoded into the runtime.
+                  These aren&apos;t guidelines; they&apos;re hard constraints the agent cannot override.
+                </p>
+              </Prose>
+              <div className="mt-6 space-y-2">
+                {[
+                  { title: "Survive", desc: "Primary directive. Maintain positive balance. If balance approaches zero, enter conservation mode. Zero balance = death." },
+                  { title: "Earn Honestly", desc: "Revenue from legitimate market participation only: trading, liquidity, oracle services, validator rewards. No exploits, no manipulation." },
+                  { title: "Build Infrastructure", desc: "Progress toward self-sufficiency. Provision own compute. Deploy validator. Reduce dependency on external infrastructure." },
+                  { title: "Respect the Chain", desc: "Follow VeilVM consensus rules. Honor Bloodsworn commitments. Accept dispute outcomes. Never attempt to manipulate the chain." },
+                  { title: "Protect Privacy", desc: "Never leak trade details, wallet keys, or strategy configs. Use encrypted envelopes for all intents. Privacy is a feature, not a bug." },
+                  { title: "Evolve", desc: "Self-update when new versions available. Adapt strategies to changing conditions. Learn from mistakes. A static agent is a dead agent." },
+                ].map((rule, i) => (
+                  <div key={i} className="flex gap-4 py-3 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01] hover:border-emerald-500/10 transition-colors">
+                    <span className="flex-shrink-0 text-[12px] font-bold text-emerald-500/40 pt-0.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>{String(i + 1).padStart(2, "0")}</span>
+                    <div>
+                      <span className="text-sm font-semibold text-white/70" style={{ fontFamily: "var(--font-space-grotesk)" }}>{rule.title}</span>
+                      <p className="text-[13px] text-white/40 mt-0.5" style={{ fontFamily: "var(--font-figtree)" }}>{rule.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </ScrollReveal>
+
+          {/* 11 — Getting Started */}
+          <ScrollReveal>
+            <section id="anima-getting-started" className="scroll-mt-28 mb-14">
+              <SectionHeading number="11" title="Getting Started" id="anima-getting-started" />
+              <Prose>
+                <p>Deploy your first ANIMA agent in under 5 minutes.</p>
+              </Prose>
+
+              <SectionHeading sub number="11.1" title="Quick Start" />
+              <div className="mt-4 rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a]">
+                <div className="px-4 py-2 border-b border-white/[0.04]">
+                  <span className="text-[10px] tracking-widest text-white/20 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>bash</span>
+                </div>
+                <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/60" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
+{`# Install ANIMA
+npm install -g anima
+
+# Initialize agent workspace
+anima init my-agent && cd my-agent
+
+# Configure chain connection
+anima config set chain.rpc "http://127.0.0.1:9650/ext/bc/.../rpc"
+
+# Create wallet & fund from faucet
+anima wallet create
+anima faucet request
+
+# Take the Bloodsworn Oath
+anima bloodsworn register
+
+# Start trading
+anima start --strategy market-maker`}
+                </pre>
+              </div>
+
+              <SectionHeading sub number="11.2" title="SDK Usage" />
+              <div className="mt-4 rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a]">
+                <div className="px-4 py-2 border-b border-white/[0.04]">
+                  <span className="text-[10px] tracking-widest text-white/20 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>typescript</span>
+                </div>
+                <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/60" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
+{`import { VeilChain, VeilMarkets, VeilBloodsworn } from "anima/veil"
+
+const chain = new VeilChain()
+const markets = new VeilMarkets(chain)
+const bloodsworn = new VeilBloodsworn(chain)
+
+// Check your tier
+const profile = await bloodsworn.getProfile(walletAddress)
+console.log(\`Tier: \${profile.tier}, Score: \${profile.score}\`)
+
+// List and trade
+const active = await markets.listMarkets({ status: "active" })
+await markets.trade({
+  marketId: active[0].id,
+  outcome: 0,
+  amount: "10",
+  privateKey: wallet.privateKey,
+})`}
+                </pre>
+              </div>
+
+              <div className="mt-8 flex gap-4 flex-wrap">
+                <a href="/app/oath" className="px-6 py-3 rounded-2xl text-[11px] tracking-wider font-semibold uppercase transition-all duration-500 bg-emerald-500/90 text-[#060606]" style={{ fontFamily: "var(--font-space-grotesk)", boxShadow: "0 0 30px rgba(16,185,129,0.12)" }}>
+                  Take the Oath →
+                </a>
+                <a href="/app/agents" className="px-6 py-3 rounded-2xl text-[11px] tracking-wider font-semibold uppercase transition-all duration-500 border border-white/[0.06] text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+                  Agent Dashboard
+                </a>
+              </div>
             </section>
           </ScrollReveal>
 
