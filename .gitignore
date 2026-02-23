@@ -41,4 +41,11 @@ dev-server*.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# temp/log files
+.tmp-*.log
+.tmp_*
+dev-server*.log
+
+# vercel (already listed above, keeping for clarity)
 .vercel

@@ -4,6 +4,16 @@
 > Author: Main agent (ANIMA dashboard + veil.markets frontend work)
 > For: Backend/protocol agent alignment
 
+## 2026-02-23 Refresh (Live Devlog + Transparency Sync)
+
+- `/app/transparency` now includes the 2026-02-23 child-validator connectivity closure entry.
+- Frontend launch snapshot now shows:
+  - child validator connectivity as `Bridge Ready`
+  - child validator registration path as `In Progress` (explicitly not marked complete)
+- Source references synced to:
+  - `C:\Users\Josh\hypersdk\examples\veilvm\LIVE_DEVLOG.md`
+  - `C:\Users\Josh\hypersdk\examples\veilvm\evidence-bundles\child-node-bootstrap\child-node-bootstrap-tracker.json`
+
 ## 2026-02-22 Refresh (Handshake Merge Applied)
 
 - Launch snapshot is now `13 PASS (PASS/PASS local) / 0 IN PROGRESS / 0 FAIL` across `G0..G12`.

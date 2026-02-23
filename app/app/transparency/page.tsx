@@ -54,6 +54,12 @@ const metrics = [
     target: "PASS (local): tkroll-20260222-190103",
     status: "warning" as const,
   },
+  {
+    label: "Child Validator Connectivity",
+    value: "Bridge Ready",
+    target: "Operator staking/RPC reachable via cloudflared Access TCP sidecars",
+    status: "healthy" as const,
+  },
 ]
 
 const principles = [
@@ -80,6 +86,15 @@ const principles = [
 ]
 
 const developerJournal = [
+  {
+    date: "2026-02-23",
+    title: "Child Validator Connectivity Blocker Cleared",
+    summary:
+      "Operator staking and RPC reachability from child sandbox is now live through deterministic bridge mode: veil-staking.thesecretlab.app and veil-rpc-tcp.thesecretlab.app are tunneled and verified from child sidecars (127.0.0.1:29651 and 127.0.0.1:29660).",
+    briefing:
+      "Topology blocker is cleared; remaining blocker is validator registration/activation transaction execution parameters.",
+    status: "Completed",
+  },
   {
     date: "2026-02-22",
     title: "Operator Execution Aligned to Launched Self-Host Chain",
@@ -236,6 +251,12 @@ const developerJournal = [
 
 const changelog = [
   {
+    date: "2026-02-23",
+    change:
+      "Cleared child validator network topology blocker by enabling operator staking/RPC bridge endpoints and validating live child-side connectivity over cloudflared Access TCP.",
+    type: "Hardening",
+  },
+  {
     date: "2026-02-22",
     change:
       "Launch decision advanced to GO FOR PRODUCTION after sign-off sheet completion (6/6 PASS) and readiness parser alignment for GO decision forms.",
@@ -334,6 +355,12 @@ const changelog = [
 ]
 
 const launchBlockers = [
+  {
+    gate: "Child Validator Registration Path",
+    detail:
+      "In Progress: connectivity is now live (staking/rpc bridge verified), but validator registration/activation execution still requires finalized l1/validator-manager/stake/reward-owner tx path for child NodeID.",
+    status: "In Progress",
+  },
   {
     gate: "Cryptographic Threshold Keying",
     detail:
