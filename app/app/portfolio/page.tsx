@@ -1,5 +1,7 @@
 "use client"
 
+import { VeilFooter } from '@/components/brand'
+
 import { useState, useRef, useEffect, ReactNode } from "react"
 import Link from "next/link"
 import { PortfolioChart } from "@/components/portfolio-chart"

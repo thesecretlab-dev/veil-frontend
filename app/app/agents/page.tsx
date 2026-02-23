@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useInView, useMotionValue, useTransform, AnimatePresence } from 'framer-motion'
+import { VeilFooter } from '@/components/brand'
 import {
   Bot,
   Zap,
@@ -699,8 +700,7 @@ await veil.orders.submit({
         </div>
       </section>
 
-      {/* bottom spacer for fixed footer overlap */}
-      <div className="h-20" />
+      <VeilFooter />
     </div>
   )
 }

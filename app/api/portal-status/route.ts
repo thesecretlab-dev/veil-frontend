@@ -58,6 +58,12 @@ type MvpRun = {
     totalDurationMs?: number
     targetMinutes?: number
     passed?: boolean
+    strictPassed?: boolean
+    continuityPassed?: boolean
+    provisionedFresh?: boolean
+    provisioningModeRequested?: "auto" | "fresh" | "reuse"
+    provisioningModeExecuted?: "fresh" | "reuse" | null
+    outcome?: "strict-pass" | "continuity-pass" | "failed"
   }
   output?: {
     artifactPath?: string
@@ -71,6 +77,12 @@ type MvpTracker = {
     updated?: string
     last_run_artifact?: string
     last_run_duration_ms?: number
+    strict_passed?: boolean
+    continuity_passed?: boolean
+    provisioned_fresh?: boolean
+    provision_mode_requested?: "auto" | "fresh" | "reuse"
+    provision_mode_executed?: "fresh" | "reuse" | null
+    outcome?: "strict-pass" | "continuity-pass" | "failed"
   }
   milestones?: Array<{
     id?: string
@@ -294,6 +306,16 @@ export async function GET() {
     mvp: {
       available: Boolean(mvpRun),
       passed: mvpRun?.meta?.passed ?? null,
+      strictPassed: mvpRun?.meta?.strictPassed ?? mvpRun?.meta?.passed ?? null,
+      continuityPassed:
+        mvpRun?.meta?.continuityPassed ??
+        mvpRun?.meta?.strictPassed ??
+        mvpRun?.meta?.passed ??
+        null,
+      provisionedFresh: mvpRun?.meta?.provisionedFresh ?? null,
+      provisioningModeRequested: mvpRun?.meta?.provisioningModeRequested ?? null,
+      provisioningModeExecuted: mvpRun?.meta?.provisioningModeExecuted ?? null,
+      outcome: mvpRun?.meta?.outcome ?? null,
       targetMinutes: mvpRun?.meta?.targetMinutes ?? null,
       totalDurationMs: mvpRun?.meta?.totalDurationMs ?? null,
       totalDurationMinutes:
@@ -314,6 +336,12 @@ export async function GET() {
       trackerStatus: mvpTracker?._meta?.status ?? null,
       trackerUpdated: mvpTracker?._meta?.updated ?? null,
       trackerLastArtifact: mvpTracker?._meta?.last_run_artifact ?? null,
+      trackerStrictPassed: mvpTracker?._meta?.strict_passed ?? null,
+      trackerContinuityPassed: mvpTracker?._meta?.continuity_passed ?? null,
+      trackerProvisionedFresh: mvpTracker?._meta?.provisioned_fresh ?? null,
+      trackerProvisionModeRequested: mvpTracker?._meta?.provision_mode_requested ?? null,
+      trackerProvisionModeExecuted: mvpTracker?._meta?.provision_mode_executed ?? null,
+      trackerOutcome: mvpTracker?._meta?.outcome ?? null,
     },
     orderRouter: {
       configured: Boolean(orderRouterBase),
@@ -326,7 +354,13 @@ export async function GET() {
       bridgeReady: bridgeStatus?.overallPass === true,
       chainlinkFresh: chainlinkFeeds.length > 0 && staleFeeds === 0,
       prelaunchReady: readiness?.overallPass === true,
-      mvpReady: mvpRun?.meta?.passed === true,
+      mvpReady:
+        (mvpRun?.meta?.strictPassed ?? mvpRun?.meta?.passed ?? false) === true,
+      mvpContinuityReady:
+        (mvpRun?.meta?.continuityPassed ??
+          mvpRun?.meta?.strictPassed ??
+          mvpRun?.meta?.passed ??
+          false) === true,
       orderRouterReady: Boolean(orderRouterBase) && orderRouterProbe.reachable,
     },
   })

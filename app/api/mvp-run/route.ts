@@ -42,6 +42,12 @@ type MvpRunStep = {
 type MvpRunArtifact = {
   meta?: {
     passed?: boolean
+    strictPassed?: boolean
+    continuityPassed?: boolean
+    provisionedFresh?: boolean
+    provisioningModeRequested?: "auto" | "fresh" | "reuse"
+    provisioningModeExecuted?: "fresh" | "reuse" | null
+    outcome?: "strict-pass" | "continuity-pass" | "failed"
     startedAt?: string
     endedAt?: string
     totalDurationMs?: number
@@ -56,6 +62,7 @@ type MvpRunArtifact = {
 type StartRunPayload = {
   paymentTxHash?: string
   paymentTo?: string
+  provisionMode?: "auto" | "fresh" | "reuse"
   minAvax?: number
   targetUsd?: number
   usdPerAvax?: number
@@ -189,6 +196,7 @@ function extractArtifactPath(logs: string[]): string | null {
 function parsePayload(body: StartRunPayload): {
   paymentTxHash: string
   paymentTo?: string
+  provisionMode?: "auto" | "fresh" | "reuse"
   minAvax?: string
   targetUsd?: string
   usdPerAvax?: string
@@ -204,6 +212,7 @@ function parsePayload(body: StartRunPayload): {
   const parsed: {
     paymentTxHash: string
     paymentTo?: string
+    provisionMode?: "auto" | "fresh" | "reuse"
     minAvax?: string
     targetUsd?: string
     usdPerAvax?: string
@@ -223,6 +232,13 @@ function parsePayload(body: StartRunPayload): {
     const addr = body.operatorAddress.trim()
     if (!isAddress(addr)) throw new Error("operatorAddress must be a valid 0x address")
     parsed.operatorAddress = addr
+  }
+  if (body.provisionMode !== undefined) {
+    const mode = String(body.provisionMode).trim().toLowerCase()
+    if (mode !== "auto" && mode !== "fresh" && mode !== "reuse") {
+      throw new Error("provisionMode must be one of auto|fresh|reuse")
+    }
+    parsed.provisionMode = mode as "auto" | "fresh" | "reuse"
   }
 
   const maybePositive = (value: unknown, label: string): string | undefined => {
@@ -300,8 +316,10 @@ export async function POST(request: NextRequest) {
   const automatonDir = process.env.VEIL_AUTOMATON_DIR || DEFAULT_AUTOMATON_DIR
   const command = process.platform === "win32" ? "pnpm.cmd" : "pnpm"
   const args = ["mvp:build-games", "--", "--payment-tx", parsed.paymentTxHash]
+  const provisionMode = parsed.provisionMode || "fresh"
 
   if (parsed.paymentTo) args.push("--payment-to", parsed.paymentTo)
+  args.push("--provision-mode", provisionMode)
   if (parsed.minAvax) args.push("--min-avax", parsed.minAvax)
   if (parsed.targetUsd) args.push("--target-usd", parsed.targetUsd)
   if (parsed.usdPerAvax) args.push("--usd-per-avax", parsed.usdPerAvax)

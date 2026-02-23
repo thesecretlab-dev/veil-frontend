@@ -37,17 +37,23 @@ Updated: 2026-02-23
 pnpm.cmd exec tsx src/index.ts --build-games-mvp \
   --payment-tx 0xYOUR_TX_HASH \
   --payment-to 0xRECIPIENT \
+  --provision-mode fresh \
   --conway-api-key $CONWAY_API_KEY \
-  --control-sandbox-id YOUR_EXISTING_SANDBOX_ID \
   --veil-rpc-url-remote https://YOUR_VEIL_RPC_FOR_CLOUD \
   --veil-rpc-url-local http://127.0.0.1:9660 \
   --tracker-path C:/Users/Josh/Desktop/private-github-ready-20260219/veil-frontend/docs/claude-handshake/build-games-2026-mvp-tracker.json \
   --publish-dir C:/Users/Josh/Desktop/private-github-ready-20260219/veil-frontend/public/maiev
 ```
 
+Run outcome semantics:
+
+1. `strict-pass`: all milestones pass in SLA and M2 used fresh provisioning.
+2. `continuity-pass`: all milestones pass in SLA but M2 reused an existing sandbox.
+3. `failed`: one or more required milestones failed or SLA exceeded.
+
 Low-credit continuity mode:
 
-1. If Conway credits are `0` and new sandbox provisioning returns `402 INSUFFICIENT_CREDITS`, set `--control-sandbox-id` to a currently running sandbox.
+1. If Conway credits are `0` and new sandbox provisioning returns `402 INSUFFICIENT_CREDITS`, rerun with `--provision-mode reuse --control-sandbox-id <id>`.
 2. In this mode, M2 records a reused sandbox (probe-verified) instead of creating a brand-new one.
 3. Treat reused-sandbox runs as continuity validation evidence; keep at least one recent fresh-provision pass when credits are available.
 

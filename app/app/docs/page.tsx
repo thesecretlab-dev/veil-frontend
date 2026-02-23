@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, ReactNode } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import Link from "next/link"
+import { VeilFooter, FilmGrain as BrandFilmGrain } from "@/components/brand"
 
 /* ─────────────────────── helpers ─────────────────────── */
 
@@ -1540,19 +1541,7 @@ await markets.trade({
         </main>
       </div>
 
-      {/* ── Fixed footer ── */}
-      <footer className="border-t border-white/[0.04] bg-[#060606]/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[12px] text-white/20" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            © 2026 VEIL · TSL — No users. Only developers.
-          </p>
-          <div className="flex items-center gap-6 text-[12px] text-white/20" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            <Link href="/app" className="hover:text-white/40 transition">Home</Link>
-            <Link href="/app/investor-deck" className="hover:text-white/40 transition">Investors</Link>
-            <Link href="/app/docs" className="text-emerald-500/40">Docs</Link>
-          </div>
-        </div>
-      </footer>
+      <VeilFooter />
     </div>
   )
 }

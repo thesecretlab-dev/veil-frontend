@@ -1,5 +1,7 @@
 "use client"
 
+import { VeilFooter } from '@/components/brand'
+
 import { useState, useRef } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import { Copy, Download, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react"

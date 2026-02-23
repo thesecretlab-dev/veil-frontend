@@ -1,5 +1,7 @@
 "use client"
 
+import { VeilFooter } from '@/components/brand'
+
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { AlertTriangle, ArrowLeft, CheckCircle2, Loader2, Play, RefreshCw } from "lucide-react"
@@ -32,6 +34,12 @@ type MvpRunStep = {
 type MvpRunArtifact = {
   meta?: {
     passed?: boolean
+    strictPassed?: boolean
+    continuityPassed?: boolean
+    provisionedFresh?: boolean
+    provisioningModeRequested?: "auto" | "fresh" | "reuse"
+    provisioningModeExecuted?: "fresh" | "reuse" | null
+    outcome?: "strict-pass" | "continuity-pass" | "failed"
     startedAt?: string
     endedAt?: string
     totalDurationMs?: number
@@ -140,6 +148,7 @@ export default function LaunchPage() {
         },
         body: JSON.stringify({
           paymentTxHash: hash,
+          provisionMode: "fresh",
           minAvax: 0.1,
           targetUsd: 100,
         }),
@@ -161,6 +170,11 @@ export default function LaunchPage() {
     typeof api.latestRun?.meta?.totalDurationMs === "number"
       ? Number((api.latestRun.meta.totalDurationMs / 60_000).toFixed(2))
       : null
+  const strictPassed = api.latestRun?.meta?.strictPassed ?? api.latestRun?.meta?.passed ?? null
+  const continuityPassed = api.latestRun?.meta?.continuityPassed ?? strictPassed
+  const provisionModeSummary = api.latestRun?.meta
+    ? `${api.latestRun.meta.provisioningModeRequested || "auto"} -> ${api.latestRun.meta.provisioningModeExecuted || "n/a"}`
+    : null
 
   const runError = useMemo(() => {
     const fromRunner = api.runner.error
@@ -190,7 +204,7 @@ export default function LaunchPage() {
           <p className="text-[11px] uppercase tracking-[0.22em] text-emerald-300/80">Build Games 2026 MVP Runner</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">Payment TX -&gt; Server Provision -&gt; VEIL Validation</h1>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/65">
-            Submit the AVAX payment tx hash and launch the scripted MVP run. The runner writes artifacts to MAIEV, updates the handshake tracker, and surfaces live status below.
+            Submit the AVAX payment tx hash and launch the scripted MVP run. Launch runs default to strict mode (fresh server provision, no sandbox reuse), then write artifacts to MAIEV and update the handshake tracker.
           </p>
         </div>
 
@@ -247,13 +261,18 @@ export default function LaunchPage() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <p className="text-xs uppercase tracking-[0.14em] text-white/60">Latest Run Evidence</p>
-            {api.latestRun?.meta?.passed === true && (
+            {strictPassed === true && (
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-emerald-200">
                 <CheckCircle2 className="h-3.5 w-3.5" />
-                Passed
+                Strict Pass
               </span>
             )}
-            {api.latestRun?.meta?.passed === false && (
+            {strictPassed !== true && continuityPassed === true && (
+              <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-amber-200">
+                Continuity Pass
+              </span>
+            )}
+            {strictPassed !== true && continuityPassed !== true && api.latestRun?.meta?.outcome === "failed" && (
               <span className="rounded-full border border-red-400/30 bg-red-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-red-200">
                 Failed
               </span>
@@ -264,6 +283,9 @@ export default function LaunchPage() {
             <p>Duration: <span className="font-mono text-white/80">{durationMinutes !== null ? `${durationMinutes}m` : "-"}</span></p>
             <p>Target: <span className="font-mono text-white/80">{api.latestRun?.meta?.targetMinutes ?? "-"}m</span></p>
             <p>Artifact: <span className="font-mono text-white/80 break-all">{api.latestRun?.output?.artifactPath || api.runner.artifactPath || "-"}</span></p>
+            <p>Provision mode: <span className="font-mono text-white/80">{provisionModeSummary || "-"}</span></p>
+            <p>Provisioned fresh: <span className="font-mono text-white/80">{api.latestRun?.meta?.provisionedFresh === true ? "yes" : api.latestRun?.meta ? "no" : "-"}</span></p>
+            <p>Outcome: <span className="font-mono text-white/80">{api.latestRun?.meta?.outcome || "-"}</span></p>
           </div>
 
           <div className="space-y-2">

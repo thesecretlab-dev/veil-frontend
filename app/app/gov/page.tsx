@@ -1,5 +1,7 @@
 "use client";
 
+import { VeilFooter } from '@/components/brand'
+
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
 import {

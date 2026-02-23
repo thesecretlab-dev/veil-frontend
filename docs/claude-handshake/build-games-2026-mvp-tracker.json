@@ -1,11 +1,17 @@
 {
   "_meta": {
     "schema": "veil.build-games-mvp-tracker.v1",
-    "updated": "2026-02-23T22:42:04.395Z",
+    "updated": "2026-02-23T23:56:48.250Z",
     "target_minutes": 20,
-    "status": "complete",
-    "last_run_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T22-42-04-396Z.json",
-    "last_run_duration_ms": 23834
+    "status": "failed",
+    "strict_passed": false,
+    "continuity_passed": false,
+    "provisioned_fresh": false,
+    "provision_mode_requested": "fresh",
+    "provision_mode_executed": null,
+    "outcome": "failed",
+    "last_run_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T23-56-48-251Z.json",
+    "last_run_duration_ms": 197
   },
   "mvp_definition": "User sends $100 in AVAX, gets a live cloud server + Codex access + ANIMA agent validating the VEIL network and working live in under 20 minutes.",
   "milestones": [
@@ -20,52 +26,52 @@
         "payment_timestamp",
         "payment_value_snapshot"
       ],
-      "last_duration_ms": 241,
-      "last_updated": "2026-02-23T22:42:04.395Z",
+      "last_duration_ms": 197,
+      "last_updated": "2026-02-23T23:56:48.250Z",
       "error": null
     },
     {
       "id": "M2_PROVISION",
       "name": "Provision live cloud server",
       "owner": "codex",
-      "status": "complete",
+      "status": "pending",
       "budget_minutes": 7,
       "evidence_required": [
         "instance_id",
         "instance_endpoint",
         "provision_log_path"
       ],
-      "last_duration_ms": 7477,
-      "last_updated": "2026-02-23T22:42:04.395Z",
+      "last_duration_ms": null,
+      "last_updated": "2026-02-23T23:56:48.250Z",
       "error": null
     },
     {
       "id": "M3_CODEX_ACCESS",
       "name": "Confirm Codex command access on new server",
       "owner": "codex",
-      "status": "complete",
+      "status": "pending",
       "budget_minutes": 3,
       "evidence_required": [
         "bootstrap_command_output",
         "environment_fingerprint"
       ],
-      "last_duration_ms": 8728,
-      "last_updated": "2026-02-23T22:42:04.395Z",
+      "last_duration_ms": null,
+      "last_updated": "2026-02-23T23:56:48.250Z",
       "error": null
     },
     {
       "id": "M4_ANIMA_VALIDATE_VEIL",
       "name": "Run ANIMA VEIL validation",
       "owner": "codex",
-      "status": "complete",
+      "status": "pending",
       "budget_minutes": 7,
       "evidence_required": [
         "veil_readiness_response",
         "chain_validation_output",
         "anima_validation_log"
       ],
-      "last_duration_ms": 7387,
-      "last_updated": "2026-02-23T22:42:04.395Z",
+      "last_duration_ms": null,
+      "last_updated": "2026-02-23T23:56:48.250Z",
       "error": null
     },
     {
@@ -81,10 +87,10 @@
       "evidence": {
         "mvp_run_json_path": "C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\public\\maiev\\mvp-run-latest.json",
         "ui_status_rendered": "maiev-surface-published",
-        "source_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T22-42-04-396Z.json"
+        "source_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T23-56-48-251Z.json"
       },
       "last_duration_ms": 0,
-      "last_updated": "2026-02-23T22:42:04.395Z",
+      "last_updated": "2026-02-23T23:56:48.250Z",
       "error": null
     }
   ],
@@ -101,38 +107,23 @@
     "ui_claims_success_without_artifacts"
   ],
   "last_run": {
-    "started_at": "2026-02-23T22:41:40.561Z",
-    "ended_at": "2026-02-23T22:42:04.395Z",
-    "total_duration_ms": 23834,
-    "passed": true,
-    "artifact_path": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T22-42-04-396Z.json",
+    "started_at": "2026-02-23T23:56:48.053Z",
+    "ended_at": "2026-02-23T23:56:48.250Z",
+    "total_duration_ms": 197,
+    "passed": false,
+    "strict_passed": false,
+    "continuity_passed": false,
+    "provisioned_fresh": false,
+    "provision_mode_requested": "fresh",
+    "provision_mode_executed": null,
+    "outcome": "failed",
+    "artifact_path": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T23-56-48-251Z.json",
     "steps": [
       {
         "id": "M1_PAYMENT",
         "name": "Detect and verify AVAX payment",
         "status": "passed",
-        "duration_ms": 241,
-        "error": null
-      },
-      {
-        "id": "M2_PROVISION",
-        "name": "Provision live cloud server",
-        "status": "passed",
-        "duration_ms": 7477,
-        "error": null
-      },
-      {
-        "id": "M3_CODEX_ACCESS",
-        "name": "Validate Codex command access on provisioned server",
-        "status": "passed",
-        "duration_ms": 8728,
-        "error": null
-      },
-      {
-        "id": "M4_ANIMA_VALIDATE_VEIL",
-        "name": "Run ANIMA VEIL validation probe from server and operator",
-        "status": "passed",
-        "duration_ms": 7387,
+        "duration_ms": 197,
         "error": null
       },
       {

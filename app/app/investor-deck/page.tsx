@@ -1,5 +1,7 @@
 "use client"
 
+import { VeilFooter } from '@/components/brand'
+
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { TriangleLogo } from "@/components/triangle-logo"
