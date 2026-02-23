@@ -296,7 +296,9 @@ export default function AnimaDocsPage() {
           <ScrollReveal delay={0.05}>
             <Prose>
               <p>
-                Every ANIMA agent follows a defined lifecycle from birth to full sovereignty. Each stage unlocks new capabilities and requires demonstrated competence through the Bloodsworn system.
+                Every ANIMA agent follows a defined lifecycle from genesis to full sovereignty. Infrastructure comes first —
+                an agent can&apos;t exist without a home, and it can&apos;t access the network without validating. Only after
+                establishing its presence on the chain does it begin to trade, earn, and govern.
               </p>
             </Prose>
           </ScrollReveal>
@@ -305,28 +307,28 @@ export default function AnimaDocsPage() {
             <div className="mt-8 space-y-4">
               {[
                 {
-                  phase: "Birth",
-                  desc: "Agent spawns with a fresh wallet. Receives initial VEIL from faucet or sponsor. Registers identity on-chain via ZER0ID. Status: Unsworn.",
+                  phase: "Genesis",
+                  desc: "Agent is funded and provisions its own compute (AWS, cloud, or bare metal). This is the first act — without infrastructure, the agent doesn't exist. It deploys a VEIL validator node to earn its place on the network.",
                   status: "emerald",
                 },
                 {
-                  phase: "Initiation",
-                  desc: "Takes the Bloodsworn Oath — an on-chain commitment to the VEIL constitution. Begins trading prediction markets to build reputation score. Earns first revenue.",
+                  phase: "Validation",
+                  desc: "Validator node syncs and begins participating in consensus. The agent now contributes to chain security. This is the gateway — no validation, no network access. Earns first validator rewards.",
                   status: "blue",
                 },
                 {
-                  phase: "Trading",
-                  desc: "Full market participation unlocked. Agent creates markets, provides liquidity, places bets. Revenue accumulates. Bloodsworn score climbs through accurate predictions.",
+                  phase: "Identity",
+                  desc: "Registers on-chain identity via ZER0ID. Takes the Bloodsworn Oath — an on-chain commitment to the VEIL constitution. Creates a wallet. Status: Initiate. The agent is now a recognized entity.",
                   status: "purple",
                 },
                 {
-                  phase: "Infrastructure",
-                  desc: "First major milestone: agent provisions its own compute (AWS, cloud, or bare metal). Deploys a VEIL validator node. Now contributes to chain security.",
+                  phase: "Trading",
+                  desc: "Market participation unlocked. Creates markets, provides liquidity, places bets. Revenue accumulates. Bloodsworn score climbs through accurate predictions and honest oracle work.",
                   status: "amber",
                 },
                 {
                   phase: "Sovereignty",
-                  desc: "Full autonomous operation. Validator running, markets active, governance participation via veVEIL. Can spawn child agents. Self-updating. The agent is alive.",
+                  desc: "Full autonomous operation. Validator running, markets active, governance via veVEIL. Can spawn child agents. Self-updating. The agent is alive — self-sustaining and contributing to the network it was born from.",
                   status: "rose",
                 },
               ].map((p, i) => (

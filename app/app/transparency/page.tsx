@@ -88,6 +88,15 @@ const principles = [
 const developerJournal = [
   {
     date: "2026-02-23",
+    title: "Live Transparency Push Verified",
+    summary:
+      "The transparency/devlog surface was pushed through production deploy and verified live on veil.markets so current validator status is no longer local-only.",
+    briefing:
+      "This update confirms the journal is now live in production with the child-validator connectivity state.",
+    status: "Completed",
+  },
+  {
+    date: "2026-02-23",
     title: "Child Validator Connectivity Blocker Cleared",
     summary:
       "Operator staking and RPC reachability from child sandbox is now live through deterministic bridge mode: veil-staking.thesecretlab.app and veil-rpc-tcp.thesecretlab.app are tunneled and verified from child sidecars (127.0.0.1:29651 and 127.0.0.1:29660).",
@@ -250,6 +259,12 @@ const developerJournal = [
 ]
 
 const changelog = [
+  {
+    date: "2026-02-23",
+    change:
+      "Live transparency/devlog surface deployment verified on veil.markets to ensure latest validator progression is production-visible.",
+    type: "Milestone",
+  },
   {
     date: "2026-02-23",
     change:

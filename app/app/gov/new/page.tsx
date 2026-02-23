@@ -1,9 +1,21 @@
 'use client'
 
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
-import { WalletGate, ConnectWalletButton } from '../components/WalletGate'
-import { ProposalForm } from '../components/ProposalForm'
+
+const WalletGate = dynamic(
+  () => import('../components/WalletGate').then((mod) => mod.WalletGate),
+  { ssr: false },
+)
+const ConnectWalletButton = dynamic(
+  () => import('../components/WalletGate').then((mod) => mod.ConnectWalletButton),
+  { ssr: false },
+)
+const ProposalForm = dynamic(
+  () => import('../components/ProposalForm').then((mod) => mod.ProposalForm),
+  { ssr: false },
+)
 
 export default function NewProposalPage() {
   return (
