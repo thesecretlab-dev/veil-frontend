@@ -30,12 +30,6 @@ function VeilCoin() {
         <meshStandardMaterial color="#0a0a0a" metalness={0.95} roughness={0.12} />
       </mesh>
 
-      {/* Rim edge highlight */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[1.5, 0.02, 8, 64]} />
-        <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.6} metalness={0.8} roughness={0.3} />
-      </mesh>
-
       {/* Front ▽ — pointing DOWN */}
       <mesh position={[0, 0, 0.11]}>
         <shapeGeometry args={[(() => {
