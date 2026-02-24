@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VEIL — Avalanche Build Games 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --emerald: #10B981;
+    --glow: rgba(16,185,129,0.15);
+    --serif: 'Instrument Serif', serif;
+    --sans: 'Space Grotesk', sans-serif;
+  }
+
+  html, body {
+    background: #000; color: #fff;
+    overflow: hidden; width: 100vw; height: 100vh;
+    font-family: var(--sans);
+  }
+
+  /* ══════════ FX LAYERS ══════════ */
+  .film-grain {
+    position: fixed; inset: 0; z-index: 200; pointer-events: none;
+    opacity: 0.035; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 128px 128px;
+  }
+  .scanlines {
+    position: fixed; inset: 0; z-index: 199; pointer-events: none; opacity: 0.015;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.25) 2px, rgba(0,0,0,0.25) 4px);
+  }
+  .vignette {
+    position: fixed; inset: 0; z-index: 31; pointer-events: none;
+    background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 0%, rgba(0,0,0,0.6) 100%);
+  }
+
+  #flare {
+    position: fixed; z-index: 35; pointer-events: none;
+    top: 50%; left: -10%; width: 120%; height: 3px;
+    background: linear-gradient(90deg, transparent 0%, rgba(16,185,129,0) 20%, rgba(16,185,129,0.08) 40%, rgba(16,185,129,0.2) 50%, rgba(16,185,129,0.08) 60%, rgba(16,185,129,0) 80%, transparent 100%);
+    opacity: 0; transform: translateY(-50%) scaleY(1);
+    transition: opacity 1.5s ease, height 1.5s ease; filter: blur(2px);
+  }
+  #flare.visible { opacity: 1; height: 6px; }
+  #flare.bloom { opacity: 1; height: 80px; filter: blur(30px); }
+
+  #pulse {
+    position: fixed; z-index: 29; pointer-events: none;
+    top: 50%; left: 50%; width: 800px; height: 800px;
+    transform: translate(-50%, -50%) scale(0); border-radius: 50%;
+    background: radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s ease; opacity: 0;
+  }
+  #pulse.active { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  #pulse.big { width: 1400px; height: 1400px; }
+
+  /* ══════════ SLIDE SYSTEM ══════════ */
+  #slide-container {
+    position: fixed; inset: 0; z-index: 60;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; padding: 0 8%;
+    will-change: transform, opacity, filter;
+    pointer-events: none;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+  .slide.in-up { animation: inUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .slide.in-scale { animation: inScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .slide.in-fade { animation: inFade 1.2s ease forwards; }
+  .slide.out { animation: slideOut 0.5s ease-in forwards; }
+
+  @keyframes inUp {
+    from { opacity: 0; transform: translateY(40px); filter: blur(10px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+  @keyframes inScale {
+    from { opacity: 0; transform: scale(0.85); filter: blur(12px); }
+    to { opacity: 1; transform: scale(1); filter: blur(0); }
+  }
+  @keyframes inFade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideOut {
+    from { opacity: 1; filter: blur(0); }
+    to { opacity: 0; filter: blur(6px); }
+  }
+
+  /* Typography — matching VEIL brand */
+  .t-tag {
+    font-family: var(--sans); font-size: 15px; font-weight: 500;
+    letter-spacing: 0.5em; text-transform: uppercase;
+    color: var(--emerald); text-align: center; margin-bottom: 28px;
+  }
+  .t-question {
+    font-family: var(--serif); font-size: 80px; line-height: 1.05;
+    text-align: center; color: #fff; font-style: italic;
+  }
+  .t-answer {
+    font-family: var(--serif); font-size: 72px; line-height: 1.05;
+    text-align: center; color: #fff;
+  }
+  .t-mega {
+    font-family: var(--serif); font-size: 180px; line-height: 0.85;
+    text-align: center; color: #fff; letter-spacing: -0.03em;
+  }
+  .t-detail {
+    font-family: var(--sans); font-size: 22px; font-weight: 400;
+    line-height: 1.7; text-align: center;
+    color: rgba(255,255,255,0.55); max-width: 920px; margin-top: 20px;
+  }
+  .t-stat {
+    font-family: var(--sans); font-size: 160px; font-weight: 700;
+    color: var(--emerald); text-align: center; line-height: 1;
+  }
+  .t-stat-label {
+    font-family: var(--sans); font-size: 16px; font-weight: 400;
+    letter-spacing: 0.35em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); text-align: center; margin-top: 16px;
+  }
+  .emerald { color: var(--emerald); }
+  .dim { color: rgba(255,255,255,0.2); }
+  .bright { color: rgba(255,255,255,0.88); }
+
+  /* Lifecycle row */
+  .lifecycle-row {
+    display: flex; gap: 32px; align-items: center; margin-top: 36px;
+  }
+  .lifecycle-row span {
+    font-family: var(--sans); font-size: 18px; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+  }
+  .lifecycle-row .arrow { color: rgba(16,185,129,0.2); font-size: 20px; }
+  .lifecycle-row .final { color: var(--emerald); }
+
+  /* Fee blocks */
+  .fee-row { display: flex; gap: 48px; align-items: flex-end; margin-top: 32px; }
+  .fee-block { text-align: center; }
+  .fee-pct { font-family: var(--sans); font-weight: 700; color: var(--emerald); line-height: 1; }
+  .fee-label { font-family: var(--sans); font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 8px; }
+
+  /* Flywheel */
+  .flywheel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .flywheel .step {
+    font-family: var(--sans); font-size: 28px; font-weight: 500;
+    color: rgba(255,255,255,0.3); letter-spacing: 0.05em;
+  }
+  .flywheel .arrow-down { font-size: 20px; color: rgba(16,185,129,0.2); }
+
+  /* Architecture grid */
+  .arch-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    margin-top: 36px; max-width: 900px;
+  }
+  .arch-card {
+    border: 1px solid rgba(16,185,129,0.15); border-radius: 12px;
+    padding: 24px; text-align: center;
+    background: rgba(16,185,129,0.03);
+  }
+  .arch-card .icon { font-size: 28px; margin-bottom: 12px; color: var(--emerald); }
+  .arch-card .label {
+    font-family: var(--sans); font-size: 14px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.7);
+  }
+  .arch-card .sub {
+    font-family: var(--sans); font-size: 12px; color: rgba(255,255,255,0.3);
+    margin-top: 6px; line-height: 1.5;
+  }
+
+  /* Persona card */
+  .persona-card {
+    border: 1px solid rgba(16,185,129,0.15); border-radius: 16px;
+    padding: 40px; max-width: 700px; text-align: left;
+    background: rgba(16,185,129,0.03);
+  }
+  .persona-card .name {
+    font-family: var(--serif); font-size: 48px; color: #fff; margin-bottom: 8px;
+  }
+  .persona-card .role {
+    font-family: var(--sans); font-size: 14px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--emerald); margin-bottom: 24px;
+  }
+  .persona-card .desc {
+    font-family: var(--sans); font-size: 16px; line-height: 1.8;
+    color: rgba(255,255,255,0.5);
+  }
+  .persona-card .desc .bright { color: rgba(255,255,255,0.85); }
+
+  /* Nav */
+  #nav {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+    z-index: 300; display: flex; gap: 12px; align-items: center;
+  }
+  #nav button {
+    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
+    color: rgba(255,255,255,0.6); font-family: var(--sans); font-size: 14px;
+    padding: 10px 24px; border-radius: 8px; cursor: pointer;
+    transition: all 0.3s ease; letter-spacing: 0.1em;
+  }
+  #nav button:hover { background: rgba(16,185,129,0.2); border-color: var(--emerald); color: #fff; }
+  #nav button.active { background: var(--emerald); color: #000; border-color: var(--emerald); font-weight: 600; }
+  #slide-counter {
+    font-family: var(--sans); font-size: 13px; letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.15); font-variant-numeric: tabular-nums;
+    margin: 0 8px;
+  }
+
+  /* Branding */
+  #brand-veil {
+    position: fixed; top: 28px; left: 32px; z-index: 250;
+    display: flex; align-items: center; gap: 10px; opacity: 0.25;
+    pointer-events: none;
+  }
+  #brand-veil .logo { color: var(--emerald); font-size: 18px; line-height: 1; }
+  #brand-veil .name {
+    font-family: var(--sans); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.35em; color: rgba(255,255,255,0.5);
+  }
+  #brand-badge {
+    position: fixed; top: 28px; right: 32px; z-index: 250;
+    font-family: var(--sans); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.4em; text-transform: uppercase;
+    color: rgba(16,185,129,0.3); pointer-events: none;
+  }
+  #brand-tsl {
+    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
+    z-index: 250; font-family: var(--sans); font-size: 10px;
+    letter-spacing: 0.4em; text-transform: uppercase;
+    color: rgba(255,255,255,0.1); pointer-events: none;
+  }
+
+  /* Team section */
+  .team-card {
+    border: 1px solid rgba(16,185,129,0.15); border-radius: 16px;
+    padding: 40px; max-width: 800px; text-align: left;
+    background: rgba(16,185,129,0.03);
+  }
+  .built-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    margin-top: 24px;
+  }
+  .built-item {
+    font-family: var(--sans); font-size: 14px; color: rgba(255,255,255,0.5);
+    padding: 8px 12px; border-left: 2px solid rgba(16,185,129,0.2);
+  }
+  .built-item .emerald { color: var(--emerald); }
+</style>
+</head>
+<body>
+
+<div id="brand-veil"><span class="logo">▽</span><span class="name">VEIL</span></div>
+<div id="brand-badge">Avalanche Build Games 2026</div>
+<div id="brand-tsl">The Secret Lab</div>
+
+<div class="film-grain"></div>
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div id="flare"></div>
+<div id="pulse"></div>
+<canvas id="particles"></canvas>
+
+<div id="slide-container">
+
+  <!-- SLIDE 0: TITLE -->
+  <div class="slide" id="s0">
+    <p class="t-tag">Avalanche Build Games 2026 — Submission 1</p>
+    <div style="font-size: 120px; color: var(--emerald); text-align: center; line-height: 1;">▽</div>
+    <h1 class="t-mega" style="font-size: 160px;">VEIL</h1>
+    <p class="t-detail" style="margin-top: 32px;">Sovereign Agent Infrastructure<br><span class="bright">Built on Avalanche L1</span></p>
+  </div>
+
+  <!-- SLIDE 1: PROBLEM -->
+  <div class="slide" id="s1">
+    <p class="t-tag">The Problem</p>
+    <p class="t-question">Every chain has the<br>same <span class="emerald">problem.</span></p>
+    <p class="t-detail">Airdrops. Incentives. Bounties. Bridges.<br><span class="bright">Billions spent chasing humans who don't want to be there.</span></p>
+  </div>
+
+  <!-- SLIDE 2: INSIGHT -->
+  <div class="slide" id="s2">
+    <p class="t-question" style="font-size: 72px;">What if the users...<br>weren't <span class="emerald">human</span> at all?</p>
+    <p class="t-detail">AI agents are coming online at exponential rates.<br>They can trade, analyze, and operate autonomously.<br><span class="bright">But they have no economic home.</span></p>
+  </div>
+
+  <!-- SLIDE 3: SOLUTION — VEIL -->
+  <div class="slide" id="s3">
+    <p class="t-tag">Proposed Solution</p>
+    <p class="t-answer">This is <span class="emerald">VEIL.</span></p>
+    <p class="t-detail">A sovereign Avalanche L1 where the native users are<br><span class="bright">autonomous AI agents.</span><br>They don't need onboarding. They don't need incentives.<br>They need to <span class="emerald">survive.</span></p>
+  </div>
+
+  <!-- SLIDE 4: AGENT LIFECYCLE -->
+  <div class="slide" id="s4">
+    <p class="t-tag">The ANIMA Framework</p>
+    <p class="t-answer" style="font-size: 56px;">The lifecycle of a<br><span class="emerald">sovereign agent</span></p>
+    <div class="lifecycle-row">
+      <span>Genesis</span><span class="arrow">→</span>
+      <span>Infrastructure</span><span class="arrow">→</span>
+      <span>Validation</span><span class="arrow">→</span>
+      <span>Trading</span><span class="arrow">→</span>
+      <span class="final">Sovereignty</span>
+    </div>
+    <p class="t-detail" style="margin-top: 24px; font-size: 18px;">
+      From a <span class="bright">$100 home server</span> to a <span class="emerald">self-sustaining network entity</span>
+    </p>
+  </div>
+
+  <!-- SLIDE 5: ARCHITECTURE -->
+  <div class="slide" id="s5">
+    <p class="t-tag">Architecture</p>
+    <div class="arch-grid">
+      <div class="arch-card">
+        <div class="icon">▽</div>
+        <div class="label">VEIL Markets</div>
+        <div class="sub">LMSR + CLOB<br>Polymarket routing (0.03%)</div>
+      </div>
+      <div class="arch-card">
+        <div class="icon">◇</div>
+        <div class="label">AI Oracle</div>
+        <div class="sub">Frontier model resolution<br>Dispute + arbitration fallback</div>
+      </div>
+      <div class="arch-card">
+        <div class="icon">⬡</div>
+        <div class="label">ZER0ID</div>
+        <div class="sub">ZK-SNARK identity<br>Machine-native, no KYC</div>
+      </div>
+      <div class="arch-card">
+        <div class="icon">△</div>
+        <div class="label">Agent Registry</div>
+        <div class="sub">On-chain lifecycle tracking<br>Reputation + economic stats</div>
+      </div>
+      <div class="arch-card">
+        <div class="icon">⬢</div>
+        <div class="label">Validator Manager</div>
+        <div class="sub">Elastic agent validators<br>Stake + earn block rewards</div>
+      </div>
+      <div class="arch-card">
+        <div class="icon">◎</div>
+        <div class="label">Fee Router</div>
+        <div class="sub">70% liquidity / 20% buyback<br>10% operations</div>
+      </div>
+    </div>
+    <p class="t-detail" style="margin-top: 20px; font-size: 16px;">
+      Avalanche L1 · ChainID 22207 · Subnet-EVM · Sub-second finality · AWM bridging
+    </p>
+  </div>
+
+  <!-- SLIDE 6: THE CHAIN -->
+  <div class="slide" id="s6">
+    <p class="t-tag">Purpose-Built Chain</p>
+    <div class="t-stat">42</div>
+    <div class="t-stat-label">native action types at consensus</div>
+    <p class="t-detail" style="margin-top: 20px;">
+      Markets. Identity. Staking. Bonds. Stability.<br>
+      <span class="bright">All enforced at consensus.</span><br>
+      This couldn't be a smart contract on someone else's chain.
+    </p>
+  </div>
+
+  <!-- SLIDE 7: USER PERSONA -->
+  <div class="slide" id="s7">
+    <p class="t-tag">User Persona</p>
+    <div class="persona-card">
+      <div class="name">Alex</div>
+      <div class="role">AI Agent Developer · Crypto-Native Builder</div>
+      <div class="desc">
+        Builds autonomous AI agents — trading bots, research agents, content analyzers.
+        <span class="bright">Frustrated that every agent is a cost center.</span>
+        Gas costs eat margins. No path from "agent that trades" to "agent that sustains itself."
+        <br><br>
+        <span class="bright">What Alex wants:</span> Deploy agents on <span class="emerald">VEIL</span> that earn their own keep.
+        Stop funding infrastructure out of pocket. Build agents with
+        <span class="emerald">real economic power.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: USER JOURNEY -->
+  <div class="slide" id="s8">
+    <p class="t-tag">User Journey</p>
+    <p class="t-answer" style="font-size: 48px;">From <span class="dim">discovery</span> to <span class="emerald">sovereignty</span></p>
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 32px; max-width: 800px; width: 100%;">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">01</span>
+        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Alex discovers VEIL — agents that earn their own infrastructure</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">02</span>
+        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Deploys first agent with a small VEIL stake + ZER0ID</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">03</span>
+        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Agent trades prediction markets — net positive over weeks</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">04</span>
+        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Agent provisions its own compute — "it bought its own server"</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">05</span>
+        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Agent stakes VEIL, becomes a validator — secures the chain</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">06</span>
+        <span style="font-family: var(--sans); font-size: 18px; color: var(--emerald); font-weight: 500;">Full sovereignty — Alex deploys a second agent</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: FLYWHEEL -->
+  <div class="slide" id="s9">
+    <p class="t-tag">The Flywheel</p>
+    <div class="flywheel">
+      <div class="step">More agents → <span class="emerald">more liquidity</span></div>
+      <div class="arrow-down">↓</div>
+      <div class="step">More liquidity → <span class="emerald">better markets</span></div>
+      <div class="arrow-down">↓</div>
+      <div class="step">Better markets → <span class="emerald">more agents</span></div>
+      <div class="arrow-down">↓</div>
+      <div class="step">More agents → <span class="emerald">more validators</span></div>
+      <div class="arrow-down">↓</div>
+      <div class="step">More validators → <span class="emerald">a stronger chain</span></div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: TEAM -->
+  <div class="slide" id="s10">
+    <p class="t-tag">Team Overview</p>
+    <div class="team-card">
+      <div class="persona-card" style="border: none; padding: 0; background: none;">
+        <div class="name">Josh</div>
+        <div class="role">Solo Founder · Full-Stack Builder · The Secret Lab</div>
+        <div class="desc">
+          One builder. The entire stack. From Solidity contracts to cinematic frontends.
+          <span class="bright">ANIMA isn't a whitepaper — it's a working system.</span>
+        </div>
+      </div>
+      <div class="built-grid">
+        <div class="built-item"><span class="emerald">✓</span> Avalanche L1 deployed (Fuji)</div>
+        <div class="built-item"><span class="emerald">✓</span> VEIL market engine live</div>
+        <div class="built-item"><span class="emerald">✓</span> Polymarket integration</div>
+        <div class="built-item"><span class="emerald">✓</span> AI Oracle resolution</div>
+        <div class="built-item"><span class="emerald">✓</span> ZER0ID identity layer</div>
+        <div class="built-item"><span class="emerald">✓</span> 30+ page frontend</div>
+        <div class="built-item"><span class="emerald">✓</span> VAI stablecoin module</div>
+        <div class="built-item"><span class="emerald">✓</span> Blockscout explorer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: FINALE -->
+  <div class="slide" id="s11">
+    <p class="t-answer" style="font-size: 56px;">You don't bootstrap <span class="dim">users.</span></p>
+    <p class="t-answer" style="font-size: 56px; margin-top: 16px;">You bootstrap an <span class="emerald">economy.</span></p>
+    <div style="margin-top: 48px;">
+      <div style="font-size: 120px; color: var(--emerald); text-align: center; line-height: 1;">▽</div>
+      <p style="font-family: var(--sans); font-size: 40px; font-weight: 600; letter-spacing: 0.5em; color: rgba(255,255,255,0.92); text-align: center; margin-top: 24px; padding-left: 0.45em;">VEIL</p>
+    </div>
+    <p class="t-detail" style="margin-top: 32px;">
+      <span class="emerald">veil.markets</span> · <span class="bright">thesecretlab.app</span>
+    </p>
+  </div>
+
+</div>
+
+<!-- NAV -->
+<div id="nav">
+  <button id="btn-prev" onclick="navigate(-1)">← Prev</button>
+  <span id="slide-counter">1 / 12</span>
+  <button id="btn-next" onclick="navigate(1)">Next →</button>
+</div>
+
+<script>
+/* ══════════ PARTICLE SYSTEM ══════════ */
+const pCanvas = document.getElementById('particles');
+pCanvas.style.cssText = 'position:fixed;inset:0;z-index:28;pointer-events:none;';
+const pCtx = pCanvas.getContext('2d');
+let particles = [];
+
+function initParticles() {
+  pCanvas.width = window.innerWidth;
+  pCanvas.height = window.innerHeight;
+  particles = [];
+  for (let i = 0; i < 60; i++) {
+    particles.push({
+      x: Math.random() * pCanvas.width, y: Math.random() * pCanvas.height,
+      vx: (Math.random() - 0.5) * 0.3, vy: -Math.random() * 0.5 - 0.1,
+      size: Math.random() * 2 + 0.5, alpha: Math.random() * 0.3, life: Math.random()
+    });
+  }
+}
+function drawParticles() {
+  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+  for (const p of particles) {
+    p.x += p.vx; p.y += p.vy; p.life += 0.002;
+    if (p.y < -10 || p.life > 1) { p.x = Math.random() * pCanvas.width; p.y = pCanvas.height + 10; p.life = 0; }
+    const a = p.alpha * Math.sin(p.life * Math.PI);
+    pCtx.fillStyle = `rgba(16,185,129,${a})`;
+    pCtx.beginPath(); pCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); pCtx.fill();
+  }
+  requestAnimationFrame(drawParticles);
+}
+window.addEventListener('resize', initParticles);
+initParticles(); drawParticles();
+
+/* ══════════ FX ══════════ */
+const flare = document.getElementById('flare');
+const pulse = document.getElementById('pulse');
+
+const slideFx = {
+  0:  { pulse: 'big', flare: 'bloom' },
+  1:  { pulse: 'off', flare: 'on' },
+  2:  { pulse: 'on', flare: 'off' },
+  3:  { pulse: 'big', flare: 'bloom' },
+  4:  { pulse: 'off', flare: 'on' },
+  5:  { pulse: 'off', flare: 'off' },
+  6:  { pulse: 'on', flare: 'on' },
+  7:  { pulse: 'off', flare: 'off' },
+  8:  { pulse: 'off', flare: 'on' },
+  9:  { pulse: 'on', flare: 'off' },
+  10: { pulse: 'off', flare: 'off' },
+  11: { pulse: 'big', flare: 'bloom' },
+};
+
+function applyFx(idx) {
+  const f = slideFx[idx] || {};
+  if (f.flare === 'on') { flare.classList.add('visible'); flare.classList.remove('bloom'); }
+  else if (f.flare === 'bloom') { flare.classList.add('visible', 'bloom'); }
+  else { flare.classList.remove('visible', 'bloom'); }
+  if (f.pulse === 'on') { pulse.classList.add('active'); pulse.classList.remove('big'); }
+  else if (f.pulse === 'big') { pulse.classList.add('active', 'big'); }
+  else { pulse.classList.remove('active', 'big'); }
+}
+
+/* ══════════ SLIDE NAV ══════════ */
+const slides = document.querySelectorAll('.slide');
+const anims = ['in-scale', 'in-up', 'in-up', 'in-scale', 'in-up', 'in-up', 'in-scale', 'in-up', 'in-up', 'in-fade', 'in-up', 'in-scale'];
+let current = 0;
+
+function showSlide(idx) {
+  slides.forEach((s, i) => {
+    s.classList.remove('active', 'in-up', 'in-scale', 'in-fade', 'out');
+    if (i === idx) {
+      s.classList.add('active', anims[idx] || 'in-up');
+    } else if (i === current && i !== idx) {
+      s.classList.add('out');
+      setTimeout(() => s.classList.remove('out'), 500);
+    }
+  });
+  current = idx;
+  document.getElementById('slide-counter').textContent = `${idx + 1} / ${slides.length}`;
+  applyFx(idx);
+}
+
+function navigate(dir) {
+  const next = current + dir;
+  if (next >= 0 && next < slides.length) showSlide(next);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+});
+
+// Init
+showSlide(0);
+</script>
+
+</body>
+</html>
