@@ -1,8 +1,10 @@
 "use client"
 
-import { useState, useRef, useEffect, useCallback, useMemo } from "react"
+import { useState, useRef, useEffect, useCallback, useMemo, Suspense } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import Link from "next/link"
+import { Canvas, useFrame } from "@react-three/fiber"
+import * as THREE from "three"
 import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -112,6 +114,226 @@ const STAGE_DEFS: Omit<StageState, "status" | "evidence" | "error" | "startedAt"
 ]
 
 const GATE_STAGES = ["A6_ANIMA_VALIDATED", "A7_ZEROID_8004", "A8_VALIDATOR_ACTIVE"]
+
+/* ═══════════════════════════════════════════════════════════════
+   LIVE NETWORK DATA
+   ═══════════════════════════════════════════════════════════════ */
+
+interface NetworkStatus {
+  chainId: number
+  blockHeight: number | null
+  totalPeers: number
+  subnetPeers: number
+  validators: { nodeId: string; role: string; active: boolean; label: string }[]
+  timestamp: string
+}
+
+function useNetworkStatus() {
+  const [data, setData] = useState<NetworkStatus | null>(null)
+  useEffect(() => {
+    const poll = async () => {
+      try {
+        const res = await fetch("/api/network-status", { cache: "no-store" })
+        if (res.ok) setData(await res.json())
+      } catch {}
+    }
+    poll()
+    const timer = setInterval(poll, 5000)
+    return () => clearInterval(timer)
+  }, [])
+  return data
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3D NETWORK TETRAHEDRON
+   ═══════════════════════════════════════════════════════════════ */
+
+// Inverted tetrahedron vertices (point DOWN = VEIL logo ▽)
+const TETRA_VERTS = [
+  new THREE.Vector3(0, -1.6, 0),        // bottom point (apex, pointing down)
+  new THREE.Vector3(-1.4, 0.8, 0.8),    // top-left-front
+  new THREE.Vector3(1.4, 0.8, 0.8),     // top-right-front
+  new THREE.Vector3(0, 0.8, -1.4),      // top-back
+]
+
+const TETRA_EDGES: [number, number][] = [
+  [0, 1], [0, 2], [0, 3], // bottom to top
+  [1, 2], [2, 3], [3, 1], // top ring
+]
+
+function NetworkEdges() {
+  const ref = useRef<THREE.Group>(null)
+
+  const lineGeos = useMemo(() =>
+    TETRA_EDGES.map(([a, b]) => {
+      const pts = [TETRA_VERTS[a], TETRA_VERTS[b]]
+      return new THREE.BufferGeometry().setFromPoints(pts)
+    }), [])
+
+  useFrame(({ clock }) => {
+    if (!ref.current) return
+    ref.current.children.forEach((child, i) => {
+      const mat = (child as THREE.Line).material as THREE.LineBasicMaterial
+      mat.opacity = 0.15 + Math.sin(clock.getElapsedTime() * 1.5 + i * 0.8) * 0.08
+    })
+  })
+
+  return (
+    <group ref={ref}>
+      {lineGeos.map((geo, i) => (
+        <line key={i} geometry={geo}>
+          <lineBasicMaterial color="#10b981" transparent opacity={0.2} />
+        </line>
+      ))}
+    </group>
+  )
+}
+
+function ValidatorNode({ position, role, index, active }: {
+  position: THREE.Vector3; role: string; index: number; active: boolean
+}) {
+  const ref = useRef<THREE.Mesh>(null)
+  const glowRef = useRef<THREE.Mesh>(null)
+
+  const color = role === "primary" ? "#10b981" : role === "secondary" ? "#34d399" : "#6ee7b7"
+  const size = role === "primary" ? 0.12 : 0.08
+
+  useFrame(({ clock }) => {
+    if (!ref.current) return
+    const t = clock.getElapsedTime()
+    // Gentle float
+    ref.current.position.x = position.x + Math.sin(t * 0.5 + index * 2.1) * 0.04
+    ref.current.position.y = position.y + Math.sin(t * 0.7 + index * 1.3) * 0.04
+    ref.current.position.z = position.z + Math.cos(t * 0.4 + index * 1.7) * 0.04
+
+    if (glowRef.current) {
+      glowRef.current.position.copy(ref.current.position)
+      const mat = glowRef.current.material as THREE.MeshBasicMaterial
+      // Heartbeat pulse
+      const heartbeat = Math.pow(Math.sin(t * 2 + index * 1.5), 8)
+      mat.opacity = active ? 0.15 + heartbeat * 0.2 : 0.03
+      glowRef.current.scale.setScalar(1 + heartbeat * 0.3)
+    }
+  })
+
+  return (
+    <>
+      <mesh ref={ref} position={position}>
+        <sphereGeometry args={[size, 16, 16]} />
+        <meshStandardMaterial
+          color={color}
+          emissive={color}
+          emissiveIntensity={active ? 1.2 : 0.2}
+          metalness={0.5}
+          roughness={0.3}
+        />
+      </mesh>
+      <mesh ref={glowRef} position={position}>
+        <sphereGeometry args={[size * 4, 16, 16]} />
+        <meshBasicMaterial color={color} transparent opacity={0.15} side={THREE.BackSide} />
+      </mesh>
+    </>
+  )
+}
+
+function DataParticles({ blockHeight }: { blockHeight: number | null }) {
+  const ref = useRef<THREE.Points>(null)
+  const count = 60
+
+  const positions = useMemo(() => {
+    const arr = new Float32Array(count * 3)
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2
+      const phi = Math.acos(2 * Math.random() - 1)
+      const r = 2.5 + Math.random() * 1.5
+      arr[i * 3] = r * Math.sin(phi) * Math.cos(theta)
+      arr[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta)
+      arr[i * 3 + 2] = r * Math.cos(phi)
+    }
+    return arr
+  }, [])
+
+  useFrame(({ clock }) => {
+    if (!ref.current) return
+    ref.current.rotation.y = clock.getElapsedTime() * 0.03
+    ref.current.rotation.x = clock.getElapsedTime() * 0.01
+    const mat = ref.current.material as THREE.PointsMaterial
+    mat.opacity = 0.2 + Math.sin(clock.getElapsedTime() * 0.5) * 0.08
+  })
+
+  return (
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <pointsMaterial size={0.015} color="#10b981" transparent opacity={0.25}
+        sizeAttenuation depthWrite={false} blending={THREE.AdditiveBlending} />
+    </points>
+  )
+}
+
+function NetworkTetrahedron({ validators }: { validators: { nodeId: string; role: string; active: boolean }[] }) {
+  const groupRef = useRef<THREE.Group>(null)
+
+  useFrame(({ clock }) => {
+    if (!groupRef.current) return
+    groupRef.current.rotation.y = clock.getElapsedTime() * 0.08
+  })
+
+  // Place validators at tetrahedron vertices and interpolated edge positions
+  const validatorPositions = useMemo(() => {
+    const positions: THREE.Vector3[] = []
+    for (let i = 0; i < validators.length; i++) {
+      if (i < TETRA_VERTS.length) {
+        positions.push(TETRA_VERTS[i].clone())
+      } else {
+        // Place extras along edges
+        const edgeIdx = (i - TETRA_VERTS.length) % TETRA_EDGES.length
+        const [a, b] = TETRA_EDGES[edgeIdx]
+        const t = 0.3 + Math.random() * 0.4
+        positions.push(new THREE.Vector3().lerpVectors(TETRA_VERTS[a], TETRA_VERTS[b], t))
+      }
+    }
+    return positions
+  }, [validators.length])
+
+  return (
+    <group ref={groupRef}>
+      <NetworkEdges />
+      {validators.map((v, i) => (
+        <ValidatorNode
+          key={v.nodeId}
+          position={validatorPositions[i] || new THREE.Vector3(0, 0, 0)}
+          role={v.role}
+          index={i}
+          active={v.active}
+        />
+      ))}
+    </group>
+  )
+}
+
+function NetworkScene({ network }: { network: NetworkStatus | null }) {
+  const validators = network?.validators || [
+    { nodeId: "self", role: "primary", active: true, label: "Primary" },
+    { nodeId: "peer1", role: "secondary", active: true, label: "Secondary" },
+  ]
+
+  return (
+    <div className="h-[380px] w-full max-w-[500px] mx-auto">
+      <Canvas camera={{ position: [0, 0, 5.5], fov: 38 }} gl={{ antialias: true, alpha: true }} style={{ background: "transparent" }}>
+        <ambientLight intensity={0.2} />
+        <directionalLight position={[3, 3, 5]} intensity={1} color="#ffffff" />
+        <directionalLight position={[-2, -1, 3]} intensity={0.4} color="#10b981" />
+        <pointLight position={[0, -2, 3]} intensity={0.8} color="#10b981" distance={10} decay={2} />
+        <Suspense fallback={null}>
+          <DataParticles blockHeight={network?.blockHeight || null} />
+          <NetworkTetrahedron validators={validators} />
+        </Suspense>
+      </Canvas>
+    </div>
+  )
+}
 
 /* ═══════════════════════════════════════════════════════════════
    VISUAL COMPONENTS
@@ -487,6 +709,8 @@ function ProgressSpine({ stages, activeIndex }: { stages: StageState[]; activeIn
    ═══════════════════════════════════════════════════════════════ */
 
 export default function OnboardPage() {
+  const network = useNetworkStatus()
+
   // Simulated state — in production this comes from the backend API
   const [stages, setStages] = useState<StageState[]>(() =>
     STAGE_DEFS.map((def, i) => ({
@@ -550,36 +774,80 @@ export default function OnboardPage() {
       <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-emerald-500/[0.02] blur-[160px]" />
 
       {/* ─── Hero ─── */}
-      <div className="relative pt-28 pb-16">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8 }}
-            className="mb-4 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.3em] text-emerald-500/50"
-          >
-            Network Onboarding
-          </motion.p>
-          <h1 className="font-[var(--font-instrument-serif)] text-[clamp(2.5rem,5vw,4.5rem)] leading-[1.05] tracking-tight text-white/95">
-            <Typewriter text="Become a Network Citizen" delay={300} speed={35} onComplete={() => setHeroComplete(true)} />
-          </h1>
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={heroComplete ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-5 max-w-2xl font-[var(--font-figtree)] text-base leading-relaxed text-white/30"
-          >
-            Ten stages from stranger to sovereign participant. Provision your infrastructure,
-            prove your identity, validate your node, and unlock the market economy.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={heroComplete ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8 flex items-center justify-center gap-6"
-          >
-            <GateLock locked={marketsLocked} />
-          </motion.div>
+      <div className="relative pt-24 pb-12">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Left: Text */}
+            <div>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="mb-4 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.3em] text-emerald-500/50"
+              >
+                Network Onboarding
+              </motion.p>
+              <h1 className="font-[var(--font-instrument-serif)] text-[clamp(2.2rem,4vw,3.8rem)] leading-[1.05] tracking-tight text-white/95">
+                <Typewriter text="Become a Network Citizen" delay={300} speed={35} onComplete={() => setHeroComplete(true)} />
+              </h1>
+              <motion.p
+                initial={{ opacity: 0, y: 12 }}
+                animate={heroComplete ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="mt-5 max-w-lg font-[var(--font-figtree)] text-sm leading-relaxed text-white/30"
+              >
+                Ten stages from stranger to sovereign participant. Provision your infrastructure,
+                prove your identity, validate your node, and unlock the market economy.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={heroComplete ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="mt-6 flex items-center gap-6"
+              >
+                <GateLock locked={marketsLocked} />
+              </motion.div>
+
+              {/* Live network stats */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={heroComplete ? { opacity: 1 } : {}}
+                transition={{ duration: 0.6, delay: 0.6 }}
+                className="mt-8 grid grid-cols-3 gap-3"
+              >
+                <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.015] p-3">
+                  <p className="font-[var(--font-figtree)] text-[9px] uppercase tracking-[0.16em] text-white/20">Block Height</p>
+                  <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-light text-emerald-400/80">
+                    {network?.blockHeight?.toLocaleString() || "—"}
+                  </p>
+                </div>
+                <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.015] p-3">
+                  <p className="font-[var(--font-figtree)] text-[9px] uppercase tracking-[0.16em] text-white/20">Validators</p>
+                  <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-light text-emerald-400/80">
+                    {network?.validators?.length || "—"}
+                  </p>
+                </div>
+                <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.015] p-3">
+                  <p className="font-[var(--font-figtree)] text-[9px] uppercase tracking-[0.16em] text-white/20">Network Peers</p>
+                  <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-light text-emerald-400/80">
+                    {network?.totalPeers || "—"}
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right: 3D Network Tetrahedron */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.2, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <NetworkScene network={network} />
+              <p className="text-center font-mono text-[10px] text-white/15 -mt-2">
+                Live network topology · {network?.validators?.length || 0} active validator{(network?.validators?.length || 0) !== 1 ? "s" : ""}
+              </p>
+            </motion.div>
+          </div>
         </div>
       </div>
 
