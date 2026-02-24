@@ -119,12 +119,6 @@ function VeilCoin() {
         />
       </mesh>
 
-      {/* Front bevel ring */}
-      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-        <torusGeometry args={[1.49, 0.015, 16, 64]} />
-        <meshStandardMaterial color="#1a1a1a" metalness={1} roughness={0.05} />
-      </mesh>
-
       {/* Front face — slightly recessed, darker */}
       <mesh position={[0, 0, 0.126]}>
         <circleGeometry args={[1.42, 64]} />
@@ -173,20 +167,6 @@ function VeilCoin() {
         <lineBasicMaterial color="#34d399" transparent opacity={0.6} />
       </line>
 
-      {/* Subtle emerald edge rim light */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[1.52, 1.52, 0.22, 64, 1, true]} />
-        <meshStandardMaterial
-          color="#10b981"
-          emissive="#10b981"
-          emissiveIntensity={0.15}
-          metalness={0.9}
-          roughness={0.2}
-          side={THREE.BackSide}
-          transparent
-          opacity={0.3}
-        />
-      </mesh>
     </group>
   )
 }
