@@ -1,9 +1,149 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useMemo, Suspense } from "react"
 import { motion, useInView, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
+import { Canvas, useFrame } from "@react-three/fiber"
+import * as THREE from "three"
 import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
+
+/* ═══════════════════════════════════════════════════════════════
+   3D VEIL TOKEN
+   ═══════════════════════════════════════════════════════════════ */
+
+function VeilCoin() {
+  const groupRef = useRef<THREE.Group>(null)
+  const glowRef = useRef<THREE.Mesh>(null)
+
+  // Coin geometry — flat cylinder with beveled edges
+  const coinGeo = useMemo(() => {
+    const shape = new THREE.Shape()
+    const r = 1.4
+    const segments = 64
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2
+      shape.lineTo(Math.cos(angle) * r, Math.sin(angle) * r)
+    }
+    const extrudeSettings = { depth: 0.18, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 3 }
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings)
+  }, [])
+
+  // Inverted triangle (▽) engraved on the face
+  const triGeo = useMemo(() => {
+    const shape = new THREE.Shape()
+    const s = 0.7
+    // Inverted triangle — point DOWN
+    shape.moveTo(0, -s * 1.1)
+    shape.lineTo(s * 0.95, s * 0.55)
+    shape.lineTo(-s * 0.95, s * 0.55)
+    shape.closePath()
+    const extrudeSettings = { depth: 0.03, bevelEnabled: false }
+    return new THREE.ExtrudeGeometry(shape, extrudeSettings)
+  }, [])
+
+  // Edge ring wireframe
+  const edgeGeo = useMemo(() => {
+    const points: THREE.Vector3[] = []
+    const r = 1.42
+    const segments = 64
+    for (let i = 0; i <= segments; i++) {
+      const angle = (i / segments) * Math.PI * 2
+      points.push(new THREE.Vector3(Math.cos(angle) * r, Math.sin(angle) * r, 0))
+    }
+    return new THREE.BufferGeometry().setFromPoints(points)
+  }, [])
+
+  useFrame(({ clock }) => {
+    if (!groupRef.current) return
+    const t = clock.getElapsedTime()
+    groupRef.current.rotation.y = t * 0.4
+    groupRef.current.rotation.x = Math.sin(t * 0.3) * 0.15
+    groupRef.current.position.y = Math.sin(t * 0.5) * 0.08
+
+    if (glowRef.current) {
+      const mat = glowRef.current.material as THREE.MeshBasicMaterial
+      mat.opacity = 0.08 + Math.sin(t * 1.5) * 0.03
+    }
+  })
+
+  return (
+    <group ref={groupRef}>
+      {/* Main coin body */}
+      <mesh geometry={coinGeo} position={[0, 0, -0.09]}>
+        <meshStandardMaterial
+          color="#0d1f17"
+          metalness={0.85}
+          roughness={0.2}
+          envMapIntensity={1.2}
+        />
+      </mesh>
+
+      {/* Front face — darker with emerald tint */}
+      <mesh position={[0, 0, 0.1]}>
+        <circleGeometry args={[1.38, 64]} />
+        <meshStandardMaterial color="#071210" metalness={0.9} roughness={0.15} />
+      </mesh>
+
+      {/* Back face */}
+      <mesh position={[0, 0, -0.28]} rotation={[0, Math.PI, 0]}>
+        <circleGeometry args={[1.38, 64]} />
+        <meshStandardMaterial color="#071210" metalness={0.9} roughness={0.15} />
+      </mesh>
+
+      {/* Front ▽ symbol — emerald */}
+      <mesh geometry={triGeo} position={[0, 0, 0.1]}>
+        <meshStandardMaterial
+          color="#10b981"
+          metalness={0.7}
+          roughness={0.3}
+          emissive="#10b981"
+          emissiveIntensity={0.4}
+        />
+      </mesh>
+
+      {/* Back ▽ symbol */}
+      <mesh geometry={triGeo} position={[0, 0, -0.31]} rotation={[0, Math.PI, 0]}>
+        <meshStandardMaterial
+          color="#10b981"
+          metalness={0.7}
+          roughness={0.3}
+          emissive="#10b981"
+          emissiveIntensity={0.4}
+        />
+      </mesh>
+
+      {/* Edge ring glow */}
+      <line geometry={edgeGeo} position={[0, 0, 0.1]}>
+        <lineBasicMaterial color="#10b981" transparent opacity={0.3} />
+      </line>
+      <line geometry={edgeGeo} position={[0, 0, -0.28]}>
+        <lineBasicMaterial color="#10b981" transparent opacity={0.3} />
+      </line>
+
+      {/* Ambient glow sphere */}
+      <mesh ref={glowRef} scale={2.2}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshBasicMaterial color="#10b981" transparent opacity={0.08} side={THREE.BackSide} />
+      </mesh>
+    </group>
+  )
+}
+
+function VeilTokenScene() {
+  return (
+    <div className="mx-auto h-[280px] w-[280px]">
+      <Canvas camera={{ position: [0, 0, 4.2], fov: 40 }} gl={{ antialias: true, alpha: true }}>
+        <ambientLight intensity={0.3} />
+        <directionalLight position={[3, 4, 5]} intensity={1.2} color="#ffffff" />
+        <directionalLight position={[-2, -1, 3]} intensity={0.4} color="#10b981" />
+        <pointLight position={[0, 0, 3]} intensity={0.6} color="#10b981" distance={8} />
+        <Suspense fallback={null}>
+          <VeilCoin />
+        </Suspense>
+      </Canvas>
+    </div>
+  )
+}
 
 /* ═══════════════════════════════════════════════════════════════
    HELPERS
@@ -99,17 +239,14 @@ export default function VeilTokenPage() {
       {/* ─── Hero ─── */}
       <div ref={heroRef} className="relative pt-32 pb-24">
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="mx-auto max-w-4xl px-6 text-center">
-          <ScrollReveal>
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[28px] border border-emerald-500/20 bg-emerald-500/[0.06]"
-              style={{ boxShadow: "0 0 80px rgba(16,185,129,0.12), inset 0 1px 0 rgba(255,255,255,0.04)" }}
-            >
-              <span className="text-5xl text-emerald-400" style={{ fontFamily: "var(--font-instrument-serif)" }}>▽</span>
-            </motion.div>
-          </ScrollReveal>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+            className="mb-4"
+          >
+            <VeilTokenScene />
+          </motion.div>
 
           <ScrollReveal delay={0.1}>
             <p className="mb-4 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.3em] text-emerald-500/50">
