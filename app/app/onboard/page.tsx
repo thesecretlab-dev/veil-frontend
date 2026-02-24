@@ -46,70 +46,70 @@ const STAGE_DEFS: Omit<StageState, "status" | "evidence" | "error" | "startedAt"
     name: "Accepted",
     icon: "⬡",
     description: "Developer enrollment verified",
-    detail: "Your application has been reviewed and an enrollment token issued. This grants access to the VEIL network onboarding pipeline.",
+    detail: "Your application has been reviewed by the VEIL developer committee. An enrollment token has been issued and bound to your session. This token expires in 72 hours — complete onboarding before then.",
   },
   {
     id: "A1_WALLET_BIND",
     name: "Wallet Bind",
     icon: "◈",
-    description: "Connect and sign your wallet",
-    detail: "Connect your wallet to cryptographically bind your identity to this enrollment. Sign the challenge to prove ownership.",
+    description: "Connect wallet · Sign challenge · Bind identity",
+    detail: "Connect your Avalanche C-Chain wallet (MetaMask, Core, or WalletConnect). You'll sign an EIP-712 typed message to cryptographically bind your wallet address to this enrollment. No funds are moved — this is a signature only.",
   },
   {
     id: "A2_PAYMENT",
     name: "Payment",
     icon: "◇",
-    description: "AVAX payment observed on C-Chain",
-    detail: "Send the required AVAX to the designated address. The network verifies your transaction on Avalanche C-Chain.",
+    description: "AVAX stake observed on C-Chain",
+    detail: "Send AVAX to the VEIL enrollment contract on Avalanche C-Chain. This stake is refundable if you don't complete onboarding within 30 days. The contract verifies your payment and locks your position in the validator queue.",
   },
   {
     id: "A3_PROVISION",
     name: "Provision",
     icon: "▣",
     description: "Infrastructure deployed — home server or cloud",
-    detail: "Your validator needs a home. Choose your path: set up a home server for under $100 (true sovereignty — your hardware, your rules) or deploy an automated cloud instance. Both paths lead to the same destination: a running VEIL node.",
+    detail: "Your validator needs a home. Choose your path: set up a home server for under $100 (true sovereignty — your hardware, your keys, your rules) or deploy an automated cloud instance. Both paths produce an identical validator node on the VEIL network.",
   },
   {
     id: "A4_CODEX_ACCESS",
     name: "Codex Access",
     icon: "⌘",
-    description: "Command channel established",
-    detail: "Codex runtime binds to your provisioned server. The command channel is verified through a transcript hash.",
+    description: "Secure command channel established",
+    detail: "The ANIMA Codex runtime binds to your provisioned server over an encrypted channel. A transcript hash is generated and stored on-chain as proof of channel establishment. This enables secure remote management of your node.",
   },
   {
     id: "A5_NETWORK_NATIVIZED",
     name: "Nativized",
     icon: "◎",
-    description: "Joined the VEIL network",
-    detail: "Your node identity is established, peer membership confirmed, and VEIL RPC health verified. You are now part of the network fabric.",
+    description: "Peer discovery · RPC health · Chain sync",
+    detail: "Your node connects to the VEIL network mesh. Peer discovery locates active validators, RPC endpoints are verified healthy, and your node begins syncing chain state. Once caught up to head, you're nativized — a recognized member of the network fabric.",
   },
   {
     id: "A6_ANIMA_VALIDATED",
     name: "ANIMA Validated",
     icon: "△",
-    description: "Autonomous agent runtime verified",
-    detail: "ANIMA validation suite confirms your node can participate in the agent ecosystem. Runtime checks, consensus probes, and liveness tests all pass.",
+    description: "Agent runtime suite — 14 checks must pass",
+    detail: "The ANIMA validation suite runs 14 checks against your node: consensus participation, block proposal capability, action routing, encrypted mempool access, runtime version, liveness heartbeat, and more. All must pass. This is the first of three market unlock gates.",
   },
   {
     id: "A7_ZEROID_8004",
     name: "ZER0ID Passport",
     icon: "ø",
-    description: "Identity passport 8004 verified",
-    detail: "Zero-knowledge identity verification through ZER0ID. Passport 8004 proves your humanity without revealing your identity. Privacy-preserving, cryptographically sound.",
+    description: "ZK identity proof · Groth16 verification",
+    detail: "Generate a ZER0ID Passport (credential type 8004) using zero-knowledge proofs. Your Groth16 circuit proves you are a unique, verified developer without revealing your real-world identity. The proof is verified on-chain. Second market unlock gate.",
   },
   {
     id: "A8_VALIDATOR_ACTIVE",
     name: "Validator Active",
     icon: "▽",
-    description: "Actively validating on VEIL",
-    detail: "Your validator node is live, weighted, and heartbeating. You are now contributing to network consensus and earning validation rewards.",
+    description: "Weighted · Heartbeating · Earning rewards",
+    detail: "Your validator node is registered in the active set, assigned consensus weight, and heartbeating at 1-second intervals. You are now contributing to VEIL network security and earning validation rewards. Third and final market unlock gate.",
   },
   {
     id: "A9_MARKETS_UNLOCKED",
     name: "Markets Unlocked",
     icon: "◉",
-    description: "Full network citizen — markets open",
-    detail: "All gates passed. You have full access to VEIL prediction markets, governance, and the sovereign agent economy. Welcome, citizen.",
+    description: "Full network citizen — all gates cleared",
+    detail: "ANIMA Validated ✓ · ZER0ID Passport ✓ · Validator Active ✓ — all three market gates are clear. You now have full access to VEIL prediction markets, governance proposals, the sovereign agent economy, and Bloodsworn reputation advancement. Welcome to the network, citizen.",
   },
 ]
 
@@ -601,60 +601,143 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
       </p>
 
       {/* ZK stream for running crypto stages */}
-      {stage.status === "running" && ["A6_ANIMA_VALIDATED", "A7_ZEROID_8004"].includes(stage.id) && (
+      {stage.status === "running" && ["A5_NETWORK_NATIVIZED", "A6_ANIMA_VALIDATED", "A7_ZEROID_8004", "A8_VALIDATOR_ACTIVE"].includes(stage.id) && (
         <div className="mb-6 rounded-[14px] border border-white/[0.04] bg-[#060606] p-4 relative overflow-hidden">
           <PulseRing size={60} />
           <ZKHashStream active={true} lines={8} />
+          <div className="mt-3 space-y-1">
+            {stage.id === "A5_NETWORK_NATIVIZED" && (
+              <>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Discovering peers...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Syncing chain state to head...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Verifying RPC endpoints...</p>
+              </>
+            )}
+            {stage.id === "A6_ANIMA_VALIDATED" && (
+              <>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Running consensus check [1/14]...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Block proposal capability...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Encrypted mempool access...</p>
+              </>
+            )}
+            {stage.id === "A7_ZEROID_8004" && (
+              <>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Generating Groth16 witness...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Computing ZK proof...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Submitting to on-chain verifier...</p>
+              </>
+            )}
+            {stage.id === "A8_VALIDATOR_ACTIVE" && (
+              <>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Registering in active set...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Assigning consensus weight...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">⟳ Starting heartbeat...</p>
+              </>
+            )}
+          </div>
         </div>
       )}
 
       {/* Action buttons per stage */}
       {(stage.status === "pending" || stage.status === "running") && stage.id === "A1_WALLET_BIND" && (
         <div className="space-y-4">
-          <button
-            onClick={() => onAction("connect_wallet")}
-            disabled={stage.status === "running"}
-            className={`group relative overflow-hidden rounded-full px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all ${
-              stage.status === "running"
-                ? "bg-amber-600/50 cursor-wait"
-                : "bg-gradient-to-r from-emerald-600 to-emerald-500 hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
-            }`}
-          >
-            <span className="relative z-10">
-              {stage.status === "running" ? "Connecting…" : "Connect Wallet"}
-            </span>
-            {stage.status !== "running" && (
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
-            )}
-          </button>
+          {stage.status === "pending" && (
+            <>
+              <p className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.2em] text-white/30 mb-2">
+                Select wallet provider
+              </p>
+              <div className="grid grid-cols-1 gap-2">
+                {[
+                  { name: "MetaMask", icon: "🦊", desc: "Browser extension" },
+                  { name: "Core Wallet", icon: "🔺", desc: "Avalanche native" },
+                  { name: "WalletConnect", icon: "🔗", desc: "Mobile & hardware" },
+                ].map(w => (
+                  <button
+                    key={w.name}
+                    onClick={() => onAction(`connect_${w.name.toLowerCase().replace(/\s/g, "_")}`)}
+                    className="flex items-center gap-3 rounded-[14px] border border-white/[0.08] bg-white/[0.015] p-4 text-left transition-all hover:border-emerald-500/20 hover:bg-emerald-500/[0.015]"
+                  >
+                    <span className="text-xl">{w.icon}</span>
+                    <div>
+                      <p className="font-[var(--font-space-grotesk)] text-sm text-white/80">{w.name}</p>
+                      <p className="text-[11px] text-white/25">{w.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
           {stage.status === "running" && (
-            <p className="text-[11px] text-amber-400/50 animate-pulse">Verifying wallet signature…</p>
+            <div className="rounded-[14px] border border-amber-500/15 bg-amber-500/[0.03] p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <motion.div className="h-3 w-3 rounded-full bg-amber-400"
+                  animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1, repeat: Infinity }} />
+                <span className="font-[var(--font-space-grotesk)] text-sm text-amber-300/80">Waiting for signature…</span>
+              </div>
+              <p className="text-[11px] text-white/30 leading-relaxed">
+                Check your wallet for the EIP-712 signature request. You're signing a message that binds your address to enrollment token <span className="font-mono text-emerald-400/50">veil_enr_8f3k2m9x4p7n</span>
+              </p>
+            </div>
           )}
         </div>
       )}
 
-      {stage.status === "pending" && stage.id === "A2_PAYMENT" && (
+      {(stage.status === "pending" || stage.status === "running") && stage.id === "A2_PAYMENT" && (
         <div className="space-y-4">
           <div className="rounded-[14px] border border-emerald-500/15 bg-emerald-500/[0.03] p-5">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-500/50 font-[var(--font-space-grotesk)] mb-2">Send AVAX to</p>
-            <p className="font-mono text-sm text-emerald-400/80 break-all">0x9378...EED6</p>
-            <p className="mt-2 text-[11px] text-white/30">Minimum: 0.1 AVAX · Target: ~$100 USD equivalent</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-500/50 font-[var(--font-space-grotesk)] mb-2">
+              VEIL Enrollment Contract · Avalanche C-Chain
+            </p>
+            <div className="flex items-center gap-2">
+              <p className="font-mono text-sm text-emerald-400/80 break-all">0x9378a4b2c1d5e6f7890123456789abcdefEED6</p>
+              <button className="flex-shrink-0 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-1 text-[10px] text-white/30 hover:text-white/60 transition-colors">
+                Copy
+              </button>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="rounded-[10px] border border-white/[0.04] bg-[#060606] p-3">
+                <p className="text-[9px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)]">Required Amount</p>
+                <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-semibold text-emerald-400/90">0.5 AVAX</p>
+                <p className="text-[10px] text-white/20">≈ $18.50 USD</p>
+              </div>
+              <div className="rounded-[10px] border border-white/[0.04] bg-[#060606] p-3">
+                <p className="text-[9px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)]">Refund Policy</p>
+                <p className="mt-1 text-[12px] text-white/40 leading-relaxed">Full refund if onboarding incomplete within 30 days</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="block text-[10px] uppercase tracking-[0.2em] text-white/30 font-[var(--font-space-grotesk)] mb-2">
-              Payment Transaction Hash
-            </label>
-            <input
-              placeholder="0x..."
-              className="w-full rounded-[14px] border border-white/[0.08] bg-[#060606] px-4 py-3 font-mono text-xs text-white/80 outline-none transition focus:border-emerald-500/30 placeholder:text-white/15"
-            />
-          </div>
-          <button
-            onClick={() => onAction("verify_payment")}
-            className="rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-6 py-2.5 font-[var(--font-space-grotesk)] text-sm text-emerald-400/80 transition-all hover:border-emerald-500/40 hover:text-emerald-400"
-          >
-            Verify Payment
-          </button>
+          {stage.status === "pending" && (
+            <>
+              <div>
+                <label className="block text-[10px] uppercase tracking-[0.2em] text-white/30 font-[var(--font-space-grotesk)] mb-2">
+                  Payment Transaction Hash
+                </label>
+                <input
+                  placeholder="0x..."
+                  className="w-full rounded-[14px] border border-white/[0.08] bg-[#060606] px-4 py-3 font-mono text-xs text-white/80 outline-none transition focus:border-emerald-500/30 placeholder:text-white/15"
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => onAction("verify_payment")}
+                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
+                >
+                  <span className="relative z-10">Verify Payment</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                </button>
+                <span className="text-[11px] text-white/15">or paste tx hash above</span>
+              </div>
+            </>
+          )}
+          {stage.status === "running" && (
+            <div className="flex items-center gap-3 py-2">
+              <motion.div className="h-2 w-2 rounded-full bg-amber-400"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1, repeat: Infinity }} />
+              <span className="text-[12px] text-amber-400/60">Confirming transaction on C-Chain… waiting for 12 confirmations</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -728,14 +811,80 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
         </div>
       )}
 
-      {stage.status === "pending" && stage.id === "A7_ZEROID_8004" && (
-        <button
-          onClick={() => onAction("start_zeroid")}
-          className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
-        >
-          <span className="relative z-10">Begin ZER0ID Verification</span>
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
-        </button>
+      {stage.status === "running" && stage.id === "A3_PROVISION" && (
+        <div className="space-y-4">
+          <div className="rounded-[14px] border border-amber-500/15 bg-amber-500/[0.03] p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <motion.div className="h-3 w-3 rounded-full bg-amber-400"
+                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1, repeat: Infinity }} />
+              <span className="font-[var(--font-space-grotesk)] text-sm text-amber-300/80">Provisioning infrastructure…</span>
+            </div>
+            <div className="space-y-2">
+              {["Generating node keypair", "Installing AvalancheGo v1.14.0", "Configuring VEIL subnet", "Starting node services"].map((step, i) => (
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.4 }}
+                  className="flex items-center gap-2"
+                >
+                  <motion.span
+                    className="text-[11px]"
+                    animate={i < 3 ? { opacity: 1 } : { opacity: [0.3, 1, 0.3] }}
+                    transition={i < 3 ? {} : { duration: 1.5, repeat: Infinity }}
+                  >
+                    {i < 3 ? <span className="text-emerald-400">✓</span> : <span className="text-amber-400">⟳</span>}
+                  </motion.span>
+                  <span className={`font-mono text-[11px] ${i < 3 ? "text-emerald-400/50" : "text-amber-400/60"}`}>{step}</span>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(stage.status === "pending") && stage.id === "A7_ZEROID_8004" && (
+        <div className="space-y-4">
+          <div className="rounded-[14px] border border-white/[0.04] bg-[#060606] p-5">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/20 font-[var(--font-space-grotesk)] mb-3">
+              ZER0ID Passport Generation
+            </p>
+            <div className="space-y-2 text-[12px] text-white/35 leading-relaxed">
+              <p>1. A Groth16 circuit will generate a zero-knowledge proof of your developer identity</p>
+              <p>2. The proof is verified against the on-chain verifier contract</p>
+              <p>3. A Passport credential (type 8004) is minted to your wallet</p>
+              <p className="text-emerald-400/40 mt-3">⚡ No personal data leaves your browser. The proof reveals nothing except that you are verified.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => onAction("start_zeroid")}
+            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
+          >
+            <span className="relative z-10">Generate ZER0ID Passport</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
+          </button>
+        </div>
+      )}
+
+      {/* Markets Unlocked celebration */}
+      {stage.status === "passed" && stage.id === "A9_MARKETS_UNLOCKED" && (
+        <div className="mt-4 space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <Link href="/app/markets"
+              className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-5 py-3 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]">
+              Enter Markets →
+            </Link>
+            <Link href="/app/gov"
+              className="flex items-center justify-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-5 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400/80 transition-all hover:border-emerald-500/40">
+              Governance →
+            </Link>
+          </div>
+          <Link href="/app/oath"
+            className="flex items-center justify-center gap-2 rounded-[14px] border border-white/[0.06] bg-white/[0.015] px-5 py-3 font-[var(--font-space-grotesk)] text-xs text-white/40 transition-all hover:border-emerald-500/15 hover:text-white/60">
+            Take the Bloodsworn Oath — begin reputation advancement
+          </Link>
+        </div>
       )}
 
       {/* Generic action for stages without specific UI */}
@@ -824,10 +973,16 @@ export default function OnboardPage() {
     STAGE_DEFS.map((def, i) => ({
       ...def,
       status: (i === 0 ? "passed" : i === 1 ? "pending" : "blocked") as StageStatus,
-      evidence: i === 0 ? { acceptance_record_id: "dev_28fk3m", issued_at: "2026-02-24T03:20:00Z" } : null,
+      evidence: i === 0 ? {
+        enrollment_token: "veil_enr_8f3k2m9x4p7n",
+        committee_review: "auto_approved",
+        issued_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
+        queue_position: "#12",
+      } : null,
       error: null,
-      startedAt: i <= 1 ? "2026-02-24T03:20:00Z" : null,
-      updatedAt: i <= 1 ? "2026-02-24T03:22:00Z" : null,
+      startedAt: i === 0 ? new Date(Date.now() - 120_000).toISOString() : null,
+      updatedAt: i === 0 ? new Date(Date.now() - 60_000).toISOString() : null,
     }))
   )
 
@@ -849,6 +1004,81 @@ export default function OnboardPage() {
       const active = next[activeIdx]
 
       // If pending, transition to running first (simulate processing)
+      // Generate realistic evidence per stage
+      const genEvidence = (stageId: string, act: string): Record<string, string> => {
+        const hex = (n: number) => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join("")
+        const ts = new Date().toISOString()
+        switch (stageId) {
+          case "A1_WALLET_BIND": return {
+            wallet: `0x${hex(40)}`,
+            signature: `0x${hex(130)}`,
+            eip712_domain: "VEIL Network Enrollment",
+            chain_id: "43114",
+            bound_at: ts,
+          }
+          case "A2_PAYMENT": return {
+            tx_hash: `0x${hex(64)}`,
+            amount: "0.5 AVAX",
+            block: String(Math.floor(Math.random() * 1000000 + 50000000)),
+            confirmations: "12",
+            contract: "0x9378...EED6",
+            verified_at: ts,
+          }
+          case "A3_PROVISION": return {
+            infra_type: act === "provision_home" ? "home_server" : "cloud_instance",
+            node_id: `NodeID-${hex(20)}`,
+            ip: act === "provision_home" ? "192.168.1.100" : `${Math.floor(Math.random() * 200 + 20)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+            ssh_fingerprint: `SHA256:${hex(43).replace(/(.{6})/g, "$1:").slice(0, -1)}`,
+            provisioned_at: ts,
+          }
+          case "A4_CODEX_ACCESS": return {
+            channel_id: `codex_${hex(12)}`,
+            transcript_hash: `0x${hex(64)}`,
+            encryption: "AES-256-GCM",
+            latency_ms: String(Math.floor(Math.random() * 30 + 5)),
+            established_at: ts,
+          }
+          case "A5_NETWORK_NATIVIZED": return {
+            peer_count: String(Math.floor(Math.random() * 40 + 30)),
+            rpc_endpoint: "https://rpc.veil.markets/ext/bc/veil/rpc",
+            sync_height: String(Math.floor(Math.random() * 5000 + 100000)),
+            chain_id: "22207",
+            nativized_at: ts,
+          }
+          case "A6_ANIMA_VALIDATED": return {
+            checks_passed: "14/14",
+            runtime_version: "anima-v2026.2.22",
+            consensus_ok: "true",
+            mempool_access: "encrypted",
+            heartbeat_ms: String(Math.floor(Math.random() * 200 + 800)),
+            validated_at: ts,
+          }
+          case "A7_ZEROID_8004": return {
+            passport_type: "8004",
+            proof_system: "Groth16",
+            circuit: "zeroid-identity-v3",
+            verification_key: `0x${hex(32)}...`,
+            on_chain_tx: `0x${hex(64)}`,
+            issued_at: ts,
+          }
+          case "A8_VALIDATOR_ACTIVE": return {
+            validator_weight: String(Math.floor(Math.random() * 500 + 100)),
+            heartbeat_interval: "1000ms",
+            blocks_proposed: String(Math.floor(Math.random() * 20)),
+            uptime: "100%",
+            activated_at: ts,
+          }
+          case "A9_MARKETS_UNLOCKED": return {
+            gates_cleared: "A6 ✓ · A7 ✓ · A8 ✓",
+            citizen_id: `veil_citizen_${hex(8)}`,
+            bloodsworn_tier: "unsworn (0)",
+            market_access: "full",
+            unlocked_at: ts,
+          }
+          default: return { verified: "true", timestamp: ts }
+        }
+      }
+
       if (active.status === "pending") {
         next[activeIdx] = {
           ...active,
@@ -856,7 +1086,8 @@ export default function OnboardPage() {
           startedAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }
-        // Auto-complete after a short delay for demo
+        // Auto-complete after a realistic delay
+        const delay = ["A5_NETWORK_NATIVIZED", "A6_ANIMA_VALIDATED", "A7_ZEROID_8004"].includes(active.id) ? 3000 : 1500
         setTimeout(() => {
           setStages(current => {
             const updated = [...current]
@@ -864,11 +1095,7 @@ export default function OnboardPage() {
             updated[activeIdx] = {
               ...updated[activeIdx],
               status: "passed",
-              evidence: {
-                verified: "true",
-                action,
-                timestamp: new Date().toISOString(),
-              },
+              evidence: genEvidence(updated[activeIdx].id, action),
               updatedAt: new Date().toISOString(),
             }
             // Unlock next stage
@@ -896,7 +1123,7 @@ export default function OnboardPage() {
       next[activeIdx] = {
         ...active,
         status: "passed",
-        evidence: { verified: "true", action, timestamp: new Date().toISOString() },
+        evidence: genEvidence(active.id, action),
         updatedAt: new Date().toISOString(),
       }
       if (activeIdx + 1 < next.length) {
