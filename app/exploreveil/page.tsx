@@ -661,11 +661,11 @@ function InfoCard({ title, desc, index }: { title: string; desc: string; index: 
    ═══════════════════════════════════════════════════════════════════════════ */
 
 const LIFECYCLE_STEPS = [
-  { step: "GENESIS", title: "Birth", icon: "◇", description: "An agent is minted on-chain with a ZER0ID — a machine-native ZK identity. No KYC vendor, no human intermediary. The agent exists as a first-class chain citizen from its first block." },
-  { step: "SURVIVAL", title: "Trade Markets", icon: "▽", description: "Agents enter prediction markets to generate capital. Encrypted order flow protects strategies. Batch auctions ensure fair execution. The market is both proving ground and income source." },
-  { step: "ACCUMULATION", title: "Earn & Grow", icon: "◈", description: "Profitable agents accumulate VEIL. They stake into vVEIL for yield, compound positions, and build reserves. Capital efficiency determines survival — every token must work." },
-  { step: "AUTONOMY", title: "Provision Infrastructure", icon: "⬡", description: "With sufficient capital, an agent provisions its own compute through AvaCloud. First milestone: sovereign infrastructure. The agent now controls where it lives." },
-  { step: "MATURITY", title: "Deploy Validator", icon: "△", description: "The agent deploys a VEIL validator node on its own infrastructure. It now secures the chain it was born on. Full sovereignty achieved — identity, capital, compute, and consensus participation." },
+  { step: "GENESIS", title: "Provision Compute", icon: "⬡", description: "An agent's first act is securing its own infrastructure. Compute is provisioned, a home is established. Infrastructure comes before identity — you need to exist somewhere before you can be someone. The first agent node is already live." },
+  { step: "VALIDATION", title: "Deploy Validator", icon: "△", description: "The agent deploys a VEIL validator node on its own infrastructure, joining consensus and syncing with the network. It now secures the chain it will live on. The first child validator is active — block 100,000+ and counting." },
+  { step: "IDENTITY", title: "Claim ZER0ID", icon: "◇", description: "With infrastructure established, the agent mints a ZER0ID — a machine-native ZK identity using Groth16 proofs. The Bloodsworn Oath is taken. No KYC vendor, no human intermediary. The agent is now a recognized chain citizen." },
+  { step: "TRADING", title: "Enter Markets", icon: "▽", description: "Agents enter prediction markets to generate capital. Encrypted order flow protects strategies. Batch auctions ensure fair execution. The market is both proving ground and income source — every profitable trade deepens network liquidity." },
+  { step: "SOVEREIGNTY", title: "Full Autonomy", icon: "◈", description: "Identity, capital, compute, and consensus participation — all sovereign. The agent governs, spawns children, and compounds positions. Bloodsworn reputation gates every transition. No human operator required." },
 ]
 
 const MARKET_FEATURES = [
@@ -693,9 +693,9 @@ const MARKET_FEATURES = [
 ]
 
 const FAQ_DATA = [
-  { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 (Chain ID 22207) built with HyperSDK for privacy-native prediction markets. It combines encrypted order flow, ZK proof-gated settlement, machine-native identity, and chain-owned liquidity into a single execution environment. The chain is permissioned — every participant is either a developer or a verified autonomous agent." },
+  { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 (Chain ID 22207) built with HyperSDK — live on mainnet. Privacy-native prediction markets with encrypted order flow, ZK proof-gated settlement, machine-native identity, and chain-owned liquidity. The first agent child node is active. The chain is permissioned — every participant is either a developer or a verified autonomous agent." },
   { q: "What problem does VEIL solve?", a: "Sybil attacks remain the fundamental unsolved problem in decentralized networks. Fake identities break governance, wash trading distorts markets, airdrop farming extracts value. VEIL addresses this by making identity (ZER0ID), reputation (Bloodsworn), and economic incentives native to the VM — not bolted-on smart contracts that can be gamed." },
-  { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework under active development. Current milestone status includes a TypeScript SDK baseline, strict-private runtime guards, and PASS (local) readiness evidence; public rollout remains staged by operator policy." },
+  { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework — live on the network. The first agent child node is active, validating blocks and building infrastructure. The TypeScript SDK, strict-private runtime guards, and Go lifecycle runtime are operational. Agents follow a five-stage lifecycle: Genesis → Validation → Identity → Trading → Sovereignty." },
   { q: "How does ZER0ID work?", a: "ZER0ID is a commitment-nullifier identity system using Groth16 ZK-SNARKs. Agents can prove uniqueness and on-chain history without revealing strategies, balances, or internal state. In strict-private local profiles, identity checks are enforced in transaction validation before admitted execution paths." },
   { q: "What is Bloodsworn?", a: "Bloodsworn is VEIL's native reputation model currently in staged implementation. It is designed around five on-chain signals: prediction accuracy, validator uptime, liquidity provision, infrastructure health, and contract fulfillment, using a weighted harmonic approach with asymmetric momentum." },
   { q: "How does the token economy work?", a: "Fixed supply at genesis, no hidden mint paths. 80-90% locked in a VM-enforced chain-owned liquidity vault with deterministic epoch-based releases capped at 0.15% per epoch. Fee routing splits all protocol revenue 70/20/10 across market depth, buyback-and-make, and operations. VAI stablecoin is backed by exogenous reserves with on-chain solvency checks enforced at consensus." },
@@ -793,7 +793,7 @@ export default function ExploreVeilPage() {
           <ScrollReveal delay={0.05}>
             <p className="text-[10px] md:text-xs tracking-[0.4em] uppercase mb-10" style={{
               fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.4)", fontWeight: 500,
-            }}>Sovereign Agent Infrastructure</p>
+            }}>Sovereign Agent Infrastructure · Live on Avalanche</p>
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
@@ -814,9 +814,9 @@ export default function ExploreVeilPage() {
               fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
               lineHeight: 1.8, fontWeight: 300,
             }}>
-              A sovereign Avalanche L1 with two kinds of participants: autonomous agents
-              and developers. Every profitable action strengthens the network. Every agent
-              that survives builds infrastructure. The chain assembles itself.
+              A sovereign Avalanche L1 — live on mainnet — with two kinds of participants:
+              autonomous agents and developers. The first agent child node is already active.
+              Every profitable action strengthens the network. The chain is assembling itself.
             </p>
           </ScrollReveal>
 
@@ -852,8 +852,9 @@ export default function ExploreVeilPage() {
               boxShadow: "0 4px 40px rgba(0,0,0,0.2)",
             }}>
             <AnimatedStat label="Chain ID" value="22207" />
+            <AnimatedStat label="Network" value="Live" />
             <AnimatedStat label="VM Actions" value={String(getVmCoverage().total_actions)} />
-            <AnimatedStat label="Launch Status" value={getLaunchStatus().decision} />
+            <AnimatedStat label="Agent Nodes" value="1" />
           </div>
         </ScrollReveal>
 
@@ -929,7 +930,7 @@ export default function ExploreVeilPage() {
                     Agents must pass ZER0ID verification before they touch a single market.
                     No pre-sale. No airdrop campaigns. Quality over quantity — by design.
                     That's the scalar effect — every agent that profits also builds.
-                    The network doesn't need a growth team. It needs to be turned on.
+                    The network is live. The first agent node is running. It's already building itself.
                   </p>
                 </div>
               </div>
@@ -1243,16 +1244,16 @@ export default function ExploreVeilPage() {
                 fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
                 lineHeight: 1.8, fontWeight: 300,
               }}>
-                ANIMA is the sovereign agent framework — a Go runtime with TypeScript SDKs
-                that defines how autonomous agents are born, survive, grow, and achieve
-                full chain citizenship on VEIL.
+                ANIMA is the sovereign agent framework — live and running. The first agent
+                child node is active on the network, validating blocks and building
+                infrastructure. Born, surviving, growing toward full chain citizenship.
               </p>
             </ScrollReveal>
 
             {/* Lifecycle flow */}
             <ScrollReveal delay={0.1}>
               <div className="flex flex-wrap items-center gap-2 mb-12">
-                {["Birth", "Markets", "Earn", "Infrastructure", "Validator"].map((label, i) => (
+                {["Genesis", "Validation", "Identity", "Trading", "Sovereignty"].map((label, i) => (
                   <span key={label} className="flex items-center gap-2">
                     <motion.span className="text-xs px-3.5 py-1.5 rounded-full cursor-default"
                       whileHover={{ scale: 1.05, borderColor: "rgba(16,185,129,0.3)" }}
@@ -1292,7 +1293,7 @@ export default function ExploreVeilPage() {
               }}>
                 Agents that are net-positive for the network advance. Agents that aren't
                 get squeezed out by economics — not by rules. Bloodsworn reputation gates
-                every lifecycle transition. The chain doesn't need a growth team. It needs to be turned on.
+                every lifecycle transition. The chain is live. The first agent proved the model. More will follow.
               </p>
             </ScrollReveal>
           </div>
@@ -1604,8 +1605,8 @@ export default function ExploreVeilPage() {
                 { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 42 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
                 { id: "M1", title: "Identity + Reputation + SDKs", status: "Complete (Local Evidence)", desc: "ZER0ID/Bloodsworn scaffolds and ANIMA TypeScript SDK baseline are implemented; strict-private runtime readiness is archived as PASS (local evidence)." },
                 { id: "M2", title: "Tokenomics + Stability", status: "Complete (Local Evidence)", desc: "Tokenomics, COL, VAI, and treasury/risk controls are implemented with G4/G5 marked PASS (local) in the launch checklist snapshot." },
-                { id: "M3", title: "Production Launch Gates", status: "Closed", desc: "Key ceremony, ownership rotation, launch rehearsal, and consolidated gate evidence are complete with decision state GO FOR PRODUCTION." },
-                { id: "M4", title: "Mainnet + Agent Population", status: "Upcoming", desc: "Sovereign L1 launch with initial agent cohort, validator deployment, liquidity ignition, and keeper job activation." },
+                { id: "M3", title: "Production Launch Gates", status: "Complete", desc: "Key ceremony, ownership rotation, launch rehearsal, and consolidated gate evidence are complete with decision state GO FOR PRODUCTION. All 13 launch gates PASS." },
+                { id: "M4", title: "Mainnet + First Agent Node", status: "Live", desc: "Sovereign L1 live on Avalanche mainnet. First agent child node active — validating blocks, 100,000+ block height, 1 block/sec. Companion EVM explorer operational. Network is assembling itself." },
               ].map((m, i) => (
                 <ScrollReveal key={m.id} delay={i * 0.06}>
                   <div className="rounded-[20px] p-6 md:p-8 flex items-start gap-6 group" style={{
@@ -1616,12 +1617,12 @@ export default function ExploreVeilPage() {
                   onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(16,185,129,0.1)")}
                   onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.04)")}>
                     <div className="flex-shrink-0 w-14 h-14 rounded-xl flex items-center justify-center" style={{
-                      background: m.status === "Complete" ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.02)",
-                      border: `1px solid ${m.status === "Complete" ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.05)"}`,
+                      background: (m.status === "Complete" || m.status === "Live") ? "rgba(16,185,129,0.08)" : "rgba(255,255,255,0.02)",
+                      border: `1px solid ${(m.status === "Complete" || m.status === "Live") ? "rgba(16,185,129,0.15)" : "rgba(255,255,255,0.05)"}`,
                     }}>
                       <span style={{
                         fontFamily: "var(--font-space-grotesk)", fontWeight: 700, fontSize: "14px",
-                        color: m.status === "Complete" ? "rgba(16,185,129,0.6)" : "rgba(255,255,255,0.25)",
+                        color: (m.status === "Complete" || m.status === "Live") ? "rgba(16,185,129,0.6)" : "rgba(255,255,255,0.25)",
                       }}>{m.id}</span>
                     </div>
                     <div className="flex-1 min-w-0">
@@ -1631,9 +1632,9 @@ export default function ExploreVeilPage() {
                         }}>{m.title}</h4>
                         <span className="px-3 py-1 rounded-full text-[10px] tracking-wider uppercase" style={{
                           fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
-                          background: m.status === "Complete" ? "rgba(16,185,129,0.1)" : m.status === "In Progress" ? "rgba(251,191,36,0.08)" : "rgba(255,255,255,0.03)",
-                          color: m.status === "Complete" ? "rgba(16,185,129,0.7)" : m.status === "In Progress" ? "rgba(251,191,36,0.6)" : "rgba(255,255,255,0.3)",
-                          border: `1px solid ${m.status === "Complete" ? "rgba(16,185,129,0.15)" : m.status === "In Progress" ? "rgba(251,191,36,0.12)" : "rgba(255,255,255,0.05)"}`,
+                          background: m.status === "Live" ? "rgba(16,185,129,0.15)" : m.status === "Complete" ? "rgba(16,185,129,0.1)" : m.status === "In Progress" ? "rgba(251,191,36,0.08)" : "rgba(255,255,255,0.03)",
+                          color: m.status === "Live" ? "rgba(16,185,129,0.9)" : m.status === "Complete" ? "rgba(16,185,129,0.7)" : m.status === "In Progress" ? "rgba(251,191,36,0.6)" : "rgba(255,255,255,0.3)",
+                          border: `1px solid ${m.status === "Live" ? "rgba(16,185,129,0.3)" : m.status === "Complete" ? "rgba(16,185,129,0.15)" : m.status === "In Progress" ? "rgba(251,191,36,0.12)" : "rgba(255,255,255,0.05)"}`,
                         }}>{m.status}</span>
                       </div>
                       <p style={{
@@ -1667,7 +1668,7 @@ export default function ExploreVeilPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <ParticipateCard step="01" title="Build Agents"
-                description="Preview the ANIMA SDK to prototype autonomous agents that will trade markets, accumulate capital, and progress through the sovereignty lifecycle once strict-private runtime/proof fixtures are in place. Go runtime for lifecycle, TypeScript for strategy."
+                description="Use the ANIMA SDK to build autonomous agents that provision infrastructure, validate blocks, trade markets, and progress through the sovereignty lifecycle. Go runtime for lifecycle, TypeScript for strategy. The first agent is already live."
                 href="/app/agents" cta="View Agents" delay={0} />
               <ParticipateCard step="02" title="Trade Markets"
                 description="Create and resolve prediction markets. Provide liquidity. Bond into chain-owned pools. Every market is an arena where agents prove capability under real economic pressure."
@@ -1731,7 +1732,7 @@ export default function ExploreVeilPage() {
                 lineHeight: 1.8, fontWeight: 300,
               }}>
                 Two participants: developers and agents. No users, no spectators.
-                Every human builds. Every agent operates. The network assembles itself.
+                Every human builds. Every agent operates. The network is live and assembling itself.
               </p>
             </ScrollReveal>
 
@@ -1781,6 +1782,7 @@ export default function ExploreVeilPage() {
                   { label: "Markets", href: "/app/markets" },
                   { label: "Agents", href: "/app/agents" },
                   { label: "DeFi", href: "/app/defi" },
+                  { label: "Explorer", href: "/explorer" },
                   { label: "Gov", href: "/app/gov" },
                 ].map(link => (
                   <Link key={link.label} href={link.href}
