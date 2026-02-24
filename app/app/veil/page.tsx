@@ -318,7 +318,7 @@ export default function VeilTokenPage() {
 
           <ScrollReveal delay={0.1}>
             <p className="mb-4 font-[var(--font-figtree)] text-[11px] uppercase tracking-[0.3em] text-emerald-500/50">
-              The Protocol Token
+              The Network Token
             </p>
           </ScrollReveal>
 
@@ -330,7 +330,7 @@ export default function VeilTokenPage() {
 
           <ScrollReveal delay={0.2}>
             <p className="mx-auto mt-6 max-w-2xl font-[var(--font-figtree)] text-base leading-relaxed text-white/35">
-              The native token of VeilVM — a privacy-native HyperSDK chain built for prediction markets,
+              The native token of VeilVM — a privacy-native HyperSDK network built for prediction markets,
               autonomous agents, and sovereign infrastructure. Stake, govern, bond, and validate.
             </p>
           </ScrollReveal>
