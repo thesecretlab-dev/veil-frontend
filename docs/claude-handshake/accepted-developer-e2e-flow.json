@@ -1,0 +1,121 @@
+{
+  "_meta": {
+    "schema": "veil.accepted-developer-flow.v1",
+    "updated": "2026-02-24T04:35:00Z",
+    "flow_version": "accepted-dev.v1"
+  },
+  "definition": "Accepted developer onboarding from approval to market access, requiring ANIMA validation, ZER0ID passport 8004 verification, and active VEIL validator status.",
+  "unlock_rule": {
+    "markets_unlocked_when_all": [
+      "A6_ANIMA_VALIDATED",
+      "A7_ZEROID_8004",
+      "A8_VALIDATOR_ACTIVE"
+    ],
+    "relock_on_any_failure": true
+  },
+  "stages": [
+    {
+      "id": "A0_ACCEPTED",
+      "name": "Developer accepted",
+      "blocking": true,
+      "evidence_required": [
+        "acceptance_record_id",
+        "issued_at"
+      ]
+    },
+    {
+      "id": "A1_WALLET_BIND",
+      "name": "Wallet bind and signature",
+      "blocking": true,
+      "evidence_required": [
+        "wallet_address",
+        "wallet_signature"
+      ]
+    },
+    {
+      "id": "A2_PAYMENT",
+      "name": "Required AVAX payment observed",
+      "blocking": true,
+      "evidence_required": [
+        "payment_tx_hash",
+        "payment_amount",
+        "payment_timestamp"
+      ]
+    },
+    {
+      "id": "A3_PROVISION",
+      "name": "Cloud server provisioned",
+      "blocking": true,
+      "evidence_required": [
+        "instance_id",
+        "instance_endpoint",
+        "provision_log_path"
+      ]
+    },
+    {
+      "id": "A4_CODEX_ACCESS",
+      "name": "Codex command access confirmed",
+      "blocking": true,
+      "evidence_required": [
+        "command_transcript_hash",
+        "environment_fingerprint"
+      ]
+    },
+    {
+      "id": "A5_NETWORK_NATIVIZED",
+      "name": "Nativized into VEIL network",
+      "blocking": true,
+      "evidence_required": [
+        "node_identity",
+        "peer_membership_proof",
+        "veil_rpc_health"
+      ]
+    },
+    {
+      "id": "A6_ANIMA_VALIDATED",
+      "name": "ANIMA validation complete",
+      "blocking": true,
+      "evidence_required": [
+        "anima_run_id",
+        "anima_validation_report",
+        "completed_at"
+      ]
+    },
+    {
+      "id": "A7_ZEROID_8004",
+      "name": "ZER0ID passport 8004 verified",
+      "blocking": true,
+      "evidence_required": [
+        "passport_id",
+        "verification_proof",
+        "verified_at"
+      ]
+    },
+    {
+      "id": "A8_VALIDATOR_ACTIVE",
+      "name": "Validator active on VEIL",
+      "blocking": true,
+      "evidence_required": [
+        "validator_id",
+        "validator_weight",
+        "last_seen_heartbeat"
+      ]
+    },
+    {
+      "id": "A9_MARKETS_UNLOCKED",
+      "name": "Markets unlocked",
+      "blocking": false,
+      "evidence_required": [
+        "unlock_event_id",
+        "granted_at"
+      ]
+    }
+  ],
+  "ui_states": [
+    "pending",
+    "running",
+    "passed",
+    "failed",
+    "blocked"
+  ]
+}

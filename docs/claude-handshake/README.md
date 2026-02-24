@@ -16,6 +16,8 @@ Cross-agent coordination files for full VEIL ecosystem surface translation:
 | `surface-translation-matrix.md` | Human-readable copy guidance with allowed/forbidden wording across ecosystem domains | Protocol + frontend review |
 | `build-games-2026-mvp.md` | Canonical MVP definition, 20-minute SLA, and owner split for Codex + Claude | Protocol + frontend execution leads |
 | `build-games-2026-mvp-tracker.json` | Machine-readable milestone board for the Build Games MVP flow | Protocol truth owner updates; frontend can render |
+| `accepted-developer-e2e-flow.md` | End-to-end first-time accepted developer flow (approval -> ANIMA + ZER0ID 8004 -> markets unlock) | Protocol + frontend execution leads |
+| `accepted-developer-e2e-flow.json` | Machine-readable stage model and hard unlock rules for accepted developer onboarding | Protocol truth owner updates; frontend consumes |
 
 ## Rules
 

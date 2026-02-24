@@ -6,6 +6,15 @@ Updated: 2026-02-23
 
 `User sends $100 in AVAX, gets a live cloud server + Codex access + ANIMA agent validating the VEIL network and working live in under 20 minutes.`
 
+## Scope Boundary
+
+This file defines the fast bootstrap MVP only.
+
+For the full accepted-developer onboarding flow (including nativization, ZER0ID `8004` passport verification, and hard market unlock gates), use:
+
+- `docs/claude-handshake/accepted-developer-e2e-flow.md`
+- `docs/claude-handshake/accepted-developer-e2e-flow.json`
+
 ## Hard Acceptance Criteria
 
 1. A real AVAX payment transaction is observed and archived.
