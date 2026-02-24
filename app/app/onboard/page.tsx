@@ -66,8 +66,8 @@ const STAGE_DEFS: Omit<StageState, "status" | "evidence" | "error" | "startedAt"
     id: "A3_PROVISION",
     name: "Provision",
     icon: "▣",
-    description: "Cloud infrastructure deployed",
-    detail: "A dedicated cloud instance is provisioned for your validator node. This is your home on the network — sovereign compute.",
+    description: "Infrastructure deployed — home server or cloud",
+    detail: "Your validator needs a home. Choose your path: set up a home server for under $100 (true sovereignty — your hardware, your rules) or deploy an automated cloud instance. Both paths lead to the same destination: a running VEIL node.",
   },
   {
     id: "A4_CODEX_ACCESS",
@@ -641,6 +641,76 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
           >
             Verify Payment
           </button>
+        </div>
+      )}
+
+      {stage.status === "pending" && stage.id === "A3_PROVISION" && (
+        <div className="space-y-4">
+          <p className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.2em] text-white/30 mb-3">
+            Choose your infrastructure path
+          </p>
+          <div className="grid grid-cols-1 gap-3">
+            {/* Home Server */}
+            <button
+              onClick={() => onAction("provision_home")}
+              className="group relative text-left rounded-[16px] border border-emerald-500/15 bg-emerald-500/[0.02] p-5 transition-all hover:border-emerald-500/30 hover:bg-emerald-500/[0.04]"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px] border border-emerald-500/20 bg-emerald-500/[0.06]">
+                  <span className="text-xl text-emerald-400">⬡</span>
+                </div>
+                <div>
+                  <p className="font-[var(--font-space-grotesk)] text-sm font-medium text-white/85">
+                    Home Server
+                    <span className="ml-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-2 py-0.5 text-[9px] uppercase tracking-[0.15em] text-emerald-400/70">Recommended</span>
+                  </p>
+                  <p className="mt-1 text-[12px] text-white/35 leading-relaxed">
+                    Set up a dedicated machine at home. Under $100 for a capable mini PC.
+                    True sovereignty — your hardware, your keys, your rules. Follow our guided setup.
+                  </p>
+                  <div className="mt-3 flex items-center gap-4 text-[10px] text-emerald-400/50 font-[var(--font-space-grotesk)]">
+                    <span>~$50-100 hardware</span>
+                    <span className="text-white/10">|</span>
+                    <span>~20 min setup</span>
+                    <span className="text-white/10">|</span>
+                    <span>Full sovereignty</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            {/* Cloud */}
+            <button
+              onClick={() => onAction("provision_cloud")}
+              className="group relative text-left rounded-[16px] border border-white/[0.08] bg-white/[0.015] p-5 transition-all hover:border-white/15 hover:bg-white/[0.025]"
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px] border border-white/[0.08] bg-white/[0.02]">
+                  <span className="text-xl text-white/40">☁</span>
+                </div>
+                <div>
+                  <p className="font-[var(--font-space-grotesk)] text-sm font-medium text-white/85">
+                    Automated Cloud
+                  </p>
+                  <p className="mt-1 text-[12px] text-white/35 leading-relaxed">
+                    We provision a cloud instance automatically. Faster to start but recurring monthly cost.
+                    Your node, managed infrastructure.
+                  </p>
+                  <div className="mt-3 flex items-center gap-4 text-[10px] text-white/30 font-[var(--font-space-grotesk)]">
+                    <span>~$5-20/mo</span>
+                    <span className="text-white/10">|</span>
+                    <span>~2 min deploy</span>
+                    <span className="text-white/10">|</span>
+                    <span>Managed infra</span>
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
+          <p className="text-[11px] text-white/20 leading-relaxed">
+            Both paths produce an identical validator node. Home servers align with the ANIMA vision — agents that own their own infrastructure.
+            You can migrate between paths later.
+          </p>
         </div>
       )}
 
