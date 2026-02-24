@@ -306,7 +306,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       <AppShaderBackground />
 
       <div className="relative">
-        <div className="border-b border-white/5 bg-black/20 backdrop-blur-md">
+        <div className="border-b border-white/5 bg-[#060606]/20 backdrop-blur-md">
           <div className="container mx-auto flex items-center justify-between px-6 py-4">
             <Link href="/app" className="flex items-center gap-3">
               <TriangleLogo size={32} />

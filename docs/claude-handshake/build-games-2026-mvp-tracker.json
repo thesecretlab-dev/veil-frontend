@@ -1,17 +1,17 @@
 {
   "_meta": {
     "schema": "veil.build-games-mvp-tracker.v1",
-    "updated": "2026-02-23T23:58:14.325Z",
+    "updated": "2026-02-24T00:10:40.383Z",
     "target_minutes": 20,
-    "status": "continuity",
+    "status": "failed",
     "strict_passed": false,
-    "continuity_passed": true,
+    "continuity_passed": false,
     "provisioned_fresh": false,
     "provision_mode_requested": "reuse",
     "provision_mode_executed": "reuse",
-    "outcome": "continuity-pass",
-    "last_run_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T23-58-14-326Z.json",
-    "last_run_duration_ms": 6594
+    "outcome": "failed",
+    "last_run_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-24T00-10-40-385Z.json",
+    "last_run_duration_ms": 5255
   },
   "mvp_definition": "User sends $100 in AVAX, gets a live cloud server + Codex access + ANIMA agent validating the VEIL network and working live in under 20 minutes.",
   "milestones": [
@@ -26,8 +26,8 @@
         "payment_timestamp",
         "payment_value_snapshot"
       ],
-      "last_duration_ms": 231,
-      "last_updated": "2026-02-23T23:58:14.325Z",
+      "last_duration_ms": 361,
+      "last_updated": "2026-02-24T00:10:40.383Z",
       "error": null
     },
     {
@@ -41,8 +41,8 @@
         "instance_endpoint",
         "provision_log_path"
       ],
-      "last_duration_ms": 1455,
-      "last_updated": "2026-02-23T23:58:14.325Z",
+      "last_duration_ms": 1503,
+      "last_updated": "2026-02-24T00:10:40.383Z",
       "error": null
     },
     {
@@ -55,24 +55,24 @@
         "bootstrap_command_output",
         "environment_fingerprint"
       ],
-      "last_duration_ms": 1278,
-      "last_updated": "2026-02-23T23:58:14.325Z",
+      "last_duration_ms": 1332,
+      "last_updated": "2026-02-24T00:10:40.383Z",
       "error": null
     },
     {
       "id": "M4_ANIMA_VALIDATE_VEIL",
       "name": "Run ANIMA VEIL validation",
       "owner": "codex",
-      "status": "complete",
+      "status": "failed",
       "budget_minutes": 7,
       "evidence_required": [
         "veil_readiness_response",
         "chain_validation_output",
         "anima_validation_log"
       ],
-      "last_duration_ms": 3630,
-      "last_updated": "2026-02-23T23:58:14.325Z",
-      "error": null
+      "last_duration_ms": 2058,
+      "last_updated": "2026-02-24T00:10:40.383Z",
+      "error": "[ANIMA] runtime probe failed: RPC error: the method veil_agent_get does not exist/is not available"
     },
     {
       "id": "M5_SURFACE_STATUS",
@@ -87,10 +87,10 @@
       "evidence": {
         "mvp_run_json_path": "C:\\Users\\Josh\\Desktop\\private-github-ready-20260219\\veil-frontend\\public\\maiev\\mvp-run-latest.json",
         "ui_status_rendered": "maiev-surface-published",
-        "source_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T23-58-14-326Z.json"
+        "source_artifact": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-24T00-10-40-385Z.json"
       },
-      "last_duration_ms": 1,
-      "last_updated": "2026-02-23T23:58:14.325Z",
+      "last_duration_ms": 0,
+      "last_updated": "2026-02-24T00:10:40.383Z",
       "error": null
     }
   ],
@@ -107,51 +107,51 @@
     "ui_claims_success_without_artifacts"
   ],
   "last_run": {
-    "started_at": "2026-02-23T23:58:07.731Z",
-    "ended_at": "2026-02-23T23:58:14.325Z",
-    "total_duration_ms": 6594,
+    "started_at": "2026-02-24T00:10:35.128Z",
+    "ended_at": "2026-02-24T00:10:40.383Z",
+    "total_duration_ms": 5255,
     "passed": false,
     "strict_passed": false,
-    "continuity_passed": true,
+    "continuity_passed": false,
     "provisioned_fresh": false,
     "provision_mode_requested": "reuse",
     "provision_mode_executed": "reuse",
-    "outcome": "continuity-pass",
-    "artifact_path": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-23T23-58-14-326Z.json",
+    "outcome": "failed",
+    "artifact_path": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-24T00-10-40-385Z.json",
     "steps": [
       {
         "id": "M1_PAYMENT",
         "name": "Detect and verify AVAX payment",
         "status": "passed",
-        "duration_ms": 231,
+        "duration_ms": 361,
         "error": null
       },
       {
         "id": "M2_PROVISION",
         "name": "Provision live cloud server",
         "status": "passed",
-        "duration_ms": 1455,
+        "duration_ms": 1503,
         "error": null
       },
       {
         "id": "M3_CODEX_ACCESS",
         "name": "Validate Codex command access on provisioned server",
         "status": "passed",
-        "duration_ms": 1278,
+        "duration_ms": 1332,
         "error": null
       },
       {
         "id": "M4_ANIMA_VALIDATE_VEIL",
         "name": "Run ANIMA VEIL validation probe from server and operator",
-        "status": "passed",
-        "duration_ms": 3630,
-        "error": null
+        "status": "failed",
+        "duration_ms": 2058,
+        "error": "[ANIMA] runtime probe failed: RPC error: the method veil_agent_get does not exist/is not available"
       },
       {
         "id": "M5_ARTIFACT",
         "name": "Write MVP evidence artifact",
         "status": "passed",
-        "duration_ms": 1,
+        "duration_ms": 0,
         "error": null
       }
     ]

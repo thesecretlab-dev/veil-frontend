@@ -221,7 +221,7 @@ export default function LaunchPage() {
                 value={txHash}
                 onChange={(event) => setTxHash(event.target.value)}
                 placeholder="0x..."
-                className="w-full rounded-lg border border-white/15 bg-black/30 px-3 py-2 font-mono text-xs text-white outline-none transition focus:border-emerald-300/45"
+                className="w-full rounded-lg border border-white/15 bg-[#060606]/30 px-3 py-2 font-mono text-xs text-white outline-none transition focus:border-emerald-300/45"
               />
             </div>
             <button
@@ -293,7 +293,7 @@ export default function LaunchPage() {
               <p className="text-sm text-white/45">{loading ? "Loading run data..." : "No run artifacts yet."}</p>
             )}
             {steps.map((step) => (
-              <div key={`${step.id}-${step.name}`} className="rounded-lg border border-white/10 bg-black/20 p-3">
+              <div key={`${step.id}-${step.name}`} className="rounded-lg border border-white/10 bg-[#060606]/20 p-3">
                 <div className="mb-1 flex items-start justify-between gap-3">
                   <div>
                     <p className="font-mono text-xs text-white/90">{step.id || "step"}</p>
@@ -310,16 +310,16 @@ export default function LaunchPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-black/30 p-6">
+        <div className="rounded-2xl border border-white/10 bg-[#060606]/30 p-6">
           <p className="mb-2 text-xs uppercase tracking-[0.14em] text-white/60">Runner Logs (tail)</p>
           <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-lg border border-white/10 bg-black/50 p-3">
+            <div className="rounded-lg border border-white/10 bg-[#060606]/50 p-3">
               <p className="mb-2 text-[11px] uppercase tracking-[0.14em] text-emerald-200/70">stdout</p>
               <pre className="max-h-72 overflow-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-white/75">
                 {(api.runner.stdoutTail || []).join("\n") || "(empty)"}
               </pre>
             </div>
-            <div className="rounded-lg border border-white/10 bg-black/50 p-3">
+            <div className="rounded-lg border border-white/10 bg-[#060606]/50 p-3">
               <p className="mb-2 text-[11px] uppercase tracking-[0.14em] text-red-200/70">stderr</p>
               <pre className="max-h-72 overflow-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-white/75">
                 {(api.runner.stderrTail || []).join("\n") || "(empty)"}

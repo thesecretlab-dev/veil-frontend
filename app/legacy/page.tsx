@@ -250,14 +250,14 @@ export default function ShaderShowcase() {
         }}
       />
 
-      {/* ── Launch App ── */}
+      {/* ── Enter Chain ── */}
       <Magnetic strength={0.4} radius={100}>
         <Link
           href="/app"
           className="veil-launch-btn fixed top-8 right-8 z-50 flex items-center gap-2.5 px-5 py-2.5 rounded-full"
         >
           <span className="veil-launch-dot" />
-          <span className="veil-launch-text">Launch App</span>
+          <span className="veil-launch-text">Enter Chain</span>
           <span className="veil-launch-arrow">{"\u2192"}</span>
         </Link>
       </Magnetic>

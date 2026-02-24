@@ -59,7 +59,7 @@ const WALLETS = [
     color: "#10b981",
     icon: (
       <svg viewBox="0 0 32 32" fill="none" className="w-8 h-8">
-        <path d="M16 2L4 28h8l4-10 4 10h8L16 2z" fill="#10b981" />
+        <path d="M12 22L2 4H22L12 22Z" fill="#10b981" />
       </svg>
     ),
   },
@@ -486,9 +486,9 @@ export default function GovernancePage() {
                             <span
                               className={`text-[9px] px-2 py-0.5 rounded-full font-medium uppercase tracking-[0.2em] ${
                                 t.tag === "Discussion"
-                                  ? "bg-blue-500/8 text-blue-400/70 border border-blue-500/15"
+                                  ? "bg-emerald-500/8 text-emerald-400/70 border border-emerald-500/15"
                                   : t.tag === "Research"
-                                  ? "bg-purple-500/8 text-purple-400/70 border border-purple-500/15"
+                                  ? "bg-emerald-500/8 text-emerald-400/70 border border-emerald-500/15"
                                   : t.tag === "Proposal"
                                   ? "bg-emerald-500/8 text-emerald-400/70 border border-emerald-500/15"
                                   : "bg-orange-500/8 text-orange-400/70 border border-orange-500/15"
@@ -602,7 +602,7 @@ export default function GovernancePage() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="flex items-center gap-2.5">
                 <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6">
-                  <path d="M16 2L4 28h8l4-10 4 10h8L16 2z" fill="rgba(16,185,129,0.5)" />
+                  <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" fill="none" />
                 </svg>
                 <span className="text-[13px] tracking-[0.1em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.3)" }}>
                   VEIL

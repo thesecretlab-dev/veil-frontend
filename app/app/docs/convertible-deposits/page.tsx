@@ -274,7 +274,7 @@ function StrategyMatrix() {
     emerald: "border-emerald-500/30 bg-emerald-500/5",
     sky: "border-sky-500/30 bg-sky-500/5",
     amber: "border-amber-500/30 bg-amber-500/5",
-    purple: "border-purple-500/30 bg-purple-500/5",
+    purple: "border-emerald-500/30 bg-emerald-500/5",
   }
 
   return (
@@ -470,7 +470,7 @@ function SidebarNav({ activeId }: { activeId: string }) {
   return (
     <>
       {/* Mobile toggle */}
-      <div className="lg:hidden sticky top-0 z-30 bg-black/80 backdrop-blur-xl border-b border-white/10 px-4 py-3">
+      <div className="lg:hidden sticky top-0 z-30 bg-[#060606]/80 backdrop-blur-xl border-b border-white/10 px-4 py-3">
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           className="flex items-center gap-2 text-sm text-white/60 hover:text-white"
@@ -584,7 +584,7 @@ export default function ConvertibleDepositsPage() {
       />
 
       {/* Header */}
-      <header className="relative z-20 border-b border-white/10 bg-black/40 backdrop-blur-xl">
+      <header className="relative z-20 border-b border-white/10 bg-[#060606]/40 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-5 flex items-center justify-between">
           <Link href="/app" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <TriangleLogo />
@@ -1090,7 +1090,7 @@ export default function ConvertibleDepositsPage() {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 bg-black/40 backdrop-blur-xl">
+      <footer className="relative z-10 border-t border-white/10 bg-[#060606]/40 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/30">
             © {new Date().getFullYear()} VEIL Protocol. All rights reserved.
