@@ -31,6 +31,8 @@ type MvpRunStep = {
   error?: string | null
 }
 
+type UserFlowState = "pending" | "running" | "passed" | "failed"
+
 type MvpRunArtifact = {
   meta?: {
     passed?: boolean
@@ -99,6 +101,63 @@ function StepBadge({ status }: { status: string | undefined }) {
   }
   return <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/60">Pending</span>
 }
+
+function UserFlowBadge({ status }: { status: UserFlowState }) {
+  if (status === "passed") {
+    return (
+      <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-emerald-200">
+        Passed
+      </span>
+    )
+  }
+  if (status === "failed") {
+    return (
+      <span className="rounded-full border border-red-400/30 bg-red-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-red-200">
+        Failed
+      </span>
+    )
+  }
+  if (status === "running") {
+    return (
+      <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-amber-200">
+        Running
+      </span>
+    )
+  }
+  return (
+    <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/60">
+      Pending
+    </span>
+  )
+}
+
+const USER_FLOW_STAGES = [
+  {
+    id: "M1_PAYMENT",
+    title: "Payment Verification",
+    detail: "Confirm inbound AVAX payment against minimum and target value.",
+  },
+  {
+    id: "M2_PROVISION",
+    title: "Cloud Provisioning",
+    detail: "Create a fresh cloud server for this run and return sandbox details.",
+  },
+  {
+    id: "M3_CODEX_ACCESS",
+    title: "Codex Access",
+    detail: "Bind the launched server to Codex workflow and validate command channel.",
+  },
+  {
+    id: "M4_ANIMA_VALIDATE_VEIL",
+    title: "ANIMA + VEIL Validation",
+    detail: "Bring ANIMA online and verify VEIL validation/runtime checks.",
+  },
+  {
+    id: "M5_ARTIFACT",
+    title: "Evidence + Surface Update",
+    detail: "Write run artifact and push latest status to live transparency surfaces.",
+  },
+] as const
 
 export default function LaunchPage() {
   const [txHash, setTxHash] = useState("")
@@ -183,6 +242,37 @@ export default function LaunchPage() {
     return failedStep?.error || null
   }, [api.runner.error, steps])
 
+  const userFlowStages = useMemo(() => {
+    const byId = new Map<string, MvpRunStep>()
+    for (const step of steps) {
+      if (step.id) byId.set(step.id, step)
+    }
+
+    const firstOpenIndex = USER_FLOW_STAGES.findIndex((stage) => {
+      const status = byId.get(stage.id)?.status
+      return status !== "passed" && status !== "failed"
+    })
+
+    return USER_FLOW_STAGES.map((stage, index) => {
+      const step = byId.get(stage.id)
+      let state: UserFlowState = "pending"
+      if (step?.status === "passed") {
+        state = "passed"
+      } else if (step?.status === "failed") {
+        state = "failed"
+      } else if (api.runner.status === "running" && firstOpenIndex === index) {
+        state = "running"
+      }
+
+      return {
+        ...stage,
+        state,
+        durationMs: step?.durationMs,
+        error: step?.error ?? null,
+      }
+    })
+  }, [api.runner.status, steps])
+
   return (
     <div className="min-h-screen bg-[#050505] px-6 py-10 text-white">
       <div className="mx-auto max-w-5xl space-y-6">
@@ -206,6 +296,44 @@ export default function LaunchPage() {
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-white/65">
             Submit the AVAX payment tx hash and launch the scripted MVP run. Launch runs default to strict mode (fresh server provision, no sandbox reuse), then write artifacts to MAIEV and update the handshake tracker.
           </p>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.14em] text-white/60">End-User Flow (Target: &lt; 20m)</p>
+              <p className="mt-1 text-sm text-white/70">
+                {api.latestRun?.definition ||
+                  "User sends AVAX, receives cloud runtime + Codex access, and ANIMA validates VEIL in one guided flow."}
+              </p>
+            </div>
+            <StatusBadge status={api.runner.status} />
+          </div>
+
+          <div className="grid gap-3 md:grid-cols-2">
+            {userFlowStages.map((stage, index) => (
+              <div key={stage.id} className="rounded-lg border border-white/10 bg-[#060606]/25 p-4">
+                <div className="mb-2 flex items-start justify-between gap-2">
+                  <div>
+                    <p className="font-mono text-[11px] text-white/65">{String(index + 1).padStart(2, "0")} · {stage.id}</p>
+                    <p className="text-sm text-white/90">{stage.title}</p>
+                  </div>
+                  <UserFlowBadge status={stage.state} />
+                </div>
+                <p className="text-xs leading-relaxed text-white/60">{stage.detail}</p>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/50">
+                  <span>Duration: {typeof stage.durationMs === "number" ? `${stage.durationMs}ms` : "-"}</span>
+                  {stage.error && <span className="text-red-200/85">Error: {stage.error}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 rounded-lg border border-white/10 bg-[#060606]/25 p-4 text-xs text-white/60">
+            <p className="uppercase tracking-[0.14em] text-white/70">Surface Split</p>
+            <p className="mt-1">VeilVM runtime surface: <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/app/network">/app/network</Link> and <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/app/transparency">/app/transparency</Link></p>
+            <p className="mt-1">Companion EVM explorer (Blockscout): tracks EVM rails, not VeilVM-native actions.</p>
+          </div>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
