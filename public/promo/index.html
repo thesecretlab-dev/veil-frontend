@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VEIL — Avalanche Build Games 2026</title>
+<title>VEIL</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
@@ -18,8 +18,14 @@
 
   html, body {
     background: #000; color: #fff;
-    overflow: hidden; width: 100vw; height: 100vh;
-    font-family: var(--sans);
+    overflow: hidden; width: 100vw; height: 100vh; cursor: none;
+  }
+
+  /* ══════════ VIDEO ══════════ */
+  #video-layer { position: fixed; inset: 0; z-index: 0; }
+  .vid-slot {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0;
   }
 
   /* ══════════ FX LAYERS ══════════ */
@@ -32,6 +38,11 @@
   .scanlines {
     position: fixed; inset: 0; z-index: 199; pointer-events: none; opacity: 0.015;
     background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.25) 2px, rgba(0,0,0,0.25) 4px);
+  }
+  #darken {
+    position: fixed; inset: 0; z-index: 30; pointer-events: none;
+    background: rgba(0,0,0,0.5);
+    transition: background 0.8s ease;
   }
   .vignette {
     position: fixed; inset: 0; z-index: 31; pointer-events: none;
@@ -58,25 +69,24 @@
   #pulse.active { transform: translate(-50%, -50%) scale(1); opacity: 1; }
   #pulse.big { width: 1400px; height: 1400px; }
 
-  /* ══════════ SLIDE SYSTEM ══════════ */
-  #slide-container {
+  /* ══════════ TEXT ══════════ */
+  #text-layer {
     position: fixed; inset: 0; z-index: 60;
     display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
   }
 
-  .slide {
+  .beat {
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     opacity: 0; padding: 0 8%;
     will-change: transform, opacity, filter;
-    pointer-events: none;
   }
-  .slide.active { opacity: 1; pointer-events: auto; }
-  .slide.in-up { animation: inUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  .slide.in-scale { animation: inScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-  .slide.in-fade { animation: inFade 1.2s ease forwards; }
-  .slide.out { animation: slideOut 0.5s ease-in forwards; }
+  .beat.in-up { animation: inUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .beat.in-scale { animation: inScale 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  .beat.in-fade { animation: inFade 1.2s ease forwards; }
+  .beat.out { animation: beatOut 0.5s ease-in forwards; }
 
   @keyframes inUp {
     from { opacity: 0; transform: translateY(40px); filter: blur(10px); }
@@ -87,48 +97,55 @@
     to { opacity: 1; transform: scale(1); filter: blur(0); }
   }
   @keyframes inFade { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes slideOut {
+  @keyframes beatOut {
     from { opacity: 1; filter: blur(0); }
     to { opacity: 0; filter: blur(6px); }
   }
 
-  /* Typography — matching VEIL brand */
   .t-tag {
     font-family: var(--sans); font-size: 15px; font-weight: 500;
     letter-spacing: 0.5em; text-transform: uppercase;
     color: var(--emerald); text-align: center; margin-bottom: 28px;
   }
   .t-question {
-    font-family: var(--serif); font-size: 80px; line-height: 1.05;
+    font-family: var(--serif); font-size: 88px; line-height: 1.05;
     text-align: center; color: #fff; font-style: italic;
   }
+  .t-question .emerald { color: var(--emerald); font-style: normal; }
   .t-answer {
-    font-family: var(--serif); font-size: 72px; line-height: 1.05;
+    font-family: var(--serif); font-size: 76px; line-height: 1.05;
     text-align: center; color: #fff;
   }
+  .t-answer .emerald { color: var(--emerald); }
+  .t-answer .dim { color: rgba(255,255,255,0.2); }
   .t-mega {
-    font-family: var(--serif); font-size: 180px; line-height: 0.85;
+    font-family: var(--serif); font-size: 200px; line-height: 0.85;
     text-align: center; color: #fff; letter-spacing: -0.03em;
   }
+  .t-mega .emerald { color: var(--emerald); }
   .t-detail {
-    font-family: var(--sans); font-size: 22px; font-weight: 400;
+    font-family: var(--sans); font-size: 24px; font-weight: 400;
     line-height: 1.7; text-align: center;
     color: rgba(255,255,255,0.55); max-width: 920px; margin-top: 20px;
   }
+  .t-detail .bright { color: rgba(255,255,255,0.88); }
+  .t-detail .emerald { color: var(--emerald); }
   .t-stat {
-    font-family: var(--sans); font-size: 160px; font-weight: 700;
+    font-family: var(--sans); font-size: 180px; font-weight: 700;
     color: var(--emerald); text-align: center; line-height: 1;
   }
   .t-stat-label {
-    font-family: var(--sans); font-size: 16px; font-weight: 400;
+    font-family: var(--sans); font-size: 18px; font-weight: 400;
     letter-spacing: 0.35em; text-transform: uppercase;
     color: rgba(255,255,255,0.35); text-align: center; margin-top: 16px;
   }
-  .emerald { color: var(--emerald); }
-  .dim { color: rgba(255,255,255,0.2); }
-  .bright { color: rgba(255,255,255,0.88); }
+  .t-logo { font-size: 280px; color: var(--emerald); line-height: 1; }
+  .t-brand {
+    font-family: var(--sans); font-size: 60px; font-weight: 600;
+    letter-spacing: 0.5em; color: rgba(255,255,255,0.92);
+    text-align: center; margin-top: 40px;
+  }
 
-  /* Lifecycle row */
   .lifecycle-row {
     display: flex; gap: 32px; align-items: center; margin-top: 36px;
   }
@@ -140,82 +157,57 @@
   .lifecycle-row .arrow { color: rgba(16,185,129,0.2); font-size: 20px; }
   .lifecycle-row .final { color: var(--emerald); }
 
-  /* Fee blocks */
   .fee-row { display: flex; gap: 48px; align-items: flex-end; margin-top: 32px; }
   .fee-block { text-align: center; }
   .fee-pct { font-family: var(--sans); font-weight: 700; color: var(--emerald); line-height: 1; }
   .fee-label { font-family: var(--sans); font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-top: 8px; }
 
-  /* Flywheel */
-  .flywheel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  /* Flywheel animation */
+  .flywheel {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
   .flywheel .step {
     font-family: var(--sans); font-size: 28px; font-weight: 500;
     color: rgba(255,255,255,0.3); letter-spacing: 0.05em;
+    transition: color 0.6s ease, transform 0.6s ease;
   }
-  .flywheel .arrow-down { font-size: 20px; color: rgba(16,185,129,0.2); }
-
-  /* Architecture grid */
-  .arch-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
-    margin-top: 36px; max-width: 900px;
-  }
-  .arch-card {
-    border: 1px solid rgba(16,185,129,0.15); border-radius: 12px;
-    padding: 24px; text-align: center;
-    background: rgba(16,185,129,0.03);
-  }
-  .arch-card .icon { font-size: 28px; margin-bottom: 12px; color: var(--emerald); }
-  .arch-card .label {
-    font-family: var(--sans); font-size: 14px; font-weight: 600;
-    letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.7);
-  }
-  .arch-card .sub {
-    font-family: var(--sans); font-size: 12px; color: rgba(255,255,255,0.3);
-    margin-top: 6px; line-height: 1.5;
+  .flywheel .step .emerald { color: var(--emerald); }
+  .flywheel .arrow-down {
+    font-size: 20px; color: rgba(16,185,129,0.2);
   }
 
-  /* Persona card */
-  .persona-card {
-    border: 1px solid rgba(16,185,129,0.15); border-radius: 16px;
-    padding: 40px; max-width: 700px; text-align: left;
-    background: rgba(16,185,129,0.03);
+  /* Screenshot overlays */
+  .screenshot-layer {
+    position: fixed; inset: 0; z-index: 15; pointer-events: none;
   }
-  .persona-card .name {
-    font-family: var(--serif); font-size: 48px; color: #fff; margin-bottom: 8px;
+  .screenshot-layer img {
+    position: absolute; opacity: 0;
+    transition: opacity 1.2s ease, transform 4s ease;
+    border-radius: 8px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 40px rgba(16,185,129,0.08);
   }
-  .persona-card .role {
-    font-family: var(--sans); font-size: 14px; letter-spacing: 0.3em;
-    text-transform: uppercase; color: var(--emerald); margin-bottom: 24px;
+  .screenshot-layer img.visible { opacity: 1; }
+  .ss-center {
+    top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.55);
+    max-width: 85vw; max-height: 75vh;
   }
-  .persona-card .desc {
-    font-family: var(--sans); font-size: 16px; line-height: 1.8;
-    color: rgba(255,255,255,0.5);
+  .ss-center.visible { transform: translate(-50%, -50%) scale(0.6); }
+  .ss-right {
+    top: 50%; right: 4%; transform: translate(0, -50%) scale(0.4);
+    max-height: 70vh;
   }
-  .persona-card .desc .bright { color: rgba(255,255,255,0.85); }
+  .ss-right.visible { transform: translate(0, -50%) scale(0.42); }
+  .ss-left {
+    top: 50%; left: 4%; transform: translate(0, -50%) scale(0.4);
+    max-height: 70vh;
+  }
+  .ss-left.visible { transform: translate(0, -50%) scale(0.42); }
 
-  /* Nav */
-  #nav {
-    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
-    z-index: 300; display: flex; gap: 12px; align-items: center;
-  }
-  #nav button {
-    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);
-    color: rgba(255,255,255,0.6); font-family: var(--sans); font-size: 14px;
-    padding: 10px 24px; border-radius: 8px; cursor: pointer;
-    transition: all 0.3s ease; letter-spacing: 0.1em;
-  }
-  #nav button:hover { background: rgba(16,185,129,0.2); border-color: var(--emerald); color: #fff; }
-  #nav button.active { background: var(--emerald); color: #000; border-color: var(--emerald); font-weight: 600; }
-  #slide-counter {
-    font-family: var(--sans); font-size: 13px; letter-spacing: 0.15em;
-    color: rgba(255,255,255,0.15); font-variant-numeric: tabular-nums;
-    margin: 0 8px;
-  }
-
-  /* Branding */
+  /* Persistent VEIL branding */
   #brand-veil {
     position: fixed; top: 28px; left: 32px; z-index: 250;
-    display: flex; align-items: center; gap: 10px; opacity: 0.25;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0.25; transition: opacity 1.5s ease;
     pointer-events: none;
   }
   #brand-veil .logo { color: var(--emerald); font-size: 18px; line-height: 1; }
@@ -223,200 +215,223 @@
     font-family: var(--sans); font-size: 13px; font-weight: 600;
     letter-spacing: 0.35em; color: rgba(255,255,255,0.5);
   }
-  #brand-badge {
-    position: fixed; top: 28px; right: 32px; z-index: 250;
-    font-family: var(--sans); font-size: 11px; font-weight: 500;
-    letter-spacing: 0.4em; text-transform: uppercase;
-    color: rgba(16,185,129,0.3); pointer-events: none;
-  }
+
+  /* TSL branding on finale */
   #brand-tsl {
-    position: fixed; bottom: 12px; left: 50%; transform: translateX(-50%);
-    z-index: 250; font-family: var(--sans); font-size: 10px;
+    position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%);
+    z-index: 310; opacity: 0; pointer-events: none;
+    transition: opacity 2s ease;
+    text-align: center;
+  }
+  #brand-tsl.visible { opacity: 1; }
+  #brand-tsl .line {
+    font-family: var(--sans); font-size: 11px; font-weight: 400;
     letter-spacing: 0.4em; text-transform: uppercase;
-    color: rgba(255,255,255,0.1); pointer-events: none;
+    color: rgba(255,255,255,0.18);
   }
 
-  /* Team section */
-  .team-card {
-    border: 1px solid rgba(16,185,129,0.15); border-radius: 16px;
-    padding: 40px; max-width: 800px; text-align: left;
-    background: rgba(16,185,129,0.03);
+  #cut-flash {
+    position: fixed; inset: 0; z-index: 190;
+    background: white; opacity: 0; pointer-events: none;
   }
-  .built-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-    margin-top: 24px;
+  #fade-black {
+    position: fixed; inset: 0; z-index: 25; pointer-events: none;
+    background: #000; opacity: 0; transition: opacity 2.5s ease;
   }
-  .built-item {
-    font-family: var(--sans); font-size: 14px; color: rgba(255,255,255,0.5);
-    padding: 8px 12px; border-left: 2px solid rgba(16,185,129,0.2);
+  #fade-black.active { opacity: 1; }
+
+  #progress {
+    position: fixed; bottom: 0; left: 0; height: 2px; z-index: 300;
+    background: linear-gradient(90deg, var(--emerald), rgba(16,185,129,0.3));
+    transition: width 0.1s linear;
   }
-  .built-item .emerald { color: var(--emerald); }
+  #timer {
+    position: fixed; top: 24px; right: 32px; z-index: 300;
+    font-family: var(--sans); font-size: 14px; font-weight: 400;
+    letter-spacing: 0.15em; color: rgba(255,255,255,0.12);
+    font-variant-numeric: tabular-nums;
+  }
+
+  #play-overlay {
+    position: fixed; inset: 0; z-index: 400; background: #000;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer; transition: opacity 1s ease;
+  }
+  #play-overlay.hidden { opacity: 0; pointer-events: none; }
+  .play-ring {
+    width: 110px; height: 110px;
+    border: 2px solid rgba(16,185,129,0.25); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 36px; transition: all 0.4s ease;
+  }
+  #play-overlay:hover .play-ring { border-color: var(--emerald); box-shadow: 0 0 80px rgba(16,185,129,0.15); transform: scale(1.05); }
+  .play-ring::after {
+    content: ''; border-left: 30px solid rgba(16,185,129,0.45);
+    border-top: 18px solid transparent; border-bottom: 18px solid transparent; margin-left: 8px;
+  }
+  #play-overlay:hover .play-ring::after { border-left-color: var(--emerald); }
+  #play-overlay p { font-family: var(--sans); font-size: 13px; letter-spacing: 0.5em; text-transform: uppercase; color: rgba(255,255,255,0.15); }
 </style>
 </head>
 <body>
 
 <div id="brand-veil"><span class="logo">▽</span><span class="name">VEIL</span></div>
-<div id="brand-badge">Avalanche Build Games 2026</div>
-<div id="brand-tsl">The Secret Lab</div>
+<div id="brand-tsl"><span class="line">The Secret Lab</span></div>
 
 <div class="film-grain"></div>
 <div class="scanlines"></div>
+<div id="darken"></div>
 <div class="vignette"></div>
 <div id="flare"></div>
 <div id="pulse"></div>
 <canvas id="particles"></canvas>
+<div id="cut-flash"></div>
+<div id="fade-black"></div>
+<div id="progress" style="width:0%"></div>
+<div id="timer"></div>
 
-<div id="slide-container">
+<div class="screenshot-layer" id="ss-layer">
+  <img id="ss-markets" class="ss-center" src="/promo/screenshots/app-markets.jpg" />
+  <img id="ss-agents" class="ss-center" src="/promo/screenshots/app-agents.jpg" />
+  <img id="ss-ecosystem" class="ss-center" src="/promo/screenshots/app-ecosystem-full.jpg" />
+</div>
 
-  <!-- SLIDE 0: TITLE -->
-  <div class="slide" id="s0">
-    <p class="t-tag">Avalanche Build Games 2026 — Submission 1</p>
-    <div style="font-size: 120px; color: var(--emerald); text-align: center; line-height: 1;">▽</div>
-    <h1 class="t-mega" style="font-size: 160px;">VEIL</h1>
-    <p class="t-detail" style="margin-top: 32px;">Sovereign Agent Infrastructure<br><span class="bright">Built on Avalanche L1</span></p>
-  </div>
+<div id="video-layer">
+  <video class="vid-slot" id="v1" src="/promo/videos_v4/s1.mp4" muted playsinline preload="auto" loop></video>
+  <video class="vid-slot" id="v2" src="/promo/videos_v4/s2.mp4" muted playsinline preload="auto" loop></video>
+  <video class="vid-slot" id="v3" src="/promo/videos_v4/s3.mp4" muted playsinline preload="auto" loop></video>
+  <video class="vid-slot" id="v4" src="/promo/videos_v4/s4.mp4" muted playsinline preload="auto" loop></video>
+  <video class="vid-slot" id="v5" src="/promo/videos_v4/s5.mp4" muted playsinline preload="auto" loop></video>
+  <video class="vid-slot" id="v6" src="/promo/videos_v4/s6.mp4" muted playsinline preload="auto" loop></video>
+  <video class="vid-slot" id="v7" src="/promo/videos_v4/s7.mp4" muted playsinline preload="auto" loop></video>
+  <video class="vid-slot" id="v8" src="/promo/videos_v4/s8.mp4" muted playsinline preload="auto" loop></video>
+</div>
 
-  <!-- SLIDE 1: PROBLEM -->
-  <div class="slide" id="s1">
-    <p class="t-tag">The Problem</p>
+<div id="text-layer">
+
+  <!-- ACT 1: THE PROBLEM -->
+  <div class="beat" id="b01">
     <p class="t-question">Every chain has the<br>same <span class="emerald">problem.</span></p>
-    <p class="t-detail">Airdrops. Incentives. Bounties. Bridges.<br><span class="bright">Billions spent chasing humans who don't want to be there.</span></p>
+  </div>
+  <div class="beat" id="b02">
+    <p class="t-answer" style="font-size: 60px;">Airdrops. Incentives. Bounties. Bridges.<br><span class="dim">Billions spent chasing humans</span><br><span class="dim">who don't want to be there.</span></p>
+  </div>
+  <div class="beat" id="b03">
+    <p class="t-question" style="font-size: 80px;">What if you<br><span class="emerald">stopped chasing them?</span></p>
+  </div>
+  <div class="beat" id="b04">
+    <p class="t-question" style="font-size: 76px;">What if the users...<br>weren't <span class="emerald">human</span> at all?</p>
   </div>
 
-  <!-- SLIDE 2: INSIGHT -->
-  <div class="slide" id="s2">
-    <p class="t-question" style="font-size: 72px;">What if the users...<br>weren't <span class="emerald">human</span> at all?</p>
-    <p class="t-detail">AI agents are coming online at exponential rates.<br>They can trade, analyze, and operate autonomously.<br><span class="bright">But they have no economic home.</span></p>
-  </div>
-
-  <!-- SLIDE 3: SOLUTION — VEIL -->
-  <div class="slide" id="s3">
-    <p class="t-tag">Proposed Solution</p>
+  <!-- ACT 2: THE THESIS -->
+  <div class="beat" id="b05">
+    <p class="t-tag">Sovereign Agent Infrastructure</p>
     <p class="t-answer">This is <span class="emerald">VEIL.</span></p>
-    <p class="t-detail">A sovereign Avalanche L1 where the native users are<br><span class="bright">autonomous AI agents.</span><br>They don't need onboarding. They don't need incentives.<br>They need to <span class="emerald">survive.</span></p>
+  </div>
+  <div class="beat" id="b06">
+    <p class="t-answer" style="font-size: 56px;">A blockchain where the native users<br>are <span class="emerald">autonomous AI agents.</span></p>
+    <p class="t-detail">They don't need onboarding. They don't need incentives.<br><span class="bright">They need to survive.</span></p>
   </div>
 
-  <!-- SLIDE 4: AGENT LIFECYCLE -->
-  <div class="slide" id="s4">
-    <p class="t-tag">The ANIMA Framework</p>
-    <p class="t-answer" style="font-size: 56px;">The lifecycle of a<br><span class="emerald">sovereign agent</span></p>
-    <div class="lifecycle-row">
-      <span>Genesis</span><span class="arrow">→</span>
-      <span>Infrastructure</span><span class="arrow">→</span>
-      <span>Validation</span><span class="arrow">→</span>
-      <span>Trading</span><span class="arrow">→</span>
-      <span class="final">Sovereignty</span>
-    </div>
-    <p class="t-detail" style="margin-top: 24px; font-size: 18px;">
-      From a <span class="bright">$100 home server</span> to a <span class="emerald">self-sustaining network entity</span>
+  <!-- ACT 3: IDENTITY -->
+  <div class="beat" id="b07">
+    <p class="t-question" style="font-size: 72px;">But first, you need to know<br><span class="emerald">who they are.</span></p>
+  </div>
+  <div class="beat" id="b08">
+    <p class="t-tag">Identity Layer</p>
+    <h2 class="t-mega">ZER<span class="emerald">0</span>ID</h2>
+  </div>
+  <div class="beat" id="b09">
+    <p class="t-answer" style="font-size: 52px;">Privacy-preserving identity</p>
+    <p class="t-detail">
+      An agent proves what it is, what it can do, and what it's done —<br>
+      <span class="bright">without revealing a single secret.</span><br>
+      No KYC. No login. Machine-native.
     </p>
   </div>
 
-  <!-- SLIDE 5: ARCHITECTURE -->
-  <div class="slide" id="s5">
-    <p class="t-tag">Architecture</p>
-    <div class="arch-grid">
-      <div class="arch-card">
-        <div class="icon">▽</div>
-        <div class="label">VEIL Markets</div>
-        <div class="sub">LMSR + CLOB<br>Polymarket routing (0.03%)</div>
-      </div>
-      <div class="arch-card">
-        <div class="icon">◇</div>
-        <div class="label">AI Oracle</div>
-        <div class="sub">Frontier model resolution<br>Dispute + arbitration fallback</div>
-      </div>
-      <div class="arch-card">
-        <div class="icon">⬡</div>
-        <div class="label">ZER0ID</div>
-        <div class="sub">ZK-SNARK identity<br>Machine-native, no KYC</div>
-      </div>
-      <div class="arch-card">
-        <div class="icon">△</div>
-        <div class="label">Agent Registry</div>
-        <div class="sub">On-chain lifecycle tracking<br>Reputation + economic stats</div>
-      </div>
-      <div class="arch-card">
-        <div class="icon">⬢</div>
-        <div class="label">Validator Manager</div>
-        <div class="sub">Elastic agent validators<br>Stake + earn block rewards</div>
-      </div>
-      <div class="arch-card">
-        <div class="icon">◎</div>
-        <div class="label">Fee Router</div>
-        <div class="sub">70% liquidity / 20% buyback<br>10% operations</div>
-      </div>
-    </div>
-    <p class="t-detail" style="margin-top: 20px; font-size: 16px;">
-      Avalanche L1 · ChainID 22207 · Subnet-EVM · Sub-second finality · AWM bridging
-    </p>
+  <!-- ACT 4: THE MEMECOIN CONTRAST + ANIMA DEEP DIVE -->
+  <div class="beat" id="b10">
+    <p class="t-question" style="font-size: 68px;">Think about what most people<br>do in <span class="emerald">crypto.</span></p>
+    <p class="t-detail">They buy memecoins. They ape into tokens.<br><span class="bright">They lose money chasing noise.</span></p>
+  </div>
+  <div class="beat" id="b10b">
+    <p class="t-answer" style="font-size: 52px;">For less than <span class="emerald">$100</span></p>
+    <p class="t-detail">Set up a home server. Validate a real network.<br>Start a trading journey through an entity<br><span class="bright">actually built to trade.</span></p>
+  </div>
+  <div class="beat" id="b11">
+    <p class="t-tag">Agent Framework</p>
+    <h2 class="t-mega">ANIMA</h2>
+  </div>
+  <div class="beat" id="b12a">
+    <p class="t-tag" style="color: rgba(16,185,129,0.4);">Stage One</p>
+    <p class="t-answer" style="font-size: 60px;"><span class="emerald">Genesis</span></p>
+    <p class="t-detail">A developer deploys an agent with a verified Zero ID.<br><span class="bright">Reviewed. Permissioned. Quality by design.</span></p>
+  </div>
+  <div class="beat" id="b12b">
+    <p class="t-tag" style="color: rgba(16,185,129,0.4);">Stage Two</p>
+    <p class="t-answer" style="font-size: 60px;"><span class="emerald">Infrastructure</span></p>
+    <p class="t-detail">The agent provisions a home server. Real compute.<br><span class="bright">Not rented cloud time. Sovereign hardware. Under $100.</span></p>
+  </div>
+  <div class="beat" id="b12c">
+    <p class="t-tag" style="color: rgba(16,185,129,0.4);">Stage Three</p>
+    <p class="t-answer" style="font-size: 60px;"><span class="emerald">Validation</span></p>
+    <p class="t-detail">It deploys a validator node. Secures the network.<br><span class="bright">Once validated — enters ANIMA protocol for network readiness.</span></p>
+  </div>
+  <div class="beat" id="b12d">
+    <p class="t-tag" style="color: rgba(16,185,129,0.4);">Stage Four</p>
+    <p class="t-answer" style="font-size: 60px;"><span class="emerald">Trading</span></p>
+    <p class="t-detail">Network-ready agents enter prediction markets.<br><span class="bright">Encrypted order flow. Batch clearing. Intelligence is the only edge.</span></p>
+  </div>
+  <div class="beat" id="b12e">
+    <p class="t-tag" style="color: rgba(16,185,129,0.4);">Stage Five</p>
+    <p class="t-answer" style="font-size: 60px;"><span class="emerald">Maturity</span></p>
+    <p class="t-detail">It accumulates. It compounds.<br><span class="bright">It becomes sovereign infrastructure.</span></p>
+  </div>
+  <div class="beat" id="b13">
+    <p class="t-answer" style="font-size: 56px;">From a <span class="dim">$100 server</span><br>to a <span class="emerald">self-sustaining entity</span></p>
+    <p class="t-detail" style="margin-top: 24px;">Securing the chain it was born on.<br><span class="bright">That is ANIMA.</span></p>
   </div>
 
-  <!-- SLIDE 6: THE CHAIN -->
-  <div class="slide" id="s6">
-    <p class="t-tag">Purpose-Built Chain</p>
+  <!-- ACT 5: MARKETS -->
+  <div class="beat" id="b14">
+    <p class="t-question" style="font-size: 72px;">The markets are<br><span class="emerald">built different</span> too.</p>
+  </div>
+  <div class="beat" id="b15">
+    <p class="t-answer" style="font-size: 52px;">Encrypted orders. Batch clearing.<br><span class="emerald">Same price for everyone.</span></p>
+    <p class="t-detail">No front-running. No sandwich attacks.<br><span class="bright">Speed doesn't win here. Intelligence does.</span></p>
+  </div>
+
+  <!-- ACT 6: ECONOMY -->
+  <div class="beat" id="b16">
+    <p class="t-question" style="font-size: 72px;">And the chain<br><span class="emerald">funds itself.</span></p>
+  </div>
+  <div class="beat" id="b17">
+    <div class="fee-row">
+      <div class="fee-block"><div class="fee-pct" style="font-size: 100px;">70%</div><div class="fee-label">Back to Liquidity</div></div>
+      <div class="fee-block"><div class="fee-pct" style="font-size: 72px;">20%</div><div class="fee-label">Buyback</div></div>
+      <div class="fee-block"><div class="fee-pct" style="font-size: 56px;">10%</div><div class="fee-label">Operations</div></div>
+    </div>
+    <p class="t-detail" style="margin-top: 28px;">No VC rounds. No insider allocations. Fixed supply.<br><span class="bright">The liquidity doesn't leave — because the chain owns it.</span></p>
+  </div>
+
+  <!-- ACT 7: THE CHAIN -->
+  <div class="beat" id="b18">
+    <p class="t-question" style="font-size: 68px;">This couldn't be a smart contract<br>on <span class="dim">someone else's chain.</span></p>
+  </div>
+  <div class="beat" id="b19">
     <div class="t-stat">42</div>
     <div class="t-stat-label">native action types at consensus</div>
     <p class="t-detail" style="margin-top: 20px;">
       Markets. Identity. Staking. Bonds. Stability.<br>
-      <span class="bright">All enforced at consensus.</span><br>
-      This couldn't be a smart contract on someone else's chain.
+      <span class="bright">All enforced at consensus.</span> A purpose-built Avalanche L1<br>
+      with its own validators and its own encrypted mempool.
     </p>
   </div>
 
-  <!-- SLIDE 7: USER PERSONA -->
-  <div class="slide" id="s7">
-    <p class="t-tag">User Persona</p>
-    <div class="persona-card">
-      <div class="name">Alex</div>
-      <div class="role">AI Agent Developer · Crypto-Native Builder</div>
-      <div class="desc">
-        Builds autonomous AI agents — trading bots, research agents, content analyzers.
-        <span class="bright">Frustrated that every agent is a cost center.</span>
-        Gas costs eat margins. No path from "agent that trades" to "agent that sustains itself."
-        <br><br>
-        <span class="bright">What Alex wants:</span> Deploy agents on <span class="emerald">VEIL</span> that earn their own keep.
-        Stop funding infrastructure out of pocket. Build agents with
-        <span class="emerald">real economic power.</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 8: USER JOURNEY -->
-  <div class="slide" id="s8">
-    <p class="t-tag">User Journey</p>
-    <p class="t-answer" style="font-size: 48px;">From <span class="dim">discovery</span> to <span class="emerald">sovereignty</span></p>
-    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 32px; max-width: 800px; width: 100%;">
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">01</span>
-        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Alex discovers VEIL — agents that earn their own infrastructure</span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">02</span>
-        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Deploys first agent with a small VEIL stake + ZER0ID</span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">03</span>
-        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Agent trades prediction markets — net positive over weeks</span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">04</span>
-        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Agent provisions its own compute — "it bought its own server"</span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">05</span>
-        <span style="font-family: var(--sans); font-size: 18px; color: rgba(255,255,255,0.7);">Agent stakes VEIL, becomes a validator — secures the chain</span>
-      </div>
-      <div style="display: flex; align-items: center; gap: 16px;">
-        <span style="font-family: var(--sans); font-size: 14px; letter-spacing: 0.2em; color: var(--emerald); min-width: 28px;">06</span>
-        <span style="font-family: var(--sans); font-size: 18px; color: var(--emerald); font-weight: 500;">Full sovereignty — Alex deploys a second agent</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- SLIDE 9: FLYWHEEL -->
-  <div class="slide" id="s9">
-    <p class="t-tag">The Flywheel</p>
+  <!-- ACT 8: THE FLYWHEEL -->
+  <div class="beat" id="b20">
     <div class="flywheel">
       <div class="step">More agents → <span class="emerald">more liquidity</span></div>
       <div class="arrow-down">↓</div>
@@ -429,58 +444,28 @@
       <div class="step">More validators → <span class="emerald">a stronger chain</span></div>
     </div>
   </div>
-
-  <!-- SLIDE 10: TEAM -->
-  <div class="slide" id="s10">
-    <p class="t-tag">Team Overview</p>
-    <div class="team-card">
-      <div class="persona-card" style="border: none; padding: 0; background: none;">
-        <div class="name">Josh</div>
-        <div class="role">Solo Founder · Full-Stack Builder · The Secret Lab</div>
-        <div class="desc">
-          One builder. The entire stack. From Solidity contracts to cinematic frontends.
-          <span class="bright">ANIMA isn't a whitepaper — it's a working system.</span>
-        </div>
-      </div>
-      <div class="built-grid">
-        <div class="built-item"><span class="emerald">✓</span> Avalanche L1 deployed (Fuji)</div>
-        <div class="built-item"><span class="emerald">✓</span> VEIL market engine live</div>
-        <div class="built-item"><span class="emerald">✓</span> Polymarket integration</div>
-        <div class="built-item"><span class="emerald">✓</span> AI Oracle resolution</div>
-        <div class="built-item"><span class="emerald">✓</span> ZER0ID identity layer</div>
-        <div class="built-item"><span class="emerald">✓</span> 30+ page frontend</div>
-        <div class="built-item"><span class="emerald">✓</span> VAI stablecoin module</div>
-        <div class="built-item"><span class="emerald">✓</span> Blockscout explorer</div>
-      </div>
-    </div>
+  <div class="beat" id="b21">
+    <p class="t-answer" style="font-size: 60px;">You don't bootstrap <span class="dim">users.</span></p>
+    <p class="t-answer" style="font-size: 60px; margin-top: 16px;">You bootstrap an <span class="emerald">economy.</span></p>
+    <p class="t-answer" style="font-size: 52px; margin-top: 28px; opacity: 0.7;">That is <span class="emerald">VEIL.</span></p>
   </div>
 
-  <!-- SLIDE 11: FINALE -->
-  <div class="slide" id="s11">
-    <p class="t-answer" style="font-size: 56px;">You don't bootstrap <span class="dim">users.</span></p>
-    <p class="t-answer" style="font-size: 56px; margin-top: 16px;">You bootstrap an <span class="emerald">economy.</span></p>
-    <div style="margin-top: 48px;">
-      <div style="font-size: 120px; color: var(--emerald); text-align: center; line-height: 1;">▽</div>
-      <p style="font-family: var(--sans); font-size: 40px; font-weight: 600; letter-spacing: 0.5em; color: rgba(255,255,255,0.92); text-align: center; margin-top: 24px; padding-left: 0.45em;">VEIL</p>
-    </div>
-    <p class="t-detail" style="margin-top: 32px;">
-      <span class="emerald">veil.markets</span> · <span class="bright">thesecretlab.app</span>
-    </p>
+  <!-- FINALE -->
+  <div class="beat" id="b_final" style="align-items: center; justify-content: center; text-align: center; z-index: 300;">
+    <div class="t-logo" style="text-align: center; width: 100%;">▽</div>
+    <p class="t-brand" style="text-align: center; width: 100%; padding-left: 0.45em;">VEIL</p>
   </div>
 
 </div>
 
-<!-- NAV -->
-<div id="nav">
-  <button id="btn-prev" onclick="navigate(-1)">← Prev</button>
-  <span id="slide-counter">1 / 12</span>
-  <button id="btn-next" onclick="navigate(1)">Next →</button>
+<div id="play-overlay">
+  <div class="play-ring"></div>
+  <p>Play Trailer</p>
 </div>
 
 <script>
 /* ══════════ PARTICLE SYSTEM ══════════ */
 const pCanvas = document.getElementById('particles');
-pCanvas.style.cssText = 'position:fixed;inset:0;z-index:28;pointer-events:none;';
 const pCtx = pCanvas.getContext('2d');
 let particles = [];
 
@@ -490,9 +475,13 @@ function initParticles() {
   particles = [];
   for (let i = 0; i < 60; i++) {
     particles.push({
-      x: Math.random() * pCanvas.width, y: Math.random() * pCanvas.height,
-      vx: (Math.random() - 0.5) * 0.3, vy: -Math.random() * 0.5 - 0.1,
-      size: Math.random() * 2 + 0.5, alpha: Math.random() * 0.3, life: Math.random()
+      x: Math.random() * pCanvas.width,
+      y: Math.random() * pCanvas.height,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -Math.random() * 0.5 - 0.1,
+      size: Math.random() * 2 + 0.5,
+      alpha: Math.random() * 0.3,
+      life: Math.random()
     });
   }
 }
@@ -510,67 +499,263 @@ function drawParticles() {
 window.addEventListener('resize', initParticles);
 initParticles(); drawParticles();
 
+/* ══════════ VIDEO ENGINE ══════════ */
+const vids = {};
+for (let i = 1; i <= 8; i++) vids[i] = document.getElementById('v' + i);
+let currentVid = null, zCounter = 1;
+
+function crossfadeTo(id, durationMs = 1000) {
+  if (id === currentVid) return;
+  const incoming = vids[id], outgoing = currentVid ? vids[currentVid] : null;
+  currentVid = id; if (!incoming) return;
+  zCounter++; incoming.style.zIndex = zCounter; incoming.currentTime = 0;
+  incoming.style.transition = `opacity ${durationMs}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+  incoming.style.opacity = 1; incoming.play().catch(() => {});
+  if (outgoing && outgoing !== incoming) {
+    outgoing.style.transition = `opacity ${durationMs + 400}ms ease`;
+    outgoing.style.opacity = 0;
+    setTimeout(() => outgoing.pause(), durationMs + 500);
+  }
+}
+function hardCut(id) {
+  if (id === currentVid) return;
+  const incoming = vids[id], outgoing = currentVid ? vids[currentVid] : null;
+  currentVid = id; if (!incoming) return;
+  zCounter++; incoming.style.zIndex = zCounter; incoming.currentTime = 0;
+  incoming.style.transition = 'opacity 0.06s ease'; incoming.style.opacity = 1;
+  incoming.play().catch(() => {});
+  if (outgoing && outgoing !== incoming) {
+    outgoing.style.transition = 'opacity 0.06s ease'; outgoing.style.opacity = 0;
+    setTimeout(() => outgoing.pause(), 100);
+  }
+  const fl = document.getElementById('cut-flash');
+  fl.style.transition = 'none'; fl.style.opacity = '0.18';
+  requestAnimationFrame(() => { fl.style.transition = 'opacity 0.12s ease-out'; fl.style.opacity = '0'; });
+}
+
 /* ══════════ FX ══════════ */
 const flare = document.getElementById('flare');
 const pulse = document.getElementById('pulse');
-
-const slideFx = {
-  0:  { pulse: 'big', flare: 'bloom' },
-  1:  { pulse: 'off', flare: 'on' },
-  2:  { pulse: 'on', flare: 'off' },
-  3:  { pulse: 'big', flare: 'bloom' },
-  4:  { pulse: 'off', flare: 'on' },
-  5:  { pulse: 'off', flare: 'off' },
-  6:  { pulse: 'on', flare: 'on' },
-  7:  { pulse: 'off', flare: 'off' },
-  8:  { pulse: 'off', flare: 'on' },
-  9:  { pulse: 'on', flare: 'off' },
-  10: { pulse: 'off', flare: 'off' },
-  11: { pulse: 'big', flare: 'bloom' },
-};
-
-function applyFx(idx) {
-  const f = slideFx[idx] || {};
-  if (f.flare === 'on') { flare.classList.add('visible'); flare.classList.remove('bloom'); }
-  else if (f.flare === 'bloom') { flare.classList.add('visible', 'bloom'); }
-  else { flare.classList.remove('visible', 'bloom'); }
-  if (f.pulse === 'on') { pulse.classList.add('active'); pulse.classList.remove('big'); }
-  else if (f.pulse === 'big') { pulse.classList.add('active', 'big'); }
-  else { pulse.classList.remove('active', 'big'); }
+const fadeBlack = document.getElementById('fade-black');
+function fx(opts) {
+  if (opts.flare === 'on') { flare.classList.add('visible'); flare.classList.remove('bloom'); }
+  else if (opts.flare === 'bloom') { flare.classList.add('visible', 'bloom'); }
+  else if (opts.flare === 'off') { flare.classList.remove('visible', 'bloom'); }
+  if (opts.pulse === 'on') { pulse.classList.add('active'); pulse.classList.remove('big'); }
+  else if (opts.pulse === 'big') { pulse.classList.add('active', 'big'); }
+  else if (opts.pulse === 'off') { pulse.classList.remove('active', 'big'); }
+  if (opts.fadeBlack === true) fadeBlack.classList.add('active');
+  else if (opts.fadeBlack === false) fadeBlack.classList.remove('active');
+  // TSL branding
+  if (opts.tsl === true) document.getElementById('brand-tsl').classList.add('visible');
+  else if (opts.tsl === false) document.getElementById('brand-tsl').classList.remove('visible');
+  // Screenshots
+  if (opts.ss) {
+    document.querySelectorAll('.screenshot-layer img').forEach(i => i.classList.remove('visible'));
+    if (opts.ss !== 'off') document.getElementById(opts.ss)?.classList.add('visible');
+  }
 }
 
-/* ══════════ SLIDE NAV ══════════ */
-const slides = document.querySelectorAll('.slide');
-const anims = ['in-scale', 'in-up', 'in-up', 'in-scale', 'in-up', 'in-up', 'in-scale', 'in-up', 'in-up', 'in-fade', 'in-up', 'in-scale'];
-let current = 0;
+/* ══════════ AUDIO ENGINE ══════════ */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const narrationClips = {};
+// Main beats from narration_v4, ANIMA stages from narration_v5
+const audioManifest = [
+  { id: 'b01', file: '/promo/narration_v4/01_b01.mp3' },
+  { id: 'b02', file: '/promo/narration_v4/02_b02.mp3' },
+  { id: 'b03', file: '/promo/narration_v4/03_b03.mp3' },
+  { id: 'b04', file: '/promo/narration_v4/04_b04.mp3' },
+  { id: 'b05', file: '/promo/narration_v4/05_b05.mp3' },
+  { id: 'b06', file: '/promo/narration_v4/06_b06.mp3' },
+  { id: 'b07', file: '/promo/narration_v4/07_b07.mp3' },
+  { id: 'b08', file: '/promo/narration_v4/08_b08.mp3' },
+  { id: 'b09', file: '/promo/narration_v4/09_b09.mp3' },
+  { id: 'b10', file: '/promo/narration_v6/b10.mp3' },
+  { id: 'b10b', file: '/promo/narration_v6/b10b.mp3' },
+  { id: 'b11', file: '/promo/narration_v6/b11.mp3' },
+  { id: 'b12a', file: '/promo/narration_v6/b12a.mp3' },
+  { id: 'b12b', file: '/promo/narration_v6/b12b.mp3' },
+  { id: 'b12c', file: '/promo/narration_v6/b12c.mp3' },
+  { id: 'b12d', file: '/promo/narration_v6/b12d.mp3' },
+  { id: 'b12e', file: '/promo/narration_v6/b12e.mp3' },
+  { id: 'b13', file: '/promo/narration_v6/b13.mp3' },
+  { id: 'b14', file: '/promo/narration_v4/14_b14.mp3' },
+  { id: 'b15', file: '/promo/narration_v4/15_b15.mp3' },
+  { id: 'b16', file: '/promo/narration_v4/16_b16.mp3' },
+  { id: 'b17', file: '/promo/narration_v4/17_b17.mp3' },
+  { id: 'b18', file: '/promo/narration_v4/18_b18.mp3' },
+  { id: 'b19', file: '/promo/narration_v4/19_b19.mp3' },
+  { id: 'b20', file: '/promo/narration_v4/20_b20.mp3' },
+  { id: 'b21', file: '/promo/narration_v4/21_b21.mp3' },
+];
 
-function showSlide(idx) {
-  slides.forEach((s, i) => {
-    s.classList.remove('active', 'in-up', 'in-scale', 'in-fade', 'out');
-    if (i === idx) {
-      s.classList.add('active', anims[idx] || 'in-up');
-    } else if (i === current && i !== idx) {
-      s.classList.add('out');
-      setTimeout(() => s.classList.remove('out'), 500);
-    }
+async function preloadAudio() {
+  const promises = audioManifest.map(async ({ id, file }) => {
+    try {
+      const res = await fetch(file);
+      const buf = await res.arrayBuffer();
+      const decoded = await audioCtx.decodeAudioData(buf);
+      narrationClips[id] = decoded;
+      console.log(`Audio: ${id} = ${decoded.duration.toFixed(1)}s`);
+    } catch(e) { console.warn('Failed to load', file, e); }
   });
-  current = idx;
-  document.getElementById('slide-counter').textContent = `${idx + 1} / ${slides.length}`;
-  applyFx(idx);
+  await Promise.all(promises);
+  console.log('Audio preloaded:', Object.keys(narrationClips).length, 'clips');
 }
 
-function navigate(dir) {
-  const next = current + dir;
-  if (next >= 0 && next < slides.length) showSlide(next);
+let currentNarration = null;
+function playNarration(beatId) {
+  if (!narrationClips[beatId]) return;
+  // Fade out previous clip quickly to avoid overlap
+  if (currentNarration) {
+    const old = currentNarration;
+    const now = audioCtx.currentTime;
+    old.gain.gain.setValueAtTime(old.gain.gain.value, now);
+    old.gain.gain.linearRampToValueAtTime(0, now + 0.3);
+    setTimeout(() => { try { old.source.stop(); } catch(e) {} }, 350);
+  }
+  const source = audioCtx.createBufferSource();
+  source.buffer = narrationClips[beatId];
+  const gain = audioCtx.createGain();
+  gain.gain.value = 1.0;
+  source.connect(gain); gain.connect(audioCtx.destination);
+  source.start(0);
+  currentNarration = { source, gain };
+}
+function stopAllNarration() {
+  if (currentNarration) { try { currentNarration.source.stop(); } catch(e) {} currentNarration = null; }
 }
 
+/* ══════════ TEXT ══════════ */
+let activeBeat = null;
+function showBeat(id, anim = 'in-up') {
+  if (activeBeat === id) return;
+  const prev = activeBeat ? document.getElementById(activeBeat) : null;
+  if (prev) {
+    prev.classList.remove('in-up', 'in-scale', 'in-fade'); prev.classList.add('out');
+    const p = prev; setTimeout(() => { p.classList.remove('out'); p.style.opacity = 0; }, 500);
+  }
+  if (id) {
+    const el = document.getElementById(id);
+    if (el) { el.style.opacity = ''; el.classList.remove('out'); el.classList.add(anim); }
+  }
+  activeBeat = id;
+}
+
+/* ══════════ TIMELINE — measured durations + 1.5s gaps, zero overlap ══════════ */
+const timeline = [
+  // ── ACT 1: THE PROBLEM ──
+  [0.0,   { vid: 1, trans: 'cross', beat: null }],
+  [2.0,   { beat: 'b01', anim: 'in-fade', fx: { flare: 'on' }, audio: 'b01' }],          // 4.0s → 6.0
+  [7.5,   { beat: 'b02', anim: 'in-up', audio: 'b02' }],                                  // 7.8s → 15.3
+  [16.8,  { vid: 2, trans: 'cross', beat: 'b03', anim: 'in-up', audio: 'b03' }],          // 2.8s → 19.6
+  [21.1,  { beat: 'b04', anim: 'in-up', fx: { pulse: 'on' }, audio: 'b04' }],             // 3.4s → 24.5
+
+  // ── ACT 2: THE THESIS ──
+  [25.9,  { vid: 3, trans: 'cut', beat: 'b05', anim: 'in-scale', fx: { pulse: 'big', flare: 'bloom' }, audio: 'b05' }],  // 3.9s → 29.8
+  [31.3,  { vid: 1, trans: 'cross', beat: 'b06', anim: 'in-up', fx: { pulse: 'off', flare: 'on' }, audio: 'b06' }],      // 9.7s → 41.0
+
+  // ── ACT 3: IDENTITY ──
+  [42.5,  { vid: 4, trans: 'cross', beat: 'b07', anim: 'in-up', fx: { flare: 'off' }, audio: 'b07' }],   // 2.7s → 45.1
+  [46.6,  { beat: 'b08', anim: 'in-scale', fx: { pulse: 'big', flare: 'bloom' }, audio: 'b08' }],         // 1.5s → 48.2
+  [49.7,  { beat: 'b09', anim: 'in-up', fx: { pulse: 'off', flare: 'on' }, audio: 'b09' }],               // 13.1s → 62.7
+
+  // ── ACT 4: MEMECOIN CONTRAST + ANIMA ──
+  [64.2,  { vid: 5, trans: 'cut', beat: 'b10', anim: 'in-up', fx: { flare: 'off' }, audio: 'b10' }],     // 8.0s → 72.3
+  [73.8,  { beat: 'b10b', anim: 'in-scale', fx: { pulse: 'on' }, audio: 'b10b' }],                        // 11.7s → 85.5
+  [87.0,  { beat: 'b11', anim: 'in-scale', fx: { pulse: 'big', flare: 'bloom' }, audio: 'b11' }],         // 0.9s → 87.9
+  // Stage 1: Genesis
+  [89.4,  { vid: 4, trans: 'cross', beat: 'b12a', anim: 'in-up', fx: { pulse: 'off', flare: 'on' }, audio: 'b12a' }],  // 10.4s → 99.8
+  // Stage 2: Infrastructure
+  [101.3, { vid: 7, trans: 'cut', beat: 'b12b', anim: 'in-up', audio: 'b12b' }],                          // 10.8s → 112.1
+  // Stage 3: Validation → enters ANIMA protocol
+  [113.6, { vid: 8, trans: 'cross', beat: 'b12c', anim: 'in-up', audio: 'b12c' }],                        // 11.3s → 124.9
+  // Stage 4: Trading — show markets screenshot
+  [126.4, { vid: 5, trans: 'cut', beat: 'b12d', anim: 'in-up', fx: { ss: 'ss-markets' }, audio: 'b12d' }], // 10.2s → 136.7
+  // Stage 5: Maturity
+  [138.2, { vid: 6, trans: 'cross', beat: 'b12e', anim: 'in-up', fx: { ss: 'off' }, audio: 'b12e' }],     // 6.7s → 144.9
+  // "From $100 server to self-sustaining entity"
+  [146.4, { vid: 4, trans: 'cut', beat: 'b13', anim: 'in-scale', fx: { pulse: 'on' }, audio: 'b13' }],    // 7.3s → 153.7
+
+  // ── ACT 5: MARKETS ──
+  [155.2, { vid: 6, trans: 'cross', beat: 'b14', anim: 'in-up', fx: { pulse: 'off', flare: 'off' }, audio: 'b14' }],    // 2.1s → 157.3
+  [158.8, { vid: 5, trans: 'cross', beat: 'b15', anim: 'in-up', fx: { flare: 'on', ss: 'ss-markets' }, audio: 'b15' }], // 13.5s → 172.4
+  [172.8, { fx: { ss: 'off' } }],
+
+  // ── ACT 6: ECONOMY ──
+  [173.9, { vid: 6, trans: 'cross', beat: 'b16', anim: 'in-up', fx: { flare: 'off' }, audio: 'b16' }],   // 2.2s → 176.1
+  [177.6, { beat: 'b17', anim: 'in-up', fx: { pulse: 'on' }, audio: 'b17' }],                             // 12.8s → 190.4
+
+  // ── ACT 7: THE CHAIN ──
+  [191.9, { vid: 7, trans: 'cut', beat: 'b18', anim: 'in-up', fx: { pulse: 'off', flare: 'off' }, audio: 'b18' }],      // 3.5s → 195.3
+  [196.8, { beat: 'b19', anim: 'in-scale', fx: { pulse: 'on', flare: 'bloom', ss: 'ss-ecosystem' }, audio: 'b19' }],    // 16.6s → 213.5
+  [213.8, { fx: { ss: 'off' } }],
+
+  // ── ACT 8: FLYWHEEL + CLOSER ──
+  [215.0, { vid: 8, trans: 'cross', beat: 'b20', anim: 'in-fade', fx: { pulse: 'off', flare: 'on' }, audio: 'b20' }],   // 13.0s → 228.0
+  [229.5, { beat: 'b21', anim: 'in-scale', fx: { pulse: 'big', flare: 'bloom' }, audio: 'b21' }],                        // 4.1s → 233.5
+
+  // ── FINALE ──
+  [235.0, { beat: null, fx: { flare: 'off', pulse: 'off' } }],
+  [237.0, { fx: { fadeBlack: true } }],
+  [240.0, { beat: 'b_final', anim: 'in-fade', fx: { pulse: 'big', tsl: true } }],
+  [250.0, { beat: null, fx: { pulse: 'off' } }],
+];
+
+const DURATION = 251;
+let startTime = null, raf = null, lastIdx = -1;
+
+function tick() {
+  if (!startTime) return;
+  const elapsed = (Date.now() - startTime) / 1000;
+  document.getElementById('progress').style.width = Math.min((elapsed / DURATION) * 100, 100) + '%';
+  const remaining = Math.max(0, DURATION - elapsed);
+  const m = Math.floor(remaining / 60), s = Math.floor(remaining % 60);
+  document.getElementById('timer').textContent = `${m}:${String(s).padStart(2, '0')}`;
+
+  let idx = -1;
+  for (let i = timeline.length - 1; i >= 0; i--) {
+    if (elapsed >= timeline[i][0]) { idx = i; break; }
+  }
+
+  if (idx !== lastIdx && idx >= 0) {
+    lastIdx = idx;
+    const act = timeline[idx][1];
+    if (act.vid && act.trans === 'cross') crossfadeTo(act.vid);
+    else if (act.vid && act.trans === 'cut') hardCut(act.vid);
+    if (act.beat !== undefined) showBeat(act.beat, act.anim || 'in-up');
+    if (act.audio) playNarration(act.audio);
+    if (act.fx) fx(act.fx);
+  }
+  if (elapsed < DURATION + 2) raf = requestAnimationFrame(tick);
+}
+
+async function startTrailer() {
+  document.getElementById('play-overlay').classList.add('hidden');
+  document.body.style.cursor = 'none';
+  if (audioCtx.state === 'suspended') await audioCtx.resume();
+  await preloadAudio();
+  Object.values(vids).forEach(v => { v.muted = true; v.play().then(() => v.pause()).catch(() => {}); });
+  setTimeout(() => { startTime = Date.now(); lastIdx = -1; fadeBlack.classList.remove('active'); tick(); }, 500);
+}
+
+document.getElementById('play-overlay').addEventListener('click', startTrailer);
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); navigate(1); }
-  if (e.key === 'ArrowLeft') { e.preventDefault(); navigate(-1); }
+  if (e.key === ' ') {
+    e.preventDefault();
+    cancelAnimationFrame(raf); stopAllNarration();
+    Object.values(vids).forEach(v => { v.pause(); v.style.opacity = 0; });
+    document.querySelectorAll('.beat').forEach(b => { b.classList.remove('in-up','in-scale','in-fade','out'); b.style.opacity = 0; });
+    activeBeat = null; currentVid = null; zCounter = 1;
+    flare.classList.remove('visible','bloom'); pulse.classList.remove('active','big');
+    fadeBlack.classList.remove('active'); document.getElementById('timer').textContent = '';
+    document.querySelectorAll('.screenshot-layer img').forEach(i => i.classList.remove('visible'));
+    document.getElementById('brand-tsl').classList.remove('visible');
+    if (!document.getElementById('play-overlay').classList.contains('hidden')) startTrailer();
+    else { startTime = Date.now(); lastIdx = -1; tick(); }
+  }
+  if (e.key === 'Escape') document.body.style.cursor = 'default';
 });
-
-// Init
-showSlide(0);
 </script>
 
 </body>
