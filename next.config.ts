@@ -8,12 +8,12 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/explorer",
-        destination: "https://explorer.veil.markets",
+        destination: "https://explorer.thesecretlab.app",
         permanent: false,
       },
       {
         source: "/explorer/:path*",
-        destination: "https://explorer.veil.markets/:path*",
+        destination: "https://explorer.thesecretlab.app/:path*",
         permanent: false,
       },
     ]
