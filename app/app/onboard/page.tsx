@@ -7,23 +7,23 @@ import { Canvas, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
 
-/* ═══════════════════════════════════════════════════════════════════════════
+/* ===========================================================================
    VEIL NETWORK CITIZEN ONBOARDING
    
    10-stage flow (accepted-developer-e2e-flow.json):
-   A0 — Accepted (enrollment token)
-   A1 — Wallet Bind (connect + sign)
-   A2 — Payment (AVAX observed)
-   A3 — Provision (cloud instance)
-   A4 — Codex Access (command channel)
-   A5 — Network Nativized (peer + RPC)
-   A6 — ANIMA Validated (runtime check)
-   A7 — ZER0ID 8004 (passport verified)
-   A8 — Validator Active (heartbeat)
-   A9 — Markets Unlocked (terminal)
+   A0  -  Accepted (enrollment token)
+   A1  -  Wallet Bind (connect + sign)
+   A2  -  Payment (AVAX observed)
+   A3  -  Provision (cloud instance)
+   A4  -  Codex Access (command channel)
+   A5  -  Network Nativized (peer + RPC)
+   A6  -  ANIMA Validated (runtime check)
+   A7  -  ZER0ID 8004 (passport verified)
+   A8  -  Validator Active (heartbeat)
+   A9  -  Markets Unlocked (terminal)
    
    Hard unlock: Markets locked until A6 + A7 + A8 all pass.
-   ═══════════════════════════════════════════════════════════════════════════ */
+   =========================================================================== */
 
 type StageStatus = "pending" | "running" | "passed" | "failed" | "blocked"
 
@@ -44,80 +44,80 @@ const STAGE_DEFS: Omit<StageState, "status" | "evidence" | "error" | "startedAt"
   {
     id: "A0_ACCEPTED",
     name: "Accepted",
-    icon: "⬡",
+    icon: "A",
     description: "Developer enrollment verified",
-    detail: "Your application has been reviewed by the VEIL developer committee. An enrollment token has been issued and bound to your session. This token expires in 72 hours — complete onboarding before then.",
+    detail: "Your application has been reviewed by the VEIL developer committee. An enrollment token has been issued and bound to your session. This token expires in 72 hours - complete onboarding before then.",
   },
   {
     id: "A1_WALLET_BIND",
     name: "Wallet Bind",
-    icon: "◈",
-    description: "Connect wallet · Sign challenge · Bind identity",
-    detail: "Connect your Avalanche C-Chain wallet (MetaMask, Core, or WalletConnect). You'll sign an EIP-712 typed message to cryptographically bind your wallet address to this enrollment. No funds are moved — this is a signature only.",
+    icon: "W",
+    description: "Connect wallet - Sign challenge - Bind identity",
+    detail: "Connect your Avalanche C-Chain wallet (MetaMask, Core, or WalletConnect). You'll sign a wallet challenge message to cryptographically bind your wallet address to this enrollment. No funds are moved - this is a signature only.",
   },
   {
     id: "A2_PAYMENT",
     name: "Payment",
-    icon: "◇",
+    icon: "$",
     description: "AVAX stake observed on C-Chain",
-    detail: "Send AVAX to the VEIL enrollment contract on Avalanche C-Chain. This stake is refundable if you don't complete onboarding within 30 days. The contract verifies your payment and locks your position in the validator queue.",
+    detail: "Submit your Avalanche C-Chain payment transaction hash. The onboarding runner verifies the transfer and uses that payment as the funding event for provisioning and ANIMA validation flow.",
   },
   {
     id: "A3_PROVISION",
     name: "Provision",
-    icon: "▣",
-    description: "Infrastructure deployed — home server or cloud",
-    detail: "Your validator needs a home. Choose your path: set up a home server for under $100 (true sovereignty — your hardware, your keys, your rules) or deploy an automated cloud instance. Both paths produce an identical validator node on the VEIL network.",
+    icon: "P",
+    description: "Infrastructure deployed - home server or cloud",
+    detail: "Your validator needs a home. Choose your path: set up a home server for under $100 (true sovereignty - your hardware, your keys, your rules) or deploy an automated cloud instance. Both paths produce an identical validator node on the VEIL network.",
   },
   {
     id: "A4_CODEX_ACCESS",
     name: "Codex Access",
-    icon: "⌘",
+    icon: "C",
     description: "Secure command channel established",
     detail: "The ANIMA Codex runtime binds to your provisioned server over an encrypted channel. A transcript hash is generated and stored on-chain as proof of channel establishment. This enables secure remote management of your node.",
   },
   {
     id: "A5_NETWORK_NATIVIZED",
     name: "Nativized",
-    icon: "◎",
-    description: "Peer discovery · RPC health · Chain sync",
-    detail: "Your node connects to the VEIL network mesh. Peer discovery locates active validators, RPC endpoints are verified healthy, and your node begins syncing chain state. Once caught up to head, you're nativized — a recognized member of the network fabric.",
+    icon: "N",
+    description: "Peer discovery - RPC health - Chain sync",
+    detail: "Your node connects to the VEIL network mesh. Peer discovery locates active validators, RPC endpoints are verified healthy, and your node begins syncing chain state. Once caught up to head, you're nativized - a recognized member of the network fabric.",
   },
   {
     id: "A6_ANIMA_VALIDATED",
     name: "ANIMA Validated",
-    icon: "△",
-    description: "Agent runtime suite — 14 checks must pass",
+    icon: "R",
+    description: "Agent runtime suite - 14 checks must pass",
     detail: "The ANIMA validation suite runs 14 checks against your node: consensus participation, block proposal capability, action routing, encrypted mempool access, runtime version, liveness heartbeat, and more. All must pass. This is the first of three market unlock gates.",
   },
   {
     id: "A7_ZEROID_8004",
     name: "ZER0ID Passport",
-    icon: "ø",
-    description: "ZK identity proof · Groth16 verification",
+    icon: "Z",
+    description: "ZK identity proof - Groth16 verification",
     detail: "Generate a ZER0ID Passport (credential type 8004) using zero-knowledge proofs. Your Groth16 circuit proves you are a unique, verified developer without revealing your real-world identity. The proof is verified on-chain. Second market unlock gate.",
   },
   {
     id: "A8_VALIDATOR_ACTIVE",
     name: "Validator Active",
-    icon: "▽",
-    description: "Weighted · Heartbeating · Earning rewards",
+    icon: "V",
+    description: "Weighted - Heartbeating - Earning rewards",
     detail: "Your validator node is registered in the active set, assigned consensus weight, and heartbeating at 1-second intervals. You are now contributing to VEIL network security and earning validation rewards. Third and final market unlock gate.",
   },
   {
     id: "A9_MARKETS_UNLOCKED",
     name: "Markets Unlocked",
-    icon: "◉",
-    description: "Full network citizen — all gates cleared",
-    detail: "ANIMA Validated ✓ · ZER0ID Passport ✓ · Validator Active ✓ — all three market gates are clear. You now have full access to VEIL prediction markets, governance proposals, the sovereign agent economy, and Bloodsworn reputation advancement. Welcome to the network, citizen.",
+    icon: "M",
+    description: "Full network citizen - all gates cleared",
+    detail: "ANIMA Validated PASS - ZER0ID Passport PASS - Validator Active PASS - all three market gates are clear. You now have full access to VEIL prediction markets, governance proposals, the sovereign agent economy, and Bloodsworn reputation advancement. Welcome to the network, citizen.",
   },
 ]
 
 const GATE_STAGES = ["A6_ANIMA_VALIDATED", "A7_ZEROID_8004", "A8_VALIDATOR_ACTIVE"]
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    LIVE NETWORK DATA
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 interface NetworkStatus {
   chainId: number
@@ -144,11 +144,95 @@ function useNetworkStatus() {
   return data
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   3D NETWORK TETRAHEDRON
-   ═══════════════════════════════════════════════════════════════ */
+type RunnerStatus = "idle" | "running" | "succeeded" | "failed"
 
-// Inverted tetrahedron vertices (point DOWN = VEIL logo ▽)
+type RunnerState = {
+  status: RunnerStatus
+  runId: string | null
+  paymentTxHash: string | null
+  startedAt: string | null
+  endedAt: string | null
+  exitCode: number | null
+  signal: string | null
+  error: string | null
+  artifactPath: string | null
+  stdoutTail: string[]
+  stderrTail: string[]
+  updatedAt: string
+}
+
+type MvpRunStep = {
+  id?: string
+  status?: string
+  error?: string | null
+  durationMs?: number
+  startedAt?: string
+  endedAt?: string
+  evidence?: Record<string, unknown>
+}
+
+type MvpRunArtifact = {
+  meta?: {
+    startedAt?: string
+    endedAt?: string
+    totalDurationMs?: number
+    targetMinutes?: number
+    strictPassed?: boolean
+    continuityPassed?: boolean
+    passed?: boolean
+    outcome?: "strict-pass" | "continuity-pass" | "failed"
+  }
+  config?: {
+    paymentTxHash?: string
+    provisionMode?: string
+  }
+  steps?: MvpRunStep[]
+  output?: {
+    artifactPath?: string
+  }
+}
+
+type RunnerApiResponse = {
+  runner: RunnerState
+  latestRun: MvpRunArtifact | null
+}
+
+const LOCAL_WALLET_BIND_KEY = "veil:onboard:wallet-bind-v1"
+const LOCAL_ZEROID_KEY = "veil:onboard:zeroid-passport-v1"
+const LOCAL_PAYMENT_TX_KEY = "veil:onboard:payment-tx-v1"
+
+function isTxHash(value: string): boolean {
+  return /^0x[a-fA-F0-9]{64}$/u.test(value.trim())
+}
+
+function toEvidenceValue(value: unknown): string {
+  if (typeof value === "string") return value
+  if (typeof value === "number" || typeof value === "boolean" || typeof value === "bigint") {
+    return String(value)
+  }
+  try {
+    return JSON.stringify(value)
+  } catch {
+    return String(value)
+  }
+}
+
+function toEvidenceMap(value: unknown): Record<string, string> | null {
+  if (!value || typeof value !== "object") return null
+  const entries = Object.entries(value as Record<string, unknown>).filter(([, item]) => item !== undefined && item !== null)
+  if (entries.length === 0) return null
+  const normalized: Record<string, string> = {}
+  for (const [key, item] of entries) {
+    normalized[key] = toEvidenceValue(item)
+  }
+  return normalized
+}
+
+/* ===============================================================
+   3D NETWORK TETRAHEDRON
+   =============================================================== */
+
+// Inverted tetrahedron vertices (point DOWN = VEIL logo v)
 const TETRA_VERTS = [
   new THREE.Vector3(0, -1.6, 0),        // bottom point (apex, pointing down)
   new THREE.Vector3(-1.4, 0.8, 0.8),    // top-left-front
@@ -335,9 +419,9 @@ function NetworkScene({ network }: { network: NetworkStatus | null }) {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    VISUAL COMPONENTS
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 function Typewriter({ text, delay = 0, speed = 25, onComplete, className = "" }: {
   text: string; delay?: number; speed?: number; onComplete?: () => void; className?: string
@@ -434,20 +518,20 @@ function GateLock({ locked }: { locked: boolean }) {
       animate={{ opacity: [0.7, 1, 0.7] }}
       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
     >
-      <span className="text-base">{locked ? "🔒" : "🔓"}</span>
+      <span className="text-base">{locked ? "L" : "O"}</span>
       <span>{locked ? "Markets Locked" : "Markets Unlocked"}</span>
     </motion.div>
   )
 }
 
 function StatusIcon({ status }: { status: StageStatus }) {
-  if (status === "passed") return <span className="text-emerald-400">✓</span>
-  if (status === "failed") return <span className="text-red-400">✕</span>
+  if (status === "passed") return <span className="text-emerald-400">OK</span>
+  if (status === "failed") return <span className="text-red-400">X</span>
   if (status === "running") return (
-    <motion.span className="text-amber-400" animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>⟳</motion.span>
+    <motion.span className="text-amber-400" animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>...</motion.span>
   )
-  if (status === "blocked") return <span className="text-white/15">⊘</span>
-  return <span className="text-white/20">○</span>
+  if (status === "blocked") return <span className="text-white/15">-</span>
+  return <span className="text-white/20">o</span>
 }
 
 const statusColors: Record<StageStatus, string> = {
@@ -466,9 +550,9 @@ const statusBadgeColors: Record<StageStatus, string> = {
   blocked: "border-white/10 text-white/20",
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    STAGE CARD
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 function StageCard({ stage, index, isActive, isGate, onClick }: {
   stage: StageState; index: number; isActive: boolean; isGate: boolean; onClick: () => void
@@ -508,7 +592,7 @@ function StageCard({ stage, index, isActive, isGate, onClick }: {
             </div>
             <div>
               <p className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.2em] text-white/30">
-                {stage.id.replace(/_/g, " · ")}
+                {stage.id.replace(/_/g, " - ")}
               </p>
               <h3 className="font-[var(--font-space-grotesk)] text-sm font-medium tracking-tight text-white/85">
                 {stage.name}
@@ -562,11 +646,23 @@ function StageCard({ stage, index, isActive, isGate, onClick }: {
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    STAGE DETAIL PANEL
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
-function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action: string) => void }) {
+function StageDetail({
+  stage,
+  onAction,
+  paymentTxHash,
+  onPaymentTxHashChange,
+  actionBusy,
+}: {
+  stage: StageState
+  onAction: (action: string) => void
+  paymentTxHash: string
+  onPaymentTxHashChange: (value: string) => void
+  actionBusy: boolean
+}) {
   return (
     <motion.div
       key={stage.id}
@@ -590,7 +686,7 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
         </div>
         <div>
           <p className="font-[var(--font-space-grotesk)] text-[11px] uppercase tracking-[0.2em] text-white/30">
-            {stage.id.replace(/_/g, " · ")}
+            {stage.id.replace(/_/g, " - ")}
           </p>
           <h2 className="font-[var(--font-instrument-serif)] text-2xl tracking-tight text-white/90">{stage.name}</h2>
         </div>
@@ -608,30 +704,30 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
           <div className="mt-3 space-y-1">
             {stage.id === "A5_NETWORK_NATIVIZED" && (
               <>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Discovering peers...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Syncing chain state to head...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Verifying RPC endpoints...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Discovering peers...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Syncing chain state to head...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Verifying RPC endpoints...</p>
               </>
             )}
             {stage.id === "A6_ANIMA_VALIDATED" && (
               <>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Running consensus check [1/14]...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Block proposal capability...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Encrypted mempool access...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Running consensus check [1/14]...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Block proposal capability...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Encrypted mempool access...</p>
               </>
             )}
             {stage.id === "A7_ZEROID_8004" && (
               <>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Generating Groth16 witness...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Computing ZK proof...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Submitting to on-chain verifier...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Generating Groth16 witness...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Computing ZK proof...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Submitting to on-chain verifier...</p>
               </>
             )}
             {stage.id === "A8_VALIDATOR_ACTIVE" && (
               <>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Registering in active set...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Assigning consensus weight...</p>
-                <p className="font-mono text-[10px] text-amber-400/40">⟳ Starting heartbeat...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Registering in active set...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Assigning consensus weight...</p>
+                <p className="font-mono text-[10px] text-amber-400/40">... Starting heartbeat...</p>
               </>
             )}
           </div>
@@ -648,14 +744,15 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
               </p>
               <div className="grid grid-cols-1 gap-2">
                 {[
-                  { name: "MetaMask", icon: "🦊", desc: "Browser extension" },
-                  { name: "Core Wallet", icon: "🔺", desc: "Avalanche native" },
-                  { name: "WalletConnect", icon: "🔗", desc: "Mobile & hardware" },
+                  { name: "MetaMask", icon: "M", desc: "Browser extension" },
+                  { name: "Core Wallet", icon: "C", desc: "Avalanche native" },
+                  { name: "WalletConnect", icon: "WC", desc: "Mobile & hardware" },
                 ].map(w => (
                   <button
                     key={w.name}
+                    disabled={actionBusy}
                     onClick={() => onAction(`connect_${w.name.toLowerCase().replace(/\s/g, "_")}`)}
-                    className="flex items-center gap-3 rounded-[14px] border border-white/[0.08] bg-white/[0.015] p-4 text-left transition-all hover:border-emerald-500/20 hover:bg-emerald-500/[0.015]"
+                    className="flex items-center gap-3 rounded-[14px] border border-white/[0.08] bg-white/[0.015] p-4 text-left transition-all hover:border-emerald-500/20 hover:bg-emerald-500/[0.015] disabled:cursor-not-allowed disabled:opacity-45"
                   >
                     <span className="text-xl">{w.icon}</span>
                     <div>
@@ -673,10 +770,10 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
                 <motion.div className="h-3 w-3 rounded-full bg-amber-400"
                   animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                   transition={{ duration: 1, repeat: Infinity }} />
-                <span className="font-[var(--font-space-grotesk)] text-sm text-amber-300/80">Waiting for signature…</span>
+                <span className="font-[var(--font-space-grotesk)] text-sm text-amber-300/80">Waiting for signature...</span>
               </div>
               <p className="text-[11px] text-white/30 leading-relaxed">
-                Check your wallet for the EIP-712 signature request. You're signing a message that binds your address to enrollment token <span className="font-mono text-emerald-400/50">veil_enr_8f3k2m9x4p7n</span>
+                Check your wallet for the signature request. You're signing a message that binds your address to enrollment token <span className="font-mono text-emerald-400/50">veil_enr_8f3k2m9x4p7n</span>
               </p>
             </div>
           )}
@@ -687,23 +784,18 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
         <div className="space-y-4">
           <div className="rounded-[14px] border border-emerald-500/15 bg-emerald-500/[0.03] p-5">
             <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-500/50 font-[var(--font-space-grotesk)] mb-2">
-              VEIL Enrollment Contract · Avalanche C-Chain
+              Avalanche C-Chain Payment Verification
             </p>
-            <div className="flex items-center gap-2">
-              <p className="font-mono text-sm text-emerald-400/80 break-all">0x9378a4b2c1d5e6f7890123456789abcdefEED6</p>
-              <button className="flex-shrink-0 rounded-lg border border-white/[0.06] bg-white/[0.02] px-2 py-1 text-[10px] text-white/30 hover:text-white/60 transition-colors">
-                Copy
-              </button>
-            </div>
+            <p className="text-[12px] text-white/38 leading-relaxed">Paste the exact payment tx hash from C-Chain. The live onboarding runner validates amount and confirmations directly from on-chain data.</p>
             <div className="mt-3 grid grid-cols-2 gap-3">
               <div className="rounded-[10px] border border-white/[0.04] bg-[#060606] p-3">
-                <p className="text-[9px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)]">Required Amount</p>
-                <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-semibold text-emerald-400/90">0.5 AVAX</p>
-                <p className="text-[10px] text-white/20">≈ $18.50 USD</p>
+                <p className="text-[9px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)]">Target Amount</p>
+                <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-semibold text-emerald-400/90">~$100 AVAX</p>
+                <p className="text-[10px] text-white/20">MVP target for live provisioning flow</p>
               </div>
               <div className="rounded-[10px] border border-white/[0.04] bg-[#060606] p-3">
-                <p className="text-[9px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)]">Refund Policy</p>
-                <p className="mt-1 text-[12px] text-white/40 leading-relaxed">Full refund if onboarding incomplete within 30 days</p>
+                <p className="text-[9px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)]">Minimum Guardrail</p>
+                <p className="mt-1 text-[12px] text-white/40 leading-relaxed">Runner enforces minimum payment threshold before provisioning starts.</p>
               </div>
             </div>
           </div>
@@ -714,14 +806,17 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
                   Payment Transaction Hash
                 </label>
                 <input
+                  value={paymentTxHash}
+                  onChange={(event) => onPaymentTxHashChange(event.target.value)}
                   placeholder="0x..."
                   className="w-full rounded-[14px] border border-white/[0.08] bg-[#060606] px-4 py-3 font-mono text-xs text-white/80 outline-none transition focus:border-emerald-500/30 placeholder:text-white/15"
                 />
               </div>
               <div className="flex items-center gap-3">
                 <button
+                  disabled={actionBusy}
                   onClick={() => onAction("verify_payment")}
-                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
+                  className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <span className="relative z-10">Verify Payment</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -735,7 +830,7 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
               <motion.div className="h-2 w-2 rounded-full bg-amber-400"
                 animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1, repeat: Infinity }} />
-              <span className="text-[12px] text-amber-400/60">Confirming transaction on C-Chain… waiting for 12 confirmations</span>
+              <span className="text-[12px] text-amber-400/60">Confirming transaction on C-Chain... waiting for 12 confirmations</span>
             </div>
           )}
         </div>
@@ -749,12 +844,13 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
           <div className="grid grid-cols-1 gap-3">
             {/* Home Server */}
             <button
+              disabled={actionBusy}
               onClick={() => onAction("provision_home")}
-              className="group relative text-left rounded-[16px] border border-emerald-500/15 bg-emerald-500/[0.02] p-5 transition-all hover:border-emerald-500/30 hover:bg-emerald-500/[0.04]"
+              className="group relative text-left rounded-[16px] border border-emerald-500/15 bg-emerald-500/[0.02] p-5 transition-all hover:border-emerald-500/30 hover:bg-emerald-500/[0.04] disabled:cursor-not-allowed disabled:opacity-45"
             >
               <div className="flex items-start gap-4">
                 <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px] border border-emerald-500/20 bg-emerald-500/[0.06]">
-                  <span className="text-xl text-emerald-400">⬡</span>
+                  <span className="text-xl text-emerald-400">H</span>
                 </div>
                 <div>
                   <p className="font-[var(--font-space-grotesk)] text-sm font-medium text-white/85">
@@ -763,7 +859,7 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
                   </p>
                   <p className="mt-1 text-[12px] text-white/35 leading-relaxed">
                     Set up a dedicated machine at home. Under $100 for a capable mini PC.
-                    True sovereignty — your hardware, your keys, your rules. Follow our guided setup.
+                    True sovereignty - your hardware, your keys, your rules. Follow our guided setup.
                   </p>
                   <div className="mt-3 flex items-center gap-4 text-[10px] text-emerald-400/50 font-[var(--font-space-grotesk)]">
                     <span>~$50-100 hardware</span>
@@ -778,12 +874,13 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
 
             {/* Cloud */}
             <button
+              disabled={actionBusy}
               onClick={() => onAction("provision_cloud")}
-              className="group relative text-left rounded-[16px] border border-white/[0.08] bg-white/[0.015] p-5 transition-all hover:border-white/15 hover:bg-white/[0.025]"
+              className="group relative text-left rounded-[16px] border border-white/[0.08] bg-white/[0.015] p-5 transition-all hover:border-white/15 hover:bg-white/[0.025] disabled:cursor-not-allowed disabled:opacity-45"
             >
               <div className="flex items-start gap-4">
                 <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-[12px] border border-white/[0.08] bg-white/[0.02]">
-                  <span className="text-xl text-white/40">☁</span>
+                  <span className="text-xl text-white/40">C</span>
                 </div>
                 <div>
                   <p className="font-[var(--font-space-grotesk)] text-sm font-medium text-white/85">
@@ -805,7 +902,7 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
             </button>
           </div>
           <p className="text-[11px] text-white/20 leading-relaxed">
-            Both paths produce an identical validator node. Home servers align with the ANIMA vision — agents that own their own infrastructure.
+            Both paths produce an identical validator node. Home servers align with the ANIMA vision - agents that own their own infrastructure.
             You can migrate between paths later.
           </p>
         </div>
@@ -818,7 +915,7 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
               <motion.div className="h-3 w-3 rounded-full bg-amber-400"
                 animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1, repeat: Infinity }} />
-              <span className="font-[var(--font-space-grotesk)] text-sm text-amber-300/80">Provisioning infrastructure…</span>
+              <span className="font-[var(--font-space-grotesk)] text-sm text-amber-300/80">Provisioning infrastructure...</span>
             </div>
             <div className="space-y-2">
               {["Generating node keypair", "Installing AvalancheGo v1.14.0", "Configuring VEIL subnet", "Starting node services"].map((step, i) => (
@@ -834,7 +931,7 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
                     animate={i < 3 ? { opacity: 1 } : { opacity: [0.3, 1, 0.3] }}
                     transition={i < 3 ? {} : { duration: 1.5, repeat: Infinity }}
                   >
-                    {i < 3 ? <span className="text-emerald-400">✓</span> : <span className="text-amber-400">⟳</span>}
+                    {i < 3 ? <span className="text-emerald-400">OK</span> : <span className="text-amber-400">...</span>}
                   </motion.span>
                   <span className={`font-mono text-[11px] ${i < 3 ? "text-emerald-400/50" : "text-amber-400/60"}`}>{step}</span>
                 </motion.div>
@@ -854,12 +951,13 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
               <p>1. A Groth16 circuit will generate a zero-knowledge proof of your developer identity</p>
               <p>2. The proof is verified against the on-chain verifier contract</p>
               <p>3. A Passport credential (type 8004) is minted to your wallet</p>
-              <p className="text-emerald-400/40 mt-3">⚡ No personal data leaves your browser. The proof reveals nothing except that you are verified.</p>
+              <p className="text-emerald-400/40 mt-3">No personal data leaves your browser. The proof reveals nothing except that you are verified.</p>
             </div>
           </div>
           <button
+            disabled={actionBusy}
             onClick={() => onAction("start_zeroid")}
-            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
+            className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] disabled:cursor-not-allowed disabled:opacity-45"
           >
             <span className="relative z-10">Generate ZER0ID Passport</span>
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
@@ -873,16 +971,16 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
           <div className="grid grid-cols-2 gap-2">
             <Link href="/app/markets"
               className="flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-5 py-3 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]">
-              Enter Markets →
+              Enter Markets
             </Link>
             <Link href="/app/gov"
               className="flex items-center justify-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-5 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400/80 transition-all hover:border-emerald-500/40">
-              Governance →
+              Governance
             </Link>
           </div>
           <Link href="/app/oath"
             className="flex items-center justify-center gap-2 rounded-[14px] border border-white/[0.06] bg-white/[0.015] px-5 py-3 font-[var(--font-space-grotesk)] text-xs text-white/40 transition-all hover:border-emerald-500/15 hover:text-white/60">
-            Take the Bloodsworn Oath — begin reputation advancement
+            Take the Bloodsworn Oath - begin reputation advancement
           </Link>
         </div>
       )}
@@ -890,8 +988,9 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
       {/* Generic action for stages without specific UI */}
       {stage.status === "pending" && !["A1_WALLET_BIND", "A2_PAYMENT", "A3_PROVISION", "A7_ZEROID_8004"].includes(stage.id) && (
         <button
+          disabled={actionBusy}
           onClick={() => onAction(`start_${stage.id.toLowerCase()}`)}
-          className="group relative overflow-hidden rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-6 py-2.5 font-[var(--font-space-grotesk)] text-sm text-emerald-400/80 transition-all hover:border-emerald-500/40 hover:text-emerald-400 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]"
+          className="group relative overflow-hidden rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-6 py-2.5 font-[var(--font-space-grotesk)] text-sm text-emerald-400/80 transition-all hover:border-emerald-500/40 hover:text-emerald-400 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] disabled:cursor-not-allowed disabled:opacity-45"
         >
           {stage.id === "A4_CODEX_ACCESS" ? "Establish Command Channel" :
            stage.id === "A5_NETWORK_NATIVIZED" ? "Join Network" :
@@ -907,14 +1006,15 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
           <motion.div className="h-2 w-2 rounded-full bg-amber-400"
             animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity }} />
-          <span className="text-[12px] text-amber-400/60 font-[var(--font-space-grotesk)]">Processing…</span>
+          <span className="text-[12px] text-amber-400/60 font-[var(--font-space-grotesk)]">Processing...</span>
         </div>
       )}
 
       {stage.status === "failed" && (
         <button
+          disabled={actionBusy}
           onClick={() => onAction("retry")}
-          className="rounded-full border border-red-500/20 bg-red-500/[0.04] px-6 py-2.5 font-[var(--font-space-grotesk)] text-sm text-red-400/80 transition-all hover:border-red-500/40 hover:text-red-400"
+          className="rounded-full border border-red-500/20 bg-red-500/[0.04] px-6 py-2.5 font-[var(--font-space-grotesk)] text-sm text-red-400/80 transition-all hover:border-red-500/40 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-45"
         >
           Retry Stage
         </button>
@@ -931,9 +1031,9 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    PROGRESS SPINE
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 function ProgressSpine({ stages, activeIndex }: { stages: StageState[]; activeIndex: number }) {
   const passedCount = stages.filter(s => s.status === "passed").length
@@ -961,187 +1061,468 @@ function ProgressSpine({ stages, activeIndex }: { stages: StageState[]; activeIn
   )
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* ===============================================================
    PAGE
-   ═══════════════════════════════════════════════════════════════ */
+   =============================================================== */
 
 export default function OnboardPage() {
   const network = useNetworkStatus()
 
-  // Simulated state — in production this comes from the backend API
-  const [stages, setStages] = useState<StageState[]>(() =>
-    STAGE_DEFS.map((def, i) => ({
-      ...def,
-      status: (i === 0 ? "passed" : i === 1 ? "pending" : "blocked") as StageStatus,
-      evidence: i === 0 ? {
-        enrollment_token: "veil_enr_8f3k2m9x4p7n",
-        committee_review: "auto_approved",
-        issued_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + 72 * 3600 * 1000).toISOString(),
-        queue_position: "#12",
-      } : null,
-      error: null,
-      startedAt: i === 0 ? new Date(Date.now() - 120_000).toISOString() : null,
-      updatedAt: i === 0 ? new Date(Date.now() - 60_000).toISOString() : null,
-    }))
-  )
-
+  const [runnerApi, setRunnerApi] = useState<RunnerApiResponse | null>(null)
+  const [runnerLoadError, setRunnerLoadError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
+  const [actionBusy, setActionBusy] = useState(false)
+  const [paymentTxHash, setPaymentTxHash] = useState("")
+  const [walletBindingEvidence, setWalletBindingEvidence] = useState<Record<string, string> | null>(null)
+  const [zeroidEvidence, setZeroidEvidence] = useState<Record<string, string> | null>(null)
   const [activeStageIndex, setActiveStageIndex] = useState(1)
-  const activeStage = stages[activeStageIndex]
 
-  const marketsLocked = useMemo(() => {
-    return !GATE_STAGES.every(gateId => stages.find(s => s.id === gateId)?.status === "passed")
-  }, [stages])
+  const refreshRunner = useCallback(async () => {
+    try {
+      const response = await fetch("/api/mvp-run", { cache: "no-store" })
+      if (!response.ok) {
+        throw new Error(`Unable to load onboarding runner (${response.status})`)
+      }
+      const payload = (await response.json()) as RunnerApiResponse
+      setRunnerApi(payload)
+      setRunnerLoadError(null)
+    } catch (error) {
+      setRunnerLoadError(error instanceof Error ? error.message : "Unable to load onboarding runner")
+    }
+  }, [])
 
-  // Simulated progress for demo — handles both pending and running states
-  const advanceStage = useCallback((action: string) => {
-    setStages(prev => {
-      const next = [...prev]
-      // Find the active stage (first pending or running)
-      const activeIdx = next.findIndex(s => s.status === "pending" || s.status === "running")
-      if (activeIdx < 0) return next
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    try {
+      const savedWallet = window.localStorage.getItem(LOCAL_WALLET_BIND_KEY)
+      if (savedWallet) {
+        const parsed = JSON.parse(savedWallet) as Record<string, string>
+        if (parsed.wallet_address && parsed.wallet_signature) {
+          setWalletBindingEvidence(parsed)
+        }
+      }
+    } catch {}
 
-      const active = next[activeIdx]
+    try {
+      const savedZeroid = window.localStorage.getItem(LOCAL_ZEROID_KEY)
+      if (savedZeroid) {
+        const parsed = JSON.parse(savedZeroid) as Record<string, string>
+        if (parsed.passport_id && parsed.verification_proof) {
+          setZeroidEvidence(parsed)
+        }
+      }
+    } catch {}
 
-      // If pending, transition to running first (simulate processing)
-      // Generate realistic evidence per stage
-      const genEvidence = (stageId: string, act: string): Record<string, string> => {
-        const hex = (n: number) => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join("")
-        const ts = new Date().toISOString()
-        switch (stageId) {
-          case "A1_WALLET_BIND": return {
-            wallet: `0x${hex(40)}`,
-            signature: `0x${hex(130)}`,
-            eip712_domain: "VEIL Network Enrollment",
-            chain_id: "43114",
-            bound_at: ts,
-          }
-          case "A2_PAYMENT": return {
-            tx_hash: `0x${hex(64)}`,
-            amount: "0.5 AVAX",
-            block: String(Math.floor(Math.random() * 1000000 + 50000000)),
-            confirmations: "12",
-            contract: "0x9378...EED6",
-            verified_at: ts,
-          }
-          case "A3_PROVISION": return {
-            infra_type: act === "provision_home" ? "home_server" : "cloud_instance",
-            node_id: `NodeID-${hex(20)}`,
-            ip: act === "provision_home" ? "192.168.1.100" : `${Math.floor(Math.random() * 200 + 20)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
-            ssh_fingerprint: `SHA256:${hex(43).replace(/(.{6})/g, "$1:").slice(0, -1)}`,
-            provisioned_at: ts,
-          }
-          case "A4_CODEX_ACCESS": return {
-            channel_id: `codex_${hex(12)}`,
-            transcript_hash: `0x${hex(64)}`,
-            encryption: "AES-256-GCM",
-            latency_ms: String(Math.floor(Math.random() * 30 + 5)),
-            established_at: ts,
-          }
-          case "A5_NETWORK_NATIVIZED": return {
-            peer_count: String(Math.floor(Math.random() * 40 + 30)),
-            rpc_endpoint: "https://rpc.veil.markets/ext/bc/veil/rpc",
-            sync_height: String(Math.floor(Math.random() * 5000 + 100000)),
-            chain_id: "22207",
-            nativized_at: ts,
-          }
-          case "A6_ANIMA_VALIDATED": return {
-            checks_passed: "14/14",
-            runtime_version: "anima-v2026.2.22",
-            consensus_ok: "true",
-            mempool_access: "encrypted",
-            heartbeat_ms: String(Math.floor(Math.random() * 200 + 800)),
-            validated_at: ts,
-          }
-          case "A7_ZEROID_8004": return {
-            passport_type: "8004",
-            proof_system: "Groth16",
-            circuit: "zeroid-identity-v3",
-            verification_key: `0x${hex(32)}...`,
-            on_chain_tx: `0x${hex(64)}`,
-            issued_at: ts,
-          }
-          case "A8_VALIDATOR_ACTIVE": return {
-            validator_weight: String(Math.floor(Math.random() * 500 + 100)),
-            heartbeat_interval: "1000ms",
-            blocks_proposed: String(Math.floor(Math.random() * 20)),
-            uptime: "100%",
-            activated_at: ts,
-          }
-          case "A9_MARKETS_UNLOCKED": return {
-            gates_cleared: "A6 ✓ · A7 ✓ · A8 ✓",
-            citizen_id: `veil_citizen_${hex(8)}`,
-            bloodsworn_tier: "unsworn (0)",
-            market_access: "full",
-            unlocked_at: ts,
-          }
-          default: return { verified: "true", timestamp: ts }
+    const savedPaymentTx = window.localStorage.getItem(LOCAL_PAYMENT_TX_KEY)
+    if (savedPaymentTx && isTxHash(savedPaymentTx)) {
+      setPaymentTxHash(savedPaymentTx)
+    }
+  }, [])
+
+  useEffect(() => {
+    void refreshRunner()
+    const timer = setInterval(() => {
+      void refreshRunner()
+    }, 3_000)
+    return () => clearInterval(timer)
+  }, [refreshRunner])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if (paymentTxHash.trim()) {
+      window.localStorage.setItem(LOCAL_PAYMENT_TX_KEY, paymentTxHash.trim())
+    } else {
+      window.localStorage.removeItem(LOCAL_PAYMENT_TX_KEY)
+    }
+  }, [paymentTxHash])
+
+  useEffect(() => {
+    if (paymentTxHash.trim()) return
+    const candidate = runnerApi?.runner.paymentTxHash || runnerApi?.latestRun?.config?.paymentTxHash || ""
+    if (candidate && isTxHash(candidate)) {
+      setPaymentTxHash(candidate)
+    }
+  }, [runnerApi, paymentTxHash])
+
+  const runnerStatus: RunnerStatus = runnerApi?.runner.status || "idle"
+
+  const stepById = useMemo(() => {
+    const map = new Map<string, MvpRunStep>()
+    for (const step of runnerApi?.latestRun?.steps || []) {
+      if (step.id) {
+        map.set(step.id, step)
+      }
+    }
+    return map
+  }, [runnerApi?.latestRun?.steps])
+
+  const mvpStageState = useCallback(
+    (stepId: string): {
+      status: StageStatus
+      evidence: Record<string, string> | null
+      error: string | null
+      startedAt: string | null
+      updatedAt: string | null
+    } => {
+      const step = stepById.get(stepId)
+      if (!step) {
+        return {
+          status: "pending",
+          evidence: null,
+          error: null,
+          startedAt: null,
+          updatedAt: null,
         }
       }
 
-      if (active.status === "pending") {
-        next[activeIdx] = {
-          ...active,
+      if (step.status === "passed") {
+        return {
+          status: "passed",
+          evidence: toEvidenceMap(step.evidence),
+          error: null,
+          startedAt: step.startedAt || null,
+          updatedAt: step.endedAt || step.startedAt || null,
+        }
+      }
+
+      if (step.status === "failed") {
+        return {
+          status: "failed",
+          evidence: toEvidenceMap(step.evidence),
+          error: step.error || "Stage failed",
+          startedAt: step.startedAt || null,
+          updatedAt: step.endedAt || step.startedAt || null,
+        }
+      }
+
+      if (runnerStatus === "running") {
+        return {
           status: "running",
+          evidence: toEvidenceMap(step.evidence),
+          error: null,
+          startedAt: step.startedAt || null,
+          updatedAt: step.endedAt || step.startedAt || null,
+        }
+      }
+
+      return {
+        status: "pending",
+        evidence: toEvidenceMap(step.evidence),
+        error: null,
+        startedAt: step.startedAt || null,
+        updatedAt: step.endedAt || step.startedAt || null,
+      }
+    },
+    [runnerStatus, stepById],
+  )
+
+  const stages = useMemo(() => {
+    const next: StageState[] = STAGE_DEFS.map((def) => ({
+      ...def,
+      status: "blocked" as StageStatus,
+      evidence: null,
+      error: null,
+      startedAt: null,
+      updatedAt: null,
+    }))
+    const idxById = new Map(next.map((stage, index) => [stage.id, index]))
+
+    const applyStage = (
+      id: string,
+      value: {
+        status: StageStatus
+        evidence?: Record<string, string> | null
+        error?: string | null
+        startedAt?: string | null
+        updatedAt?: string | null
+      },
+    ) => {
+      const idx = idxById.get(id)
+      if (idx === undefined) return
+      const previousPassed = idx === 0 || next[idx - 1].status === "passed"
+      if (!previousPassed) {
+        next[idx] = {
+          ...next[idx],
+          status: "blocked",
+          evidence: null,
+          error: null,
+          startedAt: null,
+          updatedAt: null,
+        }
+        return
+      }
+      next[idx] = {
+        ...next[idx],
+        status: value.status,
+        evidence: value.evidence ?? null,
+        error: value.error ?? null,
+        startedAt: value.startedAt ?? null,
+        updatedAt: value.updatedAt ?? null,
+      }
+    }
+
+    const acceptedAt = runnerApi?.latestRun?.meta?.startedAt || new Date().toISOString()
+    applyStage("A0_ACCEPTED", {
+      status: "passed",
+      evidence: {
+        acceptance_record_id: "accepted-dev.v1",
+        issued_at: acceptedAt,
+      },
+      startedAt: acceptedAt,
+      updatedAt: acceptedAt,
+    })
+
+    applyStage("A1_WALLET_BIND", walletBindingEvidence
+      ? {
+          status: "passed",
+          evidence: walletBindingEvidence,
+          startedAt: walletBindingEvidence.bound_at || null,
+          updatedAt: walletBindingEvidence.bound_at || null,
+        }
+      : {
+          status: "pending",
+        })
+
+    applyStage("A2_PAYMENT", mvpStageState("M1_PAYMENT"))
+    applyStage("A3_PROVISION", mvpStageState("M2_PROVISION"))
+    applyStage("A4_CODEX_ACCESS", mvpStageState("M3_CODEX_ACCESS"))
+
+    const nativized =
+      Boolean(network?.blockHeight && network.blockHeight > 0) &&
+      Boolean((network?.subnetPeers || 0) > 0 || (network?.validators?.length || 0) > 0)
+    applyStage(
+      "A5_NETWORK_NATIVIZED",
+      nativized
+        ? {
+            status: "passed",
+            evidence: {
+              chain_id: String(network?.chainId ?? "-"),
+              block_height: String(network?.blockHeight ?? "-"),
+              total_peers: String(network?.totalPeers ?? 0),
+              subnet_peers: String(network?.subnetPeers ?? 0),
+              veil_rpc_health: "ok",
+            },
+            startedAt: network?.timestamp || null,
+            updatedAt: network?.timestamp || null,
+          }
+        : {
+            status: runnerStatus === "running" ? "running" : "pending",
+          },
+    )
+
+    applyStage("A6_ANIMA_VALIDATED", mvpStageState("M4_ANIMA_VALIDATE_VEIL"))
+
+    applyStage("A7_ZEROID_8004", zeroidEvidence
+      ? {
+          status: "passed",
+          evidence: zeroidEvidence,
+          startedAt: zeroidEvidence.verified_at || null,
+          updatedAt: zeroidEvidence.verified_at || null,
+        }
+      : {
+          status: "pending",
+        })
+
+    const activeValidator = network?.validators?.find((validator) => validator.active)
+    applyStage(
+      "A8_VALIDATOR_ACTIVE",
+      activeValidator
+        ? {
+            status: "passed",
+            evidence: {
+              validator_id: activeValidator.nodeId,
+              validator_weight: activeValidator.role,
+              last_seen_heartbeat: network?.timestamp || new Date().toISOString(),
+            },
+            startedAt: network?.timestamp || null,
+            updatedAt: network?.timestamp || null,
+          }
+        : {
+            status: runnerStatus === "running" ? "running" : "pending",
+          },
+    )
+
+    const gatePassed = ["A6_ANIMA_VALIDATED", "A7_ZEROID_8004", "A8_VALIDATOR_ACTIVE"].every((gateId) => {
+      const gateIdx = idxById.get(gateId)
+      if (gateIdx === undefined) return false
+      return next[gateIdx].status === "passed"
+    })
+
+    applyStage("A9_MARKETS_UNLOCKED", gatePassed
+      ? {
+          status: "passed",
+          evidence: {
+            unlock_event_id: "unlock-gates-cleared",
+            granted_at: new Date().toISOString(),
+            unlock_rule: "A6+A7+A8",
+          },
           startedAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }
-        // Auto-complete after a realistic delay
-        const delay = ["A5_NETWORK_NATIVIZED", "A6_ANIMA_VALIDATED", "A7_ZEROID_8004"].includes(active.id) ? 3000 : 1500
-        setTimeout(() => {
-          setStages(current => {
-            const updated = [...current]
-            if (updated[activeIdx]?.status !== "running") return current
-            updated[activeIdx] = {
-              ...updated[activeIdx],
-              status: "passed",
-              evidence: genEvidence(updated[activeIdx].id, action),
-              updatedAt: new Date().toISOString(),
-            }
-            // Unlock next stage
-            if (activeIdx + 1 < updated.length) {
-              updated[activeIdx + 1] = {
-                ...updated[activeIdx + 1],
-                status: "pending",
-                updatedAt: new Date().toISOString(),
-              }
-              // Unblock subsequent
-              for (let i = activeIdx + 2; i < updated.length; i++) {
-                if (updated[i].status === "blocked") {
-                  updated[i] = { ...updated[i], status: "blocked" }
-                }
-              }
-              setActiveStageIndex(activeIdx + 1)
-            }
-            return updated
-          })
-        }, 1500)
-        return next
+      : {
+          status: "blocked",
+        })
+
+    return next
+  }, [mvpStageState, network, runnerApi?.latestRun?.meta?.startedAt, runnerStatus, walletBindingEvidence, zeroidEvidence])
+
+  useEffect(() => {
+    setActiveStageIndex((current) => {
+      if (current < stages.length) return current
+      return 0
+    })
+  }, [stages.length])
+
+  useEffect(() => {
+    const preferred = stages.findIndex((stage) => stage.status === "running" || stage.status === "failed" || stage.status === "pending")
+    if (preferred < 0) return
+    setActiveStageIndex((current) => {
+      const currentStage = stages[current]
+      if (!currentStage || currentStage.status === "passed" || currentStage.status === "blocked") {
+        return preferred
+      }
+      return current
+    })
+  }, [stages])
+
+  const activeStage = stages[Math.min(activeStageIndex, Math.max(stages.length - 1, 0))]
+
+  const marketsLocked = useMemo(() => {
+    return !GATE_STAGES.every((gateId) => stages.find((stage) => stage.id === gateId)?.status === "passed")
+  }, [stages])
+
+  const startRunner = useCallback(
+    async (provisionMode: "fresh" | "reuse") => {
+      const txHash = paymentTxHash.trim()
+      if (!isTxHash(txHash)) {
+        throw new Error("Enter a valid Avalanche C-Chain payment transaction hash.")
       }
 
-      // If running, complete it
-      next[activeIdx] = {
-        ...active,
-        status: "passed",
-        evidence: genEvidence(active.id, action),
-        updatedAt: new Date().toISOString(),
+      const response = await fetch("/api/mvp-run", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          paymentTxHash: txHash,
+          provisionMode,
+          minAvax: 0.1,
+          targetUsd: 100,
+        }),
+      })
+
+      const payload = (await response.json().catch(() => ({}))) as { error?: string }
+      if (!response.ok) {
+        throw new Error(payload.error || `Failed to start onboarding run (${response.status})`)
       }
-      if (activeIdx + 1 < next.length) {
-        next[activeIdx + 1] = {
-          ...next[activeIdx + 1],
-          status: "pending",
-          updatedAt: new Date().toISOString(),
-        }
-        for (let i = activeIdx + 2; i < next.length; i++) {
-          if (next[i].status === "blocked") {
-            next[i] = { ...next[i], status: "blocked" }
-          }
-        }
-        setActiveStageIndex(activeIdx + 1)
-      }
-      return next
-    })
+      await refreshRunner()
+    },
+    [paymentTxHash, refreshRunner],
+  )
+
+  const bindWallet = useCallback(async () => {
+    if (typeof window === "undefined") {
+      throw new Error("Wallet binding requires a browser wallet")
+    }
+
+    const ethereum = (window as Window & { ethereum?: { request: (args: { method: string; params?: unknown[] }) => Promise<unknown> } }).ethereum
+    if (!ethereum) {
+      throw new Error("No injected wallet found. Install MetaMask or Core Wallet.")
+    }
+
+    const accounts = (await ethereum.request({ method: "eth_requestAccounts" })) as string[]
+    const walletAddress = Array.isArray(accounts) ? accounts[0] : ""
+    if (!walletAddress) {
+      throw new Error("Wallet connection did not return an address")
+    }
+
+    const boundAt = new Date().toISOString()
+    const message = `VEIL enrollment wallet bind\nwallet:${walletAddress}\ntimestamp:${boundAt}`
+
+    let signature = ""
+    try {
+      signature = (await ethereum.request({ method: "personal_sign", params: [message, walletAddress] })) as string
+    } catch {
+      signature = (await ethereum.request({ method: "personal_sign", params: [walletAddress, message] })) as string
+    }
+
+    const evidence = {
+      wallet_address: walletAddress,
+      wallet_signature: signature,
+      wallet_message: message,
+      bound_at: boundAt,
+    }
+    setWalletBindingEvidence(evidence)
+    window.localStorage.setItem(LOCAL_WALLET_BIND_KEY, JSON.stringify(evidence))
   }, [])
+
+  const captureZeroidEvidence = useCallback(() => {
+    if (typeof window === "undefined") {
+      throw new Error("ZER0ID verification requires browser input")
+    }
+    const passportId = window.prompt("Enter ZER0ID passport type (expected 8004)", "8004")?.trim() || ""
+    if (!passportId) {
+      throw new Error("Passport type is required")
+    }
+    if (passportId !== "8004") {
+      throw new Error("Passport type must be 8004")
+    }
+    const verificationProof = window.prompt("Enter verification proof reference (tx hash or proof id)")?.trim() || ""
+    if (!verificationProof) {
+      throw new Error("Verification proof is required")
+    }
+    const verifiedAt = new Date().toISOString()
+    const evidence: Record<string, string> = {
+      passport_id: passportId,
+      verification_proof: verificationProof,
+      verified_at: verifiedAt,
+    }
+    if (isTxHash(verificationProof)) {
+      evidence.verification_tx_hash = verificationProof
+    }
+    setZeroidEvidence(evidence)
+    window.localStorage.setItem(LOCAL_ZEROID_KEY, JSON.stringify(evidence))
+  }, [])
+
+  const handleStageAction = useCallback(
+    async (action: string) => {
+      if (actionBusy) return
+      setActionBusy(true)
+      setActionError(null)
+      try {
+        if (action.startsWith("connect_")) {
+          await bindWallet()
+          return
+        }
+        if (action === "verify_payment" || action === "provision_cloud" || action === "retry") {
+          await startRunner("fresh")
+          return
+        }
+        if (action === "provision_home") {
+          await startRunner("reuse")
+          return
+        }
+        if (action === "start_zeroid") {
+          captureZeroidEvidence()
+          return
+        }
+        if (action.startsWith("start_")) {
+          if (action === "start_a9_markets_unlocked") {
+            await refreshRunner()
+            return
+          }
+          await startRunner("reuse")
+          return
+        }
+        await refreshRunner()
+      } catch (error) {
+        setActionError(error instanceof Error ? error.message : "Unable to run stage action")
+      } finally {
+        setActionBusy(false)
+      }
+    },
+    [actionBusy, bindWallet, captureZeroidEvidence, refreshRunner, startRunner],
+  )
 
   const [heroComplete, setHeroComplete] = useState(false)
 
@@ -1154,7 +1535,7 @@ export default function OnboardPage() {
       {/* Ambient glow */}
       <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 h-[500px] w-[800px] rounded-full bg-emerald-500/[0.02] blur-[160px]" />
 
-      {/* ─── Hero ─── */}
+      {/* --- Hero --- */}
       <div className="relative pt-24 pb-12">
         <div className="mx-auto max-w-6xl px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -1199,19 +1580,19 @@ export default function OnboardPage() {
                 <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.015] p-3">
                   <p className="font-[var(--font-figtree)] text-[9px] uppercase tracking-[0.16em] text-white/20">Block Height</p>
                   <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-light text-emerald-400/80">
-                    {network?.blockHeight?.toLocaleString() || "—"}
+                    {network?.blockHeight?.toLocaleString() || "-"}
                   </p>
                 </div>
                 <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.015] p-3">
                   <p className="font-[var(--font-figtree)] text-[9px] uppercase tracking-[0.16em] text-white/20">Validators</p>
                   <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-light text-emerald-400/80">
-                    {network?.validators?.length || "—"}
+                    {network?.validators?.length || "-"}
                   </p>
                 </div>
                 <div className="rounded-[14px] border border-white/[0.06] bg-white/[0.015] p-3">
                   <p className="font-[var(--font-figtree)] text-[9px] uppercase tracking-[0.16em] text-white/20">Network Peers</p>
                   <p className="mt-1 font-[var(--font-space-grotesk)] text-lg font-light text-emerald-400/80">
-                    {network?.totalPeers || "—"}
+                    {network?.totalPeers || "-"}
                   </p>
                 </div>
               </motion.div>
@@ -1225,14 +1606,14 @@ export default function OnboardPage() {
             >
               <NetworkScene network={network} />
               <p className="text-center font-mono text-[10px] text-white/15 -mt-2">
-                Live network topology · {network?.validators?.length || 0} active validator{(network?.validators?.length || 0) !== 1 ? "s" : ""}
+                Live network topology - {network?.validators?.length || 0} active validator{(network?.validators?.length || 0) !== 1 ? "s" : ""}
               </p>
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* ─── Progress Spine ─── */}
+      {/* --- Progress Spine --- */}
       <div className="sticky top-0 z-40 border-b border-white/[0.04] bg-[#060606]/90 backdrop-blur-xl">
         <div className="mx-auto max-w-7xl px-6 py-3 flex items-center justify-between">
           <ProgressSpine stages={stages} activeIndex={activeStageIndex} />
@@ -1248,7 +1629,15 @@ export default function OnboardPage() {
         </div>
       </div>
 
-      {/* ─── Main Content ─── */}
+      {/* --- Main Content --- */}
+      {(runnerLoadError || actionError) && (
+        <div className="mx-auto max-w-7xl px-6 pt-4">
+          <div className="rounded-[14px] border border-red-500/20 bg-red-500/[0.05] px-4 py-3 text-sm text-red-200/90">
+            {actionError || runnerLoadError}
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_420px]">
           {/* Stage Cards */}
@@ -1271,7 +1660,10 @@ export default function OnboardPage() {
               <StageDetail
                 key={activeStage.id}
                 stage={activeStage}
-                onAction={advanceStage}
+                onAction={handleStageAction}
+                paymentTxHash={paymentTxHash}
+                onPaymentTxHashChange={setPaymentTxHash}
+                actionBusy={actionBusy}
               />
             </AnimatePresence>
 
@@ -1292,7 +1684,7 @@ export default function OnboardPage() {
               <div className="mt-3 flex items-center gap-2">
                 <span className={`h-2 w-2 rounded-full ${marketsLocked ? "bg-red-500/50" : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"}`} />
                 <span className="font-[var(--font-space-grotesk)] text-[11px] uppercase tracking-[0.14em] text-white/30">
-                  {marketsLocked ? "Markets remain locked" : "All gates passed — markets open"}
+                  {marketsLocked ? "Markets remain locked" : "All gates passed - markets open"}
                 </span>
               </div>
             </div>
@@ -1315,3 +1707,4 @@ export default function OnboardPage() {
     </div>
   )
 }
+
