@@ -697,6 +697,26 @@ await veil.orders.submit({
               Read the Research
               <ExternalLink className="w-3.5 h-3.5" />
             </motion.button>
+
+            <a
+              href="https://github.com/thesecretlab-dev/anima-orchestrator"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="font-[var(--font-space-grotesk)] text-sm tracking-wider uppercase font-semibold py-4 px-10 rounded-2xl transition-all duration-500 flex items-center justify-center gap-2"
+                style={{
+                  border: '1px solid rgba(16,185,129,0.15)',
+                  color: 'rgba(16,185,129,0.6)',
+                }}
+              >
+                <Code className="w-4 h-4" />
+                ANIMA Orchestrator
+                <ExternalLink className="w-3.5 h-3.5" />
+              </motion.button>
+            </a>
           </ScrollReveal>
         </div>
       </section>
