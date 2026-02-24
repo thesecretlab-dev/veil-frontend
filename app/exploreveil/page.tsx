@@ -302,6 +302,349 @@ function HeroScene() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   LIVE NETWORK VISUALIZATION
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+interface NetNode {
+  id: string
+  label: string
+  shortLabel: string
+  x: number
+  y: number
+  size: number
+  type: "validator" | "agent" | "peer"
+}
+
+interface NetEdge {
+  from: number
+  to: number
+}
+
+const NET_NODES: NetNode[] = [
+  { id: "our-node", label: "NodeID-7eU8…b4VC", shortLabel: "VEIL-1", x: 0.5, y: 0.38, size: 28, type: "validator" },
+  { id: "peer-node", label: "NodeID-AZUK…ZjV7", shortLabel: "PEER-1", x: 0.28, y: 0.62, size: 22, type: "peer" },
+  { id: "agent-node", label: "Agent Child Node", shortLabel: "ANIMA-1", x: 0.72, y: 0.62, size: 22, type: "agent" },
+  { id: "p1", label: "P-Chain Peer", shortLabel: "P-01", x: 0.15, y: 0.35, size: 14, type: "peer" },
+  { id: "p2", label: "P-Chain Peer", shortLabel: "P-02", x: 0.85, y: 0.35, size: 14, type: "peer" },
+  { id: "p3", label: "P-Chain Peer", shortLabel: "P-03", x: 0.12, y: 0.78, size: 10, type: "peer" },
+  { id: "p4", label: "P-Chain Peer", shortLabel: "P-04", x: 0.88, y: 0.78, size: 10, type: "peer" },
+  { id: "p5", label: "P-Chain Peer", shortLabel: "P-05", x: 0.38, y: 0.22, size: 10, type: "peer" },
+  { id: "p6", label: "P-Chain Peer", shortLabel: "P-06", x: 0.62, y: 0.22, size: 10, type: "peer" },
+]
+
+const NET_EDGES: NetEdge[] = [
+  { from: 0, to: 1 }, { from: 0, to: 2 }, { from: 0, to: 3 }, { from: 0, to: 4 },
+  { from: 0, to: 7 }, { from: 0, to: 8 }, { from: 1, to: 5 }, { from: 2, to: 6 },
+  { from: 1, to: 2 }, { from: 3, to: 7 }, { from: 4, to: 8 },
+]
+
+function NetworkVisualization() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const animRef = useRef<number>(0)
+  const blockRef = useRef(100147)
+  const [blockHeight, setBlockHeight] = useState(100147)
+  const [hoveredNode, setHoveredNode] = useState<number | null>(null)
+  const nodesRef = useRef(NET_NODES.map(n => ({ ...n, ox: n.x, oy: n.y })))
+  const pulsesRef = useRef<{ edge: number; progress: number; speed: number }[]>([])
+  const blockPulseRef = useRef(0)
+
+  // Tick block height every ~1s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      blockRef.current += 1
+      setBlockHeight(blockRef.current)
+      blockPulseRef.current = 1
+      // Spawn a pulse on random edges from validator
+      const validatorEdges = NET_EDGES.map((e, i) => i).filter(i => NET_EDGES[i].from === 0 || NET_EDGES[i].to === 0)
+      const chosen = validatorEdges[Math.floor(Math.random() * validatorEdges.length)]
+      pulsesRef.current.push({ edge: chosen, progress: 0, speed: 0.012 + Math.random() * 0.008 })
+      // Occasional secondary pulse
+      if (Math.random() > 0.5) {
+        const other = validatorEdges[Math.floor(Math.random() * validatorEdges.length)]
+        if (other !== chosen) pulsesRef.current.push({ edge: other, progress: 0, speed: 0.01 + Math.random() * 0.006 })
+      }
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const container = containerRef.current
+    if (!canvas || !container) return
+
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1
+      const rect = container.getBoundingClientRect()
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      canvas.style.width = rect.width + "px"
+      canvas.style.height = rect.height + "px"
+    }
+    resize()
+    window.addEventListener("resize", resize)
+
+    const ctx = canvas.getContext("2d")!
+    let t = 0
+
+    const draw = () => {
+      const dpr = window.devicePixelRatio || 1
+      const w = canvas.width / dpr
+      const h = canvas.height / dpr
+      ctx.save()
+      ctx.scale(dpr, dpr)
+      ctx.clearRect(0, 0, w, h)
+
+      t += 0.005
+      const nodes = nodesRef.current
+
+      // Gentle node drift
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i]
+        n.x = n.ox + Math.sin(t * 0.7 + i * 1.3) * 0.008 + Math.cos(t * 0.5 + i * 0.9) * 0.005
+        n.y = n.oy + Math.cos(t * 0.6 + i * 1.7) * 0.006 + Math.sin(t * 0.4 + i * 1.1) * 0.004
+      }
+
+      // Draw edges
+      for (let i = 0; i < NET_EDGES.length; i++) {
+        const e = NET_EDGES[i]
+        const a = nodes[e.from]
+        const b = nodes[e.to]
+        const ax = a.x * w, ay = a.y * h
+        const bx = b.x * w, by = b.y * h
+
+        ctx.beginPath()
+        ctx.moveTo(ax, ay)
+        ctx.lineTo(bx, by)
+        ctx.strokeStyle = "rgba(16,185,129,0.06)"
+        ctx.lineWidth = 1
+        ctx.stroke()
+      }
+
+      // Draw pulses along edges
+      const pulses = pulsesRef.current
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i]
+        p.progress += p.speed
+        if (p.progress > 1) { pulses.splice(i, 1); continue }
+
+        const e = NET_EDGES[p.edge]
+        const a = nodes[e.from]
+        const b = nodes[e.to]
+        const px = (a.x + (b.x - a.x) * p.progress) * w
+        const py = (a.y + (b.y - a.y) * p.progress) * h
+        const alpha = p.progress < 0.2 ? p.progress / 0.2 : p.progress > 0.8 ? (1 - p.progress) / 0.2 : 1
+
+        // Pulse glow
+        const grad = ctx.createRadialGradient(px, py, 0, px, py, 12)
+        grad.addColorStop(0, `rgba(16,185,129,${0.6 * alpha})`)
+        grad.addColorStop(1, `rgba(16,185,129,0)`)
+        ctx.beginPath()
+        ctx.arc(px, py, 12, 0, Math.PI * 2)
+        ctx.fillStyle = grad
+        ctx.fill()
+
+        // Pulse dot
+        ctx.beginPath()
+        ctx.arc(px, py, 2.5, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(52,211,153,${0.9 * alpha})`
+        ctx.fill()
+
+        // Trail line segment
+        const tp = Math.max(0, p.progress - 0.15)
+        const tx = (a.x + (b.x - a.x) * tp) * w
+        const ty = (a.y + (b.y - a.y) * tp) * h
+        ctx.beginPath()
+        ctx.moveTo(tx, ty)
+        ctx.lineTo(px, py)
+        ctx.strokeStyle = `rgba(16,185,129,${0.2 * alpha})`
+        ctx.lineWidth = 1.5
+        ctx.stroke()
+      }
+
+      // Draw nodes
+      for (let i = 0; i < nodes.length; i++) {
+        const n = nodes[i]
+        const nx = n.x * w
+        const ny = n.y * h
+        const isHovered = hoveredNode === i
+        const baseAlpha = n.type === "validator" ? 0.8 : n.type === "agent" ? 0.6 : 0.25
+
+        // Outer glow for validator/agent
+        if (n.type === "validator" || n.type === "agent") {
+          const pulse = Math.sin(t * 2 + i) * 0.15 + 0.85
+          const glowR = n.size * 2.5 * pulse
+          const glow = ctx.createRadialGradient(nx, ny, 0, nx, ny, glowR)
+          glow.addColorStop(0, `rgba(16,185,129,${0.08 * pulse})`)
+          glow.addColorStop(1, "rgba(16,185,129,0)")
+          ctx.beginPath()
+          ctx.arc(nx, ny, glowR, 0, Math.PI * 2)
+          ctx.fillStyle = glow
+          ctx.fill()
+        }
+
+        // Block pulse ring on validator
+        if (i === 0 && blockPulseRef.current > 0) {
+          const bp = blockPulseRef.current
+          const ringR = n.size + (1 - bp) * 40
+          ctx.beginPath()
+          ctx.arc(nx, ny, ringR, 0, Math.PI * 2)
+          ctx.strokeStyle = `rgba(16,185,129,${bp * 0.4})`
+          ctx.lineWidth = 1.5
+          ctx.stroke()
+          blockPulseRef.current = Math.max(0, bp - 0.015)
+        }
+
+        // Node circle
+        ctx.beginPath()
+        ctx.arc(nx, ny, n.size * (isHovered ? 1.15 : 1), 0, Math.PI * 2)
+        ctx.fillStyle = n.type === "validator"
+          ? `rgba(16,185,129,${isHovered ? 0.2 : 0.1})`
+          : n.type === "agent"
+          ? `rgba(52,211,153,${isHovered ? 0.15 : 0.07})`
+          : `rgba(255,255,255,${isHovered ? 0.06 : 0.02})`
+        ctx.fill()
+        ctx.strokeStyle = n.type === "validator"
+          ? `rgba(16,185,129,${isHovered ? 0.6 : 0.35})`
+          : n.type === "agent"
+          ? `rgba(52,211,153,${isHovered ? 0.5 : 0.25})`
+          : `rgba(255,255,255,${isHovered ? 0.15 : 0.06})`
+        ctx.lineWidth = n.type === "validator" ? 1.5 : 1
+        ctx.stroke()
+
+        // Inner dot
+        if (n.type === "validator" || n.type === "agent") {
+          const dotPulse = Math.sin(t * 3 + i * 2) * 0.2 + 0.8
+          ctx.beginPath()
+          ctx.arc(nx, ny, 3, 0, Math.PI * 2)
+          ctx.fillStyle = `rgba(52,211,153,${dotPulse * baseAlpha})`
+          ctx.fill()
+        }
+
+        // Label
+        if (n.size >= 14) {
+          ctx.font = `500 ${n.size >= 22 ? 9 : 8}px "Space Grotesk", sans-serif`
+          ctx.textAlign = "center"
+          ctx.fillStyle = `rgba(255,255,255,${n.type === "validator" ? 0.5 : n.type === "agent" ? 0.4 : 0.15})`
+          ctx.fillText(n.shortLabel, nx, ny + n.size + 14)
+        }
+      }
+
+      // Block production indicator (top-right of canvas)
+      if (blockPulseRef.current > 0.5) {
+        ctx.beginPath()
+        ctx.arc(w - 20, 20, 4, 0, Math.PI * 2)
+        ctx.fillStyle = `rgba(16,185,129,${blockPulseRef.current})`
+        ctx.fill()
+      }
+
+      ctx.restore()
+      animRef.current = requestAnimationFrame(draw)
+    }
+
+    animRef.current = requestAnimationFrame(draw)
+    return () => {
+      cancelAnimationFrame(animRef.current)
+      window.removeEventListener("resize", resize)
+    }
+  }, [hoveredNode])
+
+  // Mouse hover detection
+  const handleMouse = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const mx = (e.clientX - rect.left) / rect.width
+    const my = (e.clientY - rect.top) / rect.height
+    let closest = -1
+    let closestDist = 0.05 // threshold
+    for (let i = 0; i < nodesRef.current.length; i++) {
+      const n = nodesRef.current[i]
+      const d = Math.sqrt((mx - n.x) ** 2 + (my - n.y) ** 2)
+      if (d < closestDist) { closest = i; closestDist = d }
+    }
+    setHoveredNode(closest >= 0 ? closest : null)
+  }, [])
+
+  return (
+    <ScrollReveal delay={0.5} className="relative z-10 mt-12 w-full max-w-4xl mx-auto">
+      <div ref={containerRef} className="relative rounded-[24px] overflow-hidden" style={{
+        background: "rgba(255,255,255,0.01)",
+        border: "1px solid rgba(255,255,255,0.04)",
+        height: "320px",
+      }}>
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full cursor-crosshair"
+          onMouseMove={handleMouse}
+          onMouseLeave={() => setHoveredNode(null)}
+        />
+        {/* Overlay: block counter */}
+        <div className="absolute top-5 left-6 flex items-center gap-3 z-10 pointer-events-none">
+          <motion.div
+            className="w-2 h-2 rounded-full"
+            style={{ background: "rgba(16,185,129,0.8)" }}
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          />
+          <span style={{
+            fontFamily: "var(--font-space-grotesk)", fontSize: "10px",
+            letterSpacing: "0.2em", color: "rgba(16,185,129,0.5)", fontWeight: 500,
+          }}>LIVE NETWORK</span>
+        </div>
+        <div className="absolute top-5 right-6 z-10 pointer-events-none text-right">
+          <div className="flex items-center gap-2 justify-end">
+            <span style={{
+              fontFamily: "var(--font-space-grotesk)", fontSize: "9px",
+              letterSpacing: "0.15em", color: "rgba(255,255,255,0.2)",
+              textTransform: "uppercase",
+            }}>Block Height</span>
+          </div>
+          <motion.span
+            key={blockHeight}
+            initial={{ opacity: 0.5, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              fontFamily: "var(--font-space-grotesk)", fontSize: "22px",
+              color: "rgba(16,185,129,0.7)", fontWeight: 600,
+              fontVariantNumeric: "tabular-nums",
+            }}>
+            {blockHeight.toLocaleString()}
+          </motion.span>
+        </div>
+        {/* Bottom stats */}
+        <div className="absolute bottom-5 left-6 right-6 flex items-center justify-between z-10 pointer-events-none">
+          <div className="flex items-center gap-6">
+            <div>
+              <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "8px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.15)", textTransform: "uppercase" }}>
+                Validators
+              </span>
+              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "14px", color: "rgba(16,185,129,0.6)", fontWeight: 600 }}>2</p>
+            </div>
+            <div>
+              <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "8px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.15)", textTransform: "uppercase" }}>
+                Peers
+              </span>
+              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "14px", color: "rgba(16,185,129,0.6)", fontWeight: 600 }}>69</p>
+            </div>
+            <div>
+              <span style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "8px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.15)", textTransform: "uppercase" }}>
+                Block Time
+              </span>
+              <p style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "14px", color: "rgba(16,185,129,0.6)", fontWeight: 600 }}>~1s</p>
+            </div>
+          </div>
+          <Link href="/explorer" className="pointer-events-auto flex items-center gap-1.5 text-[10px] tracking-[0.15em] uppercase transition-colors duration-700 hover:text-emerald-400/70"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.35)" }}>
+            Explorer <span>→</span>
+          </Link>
+        </div>
+      </div>
+    </ScrollReveal>
+  )
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED COUNTER
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -857,6 +1200,9 @@ export default function ExploreVeilPage() {
             <AnimatedStat label="Agent Nodes" value="1" />
           </div>
         </ScrollReveal>
+
+        {/* Live network visualization */}
+        <NetworkVisualization />
 
         {/* Scroll indicator */}
         <motion.div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
