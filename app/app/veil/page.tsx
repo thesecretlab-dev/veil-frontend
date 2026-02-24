@@ -13,117 +13,53 @@ import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
 
 function VeilCoin() {
   const groupRef = useRef<THREE.Group>(null)
-  const glowRef = useRef<THREE.Mesh>(null)
-
-  // Coin geometry — flat cylinder with beveled edges
-  const coinGeo = useMemo(() => {
-    const shape = new THREE.Shape()
-    const r = 1.4
-    const segments = 64
-    for (let i = 0; i <= segments; i++) {
-      const angle = (i / segments) * Math.PI * 2
-      shape.lineTo(Math.cos(angle) * r, Math.sin(angle) * r)
-    }
-    const extrudeSettings = { depth: 0.18, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelSegments: 3 }
-    return new THREE.ExtrudeGeometry(shape, extrudeSettings)
-  }, [])
-
-  // Inverted triangle (▽) engraved on the face
-  const triGeo = useMemo(() => {
-    const shape = new THREE.Shape()
-    const s = 0.7
-    // Inverted triangle — point DOWN
-    shape.moveTo(0, -s * 1.1)
-    shape.lineTo(s * 0.95, s * 0.55)
-    shape.lineTo(-s * 0.95, s * 0.55)
-    shape.closePath()
-    const extrudeSettings = { depth: 0.03, bevelEnabled: false }
-    return new THREE.ExtrudeGeometry(shape, extrudeSettings)
-  }, [])
-
-  // Edge ring wireframe
-  const edgeGeo = useMemo(() => {
-    const points: THREE.Vector3[] = []
-    const r = 1.42
-    const segments = 64
-    for (let i = 0; i <= segments; i++) {
-      const angle = (i / segments) * Math.PI * 2
-      points.push(new THREE.Vector3(Math.cos(angle) * r, Math.sin(angle) * r, 0))
-    }
-    return new THREE.BufferGeometry().setFromPoints(points)
-  }, [])
 
   useFrame(({ clock }) => {
     if (!groupRef.current) return
     const t = clock.getElapsedTime()
-    groupRef.current.rotation.y = t * 0.4
-    groupRef.current.rotation.x = Math.sin(t * 0.3) * 0.15
-    groupRef.current.position.y = Math.sin(t * 0.5) * 0.08
-
-    if (glowRef.current) {
-      const mat = glowRef.current.material as THREE.MeshBasicMaterial
-      mat.opacity = 0.08 + Math.sin(t * 1.5) * 0.03
-    }
+    groupRef.current.rotation.y = t * 0.5
+    groupRef.current.rotation.x = Math.sin(t * 0.25) * 0.1
+    groupRef.current.position.y = Math.sin(t * 0.4) * 0.06
   })
 
   return (
     <group ref={groupRef}>
-      {/* Main coin body */}
-      <mesh geometry={coinGeo} position={[0, 0, -0.09]}>
-        <meshStandardMaterial
-          color="#0d1f17"
-          metalness={0.85}
-          roughness={0.2}
-          envMapIntensity={1.2}
-        />
+      {/* Coin body — cylinder */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[1.5, 1.5, 0.2, 64]} />
+        <meshStandardMaterial color="#0a0a0a" metalness={0.95} roughness={0.12} />
       </mesh>
 
-      {/* Front face — darker with emerald tint */}
-      <mesh position={[0, 0, 0.1]}>
-        <circleGeometry args={[1.38, 64]} />
-        <meshStandardMaterial color="#071210" metalness={0.9} roughness={0.15} />
+      {/* Rim edge highlight */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[1.5, 0.02, 8, 64]} />
+        <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.6} metalness={0.8} roughness={0.3} />
       </mesh>
 
-      {/* Back face */}
-      <mesh position={[0, 0, -0.28]} rotation={[0, Math.PI, 0]}>
-        <circleGeometry args={[1.38, 64]} />
-        <meshStandardMaterial color="#071210" metalness={0.9} roughness={0.15} />
+      {/* Front ▽ — pointing DOWN */}
+      <mesh position={[0, 0, 0.11]}>
+        <shapeGeometry args={[(() => {
+          const s = new THREE.Shape()
+          s.moveTo(-0.65, 0.5)
+          s.lineTo(0.65, 0.5)
+          s.lineTo(0, -0.75)
+          s.closePath()
+          return s
+        })()]} />
+        <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.8} metalness={0.6} roughness={0.25} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Front ▽ symbol — emerald */}
-      <mesh geometry={triGeo} position={[0, 0, 0.1]}>
-        <meshStandardMaterial
-          color="#10b981"
-          metalness={0.7}
-          roughness={0.3}
-          emissive="#10b981"
-          emissiveIntensity={0.4}
-        />
-      </mesh>
-
-      {/* Back ▽ symbol */}
-      <mesh geometry={triGeo} position={[0, 0, -0.31]} rotation={[0, Math.PI, 0]}>
-        <meshStandardMaterial
-          color="#10b981"
-          metalness={0.7}
-          roughness={0.3}
-          emissive="#10b981"
-          emissiveIntensity={0.4}
-        />
-      </mesh>
-
-      {/* Edge ring glow */}
-      <line geometry={edgeGeo} position={[0, 0, 0.1]}>
-        <lineBasicMaterial color="#10b981" transparent opacity={0.3} />
-      </line>
-      <line geometry={edgeGeo} position={[0, 0, -0.28]}>
-        <lineBasicMaterial color="#10b981" transparent opacity={0.3} />
-      </line>
-
-      {/* Ambient glow sphere */}
-      <mesh ref={glowRef} scale={2.2}>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshBasicMaterial color="#10b981" transparent opacity={0.08} side={THREE.BackSide} />
+      {/* Back ▽ */}
+      <mesh position={[0, 0, -0.11]} rotation={[0, Math.PI, 0]}>
+        <shapeGeometry args={[(() => {
+          const s = new THREE.Shape()
+          s.moveTo(-0.65, 0.5)
+          s.lineTo(0.65, 0.5)
+          s.lineTo(0, -0.75)
+          s.closePath()
+          return s
+        })()]} />
+        <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.8} metalness={0.6} roughness={0.25} side={THREE.DoubleSide} />
       </mesh>
     </group>
   )
@@ -132,11 +68,11 @@ function VeilCoin() {
 function VeilTokenScene() {
   return (
     <div className="mx-auto h-[280px] w-[280px]">
-      <Canvas camera={{ position: [0, 0, 4.2], fov: 40 }} gl={{ antialias: true, alpha: true }}>
-        <ambientLight intensity={0.3} />
-        <directionalLight position={[3, 4, 5]} intensity={1.2} color="#ffffff" />
-        <directionalLight position={[-2, -1, 3]} intensity={0.4} color="#10b981" />
-        <pointLight position={[0, 0, 3]} intensity={0.6} color="#10b981" distance={8} />
+      <Canvas camera={{ position: [0, 0, 4.5], fov: 38 }} gl={{ antialias: true, alpha: true }} style={{ background: "transparent" }}>
+        <ambientLight intensity={0.4} />
+        <directionalLight position={[3, 3, 5]} intensity={1.5} color="#ffffff" />
+        <directionalLight position={[-3, -1, 2]} intensity={0.5} color="#10b981" />
+        <pointLight position={[0, 0, 4]} intensity={0.8} color="#10b981" distance={10} />
         <Suspense fallback={null}>
           <VeilCoin />
         </Suspense>
