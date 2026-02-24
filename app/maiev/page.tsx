@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
@@ -246,27 +246,7 @@ export default function MaievPage() {
         }}
       />
 
-      {/* Fixed nav */}
-      <nav className="fixed top-0 left-0 right-0 z-40 backdrop-blur-xl" style={{ background: "rgba(6,6,6,0.8)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="font-[family-name:var(--font-space-grotesk)] text-[13px] tracking-wide">VEIL</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4" style={{ color: "rgba(16,185,129,0.7)" }} />
-            <span className="font-[family-name:var(--font-space-grotesk)] text-[13px] tracking-[0.15em] uppercase" style={{ color: "rgba(16,185,129,0.7)" }}>
-              MAIEV
-            </span>
-          </div>
-          <Link
-            href="/docs"
-            className="font-[family-name:var(--font-space-grotesk)] text-[12px] tracking-wide text-white/40 hover:text-white/70 transition-colors"
-          >
-            Docs
-          </Link>
-        </div>
-      </nav>
+      <VeilHeader />
 
       {/* ═══ HERO ═══ */}
       <section className="relative pt-40 pb-28 px-6">

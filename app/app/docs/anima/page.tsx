@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useRef, useState, useEffect, ReactNode } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
@@ -177,26 +177,7 @@ export default function AnimaDocsPage() {
     <div className="relative min-h-screen" style={{ background: "#060606", color: "white" }}>
       <FilmGrain />
 
-      {/* ──── Header ──── */}
-      <div className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-4 flex items-center justify-between" style={{ background: "linear-gradient(180deg, rgba(6,6,6,0.95) 0%, transparent 100%)" }}>
-        <Link href="/exploreveil" className="flex items-center gap-3 group">
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
-          </svg>
-          <span style={{ fontSize: "12px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)", fontWeight: 600 }}>VEIL</span>
-        </Link>
-        <div className="flex items-center gap-6">
-          <Link href="/app/docs" className="text-[11px] tracking-widest text-white/30 hover:text-white/60 transition-colors" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            ← DOCS
-          </Link>
-          <Link href="/app/agents" className="text-[11px] tracking-widest text-white/30 hover:text-white/60 transition-colors" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            AGENTS
-          </Link>
-          <Link href="/app/oath" className="text-[11px] tracking-widest text-white/30 hover:text-white/60 transition-colors" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            OATH
-          </Link>
-        </div>
-      </div>
+      <VeilHeader current="docs" />
 
       {/* ──── Sidebar Nav ──── */}
       <nav className="fixed left-6 top-24 bottom-6 w-48 hidden lg:block z-40 overflow-y-auto">

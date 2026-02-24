@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
@@ -184,6 +184,7 @@ const sections = [
 export default function CompliancePage() {
   return (
     <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <VeilHeader />
       {/* Film grain */}
       <div
         className="pointer-events-none fixed inset-0 z-50"

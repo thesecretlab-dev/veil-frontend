@@ -110,38 +110,51 @@ export function Divider({ variant = "default" }: { variant?: "default" | "emeral
   )
 }
 
-/* ─── VEIL Nav Header ─── */
+/* ─── VEIL Nav Header (matches landing page nav) ─── */
 export function VeilHeader({ current }: { current?: string }) {
   return (
-    <div
-      className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-4 flex items-center justify-between"
-      style={{ background: "linear-gradient(180deg, rgba(6,6,6,0.95) 0%, transparent 100%)" }}
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 flex items-center justify-between"
+      style={{ background: "linear-gradient(180deg, rgba(6,6,6,0.9) 0%, transparent 100%)" }}
     >
       <Link href="/exploreveil" className="flex items-center gap-3 group">
-        <VeilLogo opacity={0.4} />
+        <div className="w-6 h-6 relative">
+          <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+            <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5"
+              className="group-hover:stroke-emerald-400/60 transition-all duration-700" />
+          </svg>
+        </div>
         <span style={{
-          fontSize: "12px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.4)",
+          fontSize: "13px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.5)",
           fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
-        }}>VEIL</span>
+        }} className="group-hover:text-white/70 transition-colors duration-700">VEIL</span>
       </Link>
-      <div className="hidden md:flex items-center gap-6">
+      <div className="flex items-center gap-6">
         {[
-          { label: "Markets", href: "/app/markets" },
-          { label: "Agents", href: "/app/agents" },
           { label: "Docs", href: "/app/docs" },
-          { label: "Gov", href: "/app/gov" },
+          { label: "Ecosystem", href: "/app/ecosystem" },
+          { label: "Blog", href: "/app/blog" },
         ].map(link => (
           <Link key={link.label} href={link.href}
-            className="text-[11px] tracking-[0.15em] uppercase transition-colors duration-500"
+            className="hidden md:block text-xs tracking-[0.15em] uppercase transition-colors duration-700 hover:text-emerald-400/70"
             style={{
               fontFamily: "var(--font-space-grotesk)",
-              color: current === link.label.toLowerCase() ? "rgba(16,185,129,0.6)" : "rgba(255,255,255,0.25)",
+              color: current === link.label.toLowerCase() ? "rgba(16,185,129,0.7)" : "rgba(255,255,255,0.3)",
             }}>
             {link.label}
           </Link>
         ))}
+        <Link href="/app"
+          className="px-5 py-2 rounded-full text-xs tracking-wider transition-all duration-700 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]"
+          style={{
+            fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
+            background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.7)",
+            border: "1px solid rgba(16,185,129,0.15)",
+          }}>
+          Enter Chain
+        </Link>
       </div>
-    </div>
+    </nav>
   )
 }
 

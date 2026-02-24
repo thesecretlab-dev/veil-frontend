@@ -1,6 +1,6 @@
 "use client";
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useState, useMemo, useRef } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
@@ -250,64 +250,7 @@ export default function GovernancePage() {
         }}
       />
 
-      {/* ─── Fixed Navbar ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl" style={{ background: "rgba(6,6,6,0.8)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-        <div className="max-w-[1400px] mx-auto px-8 h-[72px] flex items-center justify-between">
-          {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <svg viewBox="0 0 32 32" fill="none" className="w-7 h-7">
-              <path d="M16 2L4 28h8l4-10 4 10h8L16 2z" fill="rgba(16,185,129,0.9)" />
-            </svg>
-            <span className="text-[15px] font-semibold tracking-[0.12em]" style={{ fontFamily: "var(--font-instrument-serif), serif", color: "rgba(255,255,255,0.92)" }}>
-              VEIL
-            </span>
-          </div>
-
-          {/* Links */}
-          <div className="hidden md:flex items-center gap-10">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link}
-                href="#"
-                className="text-[13px] tracking-[0.06em] transition-colors duration-500"
-                style={{
-                  fontFamily: "var(--font-space-grotesk), monospace",
-                  color: link === "Governance" ? "rgba(16,185,129,0.8)" : "rgba(255,255,255,0.35)",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.92)")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = link === "Governance" ? "rgba(16,185,129,0.8)" : "rgba(255,255,255,0.35)")}
-              >
-                {link}
-              </a>
-            ))}
-          </div>
-
-          {/* Launch App */}
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            className="px-5 py-2 rounded-full text-[12px] font-medium tracking-[0.08em] transition-all duration-700"
-            style={{
-              fontFamily: "var(--font-space-grotesk), monospace",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.2)",
-              color: "rgba(16,185,129,0.8)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(16,185,129,0.15)";
-              e.currentTarget.style.borderColor = "rgba(16,185,129,0.4)";
-              e.currentTarget.style.boxShadow = "0 0 30px rgba(16,185,129,0.1)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(16,185,129,0.08)";
-              e.currentTarget.style.borderColor = "rgba(16,185,129,0.2)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
-          >
-            Launch App
-          </motion.button>
-        </div>
-      </nav>
+      <VeilHeader />
 
       {/* ─── Content ─── */}
       <div className="relative z-10 pt-[72px]">

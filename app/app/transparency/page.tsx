@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
@@ -450,6 +450,7 @@ function typeBadge(type: string) {
 export default function TransparencyPage() {
   return (
     <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <VeilHeader />
       <div
         className="pointer-events-none fixed inset-0 z-50"
         style={{

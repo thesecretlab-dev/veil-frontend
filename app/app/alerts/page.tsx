@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useState, useRef } from "react"
 import Link from "next/link"
@@ -78,6 +78,7 @@ export default function AlertsPage() {
 
   return (
     <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <VeilHeader />
       {/* Film Grain */}
       <div
         className="pointer-events-none fixed inset-0 z-[9999]"

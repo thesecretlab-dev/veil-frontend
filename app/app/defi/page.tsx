@@ -1,8 +1,13 @@
+"use client"
+
 import Link from "next/link"
+import { VeilFooter, VeilHeader, FilmGrain } from '@/components/brand'
 
 export default function DefiPage() {
   return (
     <main className="min-h-screen bg-[#060606] px-6 py-24 text-white">
+      <FilmGrain />
+      <VeilHeader />
       <div className="mx-auto max-w-2xl rounded-2xl border border-white/[0.08] bg-white/[0.02] p-8 text-center">
         <p className="mb-3 font-[var(--font-space-grotesk)] text-[11px] uppercase tracking-[0.2em] text-emerald-400/70">
           DeFi Preview

@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"

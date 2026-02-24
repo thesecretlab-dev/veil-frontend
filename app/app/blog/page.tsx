@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import Link from "next/link"
 import { useRef } from "react"
@@ -75,6 +75,7 @@ const posts = [
 export default function BlogPage() {
   return (
     <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <VeilHeader />
       {/* Film Grain */}
       <div
         className="pointer-events-none fixed inset-0 z-[9999]"

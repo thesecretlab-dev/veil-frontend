@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useState, useRef, useEffect, ReactNode } from "react"
 import Link from "next/link"
@@ -201,6 +201,7 @@ export default function PortfolioPage() {
   return (
     <div className="relative min-h-screen" style={{ background: "#060606" }}>
       <FilmGrain />
+      <VeilHeader />
 
       {/* ─── Fixed Nav ─── */}
       <nav

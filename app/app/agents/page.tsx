@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useInView, useMotionValue, useTransform, AnimatePresence } from 'framer-motion'
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 import {
   Bot,
   Zap,
@@ -261,6 +261,7 @@ export default function AgentsPage() {
   return (
     <div className="relative min-h-screen text-white selection:bg-emerald-500/20" style={{ background: '#060606' }}>
       <FilmGrain />
+      <VeilHeader />
 
       {/* ──── HERO ──── */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

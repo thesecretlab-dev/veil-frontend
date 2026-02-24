@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -550,6 +550,7 @@ export default function VeilDeFiPage() {
   return (
     <>
       <FilmGrain />
+      <VeilHeader />
 
       {/* ─── Fixed Nav ─── */}
       <motion.nav

@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import Link from "next/link"
 import { useEffect, useState, useRef, useCallback } from "react"
@@ -349,45 +349,7 @@ export default function EcosystemPage() {
         }}
       />
 
-      {/* ─── FIXED NAV ─── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 flex items-center justify-between"
-        style={{ background: "linear-gradient(180deg, rgba(6,6,6,0.95) 0%, rgba(6,6,6,0.7) 60%, transparent 100%)", backdropFilter: "blur(12px)" }}>
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-6 h-6 relative">
-            <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
-              <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5"
-                className="group-hover:stroke-emerald-400/60 transition-all duration-700" />
-            </svg>
-          </div>
-          <span style={{
-            fontSize: "13px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.5)",
-            fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
-          }} className="group-hover:text-white/70 transition-colors duration-700">VEIL</span>
-        </Link>
-        <div className="flex items-center gap-6">
-          {[
-            { label: "Markets", href: "/app/markets" },
-            { label: "DeFi", href: "/app/defi" },
-            { label: "Docs", href: "/app/docs" },
-            { label: "MAIEV", href: "/maiev" },
-          ].map(link => (
-            <Link key={link.label} href={link.href}
-              className="hidden md:block text-xs tracking-[0.15em] uppercase transition-colors duration-700 hover:text-emerald-400/70"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.3)" }}>
-              {link.label}
-            </Link>
-          ))}
-          <Link href="/app"
-            className="px-5 py-2 rounded-full text-xs tracking-wider transition-all duration-700 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]"
-            style={{
-              fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
-              background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.7)",
-              border: "1px solid rgba(16,185,129,0.15)",
-            }}>
-            Launch App
-          </Link>
-        </div>
-      </nav>
+      <VeilHeader current="ecosystem" />
 
       {/* ═══════════ HERO ═══════════ */}
       <section className="relative pt-40 pb-24 md:pt-52 md:pb-32 px-6">

@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
@@ -91,6 +91,7 @@ function Card({
 export default function InvestorDeckPage() {
   return (
     <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <VeilHeader />
       {/* Film grain overlay */}
       <div
         className="pointer-events-none fixed inset-0 z-50 opacity-[0.035]"

@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
@@ -141,27 +141,7 @@ export default function BloodswornOathPage() {
         </svg>
       </div>
 
-      {/* Header bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-4 flex items-center justify-between"
-        style={{ background: "linear-gradient(180deg, rgba(6,6,6,0.95) 0%, transparent 100%)" }}>
-        <Link href="/exploreveil" className="flex items-center gap-3 group">
-          <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-            <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
-          </svg>
-          <span style={{ fontSize: "12px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.4)",
-            fontFamily: "var(--font-space-grotesk)", fontWeight: 600 }}>VEIL</span>
-        </Link>
-        <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full" style={{
-            background: stage === "verified" ? "rgba(16,185,129,0.8)" : "rgba(255,255,255,0.15)",
-            boxShadow: stage === "verified" ? "0 0 8px rgba(16,185,129,0.4)" : "none",
-          }} />
-          <span style={{ fontSize: "10px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.25)",
-            fontFamily: "var(--font-space-grotesk)" }}>
-            {stage === "verified" ? "BLOODSWORN" : "NETWORK STATE DOCUMENT"}
-          </span>
-        </div>
-      </div>
+      <VeilHeader />
 
       {/* Main document area */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-24">

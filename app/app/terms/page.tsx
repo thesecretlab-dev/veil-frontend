@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
@@ -82,6 +82,7 @@ export default function TermsPage() {
       />
 
       <div className="min-h-screen" style={{ background: "#060606" }}>
+      <VeilHeader />
         {/* ─── Fixed Nav ─── */}
         <nav
           className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5"

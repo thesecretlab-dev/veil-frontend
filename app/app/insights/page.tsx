@@ -1,6 +1,6 @@
 "use client"
 
-import { VeilFooter } from '@/components/brand'
+import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useState, useRef } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
@@ -122,6 +122,7 @@ export default function InsightsPage() {
   return (
     <div className="min-h-screen relative" style={{ background: "#060606" }}>
       <FilmGrain />
+      <VeilHeader />
 
       {/* Ambient glow */}
       <div className="pointer-events-none fixed inset-0 z-0">
