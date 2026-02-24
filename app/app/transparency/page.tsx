@@ -58,8 +58,8 @@ const metrics = [
   },
   {
     label: "Child Validator Connectivity",
-    value: "Bridge Ready",
-    target: "Operator staking/RPC reachable via cloudflared Access TCP sidecars",
+    value: "Live / Peered (2 Nodes)",
+    target: "Operator NodeID-BRW... <-> Child NodeID-A4... connected=true",
     status: "healthy" as const,
   },
 ]
@@ -88,6 +88,15 @@ const principles = [
 ]
 
 const developerJournal = [
+  {
+    date: "2026-02-24",
+    title: "Mainnet + Child Node Pair Live and Peered",
+    summary:
+      "Recovered live child-validator connectivity end-to-end by correcting staking tunnel routing (operator 9661), aligning child runtime to avalanchego/1.12.2, and installing the VEIL VM plugin on child host. Operator and child now report mutual peer links and the child validator shows connected=true on the active primary set.",
+    briefing:
+      "Connectivity is no longer bridge-only preflight; the operator-child pair is now live and peered.",
+    status: "Completed",
+  },
   {
     date: "2026-02-23",
     title: "Live Transparency Push Verified",
@@ -262,6 +271,12 @@ const developerJournal = [
 
 const changelog = [
   {
+    date: "2026-02-24",
+    change:
+      "Operator-child validator peering moved from bridge-ready to live connected status after staking tunnel correction, runtime version alignment, and child plugin install.",
+    type: "Milestone",
+  },
+  {
     date: "2026-02-23",
     change:
       "Live transparency/devlog surface deployment verified on veil.markets to ensure latest validator progression is production-visible.",
@@ -373,10 +388,16 @@ const changelog = [
 
 const launchBlockers = [
   {
-    gate: "Child Validator Registration Path",
+    gate: "Child Full Subnet Bootstrap Scope",
     detail:
-      "In Progress: connectivity is now live (staking/rpc bridge verified), but validator registration/activation execution still requires finalized l1/validator-manager/stake/reward-owner tx path for child NodeID.",
+      "In Progress: child node is live and peered, but readiness still reports additional tracked subnets not bootstrapped on the child profile. This does not block current operator-child validator peering.",
     status: "In Progress",
+  },
+  {
+    gate: "Child Validator Registration + Peering",
+    detail:
+      "PASS: child NodeID-A4yqq7yUCQV3CPsVaEGVATLNgHc2fd7vC is registered and connected to operator NodeID-BRWmyj4aQPgx1suA3Le9km1aF6sQnmVyw on the active validator set.",
+    status: "PASS",
   },
   {
     gate: "Cryptographic Threshold Keying",
@@ -509,6 +530,20 @@ export default function TransparencyPage() {
             >
               A live community update on where we started, what is shipped, and what remains.
             </p>
+            <div className="mt-6">
+              <Link
+                href="/app/network"
+                className="inline-flex items-center rounded-lg px-4 py-2 text-xs tracking-[0.16em] uppercase transition-colors"
+                style={{
+                  color: "rgba(16, 185, 129, 0.9)",
+                  border: "1px solid rgba(16, 185, 129, 0.26)",
+                  background: "rgba(16, 185, 129, 0.08)",
+                  fontFamily: "var(--font-space-grotesk)",
+                }}
+              >
+                Open Live Network View
+              </Link>
+            </div>
           </div>
         </ScrollReveal>
 
