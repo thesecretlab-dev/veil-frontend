@@ -778,6 +778,19 @@ export default function ExploreVeilPage() {
 
         <div className="relative z-10 text-center max-w-5xl mx-auto">
           <ScrollReveal>
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-8 h-8 relative">
+                <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
+                  <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.5)" strokeWidth="1.5" />
+                </svg>
+              </div>
+              <span style={{
+                fontSize: "16px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.6)",
+                fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
+              }}>VEIL</span>
+            </div>
+          </ScrollReveal>
+          <ScrollReveal delay={0.05}>
             <p className="text-[10px] md:text-xs tracking-[0.4em] uppercase mb-10" style={{
               fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.4)", fontWeight: 500,
             }}>Sovereign Agent Infrastructure</p>
