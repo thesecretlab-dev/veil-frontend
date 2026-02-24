@@ -609,14 +609,28 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
       )}
 
       {/* Action buttons per stage */}
-      {stage.status === "pending" && stage.id === "A1_WALLET_BIND" && (
-        <button
-          onClick={() => onAction("connect_wallet")}
-          className="group relative overflow-hidden rounded-full bg-gradient-to-r from-emerald-600 to-emerald-500 px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
-        >
-          <span className="relative z-10">Connect Wallet</span>
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
-        </button>
+      {(stage.status === "pending" || stage.status === "running") && stage.id === "A1_WALLET_BIND" && (
+        <div className="space-y-4">
+          <button
+            onClick={() => onAction("connect_wallet")}
+            disabled={stage.status === "running"}
+            className={`group relative overflow-hidden rounded-full px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium text-white transition-all ${
+              stage.status === "running"
+                ? "bg-amber-600/50 cursor-wait"
+                : "bg-gradient-to-r from-emerald-600 to-emerald-500 hover:shadow-[0_0_40px_rgba(16,185,129,0.3)]"
+            }`}
+          >
+            <span className="relative z-10">
+              {stage.status === "running" ? "Connecting…" : "Connect Wallet"}
+            </span>
+            {stage.status !== "running" && (
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
+            )}
+          </button>
+          {stage.status === "running" && (
+            <p className="text-[11px] text-amber-400/50 animate-pulse">Verifying wallet signature…</p>
+          )}
+        </div>
       )}
 
       {stage.status === "pending" && stage.id === "A2_PAYMENT" && (
@@ -724,6 +738,30 @@ function StageDetail({ stage, onAction }: { stage: StageState; onAction: (action
         </button>
       )}
 
+      {/* Generic action for stages without specific UI */}
+      {stage.status === "pending" && !["A1_WALLET_BIND", "A2_PAYMENT", "A3_PROVISION", "A7_ZEROID_8004"].includes(stage.id) && (
+        <button
+          onClick={() => onAction(`start_${stage.id.toLowerCase()}`)}
+          className="group relative overflow-hidden rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-6 py-2.5 font-[var(--font-space-grotesk)] text-sm text-emerald-400/80 transition-all hover:border-emerald-500/40 hover:text-emerald-400 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]"
+        >
+          {stage.id === "A4_CODEX_ACCESS" ? "Establish Command Channel" :
+           stage.id === "A5_NETWORK_NATIVIZED" ? "Join Network" :
+           stage.id === "A6_ANIMA_VALIDATED" ? "Run ANIMA Validation" :
+           stage.id === "A8_VALIDATOR_ACTIVE" ? "Activate Validator" :
+           stage.id === "A9_MARKETS_UNLOCKED" ? "Unlock Markets" :
+           "Begin Stage"}
+        </button>
+      )}
+
+      {stage.status === "running" && !["A1_WALLET_BIND"].includes(stage.id) && (
+        <div className="flex items-center gap-3">
+          <motion.div className="h-2 w-2 rounded-full bg-amber-400"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }} />
+          <span className="text-[12px] text-amber-400/60 font-[var(--font-space-grotesk)]">Processing…</span>
+        </div>
+      )}
+
       {stage.status === "failed" && (
         <button
           onClick={() => onAction("retry")}
@@ -785,7 +823,7 @@ export default function OnboardPage() {
   const [stages, setStages] = useState<StageState[]>(() =>
     STAGE_DEFS.map((def, i) => ({
       ...def,
-      status: (i === 0 ? "passed" : i === 1 ? "running" : "blocked") as StageStatus,
+      status: (i === 0 ? "passed" : i === 1 ? "pending" : "blocked") as StageStatus,
       evidence: i === 0 ? { acceptance_record_id: "dev_28fk3m", issued_at: "2026-02-24T03:20:00Z" } : null,
       error: null,
       startedAt: i <= 1 ? "2026-02-24T03:20:00Z" : null,
@@ -800,33 +838,79 @@ export default function OnboardPage() {
     return !GATE_STAGES.every(gateId => stages.find(s => s.id === gateId)?.status === "passed")
   }, [stages])
 
-  // Simulated progress for demo
+  // Simulated progress for demo — handles both pending and running states
   const advanceStage = useCallback((action: string) => {
     setStages(prev => {
       const next = [...prev]
-      const currentRunning = next.findIndex(s => s.status === "running")
-      if (currentRunning >= 0) {
-        next[currentRunning] = {
-          ...next[currentRunning],
-          status: "passed",
-          evidence: { verified: "true", timestamp: new Date().toISOString() },
+      // Find the active stage (first pending or running)
+      const activeIdx = next.findIndex(s => s.status === "pending" || s.status === "running")
+      if (activeIdx < 0) return next
+
+      const active = next[activeIdx]
+
+      // If pending, transition to running first (simulate processing)
+      if (active.status === "pending") {
+        next[activeIdx] = {
+          ...active,
+          status: "running",
+          startedAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         }
-        if (currentRunning + 1 < next.length) {
-          next[currentRunning + 1] = {
-            ...next[currentRunning + 1],
-            status: "running",
-            startedAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          }
-          // Unblock subsequent stages
-          for (let i = currentRunning + 2; i < next.length; i++) {
-            if (next[i].status === "blocked") {
-              next[i] = { ...next[i], status: "pending" }
+        // Auto-complete after a short delay for demo
+        setTimeout(() => {
+          setStages(current => {
+            const updated = [...current]
+            if (updated[activeIdx]?.status !== "running") return current
+            updated[activeIdx] = {
+              ...updated[activeIdx],
+              status: "passed",
+              evidence: {
+                verified: "true",
+                action,
+                timestamp: new Date().toISOString(),
+              },
+              updatedAt: new Date().toISOString(),
             }
-          }
-          setActiveStageIndex(currentRunning + 1)
+            // Unlock next stage
+            if (activeIdx + 1 < updated.length) {
+              updated[activeIdx + 1] = {
+                ...updated[activeIdx + 1],
+                status: "pending",
+                updatedAt: new Date().toISOString(),
+              }
+              // Unblock subsequent
+              for (let i = activeIdx + 2; i < updated.length; i++) {
+                if (updated[i].status === "blocked") {
+                  updated[i] = { ...updated[i], status: "blocked" }
+                }
+              }
+              setActiveStageIndex(activeIdx + 1)
+            }
+            return updated
+          })
+        }, 1500)
+        return next
+      }
+
+      // If running, complete it
+      next[activeIdx] = {
+        ...active,
+        status: "passed",
+        evidence: { verified: "true", action, timestamp: new Date().toISOString() },
+        updatedAt: new Date().toISOString(),
+      }
+      if (activeIdx + 1 < next.length) {
+        next[activeIdx + 1] = {
+          ...next[activeIdx + 1],
+          status: "pending",
+          updatedAt: new Date().toISOString(),
         }
+        for (let i = activeIdx + 2; i < next.length; i++) {
+          if (next[i].status === "blocked") {
+            next[i] = { ...next[i], status: "blocked" }
+          }
+        }
+        setActiveStageIndex(activeIdx + 1)
       }
       return next
     })
