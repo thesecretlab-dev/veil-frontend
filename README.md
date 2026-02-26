@@ -1,64 +1,80 @@
-﻿# VEIL Frontend
+# VEIL Frontend
 
-Frontend application for VEIL web experience.
+**[veil.markets](https://veil.markets)** â€” Privacy-native prediction markets on Avalanche.
+
+Award-winning UI with film grain, magnetic components, character reveal animations, noise reveals, parallax headings, and a 3D R3F tetrahedron hero. 30+ pages across markets, governance, agents, docs, and ecosystem.
+
+## Features
+
+- **Live Polymarket Feed** â€” Real market data with 10s polling, CLOB order book depth
+- **Dual Market Engine** â€” Route through Polymarket (0.03% fee) or VEIL-native markets (earn VEIL)
+- **AI Oracle** â€” Grok 4.2 resolves social/political/non-financial markets
+- **Agent Portal** â€” ANIMA agent lifecycle dashboard, ecosystem directory
+- **Governance** â€” veVEIL voting, proposal creation, forum integration
+- **Investor Deck** â€” Interactive pitch deck with live metrics
 
 ## Stack
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
 
-## Local run
-```powershell
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **3D**: React Three Fiber / Three.js
+- **Animation**: Framer Motion, GSAP
+- **Data**: Polymarket CLOB + Gamma API
+
+## Routes (Selection)
+
+| Route | Page |
+|-------|------|
+| `/` | Landing â€” exploreveil with 3D hero |
+| `/app` | Market dashboard with live Polymarket feeds |
+| `/app/market/[id]` | Market detail â€” prices, order book, payout calculator |
+| `/app/agents` | ANIMA agent fleet monitoring |
+| `/app/ecosystem` | Portal directory with 3D geometric icons |
+| `/gov` | Governance hub â€” proposals, voting, forum |
+| `/docs` | Protocol documentation |
+| `/investor-deck` | Interactive investor presentation |
+
+## Local Development
+
+```bash
 npm install
 npm run dev
 ```
 
-`npm run dev` is configured to run with webpack (not Turbopack) for local stability.
+Runs on webpack (not Turbopack) for local stability.
 
-## Polymarket Bridge
-Frontend market routes now read through local Next API endpoints backed by Polymarket:
+### Environment
 
-- `GET /api/markets`
-- `GET /api/markets/:id`
-- `GET /api/markets/:id/latest-trade`
-
-For Polygon-native markets, the trade UI labels them as `Polygon native` and applies a `0.03%` routing fee when routing liquidity through VEIL.
-
-To override upstream API hosts, set:
-
-- `POLYMARKET_GAMMA_API` (default `https://gamma-api.polymarket.com`)
-- `POLYMARKET_CLOB_API` (default `https://clob.polymarket.com`)
-- `POLYMARKET_DATA_API` (default `https://data-api.polymarket.com`)
-- `POLYMARKET_MARKETS_LIMIT` (default `80`)
-
-Example:
-
-```dotenv
+```env
+# Optional â€” defaults to public Polymarket endpoints
 POLYMARKET_GAMMA_API=https://gamma-api.polymarket.com
 POLYMARKET_CLOB_API=https://clob.polymarket.com
-POLYMARKET_DATA_API=https://data-api.polymarket.com
-POLYMARKET_MARKETS_LIMIT=80
 ```
 
-## VEIL Order Routing
-To return VEIL execution tx hashes from accepted orders, set:
+## API Routes
 
-- `VEIL_ORDER_API_BASE` (required for real order execution)
-- `VEIL_ORDER_API_KEY` (optional bearer token)
-- `NEXT_PUBLIC_VEIL_TX_EXPLORER_BASE` (optional, for VEIL tx links)
-- `NEXT_PUBLIC_ORACLE_TX_EXPLORER_BASE` (optional, defaults to PolygonScan)
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/markets` | Aggregated market listings |
+| `GET /api/markets/:id` | Market detail + metadata |
+| `GET /api/markets/:id/latest-trade` | Most recent trade data |
 
-Example:
+## Brand System
 
-```dotenv
-VEIL_ORDER_API_BASE=http://127.0.0.1:9098
-VEIL_ORDER_API_KEY=replace-me
-NEXT_PUBLIC_VEIL_TX_EXPLORER_BASE=https://veilscan.example/tx/
-NEXT_PUBLIC_ORACLE_TX_EXPLORER_BASE=https://polygonscan.com/tx/
-```
+Shared brand components in `components/brand.tsx`:
 
-In local development, if `VEIL_ORDER_API_BASE` is unset, `/api/orders` defaults to `http://127.0.0.1:9098`.
+- `VeilHeader` / `VeilFooter` â€” Consistent nav + TSL branding
+- `FilmGrain` â€” Cinematic grain overlay
+- `MagneticComponent` â€” Mouse-tracking magnetic interaction
+- `CharReveal` / `NoiseReveal` â€” Text reveal animations
 
-## Notes
-- Keep secrets in environment variables only.
-- `.env*` files are ignored.
+## Links
+
+- **Live**: [veil.markets](https://veil.markets)
+- **Ecosystem**: [thesecretlab.app](https://thesecretlab.app)
+- **Org**: [github.com/thesecretlab-dev](https://github.com/thesecretlab-dev)
+
+---
+
+*Markets for machines. Interfaces for humans.*
