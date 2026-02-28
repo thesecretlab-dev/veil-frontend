@@ -1,0 +1,8 @@
+{
+  "launched": false,
+  "targetCommitsUSD": 1000000,
+  "generatedAt": "2026-02-20T17:43:39.085Z",
+  "freezePath": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\launchpad\\launchpad-freeze-2026-02-20T17-43-39-084Z.json",
+  "genesisOutPath": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\genesis.launchpad.json",
+  "genesisSha256": "61abaf2d1d74f89555dd0148f45ff77cb12d7363908faddc94aeafac1a0df531"
+}

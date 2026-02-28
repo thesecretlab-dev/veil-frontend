@@ -1,0 +1,23 @@
+2026-02-20T18:36:26.887337+0000 | INFO     | __main__:main:8 - Starting results service at 0.0.0.0:8083
+2026-02-20T18:36:26.896259+0000 | INFO     | uvicorn.server:_serve:84 - Started server process [1]
+2026-02-20T18:36:26.896416+0000 | INFO     | uvicorn.lifespan.on:startup:48 - Waiting for application startup.
+2026-02-20T18:36:26.896658+0000 | INFO     | uvicorn.lifespan.on:startup:62 - Application startup complete.
+2026-02-20T18:36:26.896960+0000 | INFO     | uvicorn.server:_log_started_message:216 - Uvicorn running on http://0.0.0.0:8083 (Press CTRL+C to quit)
+2026-02-20T18:37:19.164162+0000 | INFO     | resultsvc.routers.v1:_load_report:104 - Successfully loaded report
+2026-02-20T18:37:19.164334+0000 | INFO     | resultsvc.routers.v1:submit_result:132 - Updated job 3eb0116d-64df-42db-af73-f1d0d0e79cf6 status to JobStatus.succeeded
+2026-02-20T18:37:19.164563+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.24.0.5:59234 - "POST /v1/results HTTP/1.1" 200
+2026-02-20T18:51:35.995484+0000 | INFO     | resultsvc.routers.v1:_load_report:104 - Successfully loaded report
+2026-02-20T18:51:35.995845+0000 | INFO     | resultsvc.routers.v1:submit_result:132 - Updated job 36cda7a8-3531-48a3-8ab6-8f4d63af04c6 status to JobStatus.succeeded
+2026-02-20T18:51:35.996209+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.24.0.5:38000 - "POST /v1/results HTTP/1.1" 200
+2026-02-20T18:56:06.713868+0000 | INFO     | resultsvc.routers.v1:_load_report:104 - Successfully loaded report
+2026-02-20T18:56:06.714088+0000 | INFO     | resultsvc.routers.v1:submit_result:132 - Updated job 42b37c6d-866f-4891-8357-6815af883c70 status to JobStatus.succeeded
+2026-02-20T18:56:06.714300+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.24.0.5:38510 - "POST /v1/results HTTP/1.1" 200
+2026-02-20T19:03:03.917319+0000 | INFO     | resultsvc.routers.v1:_load_report:104 - Successfully loaded report
+2026-02-20T19:03:03.917479+0000 | INFO     | resultsvc.routers.v1:submit_result:132 - Updated job a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 status to JobStatus.succeeded
+2026-02-20T19:03:03.917731+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.24.0.5:46912 - "POST /v1/results HTTP/1.1" 200
+2026-02-20T19:06:36.708504+0000 | INFO     | resultsvc.routers.v1:_load_report:104 - Successfully loaded report
+2026-02-20T19:06:36.708639+0000 | INFO     | resultsvc.routers.v1:submit_result:132 - Updated job 4800e4e6-e431-4966-b85f-885e4e16b41d status to JobStatus.succeeded
+2026-02-20T19:06:36.708804+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.24.0.5:40932 - "POST /v1/results HTTP/1.1" 200
+2026-02-20T19:12:26.466170+0000 | INFO     | resultsvc.routers.v1:_load_report:104 - Successfully loaded report
+2026-02-20T19:12:26.466359+0000 | INFO     | resultsvc.routers.v1:submit_result:132 - Updated job 5bc128ab-b89d-4123-a4ec-53db026bc07d status to JobStatus.succeeded
+2026-02-20T19:12:26.466579+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.24.0.5:46062 - "POST /v1/results HTTP/1.1" 200

@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-02-20T02:41:00.354Z",
+  "nodeUrl": "http://127.0.0.1:9660",
+  "chainId": "TEV1x8r8HjAwdDhj3GhkpyxKrLLKXFHHxYEYeW8jdnsLFFgVa",
+  "chainDiscoveryStrategy": "vm-id",
+  "runner": "docker",
+  "dockerImage": "veilvm-zkbench-evidence:local",
+  "zkbenchExec": {
+    "mode": "binary",
+    "binaryPath": "/workspace/examples/veilvm/.cache/evidence-zkbench/bin/veilvm-zkbench-linux-amd64",
+    "recoveredAfterCacheReset": false
+  },
+  "pkPath": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\zk-fixture-new\\groth16_shielded_ledger_pk.bin",
+  "discoveredChains": [
+    {
+      "id": "TEV1x8r8HjAwdDhj3GhkpyxKrLLKXFHHxYEYeW8jdnsLFFgVa",
+      "name": "VEIL",
+      "subnetID": "22U1uvR6tmAcYzaPZAcAQuH6Tu6mU8GKXgrURCDAscu4gq5fqH",
+      "vmID": "u9GgvekeunSwK4TPF4jj7xLsW1LKkd1Uv9VQZo2SGfrwkejsK"
+    }
+  ],
+  "overallPass": false,
+  "checks": [
+    {
+      "id": "shielded-smoke",
+      "required": true,
+      "passed": false,
+      "attempts": [
+        {
+          "run": {
+            "name": "shielded-smoke",
+            "startedAt": "2026-02-20T02:37:30.168Z",
+            "endedAt": "2026-02-20T02:41:00.352Z",
+            "durationMs": 210184,
+            "exitCode": 1,
+            "signal": "",
+            "outputDir": "./zkbench-out-evidence-20260220-023711-shielded-smoke",
+            "summaryPath": "",
+            "summary": null,
+            "retries": 0,
+            "recoveredAfterCacheReset": false,
+            "logs": {
+              "stdout": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\20260220-023711-launch-gate-evidence\\logs\\shielded-smoke.stdout.log",
+              "stderr": "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\20260220-023711-launch-gate-evidence\\logs\\shielded-smoke.stderr.log"
+            },
+            "errorSnippet": "Fee preflight: planned_txs=6 max_fee=5000000 safety_bps=10000 reserve=1 required=30000001 balance=80000000\nGroth16 CS cache: hit (.cache/zkbench/groth16_shielded-ledger-v1_741bbff7efd4.ccs.bin)\nProof mode: groth16-shielded-ledger-v1\nRunning batch size 1 (1 windows)\n\u001b[90m02:40:59\u001b[0m \u001b[33mDBG\u001b[0m constraint system solver done \u001b[36mnbConstraints=\u001b[0m176251 \u001b[36mtook=\u001b[0m236.042272\n\u001b[90m02:40:59\u001b[0m \u001b[33mDBG\u001b[0m prover done \u001b[36macceleration=\u001b[0mnone \u001b[36mbackend=\u001b[0mgroth16 \u001b[36mcurve=\u001b[0mbn254 \u001b[36mnbConstraints=\u001b[0m176251 \u001b[36mtook=\u001b[0m350.522855\n\nbench failed: submit_batch_proof execution failed: proof verification failed: proof circuit mismatch\n"
+          },
+          "evaluation": {
+            "pass": false,
+            "reason": "process exit code 1"
+          }
+        }
+      ]
+    }
+  ]
+}

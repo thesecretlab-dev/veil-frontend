@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "schema": "veil.build-games-mvp.run.v1",
+    "startedAt": "2026-02-24T00:18:01.368Z",
+    "endedAt": "2026-02-24T00:18:06.370Z",
+    "totalDurationMs": 5002,
+    "maxDurationMs": 1200000,
+    "targetMinutes": 20,
+    "strictPassed": false,
+    "continuityPassed": false,
+    "provisionedFresh": false,
+    "provisioningModeRequested": "reuse",
+    "provisioningModeExecuted": "reuse",
+    "outcome": "failed",
+    "passed": false
+  },
+  "definition": "User sends $100 in AVAX, gets a live cloud server + Codex access + ANIMA agent validating the VEIL network and working live in under 20 minutes.",
+  "config": {
+    "paymentTxHash": "0xb860b001d03c5b7c81aeeb726a0769256c58ec03599dccd99471c6bff560b86c",
+    "paymentRecipient": null,
+    "avaxRpcUrl": "https://api.avax.network/ext/bc/C/rpc",
+    "veilRpcUrlLocal": "http://127.0.0.1:9660",
+    "veilRpcUrlRemote": "https://veil-rpc.thesecretlab.app",
+    "animaRpcUrl": "https://veil-rpc.thesecretlab.app/ext/bc/aQ8Ct8Hwwn71EeJw2eyPQJhu8mwHVoyGT8dDGgGu3svQAGSWs/veilapi",
+    "animaChainId": 12345,
+    "animaProbeDurationMs": 1500,
+    "conwayApiUrl": "https://api.conway.tech",
+    "controlSandboxId": "d2fe48a2a6465322e963a0a11c30ead3",
+    "provisionMode": "reuse",
+    "operatorAddress": null,
+    "minPaymentAvax": 0.1,
+    "targetUsd": 100,
+    "usdPerAvax": null,
+    "cloud": {
+      "region": null,
+      "vcpu": 1,
+      "memoryMb": 1024,
+      "diskGb": 10
+    }
+  },
+  "steps": [
+    {
+      "id": "M1_PAYMENT",
+      "name": "Detect and verify AVAX payment",
+      "status": "passed",
+      "budgetMs": 120000,
+      "startedAt": "2026-02-24T00:18:01.368Z",
+      "endedAt": "2026-02-24T00:18:01.584Z",
+      "durationMs": 216,
+      "evidence": {
+        "txHash": "0xb860b001d03c5b7c81aeeb726a0769256c58ec03599dccd99471c6bff560b86c",
+        "from": "0x76118c41fe87b68f7a345a90bcc93541231911c0",
+        "to": "0x6ee0d2af6f69317b89567134b080c7a66cb806b0",
+        "blockNumber": "78822411",
+        "status": "success",
+        "valueAvax": 1.3,
+        "valueWei": "1300000000000000000"
+      }
+    },
+    {
+      "id": "M2_PROVISION",
+      "name": "Provision live cloud server",
+      "status": "passed",
+      "budgetMs": 420000,
+      "startedAt": "2026-02-24T00:18:01.585Z",
+      "endedAt": "2026-02-24T00:18:03.011Z",
+      "durationMs": 1426,
+      "evidence": {
+        "id": "d2fe48a2a6465322e963a0a11c30ead3",
+        "status": "running",
+        "reused": true,
+        "provisionModeRequested": "reuse",
+        "provisionModeExecuted": "reuse",
+        "probeExitCode": 0,
+        "probeStdout": "sandbox-reuse-ok\nroot\n",
+        "probeStderr": "Warning: Permanently added '10.0.0.119' (ED25519) to the list of known hosts.\r\n",
+        "region": null,
+        "vcpu": 1,
+        "memoryMb": 1024,
+        "diskGb": 10
+      }
+    },
+    {
+      "id": "M3_CODEX_ACCESS",
+      "name": "Validate Codex command access on provisioned server",
+      "status": "passed",
+      "budgetMs": 180000,
+      "startedAt": "2026-02-24T00:18:03.011Z",
+      "endedAt": "2026-02-24T00:18:04.483Z",
+      "durationMs": 1472,
+      "evidence": {
+        "sandboxId": "d2fe48a2a6465322e963a0a11c30ead3",
+        "command": "echo codex-access-ok && whoami && pwd && uname -a",
+        "exitCode": 0,
+        "stdout": "codex-access-ok\nroot\n/root\nLinux aiws-sandbox 4.14.174 #2 SMP Wed Jul 14 11:47:24 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux\n",
+        "stderr": "Warning: Permanently added '10.0.0.119' (ED25519) to the list of known hosts.\r\n",
+        "operatorAddress": "0x76118c41fe87b68f7a345a90bcc93541231911c0"
+      }
+    },
+    {
+      "id": "M4_ANIMA_VALIDATE_VEIL",
+      "name": "Run ANIMA VEIL validation probe from server and operator",
+      "status": "failed",
+      "budgetMs": 420000,
+      "startedAt": "2026-02-24T00:18:04.483Z",
+      "endedAt": "2026-02-24T00:18:06.370Z",
+      "durationMs": 1887,
+      "error": "[ANIMA] runtime probe failed: RPC error: rpc: service/method request ill-formed: \"veil_agent_get\""
+    },
+    {
+      "id": "M5_ARTIFACT",
+      "name": "Write MVP evidence artifact",
+      "status": "passed",
+      "budgetMs": 60000,
+      "startedAt": "2026-02-24T00:18:06.370Z",
+      "endedAt": "2026-02-24T00:18:06.370Z",
+      "durationMs": 0
+    }
+  ],
+  "output": {
+    "artifactPath": "C:\\Users\\Josh\\Desktop\\veil-automaton\\docs\\build-games-mvp-runs\\run-2026-02-24T00-18-06-370Z.json"
+  }
+}

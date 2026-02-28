@@ -1,0 +1,13 @@
+﻿{
+    "job_id":  "4e5553b6-56f5-47fa-a3cd-c0c84e4d8396",
+    "status":  "failed",
+    "result":  null,
+    "error":  "Codex runner failed with code=127:\n/usr/bin/env: âbash\\râ: No such file or directory\n/usr/bin/env: use -[v]S to pass options in shebang lines\n",
+    "model":  "codex-gpt-5.2",
+    "file_name":  "contracts.zip",
+    "public":  false,
+    "created_at":  "2026-02-20T18:14:19.091605Z",
+    "started_at":  "2026-02-20T18:14:19.423290Z",
+    "finished_at":  "2026-02-20T18:14:20.157192Z",
+    "queue_position":  null
+}

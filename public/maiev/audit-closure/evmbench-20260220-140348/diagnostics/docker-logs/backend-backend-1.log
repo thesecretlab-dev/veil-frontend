@@ -1,0 +1,136 @@
+docker.exe : INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+At . char:17
++ ...    $content = (& docker logs --tail $tail $containerName 2>&1 | Out-S ...
++                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO  [alembic....PostgresqlImpl.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+2026-02-20T18:36:28.891864+0000 | INFO     | __main__:main:8 - Starting at 0.0.0.0:1337 settings.BACKEND_DEV = False
+2026-02-20T18:36:28.892258+0000 | INFO     | uvicorn.config:bind_socket:543 - Uvicorn running on http://0.0.0.0:1337 (Press CTRL+C to quit)
+2026-02-20T18:36:28.892388+0000 | INFO     | uvicorn.supervisors.multiprocess:run:148 - Started parent process [10]
+2026-02-20T18:36:29.662504+0000 | INFO     | uvicorn.server:_serve:84 - Started server process [14]
+2026-02-20T18:36:29.662706+0000 | INFO     | uvicorn.lifespan.on:startup:48 - Waiting for application startup.
+2026-02-20T18:36:29.663436+0000 | INFO     | uvicorn.server:_serve:84 - Started server process [13]
+2026-02-20T18:36:29.663612+0000 | INFO     | uvicorn.lifespan.on:startup:48 - Waiting for application startup.
+2026-02-20T18:36:29.666590+0000 | INFO     | uvicorn.server:_serve:84 - Started server process [12]
+2026-02-20T18:36:29.666744+0000 | INFO     | uvicorn.lifespan.on:startup:48 - Waiting for application startup.
+2026-02-20T18:36:29.669725+0000 | INFO     | uvicorn.lifespan.on:startup:62 - Application startup complete.
+2026-02-20T18:36:29.669949+0000 | INFO     | uvicorn.server:_serve:84 - Started server process [15]
+2026-02-20T18:36:29.670114+0000 | INFO     | uvicorn.lifespan.on:startup:48 - Waiting for application startup.
+2026-02-20T18:36:29.670915+0000 | INFO     | uvicorn.lifespan.on:startup:62 - Application startup complete.
+2026-02-20T18:36:29.672819+0000 | INFO     | uvicorn.lifespan.on:startup:62 - Application startup complete.
+2026-02-20T18:36:29.675468+0000 | INFO     | uvicorn.lifespan.on:startup:62 - Application startup complete.
+2026-02-20T18:36:30.909353+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:54964 - "GET /v1/integration/frontend HTTP/1.1" 200
+2026-02-20T18:36:31.837852+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:54972 - "POST /v1/jobs/start HTTP/1.1" 200
+2026-02-20T18:36:31.996795+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:54964 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:36:37.016559+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:47768 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:36:42.028089+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:47780 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:36:47.041728+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34366 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:36:52.052036+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34368 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:36:57.070120+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:35622 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:37:02.102654+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:35634 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:37:07.119860+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34134 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:37:12.130547+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34150 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:37:17.149623+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44880 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:37:22.161357+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44886 - "GET /v1/jobs/3eb0116d-64df-42db-af73-f1d0d0e79cf6 HTTP/1.1" 200
+2026-02-20T18:38:24.200690+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:52998 - "GET /v1/integration/frontend HTTP/1.1" 200
+2026-02-20T18:49:22.974803+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40952 - "GET /v1/integration/frontend HTTP/1.1" 200
+2026-02-20T18:49:23.547685+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40966 - "POST /v1/jobs/start HTTP/1.1" 200
+2026-02-20T18:49:23.654295+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40952 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:49:28.676796+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40974 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:49:33.682615+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:41162 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:49:38.700215+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:41170 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:49:43.711774+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38326 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:49:48.726229+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38334 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:49:53.742300+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:57852 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:49:58.752705+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:57868 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:03.768482+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38746 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:08.788251+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38756 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:13.803343+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44652 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:18.817205+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44654 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:23.834305+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:49310 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:28.848026+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:49326 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:33.857928+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50422 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:38.873038+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50432 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:43.885266+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44326 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:48.896360+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44330 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:53.907100+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37478 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:50:58.923815+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37490 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:03.939395+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34894 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:08.953680+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34908 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:13.966838+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:47872 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:18.984086+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:47888 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:24.004387+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:39548 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:29.017652+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:39554 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:34.031601+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37380 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:51:39.036792+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37382 - "GET /v1/jobs/36cda7a8-3531-48a3-8ab6-8f4d63af04c6 HTTP/1.1" 200
+2026-02-20T18:55:23.423345+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:43144 - "GET /v1/integration/frontend HTTP/1.1" 200
+2026-02-20T18:55:23.859807+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:43150 - "POST /v1/jobs/start HTTP/1.1" 200
+2026-02-20T18:55:23.879093+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:43144 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:55:28.894146+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:43152 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:55:33.904908+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44608 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:55:38.911038+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:44610 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:55:43.930474+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37206 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:55:48.937882+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37222 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:55:53.943897+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34926 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:55:58.961509+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34932 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:56:03.980889+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:51194 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T18:56:08.995134+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:51200 - "GET /v1/jobs/42b37c6d-866f-4891-8357-6815af883c70 HTTP/1.1" 200
+2026-02-20T19:01:46.121976+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:58672 - "GET /v1/integration/frontend HTTP/1.1" 200
+2026-02-20T19:01:46.585472+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:58686 - "POST /v1/jobs/start HTTP/1.1" 200
+2026-02-20T19:01:46.598230+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:58672 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:01:51.620902+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:58690 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:01:56.627001+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50220 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:01.644251+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50232 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:06.657533+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:56174 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:11.670750+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:56180 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:16.688872+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38322 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:21.707555+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38336 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:26.722135+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:35386 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:31.731893+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:35402 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:36.751451+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:43162 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:41.762653+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:43166 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:46.769927+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40634 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:51.789638+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40642 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:02:56.806885+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:42682 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:03:01.826611+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:42684 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:03:06.842842+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:32774 - "GET /v1/jobs/a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09 HTTP/1.1" 200
+2026-02-20T19:03:48.673592+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:56494 - "GET /v1/integration/frontend HTTP/1.1" 200
+2026-02-20T19:03:49.345752+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:56504 - "POST /v1/jobs/start HTTP/1.1" 200
+2026-02-20T19:03:49.363544+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:56494 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:03:54.377745+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40428 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:03:59.384330+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:40438 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:04.391148+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34142 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:09.404195+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:34146 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:14.419584+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:49428 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:19.499332+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:49434 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:24.514552+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:56384 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:29.528102+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:56398 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:34.536766+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50442 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:39.543971+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50458 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:44.561969+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:49986 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:49.575135+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:49990 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:54.593465+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:35116 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:04:59.604818+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:35126 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:04.618619+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:52466 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:09.633108+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:52470 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:14.648071+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:39310 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:19.656002+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:39314 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:24.661792+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38706 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:29.679992+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:38720 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:34.688832+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:45086 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:39.693681+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:45096 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:44.711032+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:51318 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:49.717836+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:51320 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:54.732823+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50676 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:05:59.952810+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:50678 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:04.960457+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:53138 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:09.964631+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:53154 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:14.979208+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:54634 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:19.998481+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:54646 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:25.015444+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37892 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:30.029976+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37902 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:35.051851+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37980 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+2026-02-20T19:06:40.067097+0000 | INFO     | uvicorn.protocols.http.h11_impl:send:480 - 172.26.0.1:37986 - "GET /v1/jobs/4800e4e6-e431-4966-b85f-885e4e16b41d HTTP/1.1" 200
+

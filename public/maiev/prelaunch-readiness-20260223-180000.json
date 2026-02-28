@@ -1,0 +1,77 @@
+{
+  "timestamp": "2026-02-23T18:00:00.000Z",
+  "overallPass": true,
+  "checks": {
+    "checklist": {
+      "ok": true,
+      "gates": [
+        {
+          "gateId": "G0",
+          "status": "PASS (local)",
+          "notes": "Local chain health and readiness pass."
+        },
+        {
+          "gateId": "G1",
+          "status": "PASS (local)",
+          "notes": "Proof-gated settlement path is locally validated."
+        },
+        {
+          "gateId": "G2",
+          "status": "PASS (local)",
+          "notes": "Native privacy invariants and threshold-keyed flow pass in local evidence."
+        },
+        {
+          "gateId": "G3",
+          "status": "PASS (local)",
+          "notes": "Shielded-ledger circuit assurance package is archived."
+        },
+        {
+          "gateId": "G4",
+          "status": "PASS (local)",
+          "notes": "Treasury/COL control checks pass in launch snapshot."
+        },
+        {
+          "gateId": "G5",
+          "status": "PASS (local)",
+          "notes": "VAI risk controls pass local gate checks."
+        },
+        {
+          "gateId": "G6",
+          "status": "PASS (local)",
+          "notes": "Companion EVM bridge readiness checks pass in local evidence."
+        },
+        {
+          "gateId": "G7",
+          "status": "PASS (local)",
+          "notes": "Companion primitive policy checks pass."
+        },
+        {
+          "gateId": "G8",
+          "status": "PASS (local)",
+          "notes": "Audit closure suite reports pass."
+        },
+        {
+          "gateId": "G9",
+          "status": "PASS (local)",
+          "notes": "Adversarial drill suite passes in archived evidence."
+        },
+        {
+          "gateId": "G10",
+          "status": "PASS",
+          "notes": "Key ceremony and admin rotation are complete."
+        },
+        {
+          "gateId": "G11",
+          "status": "PASS",
+          "notes": "Launch rehearsal packet is complete."
+        },
+        {
+          "gateId": "G12",
+          "status": "PASS (local)",
+          "notes": "ANIMA readiness bundle passes in current checklist evidence."
+        }
+      ],
+      "failing": []
+    }
+  }
+}

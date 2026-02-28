@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-02-20T19:37:24.773Z",
+  "target": {
+    "referenceTradeVai": 100,
+    "targetSlippagePct": 1,
+    "bufferBps": 500
+  },
+  "before": {
+    "reserveVai": 2001,
+    "reserveWveil": 1.9990034967568666,
+    "impactAtReferencePct": 5.0317989241681405
+  },
+  "plan": {
+    "requiredReserveVaiRaw": 14100.428571428565,
+    "requiredReserveVaiBuffered": 14805.449999999993,
+    "addVai": 12804.449999999993,
+    "addWveil": 12.791674324861793,
+    "ratioWveilPerVai": 0.000999002247254806
+  },
+  "wallets": {
+    "admin": "0x580358409B75e315919a9aBFEf9cB3b55F54503A",
+    "funder": "0x698acAcB4446ACaE951b5b9872a8bDC0C3c64A55",
+    "treasuryOwner": "0x580358409B75e315919a9aBFEf9cB3b55F54503A"
+  },
+  "txs": [
+    {
+      "step": "fund-admin-native",
+      "hash": "0xd437a8f5aa2917a2ff889421f19a7d13d4bf71fc0be00ac9e271664fbab30e29",
+      "status": "SUCCESS",
+      "blockNumber": "74",
+      "gasUsed": "21000"
+    },
+    {
+      "step": "wrap-native-to-wveil",
+      "hash": "0xe55b405ad0e49ae98f4edfe8a97f26a801e105139f71f20b0178f845692bb746",
+      "status": "SUCCESS",
+      "blockNumber": "75",
+      "gasUsed": "29667"
+    },
+    {
+      "step": "treasury-mint-vai-for-lp",
+      "hash": "0x2bb97336adff5c6eb6c540cb45d0b8bd3ca15eaac6f7ca4722c805d20359eeef",
+      "status": "SUCCESS",
+      "blockNumber": "76",
+      "gasUsed": "42926"
+    },
+    {
+      "step": "approve-wveil-router",
+      "hash": "0x9f796a5344080649d900378481ef587a6f63629f022dd1bcec24ff5cc2abf345",
+      "status": "SUCCESS",
+      "blockNumber": "77",
+      "gasUsed": "46176"
+    },
+    {
+      "step": "approve-vai-router",
+      "hash": "0x41d5ee6d3f2c9f476d29a837099d3ca5353bc2b23a0277d231be97e28e2451c9",
+      "status": "SUCCESS",
+      "blockNumber": "78",
+      "gasUsed": "46010"
+    },
+    {
+      "step": "add-liquidity",
+      "hash": "0xbab4b535e8ca5120ea85c0aab69ebac7e03a0e2cb4ba74b44fb3f844536f565e",
+      "status": "SUCCESS",
+      "blockNumber": "79",
+      "gasUsed": "104462"
+    }
+  ],
+  "after": {
+    "reserveVai": 14805.449999999993,
+    "reserveWveil": 14.79067782161866,
+    "impactAtReferencePct": 0.9668896321070375,
+    "targetMet": true
+  },
+  "balances": {
+    "adminNative": "0.412815556997226968",
+    "adminWveil": "0.755996503243133298",
+    "adminVai": "3002.000000000000468841"
+  }
+}

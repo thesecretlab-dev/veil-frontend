@@ -1,0 +1,10 @@
+Fee preflight: planned_txs=6 max_fee=5000000 safety_bps=10000 reserve=1 required=30000001 balance=80000000
+Groth16 CS cache: hit (.cache/zkbench/groth16_shielded-ledger-v1_741bbff7efd4.ccs.bin)
+Proof mode: groth16-shielded-ledger-v1
+Running batch size 1 (1 windows)
+[90m02:45:50[0m [33mDBG[0m constraint system solver done [36mnbConstraints=[0m176251 [36mtook=[0m219.700836
+[90m02:45:50[0m [33mDBG[0m prover done [36macceleration=[0mnone [36mbackend=[0mgroth16 [36mcurve=[0mbn254 [36mnbConstraints=[0m176251 [36mtook=[0m376.748543
+  batch=1 window=1/1
+Done.
+- Summary: zkbench-out-evidence-20260220-024205-shielded-smoke/summary.md
+- JSON: zkbench-out-evidence-20260220-024205-shielded-smoke/summary.json

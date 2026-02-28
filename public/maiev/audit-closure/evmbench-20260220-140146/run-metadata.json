@@ -1,0 +1,102 @@
+{
+    "run_dir":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-140146",
+    "job_id":  "a7f4fc4f-5c8a-4db1-b56d-5f8aadaace09",
+    "status":  "succeeded",
+    "model":  "codex-gpt-5.2",
+    "api_base_url":  "http://127.0.0.1:1337",
+    "integration_url":  "http://127.0.0.1:1337/v1/integration/frontend",
+    "key_predefined":  true,
+    "poll_interval_seconds":  5,
+    "timeout_seconds":  1800,
+    "poll_history":  [
+                         {
+                             "polled_at_utc":  "2026-02-20T19:01:46.5986546Z",
+                             "elapsed_seconds":  0,
+                             "status":  "queued"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:01:51.6205138Z",
+                             "elapsed_seconds":  5,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:01:56.6274620Z",
+                             "elapsed_seconds":  10,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:01.6442704Z",
+                             "elapsed_seconds":  15,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:06.6577342Z",
+                             "elapsed_seconds":  20,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:11.6720366Z",
+                             "elapsed_seconds":  25,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:16.6902392Z",
+                             "elapsed_seconds":  30,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:21.7089916Z",
+                             "elapsed_seconds":  35,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:26.7231795Z",
+                             "elapsed_seconds":  40,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:31.7326840Z",
+                             "elapsed_seconds":  45,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:36.7516728Z",
+                             "elapsed_seconds":  50,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:41.7635250Z",
+                             "elapsed_seconds":  55,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:46.7707505Z",
+                             "elapsed_seconds":  60,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:51.7901009Z",
+                             "elapsed_seconds":  65,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:02:56.8071021Z",
+                             "elapsed_seconds":  70,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:03:01.8266998Z",
+                             "elapsed_seconds":  75,
+                             "status":  "running"
+                         },
+                         {
+                             "polled_at_utc":  "2026-02-20T19:03:06.8446129Z",
+                             "elapsed_seconds":  80,
+                             "status":  "succeeded"
+                         }
+                     ],
+    "contracts_zip_sha256":  "f69495e48595d0e0443b4ed0a6d8a514f89de0768c271494aa2b406e36a2a58a",
+    "contracts_zip_path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\evidence-bundles\\audit-closure\\evmbench-20260220-140146\\contracts.zip",
+    "contracts_path":  "C:\\Users\\Josh\\hypersdk\\examples\\veilvm\\companion-evm\\contracts",
+    "solidity_files":  6
+}

@@ -1,0 +1,12 @@
+Fee preflight: planned_txs=6 max_fee=5000000 safety_bps=10000 reserve=1 required=30000001 balance=8322241
+Auto-refuel (startup preflight): bench=0x00e7c0852913093eb95db39e5e0e2f2a9552e07e5c1a81a37e1bfd4fb0c2ea9e0c2d4787d8 have=8322241 need=30000001 transfer=21677760 from=0x0014e7b4d411d05bc745f3a3d43328171ddffab3693f1bcc95dc63a84440366e50b1cb1a38
+Groth16 CS cache: hit (.cache/zkbench/groth16_shielded-ledger-v1_741bbff7efd4.ccs.bin)
+Proof mode: groth16-shielded-ledger-v1
+Prover authority override: 0x00e7c0852913093eb95db39e5e0e2f2a9552e07e5c1a81a37e1bfd4fb0c2ea9e0c2d4787d8
+Running batch size 8 (1 windows)
+[90m01:55:54[0m [33mDBG[0m constraint system solver done [36mnbConstraints=[0m176251 [36mtook=[0m589.667335
+[90m01:55:55[0m [33mDBG[0m prover done [36macceleration=[0mnone [36mbackend=[0mgroth16 [36mcurve=[0mbn254 [36mnbConstraints=[0m176251 [36mtook=[0m438.978762
+  batch=8 window=1/1
+Done.
+- Summary: zkbench-out-evidence-20260220-014450-backup-takeover-backup-recovers/summary.md
+- JSON: zkbench-out-evidence-20260220-014450-backup-takeover-backup-recovers/summary.json

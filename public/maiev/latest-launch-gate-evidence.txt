@@ -1,0 +1,11 @@
+saved_at_utc=2026-02-20T20:48:20.428Z
+bundle=20260220-202857-launch-gate-evidence
+bundle_path=.
+bundle_json=.
+bundle_md=.
+overall_pass=True
+node_url=http://127.0.0.1:9660
+chain_id=2CdK3iHBweFSZhh5XBgLYDaC2U7SoyqEzDaTRhmMFwSLLCm1Xb
+runner=docker
+docker_image=veilvm-zkbench-evidence:local
+

@@ -1,0 +1,4 @@
+github.com/DataDog/zstd: build constraints exclude all Go files in .
+# github.com/supranational/blst/bindings/go
+..\..\..\go\pkg\mod\github.com\supranational\blst@v0.3.14\bindings\go\rb_tree.go:130:18: undefined: Message
+

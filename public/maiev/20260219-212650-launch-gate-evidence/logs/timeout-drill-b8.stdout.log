@@ -1,0 +1,8 @@
+Fee preflight: planned_txs=6 max_fee=5000000 safety_bps=13000 reserve=250000 required=39250000 balance=4947235
+Fee preflight warning: startup preflight insufficient bench fee balance: have=4947235 need=39250000 deficit=34302765 (addr=0x0014e7b4d411d05bc745f3a3d43328171ddffab3693f1bcc95dc63a84440366e50b1cb1a38). set REFUEL_PRIVATE_KEY or fund this address
+Continuing without strict startup preflight; runtime fee checks still apply.
+Groth16 CS cache: hit (.cache/zkbench/groth16_shielded-ledger-v1_741bbff7efd4.ccs.bin)
+Proof mode: groth16-shielded-ledger-v1
+Running batch size 8 (1 windows)
+[90m21:34:08[0m [33mDBG[0m constraint system solver done [36mnbConstraints=[0m176251 [36mtook=[0m199.469393
+[90m21:34:08[0m [33mDBG[0m prover done [36macceleration=[0mnone [36mbackend=[0mgroth16 [36mcurve=[0mbn254 [36mnbConstraints=[0m176251 [36mtook=[0m326.65217
