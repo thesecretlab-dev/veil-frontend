@@ -10,11 +10,11 @@ This audit was run against the live site (not local repo rendering) using the cl
 
 ## Live Crawl Evidence
 
-- Crawl artifact: `C:\Users\Josh\veil-live-crawl-20260223-auth.json`
+- Crawl artifact: `<local-path-removed>`
 - Crawl scope: sitemap routes + discovered internal links (259 URLs crawled).
 - Canonical truth baseline used:
-  - `C:\Users\Josh\hypersdk\examples\veilvm\VEIL_PRODUCTION_LAUNCH_CHECKLIST.md` (decision `GO FOR PRODUCTION`, all gates pass/pass-local)
-  - `C:\Users\Josh\hypersdk\examples\veilvm\LIVE_DEVLOG.md` (owner-key LP custody caveat is non-gate operational blocker)
+  - `<local-path-removed>` (decision `GO FOR PRODUCTION`, all gates pass/pass-local)
+  - `<local-path-removed>` (owner-key LP custody caveat is non-gate operational blocker)
 
 ## Live Copy Drift (High Priority)
 
@@ -54,4 +54,5 @@ This audit was run against the live site (not local repo rendering) using the cl
 Use this as the default launch sentence across status surfaces:
 
 `Launch authority is GO FOR PRODUCTION (2026-02-22). All launch gates are PASS/PASS(local); treasury-owned LP actions remain signer-custody blocked pending owner migration or controlled redeploy.`
+
 

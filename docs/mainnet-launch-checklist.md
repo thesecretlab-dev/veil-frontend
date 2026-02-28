@@ -1,7 +1,7 @@
 # VEIL Mainnet Launch Checklist (Ordered)
 
 Last updated: 2026-02-23  
-Source-of-truth snapshot: `C:\Users\Josh\hypersdk\examples\veilvm\VEIL_PRODUCTION_LAUNCH_CHECKLIST.md`
+Source-of-truth snapshot: `<local-path-removed>`
 
 This checklist is the ordered go-live path.  
 Current canonical state (2026-02-22 snapshot): **GO FOR PRODUCTION** with all gates `PASS`/`PASS (local)`.
@@ -189,3 +189,4 @@ Final evidence set to attach in launch approval:
 3. Open market/deFi surfaces in controlled order.
 4. Monitor launch metrics and gate health continuously.
 5. If critical regression occurs, pause launch and execute rollback procedure from rehearsal packet.
+

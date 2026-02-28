@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from "next/server"
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
-const DEFAULT_AUTOMATON_DIR = "C:/Users/Josh/Desktop/veil-automaton"
+const DEFAULT_AUTOMATON_DIR = "/tmp/veil-automaton"
 const RUNNER_STATE_PATH = path.join(process.cwd(), "public", "maiev", "mvp-runner-state.json")
 const LATEST_MVP_RUN_PATH = path.join(process.cwd(), "public", "maiev", "mvp-run-latest.json")
 const MAX_TAIL_LINES = 100
@@ -443,3 +443,4 @@ export async function POST(request: NextRequest) {
     { status: 202 },
   )
 }
+

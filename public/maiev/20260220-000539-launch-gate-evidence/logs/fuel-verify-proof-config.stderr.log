@@ -1,1 +1,0 @@
-bench failed: startup preflight REFUEL_PRIVATE_KEY must differ from PRIVATE_KEY when auto-refuel is needed

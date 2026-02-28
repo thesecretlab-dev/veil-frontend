@@ -1,14 +1,14 @@
-﻿# VEIL.markets Verbiage Audit (2026-02-23)
+# VEIL.markets Verbiage Audit (2026-02-23)
 
 Scope: full sweep of route pages under `app/**/page.tsx`, shared copy sources, and docs surfaces in `docs/**` for launch/readiness wording alignment.
 
 ## Canonical Product Truth Used For This Audit
 
-- `C:\Users\Josh\hypersdk\examples\veilvm\VEIL_PRODUCTION_LAUNCH_CHECKLIST.md:52-70`
+- `<local-path-removed>`
   - Snapshot date: `2026-02-22`
   - Gates `G0..G12`: all `PASS` or `PASS (local)`
   - Decision line: `GO FOR PRODUCTION`
-- `C:\Users\Josh\hypersdk\examples\veilvm\LIVE_DEVLOG.md:53-65`
+- `<local-path-removed>`
   - Launch posture is green in latest pointers.
   - Remaining non-gate operator blocker: unrecovered hardened owner key blocks treasury-owned LP actions on existing production contracts until ownership migration or redeploy.
 
@@ -183,3 +183,4 @@ Whitepaper coverage:
 3. Replace hardcoded stale strings in route pages/components listed above.
 4. Replace or retire stale docs (`docs/mainnet-launch-checklist.md`, handshake docs).
 5. Refresh `public/maiev/prelaunch-readiness-*.json` latest artifact and/or adjust API selection logic to canonical latest pointer source.
+

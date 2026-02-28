@@ -1,7 +1,0 @@
-Fee preflight: planned_txs=6 max_fee=5000000 safety_bps=13000 reserve=250000 required=39250000 balance=42687040
-Groth16 CS cache: hit (.cache/zkbench/groth16_shielded-ledger-v1_741bbff7efd4.ccs.bin)
-Proof mode: groth16-shielded-ledger-v1
-Prover authority override: 0x004a65305f47493ef636de65c5348950b5752aa05e0e8289fec9f9cd527afe06e7c7a648af
-Running batch size 8 (1 windows)
-[90m21:14:19[0m [33mDBG[0m constraint system solver done [36mnbConstraints=[0m176251 [36mtook=[0m209.799446
-[90m21:14:20[0m [33mDBG[0m prover done [36macceleration=[0mnone [36mbackend=[0mgroth16 [36mcurve=[0mbn254 [36mnbConstraints=[0m176251 [36mtook=[0m445.250172

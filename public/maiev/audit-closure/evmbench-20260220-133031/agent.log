@@ -1,4 +1,0 @@
-{"type":"thread.started","thread_id":"019c7c51-601d-77d3-807f-b71ba323fa26"}
-{"type":"turn.started"}
-{"type":"error","message":"{\"error\":{\"message\":\"gpt-5.2-2025-12-11 is not a valid model ID\",\"code\":400},\"user_id\":\"user_2qROIDMh68FuSFFThdXup5zbjBC\"}"}
-{"type":"turn.failed","error":{"message":"{\"error\":{\"message\":\"gpt-5.2-2025-12-11 is not a valid model ID\",\"code\":400},\"user_id\":\"user_2qROIDMh68FuSFFThdXup5zbjBC\"}"}}

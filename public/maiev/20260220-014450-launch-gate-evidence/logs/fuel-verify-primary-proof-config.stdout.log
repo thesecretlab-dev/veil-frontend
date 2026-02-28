@@ -1,5 +1,0 @@
-Fee preflight: planned_txs=1 max_fee=5000000 safety_bps=10000 reserve=1 required=5000001 balance=33232898
-Prefund-only mode: startup preflight satisfied; exiting before benchmark txs.
-Done.
-- Summary: zkbench-out-evidence-20260220-014450-fuel-verify-primary-proof-config/summary.md
-- JSON: zkbench-out-evidence-20260220-014450-fuel-verify-primary-proof-config/summary.json

@@ -1,6 +1,0 @@
-Fee preflight: planned_txs=6 max_fee=5000000 safety_bps=13000 reserve=250000 required=39250000 balance=36908849
-Auto-refuel (startup preflight): bench=0x00e7c0852913093eb95db39e5e0e2f2a9552e07e5c1a81a37e1bfd4fb0c2ea9e0c2d4787d8 have=36908849 need=39250000 transfer=6750000 from=0x0014e7b4d411d05bc745f3a3d43328171ddffab3693f1bcc95dc63a84440366e50b1cb1a38
-Prefund-only mode: startup preflight satisfied; exiting before benchmark txs.
-Done.
-- Summary: zkbench-out-evidence-20260220-005809-fuel-prefund-primary-capped/summary.md
-- JSON: zkbench-out-evidence-20260220-005809-fuel-prefund-primary-capped/summary.json
