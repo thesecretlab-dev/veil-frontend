@@ -117,7 +117,7 @@ export function VeilHeader({ current }: { current?: string }) {
       className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 flex items-center justify-between"
       style={{ background: "linear-gradient(180deg, rgba(6,6,6,0.9) 0%, transparent 100%)" }}
     >
-      <Link href="/exploreveil" className="flex items-center gap-3 group">
+      <Link href="/" className="flex items-center gap-3 group">
         <div className="w-6 h-6 relative">
           <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
             <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5"
@@ -195,7 +195,7 @@ export function VeilFooter() {
               { label: "MAIEV", href: "/maiev" },
               { label: "Transparency", href: "/app/transparency" },
               { label: "Investor Deck", href: "/app/investor-deck" },
-              { label: "GitHub", href: "https://github.com/0x12371C" },
+              { label: "GitHub", href: "https://github.com/thesecretlab-dev/veilvm" },
             ].map(link => (
               <Link key={link.label} href={link.href}
                 className="text-[10px] tracking-[0.12em] uppercase transition-colors duration-500 hover:text-emerald-400/40"
