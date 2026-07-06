@@ -91,13 +91,13 @@ export default function NetworkPage() {
               letterSpacing: "-0.03em",
             }}
           >
-            Mainnet Core with Orbiting Child Nodes
+            Testnet Core with Orbiting Child Nodes
           </h1>
           <p
             className="mx-auto max-w-2xl text-base font-light md:text-lg"
             style={{ color: "rgba(255, 255, 255, 0.4)", fontFamily: "var(--font-figtree)" }}
           >
-            This surface tracks live VEIL mainnet topology from the operator perspective.
+            This surface tracks live VEIL local testnet topology from the operator perspective.
           </p>
         </section>
 
@@ -140,7 +140,7 @@ export default function NetworkPage() {
                     className="text-[10px] uppercase tracking-[0.18em]"
                     style={{ color: "rgba(255,255,255,0.58)", fontFamily: "var(--font-space-grotesk)" }}
                   >
-                    VEIL Mainnet
+                    VEIL Testnet
                   </p>
                   <p
                     className="mt-1 text-[11px]"
@@ -189,7 +189,7 @@ export default function NetworkPage() {
                   className="text-[10px] uppercase tracking-[0.16em]"
                   style={{ color: "rgba(16,185,129,0.85)", fontFamily: "var(--font-space-grotesk)" }}
                 >
-                  Mainnet Core
+                  Testnet Core
                 </p>
                 <p className="mt-1 text-sm" style={{ color: "rgba(255,255,255,0.9)", fontFamily: "var(--font-figtree)" }}>
                   NodeID-BRWmyj4aQPgx1suA3Le9km1aF6sQnmVyw

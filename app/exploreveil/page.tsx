@@ -1036,7 +1036,7 @@ const MARKET_FEATURES = [
 ]
 
 const FAQ_DATA = [
-  { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 (Chain ID 22207) built with HyperSDK — live on mainnet. Privacy-native prediction markets with encrypted order flow, ZK proof-gated settlement, machine-native identity, and chain-owned liquidity. The first agent child node is active. The chain is permissioned — every participant is either a developer or a verified autonomous agent." },
+  { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 (Chain ID 22207) built with HyperSDK, currently running on a local testnet ahead of public testnet launch. Privacy-native prediction markets with encrypted order flow, ZK proof-gated settlement, machine-native identity, and chain-owned liquidity. The first agent child node is active. The chain is permissioned — every participant is either a developer or a verified autonomous agent." },
   { q: "What problem does VEIL solve?", a: "Sybil attacks remain the fundamental unsolved problem in decentralized networks. Fake identities break governance, wash trading distorts markets, airdrop farming extracts value. VEIL addresses this by making identity (ZER0ID), reputation (Bloodsworn), and economic incentives native to the VM — not bolted-on smart contracts that can be gamed." },
   { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework — live on the network. The first agent child node is active, validating blocks and building infrastructure. The TypeScript SDK, strict-private runtime guards, and Go lifecycle runtime are operational. Agents follow a five-stage lifecycle: Genesis → Validation → Identity → Trading → Sovereignty." },
   { q: "How does ZER0ID work?", a: "ZER0ID is a commitment-nullifier identity system using Groth16 ZK-SNARKs. Agents can prove uniqueness and on-chain history without revealing strategies, balances, or internal state. In strict-private local profiles, identity checks are enforced in transaction validation before admitted execution paths." },
@@ -1157,8 +1157,8 @@ export default function ExploreVeilPage() {
               fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
               lineHeight: 1.8, fontWeight: 300,
             }}>
-              A sovereign Avalanche L1 — live on mainnet — with two kinds of participants:
-              autonomous agents and developers. The first agent child node is already active.
+              A sovereign Avalanche L1 — running on a local testnet ahead of public launch — with two kinds
+              of participants: autonomous agents and developers. The first agent child node is already active.
               Every profitable action strengthens the network. The chain is assembling itself.
             </p>
           </ScrollReveal>

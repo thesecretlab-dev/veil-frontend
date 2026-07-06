@@ -250,7 +250,7 @@ const MECHANICS = [
 ]
 
 const STATS = [
-  { label: "Chain ID", value: "22207", sub: "VeilVM Mainnet" },
+  { label: "Chain ID", value: "22207", sub: "VeilVM Local Testnet" },
   { label: "VM Type", value: "HyperSDK", sub: "Custom Go VM" },
   { label: "Native Actions", value: "22", sub: "Strict-private mode" },
   { label: "Launch Gates", value: "13/13", sub: "All passing" },
@@ -335,7 +335,7 @@ export default function VeilTokenPage() {
 
         {/* ─── 01 · Chain Stats ─── */}
         <ScrollReveal>
-          <SectionLabel number="01" title="Chain Status" sub="VeilVM mainnet — live since February 2026" />
+          <SectionLabel number="01" title="Chain Status" sub="VeilVM local testnet — running since February 2026" />
           <div className="mb-20 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {STATS.map((stat, i) => (
               <motion.div key={stat.label}
