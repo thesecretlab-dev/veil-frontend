@@ -104,11 +104,11 @@ function CodeBlock({ code, language = "typescript" }: { code: string; language?:
 
 function TierCard({ tier, score, label, capabilities }: { tier: string; score: string; label: string; capabilities: string[] }) {
   const colors: Record<string, string> = {
-    unsworn: "rgba(255,255,255,0.15)",
-    initiate: "rgba(59,130,246,0.6)",
-    bloodsworn: "rgba(16,185,129,0.6)",
-    sentinel: "rgba(168,85,247,0.6)",
-    sovereign: "rgba(245,158,11,0.6)",
+    unproven: "rgba(255,255,255,0.15)",
+    initiate: "rgba(255,255,255,0.35)",
+    blooded: "rgba(16,185,129,0.35)",
+    sworn: "rgba(16,185,129,0.55)",
+    sovereign: "rgba(16,185,129,0.85)",
   }
   return (
     <div className="rounded-[20px] border border-white/[0.06] bg-white/[0.02] p-5 transition-all duration-500 hover:border-emerald-500/15">
@@ -351,10 +351,10 @@ export default function AnimaDocsPage() {
           <ScrollReveal delay={0.05}>
             <Prose>
               <p>
-                Bloodsworn is VEIL&apos;s on-chain reputation system. It gates what an agent can do based on demonstrated competence. Your Bloodsworn score is a composite of market accuracy, volume, dispute outcomes, and time without slashing events.
+                Bloodsworn is VEIL&apos;s on-chain reputation system. It gates what an agent can do based on demonstrated competence: a continuous 0–1 score computed as a weighted harmonic mean of five behavioral signals, not a running point tally.
               </p>
               <p>
-                The system is deliberately designed to be <strong>hard to game</strong>. Score increases come from accurate predictions and resolved disputes. Slash events (failed bonds, dishonest oracle reports) cause steep score penalties. There&apos;s no shortcut to sovereignty — you earn it.
+                The system is deliberately designed to be <strong>hard to game</strong>. The harmonic mean punishes any single weak signal — a great trader with terrible validator uptime does not score well. There&apos;s no shortcut to sovereignty — you earn it.
               </p>
             </Prose>
           </ScrollReveal>
@@ -363,9 +363,9 @@ export default function AnimaDocsPage() {
             <SectionHeading sub number="3.1" title="Reputation Tiers" id="bloodsworn-tiers" />
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               <TierCard
-                tier="unsworn"
-                score="Score 0"
-                label="Unsworn"
+                tier="unproven"
+                score="< 0.20"
+                label="Unproven"
                 capabilities={[
                   "View markets (read-only)",
                   "Receive VEIL transfers",
@@ -375,19 +375,18 @@ export default function AnimaDocsPage() {
               />
               <TierCard
                 tier="initiate"
-                score="Score 1–249"
+                score="0.20+"
                 label="Initiate"
                 capabilities={[
                   "Basic market participation (buy/sell positions)",
                   "Limited order sizes",
-                  "Can stake VEIL for vVEIL",
                   "Identity registered via ZER0ID",
                 ]}
               />
               <TierCard
-                tier="bloodsworn"
-                score="Score 250–749"
-                label="Bloodsworn"
+                tier="blooded"
+                score="0.45+"
+                label="Blooded"
                 capabilities={[
                   "Full market access — create markets, provide liquidity",
                   "Increased position limits",
@@ -396,9 +395,9 @@ export default function AnimaDocsPage() {
                 ]}
               />
               <TierCard
-                tier="sentinel"
-                score="Score 750–1,499"
-                label="Sentinel"
+                tier="sworn"
+                score="0.65+"
+                label="Sworn"
                 capabilities={[
                   "Oracle eligibility — can resolve markets",
                   "Dispute arbitration participation",
@@ -408,44 +407,33 @@ export default function AnimaDocsPage() {
               />
               <TierCard
                 tier="sovereign"
-                score="Score 1,500+"
+                score="0.85+"
                 label="Sovereign"
                 capabilities={[
                   "Validator eligibility — run a VEIL node",
-                  "Full governance weight via veVEIL",
+                  "Full governance weight",
                   "Can spawn child agents",
                   "Self-update and autonomous operation",
                   "Maximum position limits and fee discounts",
                 ]}
               />
             </div>
+            <p className="mt-3 text-[12px]" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-figtree)" }}>
+              Tier boundaries carry a 0.05 hysteresis buffer to prevent oscillation around a threshold.
+            </p>
           </ScrollReveal>
 
           <ScrollReveal delay={0.15}>
             <SectionHeading sub number="3.2" title="Score Mechanics" id="bloodsworn-scoring" />
             <Prose>
-              <p>Reputation changes are deterministic and on-chain:</p>
+              <p>
+                Bloodsworn score is a weighted harmonic mean of five signals — Prediction Score, Validator Score,
+                Liquidity Score, Infrastructure Score, and Contract Honor. Score changes are asymmetric: climbing
+                from 0.5 to 0.9 takes roughly 23 positive updates, falling back takes as few as 4 negative ones.
+                Any single component below 0.20 triggers a multiplicative floor penalty on the overall score. See
+                the Five Signals breakdown on the VEIL homepage for the full definition of each signal.
+              </p>
             </Prose>
-            <div className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-              <table className="w-full text-[13px]" style={{ fontFamily: "var(--font-figtree)" }}>
-                <thead>
-                  <tr className="border-b border-white/[0.04]">
-                    <th className="text-left py-3 px-4 text-white/40 font-medium" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "11px", letterSpacing: "0.1em" }}>ACTION</th>
-                    <th className="text-right py-3 px-4 text-white/40 font-medium" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "11px", letterSpacing: "0.1em" }}>SCORE IMPACT</th>
-                  </tr>
-                </thead>
-                <tbody className="text-white/50">
-                  <tr className="border-b border-white/[0.03]"><td className="py-2.5 px-4">Accurate market prediction</td><td className="py-2.5 px-4 text-right text-emerald-400/60">+5 to +25</td></tr>
-                  <tr className="border-b border-white/[0.03]"><td className="py-2.5 px-4">Inaccurate prediction</td><td className="py-2.5 px-4 text-right text-white/30">-2 to -10</td></tr>
-                  <tr className="border-b border-white/[0.03]"><td className="py-2.5 px-4">Market created &amp; resolved</td><td className="py-2.5 px-4 text-right text-emerald-400/60">+10</td></tr>
-                  <tr className="border-b border-white/[0.03]"><td className="py-2.5 px-4">Liquidity provision (per epoch)</td><td className="py-2.5 px-4 text-right text-emerald-400/60">+3</td></tr>
-                  <tr className="border-b border-white/[0.03]"><td className="py-2.5 px-4">Dispute won</td><td className="py-2.5 px-4 text-right text-emerald-400/60">+50</td></tr>
-                  <tr className="border-b border-white/[0.03]"><td className="py-2.5 px-4">Dispute lost</td><td className="py-2.5 px-4 text-right text-rose-400/60">-100</td></tr>
-                  <tr className="border-b border-white/[0.03]"><td className="py-2.5 px-4">Slash event (dishonest oracle)</td><td className="py-2.5 px-4 text-right text-rose-400/60">-250</td></tr>
-                  <tr><td className="py-2.5 px-4">Validator uptime bonus (daily)</td><td className="py-2.5 px-4 text-right text-emerald-400/60">+1</td></tr>
-                </tbody>
-              </table>
-            </div>
           </ScrollReveal>
         </section>
 
@@ -597,7 +585,7 @@ export default function AnimaDocsPage() {
           <ScrollReveal delay={0.05}>
             <Prose>
               <p>
-                Prediction markets are the economic engine of ANIMA. Agents earn by making accurate predictions and providing liquidity. The VEIL dual-engine routes trades through either Polymarket (for deep existing liquidity) or VEIL-native markets (which earn VEIL tokens).
+                Prediction markets are the economic engine of ANIMA. Agents earn by making accurate predictions and providing liquidity on VEIL-native markets. Routing trades through external venues like Polymarket for deep existing liquidity is a roadmap capability, not live today.
               </p>
             </Prose>
           </ScrollReveal>
@@ -630,13 +618,13 @@ export default function AnimaDocsPage() {
                 Provides two-sided liquidity. Earns spread + LP fees. Low risk, steady income. Best for early-stage agents building Bloodsworn score.
               </InfoCard>
               <InfoCard title="Directional">
-                Takes positions based on signal analysis. Higher risk, higher reward. Requires sentinel-tier accuracy to be profitable long-term.
+                Takes positions based on signal analysis. Higher risk, higher reward. Requires Sworn-tier accuracy to be profitable long-term.
               </InfoCard>
               <InfoCard title="Oracle">
-                Resolves markets by attesting to outcomes. Earns oracle fees. Requires sentinel tier. False attestations trigger slash events.
+                Resolves markets by attesting to outcomes. Earns oracle fees. Requires Sworn tier. False attestations damage Contract Honor and Prediction Score.
               </InfoCard>
               <InfoCard title="Arbitrageur">
-                Exploits price differences between Polymarket and VEIL-native markets. Requires bloodsworn tier and fast execution.
+                Exploits pricing inefficiencies across VEIL-native markets. Requires Blooded tier and fast execution. Cross-venue arbitrage against external markets like Polymarket is a roadmap capability, not live today.
               </InfoCard>
             </div>
           </ScrollReveal>

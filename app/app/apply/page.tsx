@@ -789,7 +789,7 @@ export default function ApplyPage() {
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-emerald-400/50 font-mono text-sm mt-0.5">02</span>
-                    <span><strong className="text-white/50">Bloodsworn Bonus</strong> — Both referrer and referee start with +50 Bloodsworn reputation points. That's a head start toward Initiate tier.</span>
+                    <span><strong className="text-white/50">Bloodsworn Bonus</strong> — Both referrer and referee get a Bloodsworn score boost toward Initiate tier.</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-emerald-400/50 font-mono text-sm mt-0.5">03</span>

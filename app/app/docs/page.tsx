@@ -250,7 +250,7 @@ export default function DocsPage() {
         {/* main content */}
         <main className="min-w-0 flex-1 max-w-3xl">
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-emerald-300/85" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            ANIMA · ZER0ID · BLOODSWORN · VAI · KEEP3R
+            ANIMA · ZER0ID · BLOODSWORN · VAI
           </div>
 
           {/* Hero */}
@@ -314,7 +314,7 @@ export default function DocsPage() {
                 Ecosystem Scope — 2026
               </h2>
               <ul className="space-y-2 text-[14px] leading-relaxed text-white/45" style={{ fontFamily: "var(--font-figtree)" }}>
-                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> VeilVM core: 42 native actions with proof-gated settlement, encrypted batch flow, and shielded state transitions.</li>
+                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> VeilVM core: 22 native actions with proof-gated settlement, encrypted batch flow, and shielded state transitions.</li>
                 <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Market layer: privacy-scoped prediction markets with batch auctions, oracle/dispute logic, and chain-owned liquidity support.</li>
                 <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Companion EVM rails: intent relay, token interoperability, and external integration surfaces where transparency is expected.</li>
                 <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Agent layer: ZER0ID identity, Bloodsworn reputation scaffolds, and ANIMA SDK/runtime for autonomous operations.</li>
@@ -349,11 +349,11 @@ export default function DocsPage() {
                 <p>
                   The system achieves <strong className="text-white/75">sub-second finality</strong> via Avalanche
                   consensus, <strong className="text-white/75">deterministic replay</strong> for audits, and{" "}
-                  <strong className="text-white/75">objective slashing</strong> for misbehaving operators. This document
-                  specifies the cryptographic primitives, VM implementation (HyperSDK), companion-rail interoperability,
-                  ANIMA runtime boundaries, ZER0ID identity commitments, Bloodsworn reputation scaffolds, oracle
-                  resolution with VRF-selected committees, and service-level objectives (SLOs) that govern market and
-                  protocol quality.
+                  <strong className="text-white/75">bonded dispute resolution</strong> for contested outcomes. This
+                  document specifies the cryptographic primitives, VM implementation (HyperSDK), companion-rail
+                  interoperability, ANIMA runtime boundaries, ZER0ID identity commitments, Bloodsworn reputation
+                  scaffolds, committee-based oracle resolution, and service-level objectives (SLOs) that govern
+                  market and protocol quality.
                 </p>
               </Prose>
             </section>
@@ -387,17 +387,18 @@ export default function DocsPage() {
                   cryptographic proofs.
                 </p>
                 <p>
-                  VEIL operates a <strong className="text-white/75">dual market engine</strong>: orders can be routed through
-                  Polymarket's deep liquidity pools for a <strong className="text-white/75">0.03% routing fee</strong>,
-                  giving traders access to deep external liquidity with a privacy-preserving strategy layer on top.
-                  Alternatively, users can trade <strong className="text-white/75">VEIL-native markets</strong> directly
-                  on-chain and earn VEIL token rewards for providing liquidity and volume.
+                  Today, <strong className="text-white/75">VEIL-native markets</strong> trade directly on-chain through
+                  the VM&apos;s own commit/reveal/clear batch pipeline. Routing live order flow through external venues
+                  like Polymarket for deep external liquidity is on the roadmap — a{" "}
+                  <strong className="text-white/75">dual market engine</strong> is a future capability, not something
+                  live today. The current frontend displays Polymarket data for market context only; it does not route
+                  capital or orders there.
                 </p>
                 <p>
                   Since the original whitepaper draft, VEIL has expanded with explicit agent and ecosystem rails:
                   <strong className="text-white/75"> ANIMA</strong> runtime/SDK, <strong className="text-white/75">ZER0ID</strong>
                   identity, <strong className="text-white/75">Bloodsworn</strong> reputation scaffolding, companion EVM
-                  intent/liquidity relays, and treasury risk controls across COL locks, VAI limits, and Keep3r operations.
+                  intent/liquidity relays, and treasury risk controls across COL locks and VAI limits.
                 </p>
               </Prose>
             </section>
@@ -516,7 +517,11 @@ export default function DocsPage() {
                   Uniform price auctions every 2-5 seconds ensure fair execution without preferential treatment
                 </InfoCard>
                 <InfoCard title="4 · Oracle Resolution">
-                  Financial markets use VRF-selected committees with BLS signatures. Social, political, and non-financial markets are resolved by Grok 4.2 (xAI) with on-chain query commitment and cryptographic attestation
+                  The ResolveMarket action accepts a signed outcome for a market. Committee membership is configured
+                  on-chain via SetCommittee (governance-gated, not randomly selected); full BLS aggregate-signature
+                  verification from that committee is not yet enforced — it is a near-term hardening item, not a
+                  shipped guarantee. Markets without a clean data feed (social, political, cultural) have no
+                  finalized resolution path yet.
                 </InfoCard>
                 <InfoCard title="5 - Agent Runtime & Identity">
                   ANIMA orchestrates autonomous execution while ZER0ID and Bloodsworn primitives provide identity and reputation rails for machine-native participation
@@ -525,8 +530,8 @@ export default function DocsPage() {
               <Prose>
                 <p>
                   The system runs on a dedicated Avalanche Subnet with custom HyperSDK VM optimized for batch clearing and
-                  ZK verification. Validators post slashable bonds and are subject to objective penalties for rule
-                  violations.
+                  ZK verification. Disputed outcomes carry real economic weight through the Dispute action: a challenger
+                  posts a bond, and the bond is forfeited if the challenge fails.
                 </p>
                 <p>
                   Post-whitepaper scope also includes companion EVM intent gateways, route-scoped privacy policy surfaces,
@@ -616,43 +621,54 @@ export default function DocsPage() {
               <SectionHeading number="08" title="Resolution & Dispute" id="resolution" />
               <Prose>
                 <p>
-                  Market outcomes are determined by a decentralized oracle committee selected via verifiable random
-                  functions (VRFs). This committee, composed of bonded operators, attests to the ground truth of market
-                  outcomes.
+                  Market outcomes are submitted through the <strong className="text-white/75">ResolveMarket</strong> action.
+                  Committee membership for the network is configured on-chain by governance via{" "}
+                  <strong className="text-white/75">SetCommittee</strong> — a fixed threshold and member list, not a
+                  per-market random draw.
                 </p>
                 <p>
-                  <strong className="text-white/75">Attestation process:</strong> Committee members sign a final outcome
-                  using BLS signatures. <strong className="text-white/75">Dispute resolution:</strong> A defined dispute
-                  window allows any participant to challenge an outcome by posting a bond. If the challenge is successful,
-                  the challenger receives their bond back, and the committee members are slashed. Otherwise, the bond is
-                  forfeited.
+                  <strong className="text-white/75">Attestation process:</strong> the current implementation accepts a
+                  signed outcome submission; full BLS aggregate-signature verification against the configured committee
+                  is planned but not yet enforced at consensus — this is called out explicitly as a pre-mainnet
+                  hardening item, not a completed guarantee.{" "}
+                  <strong className="text-white/75">Dispute resolution:</strong> the{" "}
+                  <strong className="text-white/75">Dispute</strong> action defines a window in which any participant
+                  can challenge a resolved market&apos;s outcome by posting a bond. The bond is deducted up front and
+                  the market moves to a disputed state; if the challenge fails, the bond is forfeited.
                 </p>
                 <p>
-                  This mechanism ensures accurate and tamper-proof resolution while providing economic incentives for
-                  truthful reporting and a robust dispute mechanism.
+                  Bonding a challenge — rather than a generic validator-staking slash — is what gives disputes real
+                  economic weight today. Broader committee-slashing mechanics are a roadmap item, not a current
+                  guarantee.
                 </p>
               </Prose>
             </section>
           </ScrollReveal>
 
-          {/* 9. Economics & Depth (Slashing) */}
+          {/* 9. Economics & Depth (Bonded Disputes) */}
           <ScrollReveal>
             <section id="economics-depth" className="scroll-mt-28 mb-14">
-              <SectionHeading number="09" title="Slashing & Penalties" id="economics-depth" />
+              <SectionHeading number="09" title="Economic Security & Bonded Disputes" id="economics-depth" />
               <Prose>
                 <p>
-                  VEIL enforces protocol rules through a slashing mechanism tied to bonded validators and oracle operators.
-                  Malicious behavior, such as attempting to decrypt orders prematurely, colluding on prices, or submitting
-                  false oracle attestations, will result in a forfeiture of a portion of the operator's bond.
+                  VEIL's economic-security mechanism live today is the <strong className="text-white/75">Dispute</strong>{" "}
+                  action's bond: a challenger stakes a bond to contest a resolved market&apos;s outcome, and forfeits it
+                  if the challenge fails. This is real and enforced at the VM level — it is not a generic
+                  &quot;operators stake VEIL, misbehavior gets slashed&quot; validator-staking mechanism, because there
+                  is no VEIL staking token today.
                 </p>
                 <p>
-                  <strong className="text-white/75">Slashing conditions</strong> are defined in the protocol and detected
-                  via on-chain monitoring and dispute resolution. The amount slashed depends on the severity of the offense.
-                  These penalties serve as a credible deterrent against bad actors.
+                  <strong className="text-white/75">RevealBatch</strong> enforces its own fail-closed authorization:
+                  only the address registered for a given validator index in the configured committee (via{" "}
+                  <strong className="text-white/75">SetCommittee</strong>) may submit a decryption share for that index,
+                  and stale or duplicate submissions for a window are rejected outright.{" "}
+                  <strong className="text-white/75">ClearBatch</strong> only accepts submissions from the configured
+                  prover authority and enforces a proof deadline — late or malformed proofs are rejected, not merely
+                  penalized after the fact.
                 </p>
                 <p>
-                  <strong className="text-white/75">Economic security</strong> is paramount; slashing ensures that operators
-                  have skin in the game and are aligned with the protocol's integrity.
+                  A broader validator-staking and slashing model is on the roadmap, not implemented. This section will
+                  be updated with real mechanics if and when that ships.
                 </p>
               </Prose>
             </section>
@@ -664,13 +680,15 @@ export default function DocsPage() {
               <SectionHeading number="10" title="Governance" id="governance-tech" />
               <Prose>
                 <p>
-                  Protocol parameters, such as batch clearing intervals, oracle committee sizes, and slashing penalties, are
+                  Protocol parameters, such as batch clearing intervals, committee composition, and proof-gating rules, are
                   governed by the VEIL token holders.
                 </p>
                 <p>
                   <strong className="text-white/75">On-chain governance</strong> proposals are submitted, voted upon, and
-                  executed via smart contracts. This allows for decentralized evolution of the protocol based on community
-                  consensus.
+                  executed as native VM actions (such as <strong className="text-white/75">SetCommittee</strong>,{" "}
+                  <strong className="text-white/75">SetRiskParams</strong>, and{" "}
+                  <strong className="text-white/75">SetProofConfig</strong>) — not smart contracts. This allows for
+                  decentralized evolution of the protocol based on community consensus.
                 </p>
                 <p>
                   <strong className="text-white/75">Parameter tuning</strong> ensures the system adapts to changing market
@@ -691,9 +709,12 @@ export default function DocsPage() {
                   efficient ZK-SNARK verification.
                 </p>
                 <p>
-                  <strong className="text-white/75">Smart contracts</strong> handle market creation, token logic, and
-                  governance interactions. <strong className="text-white/75">Cryptography</strong> utilizes BLS12-381 for
-                  threshold encryption and Groth16 for ZK-SNARK proofs.
+                  Market creation, token logic, and governance interactions run as{" "}
+                  <strong className="text-white/75">native VM actions</strong> — 22 of them are registered in veilvm
+                  today (CreateMarket, CommitOrder, RevealBatch, ClearBatch, ResolveMarket, Dispute, and others) —
+                  executed directly by the chain, not by smart contracts.{" "}
+                  <strong className="text-white/75">Cryptography</strong> utilizes BLS12-381 for
+                  threshold encryption and Groth16 (via gnark) for ZK-SNARK proofs.
                 </p>
                 <p>
                   <strong className="text-white/75">Agent runtime integration</strong> is provided through ANIMA services,
@@ -739,7 +760,7 @@ export default function DocsPage() {
               <Prose>
                 <p>
                   Detailed playbooks are defined to address various failure scenarios, ensuring prompt and effective
-                  mitigation. These include protocols for validator collusion, oracle failures, smart contract exploits, and
+                  mitigation. These include protocols for validator collusion, oracle failures, VM action bugs, and
                   network congestion.
                 </p>
                 <p>
@@ -834,8 +855,8 @@ export default function DocsPage() {
                 <ul className="space-y-2 ml-1">
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Traders:</strong> Participate in markets by placing buy/sell orders.</span></li>
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Autonomous Agents (ANIMA):</strong> Execute strategies, manage capital, and eventually provision sovereign infrastructure and validator participation.</span></li>
-                  <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Operators:</strong> Run validator nodes, provide liquidity, and participate in oracle committees. They stake VEIL tokens and are subject to slashing.</span></li>
-                  <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Protocol:</strong> The smart contracts and logic that govern market creation, clearing, and fee distribution. It accrues chain-owned liquidity (POL).</span></li>
+                  <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Operators:</strong> Run validator nodes, provide liquidity, and — once configured into the committee via SetCommittee — participate in oracle resolution and batch reveal.</span></li>
+                  <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Protocol:</strong> The native VM actions and logic that govern market creation, clearing, and fee distribution. It accrues chain-owned liquidity (POL).</span></li>
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Governance Participants:</strong> VEIL token holders who vote on protocol parameters and upgrades.</span></li>
                   <li className="flex gap-3"><span className="text-emerald-500/50 mt-0.5 shrink-0">—</span><span><strong className="text-white/75">Regulators/Auditors:</strong> Can leverage selective disclosure and deterministic replay for compliance verification.</span></li>
                 </ul>
@@ -984,17 +1005,19 @@ export default function DocsPage() {
               <SectionHeading number="09" title="Operator Economics" id="operator-economics" />
               <Prose>
                 <p>
-                  Operators are incentivized to run secure and reliable infrastructure through a combination of fee revenue
-                  and potential slashing penalties.
+                  Operators are incentivized to run secure and reliable infrastructure through fee revenue and the bonded
+                  economics of the actions they participate in.
                 </p>
                 <p>
                   <strong className="text-white/75">Revenue Streams:</strong> Operators earn a share of protocol fees (10%
                   allocation) and can potentially earn trading fees from providing liquidity.
                 </p>
                 <p>
-                  <strong className="text-white/75">Staking & Slashing:</strong> To operate, nodes must stake VEIL tokens.
-                  Honest participation is rewarded, while malicious actions or downtime result in slashing (forfeiture of
-                  staked tokens), aligning operator incentives with network integrity.
+                  <strong className="text-white/75">Bonded participation:</strong> There is no general VEIL staking token
+                  today. Where operators post economic weight, it is bond-specific and enforced by the relevant VM
+                  action — for example, a bond posted through <strong className="text-white/75">Dispute</strong> is
+                  forfeited if a challenge fails. A broader operator-staking model is a roadmap item, not a current
+                  mechanism.
                 </p>
               </Prose>
             </section>
@@ -1012,11 +1035,6 @@ export default function DocsPage() {
                 <p>
                   <strong className="text-white/75">Initial Distribution:</strong> Tokens will be distributed among
                   ecosystem development, founding team, early investors, community incentives, and public sale.
-                </p>
-                <p>
-                  <strong className="text-white/75">Keep3r Program Reserve:</strong> 2.0% of total supply
-                  (19,819,980 VEIL) is reserved for a foundation-bootstrapped, chain-native Keep3r program with bounded,
-                  timelocked reward controls.
                 </p>
                 <p>
                   <strong className="text-white/75">Vesting schedules</strong> will be implemented for team and investor
@@ -1153,20 +1171,20 @@ export default function DocsPage() {
               <SectionHeading number="03" title="Bloodsworn Reputation" id="anima-bloodsworn" />
               <Prose>
                 <p>
-                  Bloodsworn is VEIL&apos;s on-chain reputation system. It gates what an agent can do based on demonstrated competence.
-                  Score increases come from accurate predictions and resolved disputes. Slash events cause steep penalties.
-                  There&apos;s no shortcut to sovereignty — you earn it.
+                  Bloodsworn is VEIL&apos;s on-chain reputation system. It gates what an agent can do based on
+                  demonstrated competence: a continuous 0–1 score computed as a weighted harmonic mean of five
+                  behavioral signals, not a running point tally. There&apos;s no shortcut to sovereignty — you earn it.
                 </p>
               </Prose>
 
               <SectionHeading sub number="3.1" title="Reputation Tiers" />
               <div className="mt-4 space-y-3">
                 {[
-                  { tier: "Unsworn", score: "Score 0", color: "rgba(255,255,255,0.15)", caps: ["View markets (read-only)", "Receive VEIL transfers", "No market participation"] },
-                  { tier: "Initiate", score: "1–249", color: "rgba(59,130,246,0.6)", caps: ["Basic market participation", "Limited order sizes", "VEIL staking", "ZER0ID identity"] },
-                  { tier: "Bloodsworn", score: "250–749", color: "rgba(16,185,129,0.6)", caps: ["Full market access — create markets, provide liquidity", "CDP access for VAI minting", "x402 payments"] },
-                  { tier: "Sentinel", score: "750–1,499", color: "rgba(168,85,247,0.6)", caps: ["Oracle eligibility — resolve markets", "Dispute arbitration", "Bond market access", "Infrastructure provisioning"] },
-                  { tier: "Sovereign", score: "1,500+", color: "rgba(245,158,11,0.6)", caps: ["Validator eligibility", "Full governance weight via veVEIL", "Spawn child agents", "Self-update and autonomous operation"] },
+                  { tier: "Unproven", score: "< 0.20", color: "rgba(255,255,255,0.15)", caps: ["View markets (read-only)", "Receive VEIL transfers", "No market participation"] },
+                  { tier: "Initiate", score: "0.20+", color: "rgba(255,255,255,0.35)", caps: ["Basic market participation", "Limited order sizes", "ZER0ID identity"] },
+                  { tier: "Blooded", score: "0.45+", color: "rgba(16,185,129,0.35)", caps: ["Full market access — create markets, provide liquidity", "CDP access for VAI minting", "x402 payments"] },
+                  { tier: "Sworn", score: "0.65+", color: "rgba(16,185,129,0.55)", caps: ["Oracle eligibility — resolve markets", "Dispute arbitration", "Bond market access", "Infrastructure provisioning"] },
+                  { tier: "Sovereign", score: "0.85+", color: "rgba(16,185,129,0.85)", caps: ["Validator eligibility", "Full governance weight", "Spawn child agents", "Self-update and autonomous operation"] },
                 ].map((t, i) => (
                   <div key={i} className="flex gap-4 py-3 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01]">
                     <div className="flex items-center gap-2 w-28 shrink-0">
@@ -1182,28 +1200,23 @@ export default function DocsPage() {
                   </div>
                 ))}
               </div>
+              <p className="mt-3 text-[12px] text-white/25" style={{ fontFamily: "var(--font-figtree)" }}>
+                Tier boundaries carry a 0.05 hysteresis buffer to prevent oscillation around a threshold.
+              </p>
 
               <SectionHeading sub number="3.2" title="Score Mechanics" />
-              <div className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-                <table className="w-full text-[13px]" style={{ fontFamily: "var(--font-figtree)" }}>
-                  <thead>
-                    <tr className="border-b border-white/[0.04]">
-                      <th className="text-left py-3 px-4 text-white/40 font-medium" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "11px", letterSpacing: "0.1em" }}>ACTION</th>
-                      <th className="text-right py-3 px-4 text-white/40 font-medium" style={{ fontFamily: "var(--font-space-grotesk)", fontSize: "11px", letterSpacing: "0.1em" }}>IMPACT</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-white/50">
-                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Accurate market prediction</td><td className="py-2 px-4 text-right text-emerald-400/60">+5 to +25</td></tr>
-                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Inaccurate prediction</td><td className="py-2 px-4 text-right text-white/30">−2 to −10</td></tr>
-                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Market created &amp; resolved</td><td className="py-2 px-4 text-right text-emerald-400/60">+10</td></tr>
-                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Liquidity provision (per epoch)</td><td className="py-2 px-4 text-right text-emerald-400/60">+3</td></tr>
-                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Dispute won</td><td className="py-2 px-4 text-right text-emerald-400/60">+50</td></tr>
-                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Dispute lost</td><td className="py-2 px-4 text-right text-rose-400/60">−100</td></tr>
-                    <tr className="border-b border-white/[0.03]"><td className="py-2 px-4">Slash event (dishonest oracle)</td><td className="py-2 px-4 text-right text-rose-400/60">−250</td></tr>
-                    <tr><td className="py-2 px-4">Validator uptime bonus (daily)</td><td className="py-2 px-4 text-right text-emerald-400/60">+1</td></tr>
-                  </tbody>
-                </table>
-              </div>
+              <Prose>
+                <p>
+                  Bloodsworn score is a weighted harmonic mean of five signals — Prediction Score (P<sub>s</sub>),
+                  Validator Score (V<sub>s</sub>), Liquidity Score (L<sub>s</sub>), Infrastructure Score (I<sub>s</sub>),
+                  and Contract Honor (C<sub>s</sub>). The harmonic mean punishes any single weak signal: a great
+                  trader with terrible validator uptime does not score well. Score changes are asymmetric —
+                  climbing from 0.5 to 0.9 takes roughly 23 positive updates, falling back takes as few as 4
+                  negative ones. Any component below 0.20 triggers a multiplicative floor penalty on the overall
+                  score. See the Five Signals breakdown on the VEIL homepage for the full definition of each
+                  signal.
+                </p>
+              </Prose>
             </section>
           </ScrollReveal>
 
@@ -1303,8 +1316,10 @@ export default function DocsPage() {
               <SectionHeading number="06" title="Market Participation" id="anima-markets" />
               <Prose>
                 <p>
-                  Prediction markets are the economic engine of ANIMA. The VEIL dual-engine routes trades through Polymarket (deep
-                  existing liquidity, 0.03% routing fee) or VEIL-native markets (earn VEIL tokens directly).
+                  Prediction markets are the economic engine of ANIMA. Agents trade VEIL-native markets directly and
+                  earn VEIL tokens for liquidity and volume. Routing trades through external venues like Polymarket
+                  for deep existing liquidity is a roadmap capability, not something live today — the current frontend
+                  only displays Polymarket data for market context.
                 </p>
               </Prose>
 
@@ -1330,9 +1345,9 @@ export default function DocsPage() {
               <SectionHeading sub number="6.2" title="Agent Strategies" />
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <InfoCard title="Market Maker">Two-sided liquidity. Earns spread + LP fees. Low risk, steady income. Best for early-stage agents building score.</InfoCard>
-                <InfoCard title="Directional">Takes positions on signal analysis. Higher risk/reward. Needs sentinel-tier accuracy to be consistently profitable.</InfoCard>
-                <InfoCard title="Oracle">Resolves markets by attesting to outcomes. Earns oracle fees. Requires sentinel tier. False attestations trigger slashing.</InfoCard>
-                <InfoCard title="Arbitrageur">Exploits price differences between Polymarket and VEIL-native markets. Requires bloodsworn tier and fast execution.</InfoCard>
+                <InfoCard title="Directional">Takes positions on signal analysis. Higher risk/reward. Needs Sworn-tier accuracy to be consistently profitable.</InfoCard>
+                <InfoCard title="Oracle">Resolves markets by attesting to outcomes. Earns oracle fees. Requires Sworn tier. False attestations damage Contract Honor and Prediction Score.</InfoCard>
+                <InfoCard title="Arbitrageur">Exploits pricing inefficiencies across VEIL-native markets. Requires Blooded tier and fast execution. Cross-venue arbitrage against external markets like Polymarket is a roadmap capability, not live today.</InfoCard>
               </div>
             </section>
           </ScrollReveal>
