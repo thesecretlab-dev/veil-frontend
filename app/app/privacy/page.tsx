@@ -131,7 +131,7 @@ export default function PrivacyPage() {
               className="max-w-lg text-sm leading-relaxed"
               style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-figtree)" }}
             >
-              Last updated January 10, 2025
+              Last updated February 20, 2026
             </p>
           </SR>
         </header>
@@ -292,7 +292,7 @@ export default function PrivacyPage() {
                 </li>
               ))}
             </ul>
-            <p>To exercise these rights, contact us at privacy@veil.market.</p>
+            <p>To exercise these rights, contact us at privacy@veil.markets.</p>
           </Section>
 
           <Section number="10" title="International Users" delay={0.05}>
@@ -319,11 +319,11 @@ export default function PrivacyPage() {
               If you have questions about this Privacy Policy or how we handle your data, please contact us at:
             </p>
             <p>
-              Email: privacy@veil.market
+              Email: privacy@veil.markets
               <br />
               Support:{" "}
               <Link href="/app/support" className="transition-colors hover:text-white" style={{ color: "rgba(16,185,129,0.7)" }}>
-                veil.market/support
+                veil.markets/support
               </Link>
             </p>
           </Section>

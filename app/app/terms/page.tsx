@@ -131,7 +131,7 @@ export default function TermsPage() {
               className="max-w-lg text-sm leading-relaxed"
               style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-figtree)" }}
             >
-              Last updated January 10, 2025
+              Last updated February 20, 2026
             </p>
           </SR>
         </header>
@@ -280,11 +280,11 @@ export default function TermsPage() {
               If you have questions about these Terms, please contact us at:
             </p>
             <p>
-              Email: legal@veil.market
+              Email: legal@veil.markets
               <br />
               Support:{" "}
               <Link href="/app/support" className="transition-colors hover:text-white" style={{ color: "rgba(16,185,129,0.7)" }}>
-                veil.market/support
+                veil.markets/support
               </Link>
             </p>
           </Section>
