@@ -261,12 +261,12 @@ export default function RiskPage() {
                     <div className="text-[15px] leading-[1.85] font-light" style={{ color: "rgba(255, 255, 255, 0.45)" }}>
                       <p>If you have questions about these risks or need assistance, please contact us at:</p>
                       <p className="mt-3">
-                        Email: <span style={{ color: "rgba(16, 185, 129, 0.7)" }}>risk@veil.market</span>
+                        Email: <span style={{ color: "rgba(16, 185, 129, 0.7)" }}>risk@veil.markets</span>
                       </p>
                       <p>
                         Support:{" "}
                         <Link href="/app/support" style={{ color: "rgba(16, 185, 129, 0.7)" }} className="hover:underline">
-                          veil.market/support
+                          veil.markets/support
                         </Link>
                       </p>
                     </div>

@@ -309,12 +309,12 @@ export default function CompliancePage() {
                       </p>
                       <p className="mt-3">
                         Email:{" "}
-                        <span style={{ color: "rgba(16, 185, 129, 0.7)" }}>compliance@veil.market</span>
+                        <span style={{ color: "rgba(16, 185, 129, 0.7)" }}>compliance@veil.markets</span>
                       </p>
                       <p>
                         Support:{" "}
                         <Link href="/app/support" style={{ color: "rgba(16, 185, 129, 0.7)" }} className="hover:underline">
-                          veil.market/support
+                          veil.markets/support
                         </Link>
                       </p>
                     </div>

@@ -109,8 +109,8 @@ export function LegalPageLayout({ title, lastUpdated, children }: LegalPageLayou
               }}
             >
               Contact us at{" "}
-              <a href="mailto:legal@veil.market" className="text-emerald-400 hover:text-emerald-300 transition-colors">
-                legal@veil.market
+              <a href="mailto:legal@veil.markets" className="text-emerald-400 hover:text-emerald-300 transition-colors">
+                legal@veil.markets
               </a>
             </p>
           </div>
