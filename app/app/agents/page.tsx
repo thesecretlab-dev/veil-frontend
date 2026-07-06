@@ -429,7 +429,7 @@ export default function AgentsPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             {([
               { label: 'ANIMA SDK Status', value: 'Tier 0', icon: Bot },
-              { label: 'VM Actions Defined', value: '42', icon: Activity },
+              { label: 'VM Actions Defined', value: '22', icon: Activity },
               { label: 'Launch Posture', value: 'GO', icon: TrendingUp },
               { label: 'Live Agents', value: '0', icon: BarChart3 },
             ]).map((s, i) => (

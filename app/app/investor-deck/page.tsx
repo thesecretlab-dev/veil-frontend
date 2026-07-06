@@ -563,7 +563,7 @@ export default function InvestorDeckPage() {
             </h2>
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                { value: "42", label: "VM Actions Defined" },
+                { value: "22", label: "VM Actions Defined" },
                 { value: "13/13", label: "Launch Gates (PASS/PASS Local)" },
                 { value: "22207", label: "Chain ID (VEIL L1)" },
                 { value: "Tier 0", label: "ANIMA SDK Baseline" },
@@ -807,7 +807,7 @@ export default function InvestorDeckPage() {
                   title: "Custom VM + Proof Pipeline",
                   current: true,
                   items: [
-                    "VeilVM on HyperSDK with 42 native actions",
+                    "VeilVM on HyperSDK with 22 native actions",
                     "Groth16 proof-gated settlement, encrypted mempool",
                     "Threshold-keyed committee, private-only admission",
                   ],

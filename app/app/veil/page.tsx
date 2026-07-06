@@ -252,7 +252,7 @@ const MECHANICS = [
 const STATS = [
   { label: "Chain ID", value: "22207", sub: "VeilVM Mainnet" },
   { label: "VM Type", value: "HyperSDK", sub: "Custom Go VM" },
-  { label: "Native Actions", value: "42", sub: "Strict-private mode" },
+  { label: "Native Actions", value: "22", sub: "Strict-private mode" },
   { label: "Launch Gates", value: "13/13", sub: "All passing" },
   { label: "Contracts", value: "16", sub: "Companion EVM" },
 ]

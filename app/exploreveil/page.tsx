@@ -1858,7 +1858,7 @@ export default function ExploreVeilPage() {
                   title: "VeilVM (Custom HyperSDK)",
                   accent: true,
                   items: [
-                    "42 native action types — markets, identity, reputation, staking, bonds, stability",
+                    "22 native action types — markets, batch settlement, dispute/resolution, fee routing, VAI stablecoin, and AMM liquidity",
                     "ZK proof verification at consensus (Groth16/PLONK, BN254)",
                     "Private-only admission gate — public core actions rejected at consensus",
                     "Threshold-keyed encrypted mempool with committee quorum release",
@@ -1948,7 +1948,7 @@ export default function ExploreVeilPage() {
 
             <div className="space-y-4">
               {[
-                { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 42 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
+                { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 22 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
                 { id: "M1", title: "Identity + Reputation + SDKs", status: "Complete (Local Evidence)", desc: "ZER0ID/Bloodsworn scaffolds and ANIMA TypeScript SDK baseline are implemented; strict-private runtime readiness is archived as PASS (local evidence)." },
                 { id: "M2", title: "Tokenomics + Stability", status: "Complete (Local Evidence)", desc: "Tokenomics, COL, VAI, and treasury/risk controls are implemented with G4/G5 marked PASS (local) in the launch checklist snapshot." },
                 { id: "M3", title: "Production Launch Gates", status: "Complete", desc: "Key ceremony, ownership rotation, launch rehearsal, and consolidated gate evidence are complete with decision state GO FOR PRODUCTION. All 13 launch gates PASS." },
@@ -2148,7 +2148,7 @@ export default function ExploreVeilPage() {
                   { label: "MAIEV", href: "/maiev" },
                   { label: "Transparency", href: "/app/transparency" },
                   { label: "Investor Deck", href: "/app/investor-deck" },
-                  { label: "GitHub", href: "https://github.com/0x12371C" },
+                  { label: "GitHub", href: "https://github.com/thesecretlab-dev/veilvm" },
                 ].map(link => (
                   <Link key={link.label} href={link.href}
                     className="text-[10px] tracking-[0.12em] uppercase transition-colors duration-500 hover:text-emerald-400/40"
