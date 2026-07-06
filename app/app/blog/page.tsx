@@ -24,7 +24,7 @@ function ScrollReveal({ children, delay = 0 }: { children: React.ReactNode; dela
 const posts = [
   {
     title: "On Privacy-Native Prediction Markets: Architecture Notes",
-    date: "April 1, 2024",
+    date: "May 5, 2026",
     author: "Relic",
     excerpt:
       "Technical design notes on VEIL's architecture: sealed order flow, batch auctions, shielded ledgers, chain-owned liquidity, and the engineering discipline behind privacy-first market infrastructure.",
@@ -32,7 +32,7 @@ const posts = [
   },
   {
     title: "Why We're Building VEIL",
-    date: "March 15, 2024",
+    date: "April 14, 2026",
     author: "Relic",
     excerpt:
       "The thesis behind VEIL: a custom Avalanche L1 for privacy-scoped prediction markets, designed for sovereign agents and permissioned participation. What we're building and why.",
@@ -40,23 +40,15 @@ const posts = [
   },
   {
     title: "Zero-Knowledge Proofs in VEIL's Design",
-    date: "March 10, 2024",
+    date: "March 24, 2026",
     author: "Relic",
     excerpt:
       "How Groth16 ZK-SNARKs are integrated into VeilVM for proof-gated settlement, identity verification, and shielded ledger operations.",
     slug: "zero-knowledge-proofs",
   },
   {
-    title: "VEIL Token Economics: Design Principles",
-    date: "March 5, 2024",
-    author: "Relic",
-    excerpt:
-      "Design principles behind VEIL's token economy: fixed supply, chain-owned liquidity, fee routing, and the role of the VEIL token in the network.",
-    slug: "token-airdrop",
-  },
-  {
     title: "Building on Avalanche: Why HyperSDK",
-    date: "February 28, 2024",
+    date: "March 10, 2026",
     author: "Relic",
     excerpt:
       "Why we chose Avalanche's HyperSDK for VEIL's custom VM rather than Subnet-EVM, and the tradeoffs involved in building a purpose-built execution environment.",
@@ -64,10 +56,10 @@ const posts = [
   },
   {
     title: "Market Resolution: Oracle Design for VEIL",
-    date: "February 20, 2024",
+    date: "February 25, 2026",
     author: "Relic",
     excerpt:
-      "Design notes on VEIL's oracle resolution system: decentralized outcome determination, dispute mechanisms, and the Grok 4.2 AI oracle for social/political markets.",
+      "Design notes on VEIL's oracle resolution system: decentralized outcome determination, bonded dispute mechanisms, and the open problem of resolving markets that have no clean price feed.",
     slug: "market-resolution",
   },
 ]
@@ -216,7 +208,7 @@ export default function BlogPage() {
             VEIL
           </span>
           <span style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.2)", fontSize: "0.75rem", letterSpacing: "0.05em" }}>
-            © 2024 VEIL PROTOCOL
+            © 2026 VEIL PROTOCOL
           </span>
         </div>
       </footer>

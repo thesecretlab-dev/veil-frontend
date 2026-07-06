@@ -11,7 +11,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   > = {
     "introducing-veil": {
       title: "Why We're Building VEIL",
-      date: "March 15, 2024",
+      date: "April 14, 2026",
       author: { name: "Relic", role: "Founder" },
       content: (
         <>
@@ -50,7 +50,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Current Status</h2>
           <p className="mb-6">
-            VEIL is under active development. The custom VM is implemented with 42 native actions. Launch authority is
+            VEIL is under active development. The custom VM is implemented with 22 native actions. Launch authority is
             GO FOR PRODUCTION (2026-02-22), with gate evidence tracked on the transparency page and MAIEV archive.
           </p>
         </>
@@ -58,7 +58,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     },
     "zero-knowledge-proofs": {
       title: "Zero-Knowledge Proofs in VEIL's Design",
-      date: "March 10, 2024",
+      date: "March 24, 2026",
       author: { name: "Relic", role: "Founder" },
       content: (
         <>
@@ -96,48 +96,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         </>
       ),
     },
-    "token-airdrop": {
-      title: "VEIL Token Economics: Design Principles",
-      date: "March 5, 2024",
-      author: { name: "Relic", role: "Founder" },
-      content: (
-        <>
-          <p className="mb-6">
-            The VEIL token is the economic engine of the network. This post covers the design principles behind
-            the token economy — not as marketing material, but as engineering documentation.
-          </p>
-
-          <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Fixed Supply</h2>
-          <p className="mb-6">
-            Fixed supply at genesis, no hidden mint paths. 80-90% locked in a VM-enforced chain-owned liquidity
-            (COL) vault with deterministic epoch-based releases capped at 0.15% per epoch. Launch float is
-            intentionally low (3-5%). There is no fast unlock path.
-          </p>
-
-          <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Fee Routing</h2>
-          <p className="mb-6">
-            All protocol revenue routes through a 70/20/10 split: 70% to market depth (MSRB), 20% to
-            buyback-and-make, 10% to operations. This is enforced at the VM level, not by governance vote.
-          </p>
-
-          <h2 className="mb-4 mt-8 text-2xl font-light etched-text">VAI Stablecoin</h2>
-          <p className="mb-6">
-            VAI is designed as a native stablecoin backed by exogenous reserves with on-chain solvency checks
-            enforced at consensus. VAI risk controls (G5) are implemented but production validation remains
-            pending. No stability or peg claims should be assumed until G5 is closed.
-          </p>
-
-          <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Current Status</h2>
-          <p className="mb-6">
-            Tokenomics and treasury controls (G4) are implemented in design/runtime paths. Production parameter
-            freeze is pending. No token distribution event has occurred or been scheduled.
-          </p>
-        </>
-      ),
-    },
     "avalanche-subnets": {
       title: "Building on Avalanche: Why HyperSDK",
-      date: "February 28, 2024",
+      date: "March 10, 2026",
       author: { name: "Relic", role: "Founder" },
       content: (
         <>
@@ -155,7 +116,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">HyperSDK Advantages</h2>
           <ul className="mb-6 list-disc space-y-2 pl-6">
-            <li>Custom action types (42 defined for VeilVM)</li>
+            <li>Custom action types (22 defined for VeilVM)</li>
             <li>Native proof verification in action execution</li>
             <li>Custom mempool semantics (sealed order flow, admission control)</li>
             <li>Deterministic batch clearing with configurable window timing</li>
@@ -173,34 +134,42 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     },
     "market-resolution": {
       title: "Market Resolution: Oracle Design for VEIL",
-      date: "February 20, 2024",
+      date: "February 25, 2026",
       author: { name: "Relic", role: "Founder" },
       content: (
         <>
           <p className="mb-6">
-            Fair market resolution is critical to prediction market integrity. VEIL uses a dual resolution
-            system: decentralized oracle consensus for financial/sports markets, and the Grok 4.2 AI oracle
-            for social and political markets.
+            Fair market resolution is critical to prediction market integrity. VEIL&apos;s resolution design
+            splits by market type: markets with a clean external data feed (financial, sports) resolve through
+            committee attestation. Markets without one — social, political, cultural predictions — are the
+            harder open problem, and we don&apos;t have that path finalized yet.
           </p>
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Oracle Architecture</h2>
           <p className="mb-6">
-            Multiple independent data providers submit outcomes. Validators stake tokens and reach consensus
-            through economic incentives. Disputed outcomes can be challenged through a bonded dispute path
-            with time-locked resolution windows.
+            The <code>ResolveMarket</code> action accepts a signed outcome submission for a market. Committee
+            membership is configured on-chain via a dedicated <code>SetCommittee</code> action (governance-gated,
+            not randomly selected), and full BLS aggregate-signature verification from that committee is not yet
+            enforced in the current implementation — it accepts a well-formed signature today, with stricter
+            verification planned before mainnet. Disputed outcomes can be challenged through the{" "}
+            <code>Dispute</code> action: a challenger posts a bond and the market moves to a disputed state
+            pending resolution.
           </p>
 
-          <h2 className="mb-4 mt-8 text-2xl font-light etched-text">AI Oracle</h2>
+          <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Markets Without a Price Feed</h2>
           <p className="mb-6">
             For markets that don&apos;t have clean data feeds (social predictions, political outcomes, cultural
-            events), VEIL routes resolution through an AI oracle. This is a design decision — not all markets
-            can be resolved by price feeds alone.
+            events), VEIL does not yet have a finalized resolution path. This is an open design problem, not a
+            shipped feature — there is no third-party oracle service wired into the protocol today. Whatever we
+            land on will be documented here when it ships, not announced ahead of the code.
           </p>
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Implementation Status</h2>
           <p className="mb-6">
-            Oracle and resolution mechanisms are in the design/implementation phase. The current frontend
-            routes through Polymarket for live market data. Native VEIL market resolution is part of the
+            Oracle and resolution mechanisms are in the design/implementation phase. <code>ResolveMarket</code>,{" "}
+            <code>RevealBatch</code>, and <code>Dispute</code> are live in the 22-action registry; full
+            committee signature verification and non-price-feed resolution are still open. The current frontend
+            displays Polymarket data for live market context. Native VEIL market resolution is part of the
             production launch gate requirements.
           </p>
         </>
@@ -208,7 +177,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     },
     "privacy-native-prediction-markets": {
       title: "On Privacy-Native Prediction Markets: Architecture Notes",
-      date: "April 1, 2024",
+      date: "May 5, 2026",
       author: { name: "Relic", role: "Founder" },
       content: (
         <>
