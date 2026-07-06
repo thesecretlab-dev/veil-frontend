@@ -46,22 +46,6 @@ function SectionLabel({ num, label }: { num: string; label: string }) {
   )
 }
 
-/* ─── Severity Pill ─── */
-function SeverityPill({ level, count }: { level: string; count: number }) {
-  const colors: Record<string, string> = {
-    Critical: "bg-red-500/15 text-red-400 border-red-500/20",
-    High: "bg-amber-500/15 text-amber-400 border-amber-500/20",
-    Medium: "bg-yellow-500/15 text-yellow-400 border-yellow-500/20",
-    Low: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-    Info: "bg-zinc-500/15 text-zinc-400 border-zinc-500/20",
-  }
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border ${colors[level] || colors.Info}`}>
-      {count} {level}
-    </span>
-  )
-}
-
 /* ─── Status Badge ─── */
 function StatusBadge({ status }: { status: "Complete" | "In Progress" | "Pending" }) {
   const styles = {
@@ -82,120 +66,87 @@ function StatusBadge({ status }: { status: "Complete" | "In Progress" | "Pending
 }
 
 /* ─── Data ─── */
+// Note: these describe internal (self-run) validation coverage only. VEIL has
+// zero external third-party audits as of this writing — see the status line
+// above and the Methodology section below.
 const auditCategories = [
   {
     icon: <FileText className="w-5 h-5" />,
-    title: "Smart Contracts",
-    description: "Full coverage of prediction market contracts, vault logic, oracle integrations, and settlement mechanisms on Avalanche C-Chain.",
-    status: "Complete" as const,
-    auditor: "Internal Validation Team",
-    lastUpdated: "2026-01-15",
-    coverage: "100%",
+    title: "VM Actions & Settlement",
+    description: "VEIL's 22 native VM actions — markets, batch commit/reveal/clear, dispute, resolution, fee routing, VAI mint/burn/redeem, and AMM pool actions — run as native chain.Action state transitions inside veilvm. There are no smart contracts in this stack and nothing deployed to an EVM chain.",
+    status: "In Progress" as const,
+    owner: "VEIL Core (internal)",
+    lastUpdated: "2026-02-20",
   },
   {
     icon: <Eye className="w-5 h-5" />,
-    title: "VM Privacy",
-    description: "Zero-knowledge proof circuits, private state transitions, and encrypted order flow through VEIL's privacy layer.",
-    status: "Complete" as const,
-    auditor: "Internal Validation Team",
-    lastUpdated: "2026-01-28",
-    coverage: "100%",
+    title: "VM Privacy & ZK Verification",
+    description: "Groth16 (gnark, BN254) shielded-ledger proof verification for batch settlement, exercised against a running local testnet: proof-gated acceptance, malformed-proof rejection, and settlement-deadline enforcement.",
+    status: "In Progress" as const,
+    owner: "VEIL Core (internal)",
+    lastUpdated: "2026-02-20",
   },
   {
     icon: <Coins className="w-5 h-5" />,
     title: "Economic Model",
-    description: "Tokenomics, fee structures, liquidity incentives, staking mechanisms, and protocol sustainability analysis.",
+    description: "Fee routing, liquidity incentives, and VAI collateral/redemption parameters. Design and runtime paths are implemented; production parameter freeze and full stress-test evidence are still pending.",
     status: "In Progress" as const,
-    auditor: "Internal Validation Team",
+    owner: "VEIL Core (internal)",
     lastUpdated: "2026-02-10",
-    coverage: "78%",
   },
   {
     icon: <Server className="w-5 h-5" />,
     title: "Infrastructure",
-    description: "Node architecture, RPC endpoints, sequencer integrity, uptime guarantees, and disaster recovery procedures.",
-    status: "Pending" as const,
-    auditor: "Internal Validation Team",
-    lastUpdated: "—",
-    coverage: "—",
+    description: "Node architecture, backup-prover takeover, and disaster-recovery drills, exercised on a local protocol-45 testnet. Public Fuji testnet deployment has not happened yet — that's the next campaign.",
+    status: "In Progress" as const,
+    owner: "VEIL Core (internal)",
+    lastUpdated: "2026-02-20",
   },
 ]
 
-const publishedReports = [
-  {
-    id: "MAIEV-2026-001",
-    title: "Core Prediction Market Contracts v2.1",
-    auditor: "Internal Validation Team",
-    date: "2026-01-15",
-    duration: "6 weeks",
-    findings: { Critical: 0, High: 1, Medium: 3, Low: 7, Info: 12 },
-    summary: "One high-severity finding in the settlement callback path was identified and remediated in local validation. All medium findings addressed in v2.1.1 patch.",
-    status: "Remediated",
-  },
-  {
-    id: "MAIEV-2026-002",
-    title: "ZK Privacy Circuit Review — Round 1",
-    auditor: "Internal Validation Team",
-    date: "2026-01-28",
-    duration: "8 weeks",
-    findings: { Critical: 0, High: 0, Medium: 2, Low: 5, Info: 9 },
-    summary: "No critical or high-severity issues. Two medium findings related to circuit constraint optimization were resolved. Privacy guarantees validated under adversarial conditions.",
-    status: "Remediated",
-  },
-  {
-    id: "MAIEV-2026-003",
-    title: "Oracle Integration & Price Feed Security",
-    auditor: "Internal Validation Team",
-    date: "2025-12-02",
-    duration: "4 weeks",
-    findings: { Critical: 0, High: 0, Medium: 1, Low: 4, Info: 6 },
-    summary: "Oracle fallback mechanisms validated. One medium finding regarding stale price tolerance windows was tightened from 120s to 30s. Chainlink and API3 integrations confirmed secure.",
-    status: "Remediated",
-  },
-  {
-    id: "MAIEV-2026-004",
-    title: "Economic Model — Preliminary Assessment",
-    auditor: "Internal Validation Team",
-    date: "2026-02-10",
-    duration: "Ongoing",
-    findings: { Critical: 0, High: 0, Medium: 0, Low: 2, Info: 4 },
-    summary: "Preliminary findings on fee structure sustainability and liquidity depth requirements. Full report pending completion of stress-testing scenarios.",
-    status: "In Progress",
-  },
-]
+// Real launch-gate run: bundle 20260220-202857-launch-gate-evidence, generated
+// 2026-02-20T20:48:20.428Z against local chain 2CdK3iHBweFSZhh5XBgLYDaC2U7SoyqEzDaTRhmMFwSLLCm1Xb.
+// Source: public/maiev/20260220-202857-launch-gate-evidence/bundle.json
+const launchGateRun = {
+  bundleId: "20260220-202857-launch-gate-evidence",
+  generatedAt: "2026-02-20T20:48:20.428Z",
+  overallPass: true,
+  checks: [
+    { id: "shielded-smoke", result: "PASS", durationS: 221.6, detail: "accepted=1, rejected=0, missed=0" },
+    { id: "backup-takeover", result: "PASS", durationS: 451.3, detail: "primary prover rejected under backup-authority gate; backup recovered and cleared 1/1" },
+    { id: "synthetic-negative", result: "PASS", durationS: 5.5, detail: "expected fail-close proof rejection observed (non-zero exit)" },
+    { id: "malformed-proof", result: "PASS", durationS: 232.5, detail: "expected malformed-proof rejection observed (non-zero exit)" },
+    { id: "timeout-drill", result: "PASS", durationS: 224.6, detail: "expected proof-deadline-missed rejection observed (non-zero exit)" },
+  ],
+}
 
 const evidenceBundles = [
   {
-    name: "Smart Contract Source + Bytecode Verification",
-    version: "v2.1.1",
-    date: "2026-01-18",
-    size: "4.2 MB",
-    sha256: "a7c3e9f1...d84b2106",
-    contents: ["Verified Solidity source", "Deployed bytecode diff", "Constructor arguments", "Etherscan verification proof"],
+    name: "Launch-Gate Evidence Bundle — 2026-02-20 20:48 UTC (latest full PASS)",
+    version: "bundle 20260220-202857",
+    date: "2026-02-20",
+    size: "17.7 KB",
+    sha256: "8925e405665cf33cee794005a7326a83168b847948e5eb814c1abecee06e3590",
+    href: "/maiev/20260220-202857-launch-gate-evidence/bundle.json",
+    contents: ["shielded-smoke — PASS", "backup-takeover — PASS (primary rejected, backup recovered)", "synthetic-negative — PASS (fail-closed)", "malformed-proof — PASS (fail-closed)", "timeout-drill — PASS (fail-closed)"],
   },
   {
-    name: "ZK Circuit Artifacts",
-    version: "v1.0.0",
-    date: "2026-01-30",
-    size: "18.7 MB",
-    sha256: "f29d0a83...1c7e4520",
-    contents: ["Circom circuit source", "Trusted setup ceremony transcript", "Proving/verification keys", "Witness generation tests"],
+    name: "Launch-Gate Evidence Bundle — Human-Readable Summary",
+    version: "bundle 20260220-202857",
+    date: "2026-02-20",
+    size: "3.0 KB",
+    sha256: "9089afc349e1e69e2c9ca8a681765b8551e9688d69b8aad5b53f5b522c28a518",
+    href: "/maiev/20260220-202857-launch-gate-evidence/bundle.md",
+    contents: ["Per-check PASS/FAIL table", "Duration + accepted/rejected/missed counts", "Paths to raw stdout/stderr logs per check"],
   },
   {
-    name: "Internal Validation Team — Full Report + Remediation Diff",
-    version: "Final",
-    date: "2026-01-20",
-    size: "2.8 MB",
-    sha256: "b1e4f708...93a2c6df",
-    contents: ["Validation report", "Git diff of remediations", "Remediation verification notes", "Artifact signature manifest"],
-  },
-  {
-    name: "Internal Validation Team — Privacy Audit Package",
-    version: "Final",
-    date: "2026-02-01",
-    size: "6.1 MB",
-    sha256: "c8d2a195...47f0e3b1",
-    contents: ["Validation report", "Circuit constraint analysis", "Adversarial test results", "Formal verification proofs"],
+    name: "Latest Launch-Gate Pointer",
+    version: "—",
+    date: "2026-02-20",
+    size: "300 B",
+    sha256: "8a21ef9d966aa2a07b702bd14a4a1c55ad13cbb237e54968e8f4af1a9a19eda9",
+    href: "/maiev/latest-launch-gate-evidence.txt",
+    contents: ["Points at the most recent bundle directory", "overall_pass flag", "Chain ID + node URL used for the run"],
   },
 ]
 
@@ -336,9 +287,8 @@ export default function MaievPage() {
                   </div>
                   <p className="font-[family-name:var(--font-figtree)] text-[14px] leading-relaxed text-white/40 mb-5">{cat.description}</p>
                   <div className="flex items-center gap-6 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/25">
-                    <span>Review Owner: <span className="text-white/45">{cat.auditor}</span></span>
+                    <span>Review Owner: <span className="text-white/45">{cat.owner}</span></span>
                     <span>Updated: <span className="text-white/45">{cat.lastUpdated}</span></span>
-                    <span>Coverage: <span className="text-white/45">{cat.coverage}</span></span>
                   </div>
                 </div>
               </ScrollReveal>
@@ -347,46 +297,46 @@ export default function MaievPage() {
         </div>
       </section>
 
-      {/* ═══ 02 — PUBLISHED REPORTS ═══ */}
+      {/* ═══ 02 — LAUNCH-GATE EVIDENCE ═══ */}
       <section className="relative py-24 px-6">
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
-            <SectionLabel num="02" label="Published Validation Reports" />
+            <SectionLabel num="02" label="Launch-Gate Evidence (Local)" />
+            <p className="font-[family-name:var(--font-figtree)] text-white/40 text-[15px] leading-relaxed max-w-2xl mb-12">
+              No external audit firm has reviewed VEIL. What exists instead is a reproducible local launch-gate
+              suite run against a real protocol-45 testnet. Bundle{" "}
+              <code className="font-mono text-[12px] text-emerald-400/60">{launchGateRun.bundleId}</code>{" "}
+              (generated {launchGateRun.generatedAt}) is the latest full run — every required gate passed.
+            </p>
           </ScrollReveal>
-          <div className="space-y-5">
-            {publishedReports.map((report, i) => (
-              <ScrollReveal key={report.id} delay={i * 0.08}>
-                <div
-                  className="rounded-[20px] p-7 hover:border-emerald-500/10 transition-colors duration-500"
-                  style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}
-                >
-                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="font-[family-name:var(--font-space-grotesk)] text-[10px] tracking-[0.2em] uppercase px-2 py-0.5 rounded" style={{ color: "rgba(16,185,129,0.6)", background: "rgba(16,185,129,0.06)" }}>
-                          {report.id}
-                        </span>
-                        <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${report.status === "Remediated" ? "text-emerald-400 bg-emerald-500/10" : "text-amber-400 bg-amber-500/10"}`}>
-                          {report.status}
-                        </span>
-                      </div>
-                      <h3 className="font-[family-name:var(--font-instrument-serif)] text-lg text-white/90">{report.title}</h3>
+          <div
+            className="rounded-[20px] overflow-hidden"
+            style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}
+          >
+            <div className="flex items-center justify-between px-7 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+              <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase text-white/40">
+                Overall verdict
+              </span>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border bg-emerald-500/15 text-emerald-400 border-emerald-500/20">
+                <CheckCircle className="w-3 h-3" /> {launchGateRun.overallPass ? "PASS" : "FAIL"}
+              </span>
+            </div>
+            <div className="divide-y" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
+              {launchGateRun.checks.map((check, i) => (
+                <ScrollReveal key={check.id} delay={i * 0.06}>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 px-7 py-5">
+                    <div className="flex items-center gap-3 sm:w-56 shrink-0">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium border bg-emerald-500/15 text-emerald-400 border-emerald-500/20">
+                        {check.result}
+                      </span>
+                      <code className="font-[family-name:var(--font-space-grotesk)] text-[13px] text-white/75">{check.id}</code>
                     </div>
-                    <div className="flex items-center gap-4 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/30 shrink-0">
-                      <span>{report.auditor}</span>
-                      <span>{report.date}</span>
-                      <span>{report.duration}</span>
-                    </div>
+                    <p className="font-[family-name:var(--font-figtree)] text-[13px] text-white/40 flex-1">{check.detail}</p>
+                    <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] text-white/25 shrink-0">{check.durationS}s</span>
                   </div>
-                  <p className="font-[family-name:var(--font-figtree)] text-[14px] leading-relaxed text-white/40 mb-4">{report.summary}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(report.findings).map(([level, count]) => (
-                      <SeverityPill key={level} level={level} count={count} />
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -397,21 +347,25 @@ export default function MaievPage() {
           <ScrollReveal>
             <SectionLabel num="03" label="Evidence Bundles" />
             <p className="font-[family-name:var(--font-figtree)] text-white/40 text-[15px] leading-relaxed max-w-2xl mb-12">
-              Each validation run produces a cryptographically sealed evidence bundle. Packages include snapshots, validation notes, remediation diffs, and verification artifacts.
+              Every local launch-gate run publishes its bundle under <code className="font-mono text-[12px] text-emerald-400/60">public/maiev/*-launch-gate-evidence/</code>.
+              These are real, unaltered files from this repository — open them directly.
             </p>
           </ScrollReveal>
           <div className="grid md:grid-cols-2 gap-5">
             {evidenceBundles.map((bundle, i) => (
               <ScrollReveal key={bundle.name} delay={i * 0.1}>
-                <div
-                  className="rounded-[20px] p-7 h-full hover:border-emerald-500/10 transition-colors duration-500"
+                <a
+                  href={bundle.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-[20px] p-7 h-full hover:border-emerald-500/10 transition-colors duration-500"
                   style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="font-[family-name:var(--font-instrument-serif)] text-[17px] text-white/90 leading-snug pr-4">{bundle.name}</h3>
-                    <button className="p-2 rounded-xl shrink-0 hover:bg-white/5 transition-colors" style={{ color: "rgba(16,185,129,0.6)" }}>
+                    <span className="p-2 rounded-xl shrink-0" style={{ color: "rgba(16,185,129,0.6)" }}>
                       <Download className="w-4 h-4" />
-                    </button>
+                    </span>
                   </div>
                   <div className="flex items-center gap-4 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/25 mb-4">
                     <span>{bundle.version}</span>
@@ -433,7 +387,7 @@ export default function MaievPage() {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </a>
               </ScrollReveal>
             ))}
           </div>
@@ -523,7 +477,7 @@ export default function MaievPage() {
             </p>
             <div className="flex items-center justify-center gap-4">
               <Link
-                href="/docs"
+                href="/app/docs"
                 className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-[family-name:var(--font-space-grotesk)] text-[13px] tracking-wide transition-all duration-300 hover:scale-105"
                 style={{ background: "rgba(16,185,129,0.15)", color: "rgba(16,185,129,0.9)", border: "1px solid rgba(16,185,129,0.2)" }}
               >
@@ -531,7 +485,7 @@ export default function MaievPage() {
                 <ExternalLink className="w-3.5 h-3.5" />
               </Link>
               <Link
-                href="https://github.com/veil-protocol"
+                href="https://github.com/thesecretlab-dev/veilvm"
                 target="_blank"
                 className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-[family-name:var(--font-space-grotesk)] text-[13px] tracking-wide text-white/50 hover:text-white/70 transition-colors duration-300"
                 style={{ border: "1px solid rgba(255,255,255,0.06)" }}
