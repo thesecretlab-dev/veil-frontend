@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { AppShaderBackground } from "@/components/app-shader-background"
 import { MarketGrid } from "@/components/market-grid"
+import { NativeCreateBar } from "@/components/native-create-bar"
 import { AppNav } from "@/components/app-nav"
 import { AppFooter } from "@/components/app-footer"
 import { HowItWorksModal } from "@/components/how-it-works-modal"
@@ -12,6 +13,7 @@ const CATEGORY_MAP: Record<string, string> = {
   trending: "Trending",
   breaking: "Breaking",
   new: "New",
+  native: "Native",
   politics: "Politics",
   sports: "Sports",
   crypto: "Crypto",
@@ -26,6 +28,7 @@ export default function AppPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("All")
   const [showTutorial, setShowTutorial] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [marketTick, setMarketTick] = useState(0)
 
   useEffect(() => {
     const syncCategoryFromUrl = () => {
@@ -63,7 +66,8 @@ export default function AppPage() {
           onSearchChange={setSearchQuery}
         />
         <div className="pt-[140px]">
-          <MarketGrid selectedCategory={selectedCategory} searchQuery={searchQuery} />
+          <NativeCreateBar onCreated={() => setMarketTick((n) => n + 1)} />
+          <MarketGrid key={marketTick} selectedCategory={selectedCategory} searchQuery={searchQuery} />
         </div>
         <AppFooter />
       </div>

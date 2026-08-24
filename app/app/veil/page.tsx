@@ -310,8 +310,8 @@ export default function VeilTokenPage() {
 
           <ScrollReveal delay={0.2}>
             <p className="mx-auto mt-6 max-w-2xl font-[var(--font-figtree)] text-base leading-relaxed text-white/35">
-              The native token of VeilVM — a privacy-native HyperSDK network built for prediction markets,
-              autonomous agents, and sovereign infrastructure. Stake, govern, bond, and validate.
+              Native token of VeilVM (HyperSDK). v1 is 19 actions: markets, VAI, AMM, COL, proofs.
+              Not live on Fuji or mainnet. Bonds/staking are spec-only.
             </p>
           </ScrollReveal>
 

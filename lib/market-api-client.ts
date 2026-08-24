@@ -59,6 +59,26 @@ function safeStringError(error: unknown): string {
   return String(error)
 }
 
+export async function createNativeMarket(question: string): Promise<{ accepted?: boolean; marketId?: string; veilTxHash?: string; error?: string } | null> {
+  try {
+    const response = await fetch("/api/markets", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ question }),
+    })
+    return (await response.json().catch(() => null)) as {
+      accepted?: boolean
+      marketId?: string
+      veilTxHash?: string
+      error?: string
+    } | null
+  } catch (error) {
+    console.error("Failed to create native market:", safeStringError(error))
+    return null
+  }
+}
+
 export async function fetchMarkets(): Promise<Market[]> {
   try {
     const response = await fetch("/api/markets", { cache: "no-store" })

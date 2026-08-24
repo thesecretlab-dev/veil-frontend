@@ -42,8 +42,8 @@ export default function CTASection() {
           className="text-base leading-relaxed mb-12 max-w-xl mx-auto"
           style={{ color: "rgba(255, 255, 255, 0.33)", fontFamily: "var(--font-figtree)" }}
         >
-          Join the first wave of traders, market makers, and builders on VEIL. Get early access to testnet, propose
-          markets, and shape the future of privacy-native prediction markets.
+          Local VeilVM settles native markets. Polymarket on this site is a public catalog, not VEIL settlement.
+          Fuji/mainnet are not live.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">

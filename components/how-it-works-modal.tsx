@@ -17,7 +17,7 @@ export function HowItWorksModal({ isOpen, onClose }: HowItWorksModalProps) {
     {
       title: "1. Pick a Market",
       description:
-        "Buy 'Yes' or 'No' shares depending on your prediction. Buying shares is like betting on the outcome. Odds shift in real time as other traders bet.",
+        "VeilVM native markets settle with commit-reveal on this machine. Polymarket rows are a public catalog — they do not settle on VEIL. Fuji/mainnet are not live.",
       mockup: (
         <div className="relative w-full max-w-sm mx-auto mb-8">
           <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl transform rotate-2">

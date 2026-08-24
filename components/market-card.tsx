@@ -15,9 +15,10 @@ function isHttpImage(value: string): boolean {
 export function MarketCard({ market }: { market: Market }) {
   const categoryColors = getCategoryColors(market.category)
   const isUp = (market.change24h || 0) >= 0
-  const statusText = market.status === "closed" ? "Closed" : "Live"
   const isPolygonNative =
     (market.sourceName || "").toLowerCase().includes("poly") || (market.sourceName || "").toLowerCase().includes("Polymarket")
+  const isVeilNative = Boolean(market.veilMarketId)
+  const statusText = market.status === "closed" ? "Closed" : isVeilNative ? "Local" : "Live"
 
   const cardRef = useRef<HTMLDivElement>(null)
   const [glowPos, setGlowPos] = useState({ x: 50, y: 50 })
@@ -85,7 +86,7 @@ export function MarketCard({ market }: { market: Market }) {
                 border: isPolygonNative ? "1px solid rgba(99, 102, 241, 0.15)" : "1px solid rgba(16, 185, 129, 0.15)",
               }}
             >
-              {isPolygonNative ? "Polymarket" : "VEIL"}
+              {isPolygonNative ? "Polymarket" : isVeilNative ? "VeilVM" : "VEIL"}
             </span>
           </div>
           <span

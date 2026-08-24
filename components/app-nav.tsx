@@ -205,7 +205,7 @@ export function AppNav({
 
         <div className="mx-2 h-4 w-px shrink-0" style={{ background: "rgba(255, 255, 255, 0.06)" }} />
 
-        {["Politics", "Sports", "Crypto", "Earnings", "Tech", "Culture", "World", "Economy"].map((category) => {
+        {["Native", "Politics", "Sports", "Crypto", "Earnings", "Tech", "Culture", "World", "Economy"].map((category) => {
           const isActive = selectedCategory === category
           return (
             <button

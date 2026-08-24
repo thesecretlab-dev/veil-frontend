@@ -70,7 +70,9 @@ export function MarketGrid({ selectedCategory, searchQuery }: MarketGridProps) {
 
   const filteredMarkets = useMemo(() => {
     const categoryFiltered =
-      selectedCategory === "All" || selectedCategory === "Trending" || selectedCategory === "Breaking" || selectedCategory === "New"
+      selectedCategory === "Native"
+        ? markets.filter((market) => Boolean(market.veilMarketId) || normalizeCategory(market.category) === "native")
+        : selectedCategory === "All" || selectedCategory === "Trending" || selectedCategory === "Breaking" || selectedCategory === "New"
         ? markets
         : markets.filter((market) => normalizeCategory(market.category) === normalizeCategory(selectedCategory))
 
