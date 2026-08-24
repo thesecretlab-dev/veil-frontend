@@ -11,6 +11,7 @@ export interface Market {
   sourceName?: string
   sourceUrl?: string
   marketSlug?: string
+  veilMarketId?: string
   status?: "active" | "closed"
   volume24h?: string
   liquidity?: string

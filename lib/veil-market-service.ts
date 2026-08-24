@@ -364,18 +364,83 @@ async function findGammaMarketByUiId(uiId: number): Promise<GammaMarket | null> 
   return null
 }
 
-export async function getMergedMarkets(): Promise<Market[]> {
-  const gammaMarkets = await fetchGammaMarkets()
-  if (gammaMarkets.length === 0) {
+function veilOrderBase(): string {
+  const localDefault = process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:9098"
+  return (process.env.VEIL_ORDER_API_BASE || localDefault).trim().replace(/\/+$/, "")
+}
+
+type NativeRouterMarket = {
+  marketId?: string
+  question?: string
+  sourceName?: string
+  lastTx?: string
+}
+
+function mapNativeMarket(row: NativeRouterMarket): Market | null {
+  const marketId = String(row.marketId || "").trim()
+  if (!marketId) {
+    return null
+  }
+  const title = row.question || "VEIL native market"
+  return {
+    id: stableUiId(marketId),
+    title,
+    category: "native",
+    type: "binary",
+    yesPrice: 50,
+    noPrice: 50,
+    volume: "$0",
+    endDate: "open",
+    image: "VEIL",
+    sourceName: row.sourceName || "VEIL native",
+    sourceUrl: "",
+    marketSlug: marketId,
+    veilMarketId: marketId,
+    status: "active",
+    details: {
+      description: "Settles on VeilVM (commit-reveal). Not Polymarket.",
+      outcomes: {
+        yes: { label: "Yes", price: 0.5 },
+        no: { label: "No", price: 0.5 },
+      },
+      orderBook: [],
+    },
+  }
+}
+
+async function fetchNativeMarkets(): Promise<Market[]> {
+  const base = veilOrderBase()
+  if (!base) {
     return []
   }
+  try {
+    const response = await fetch(`${base}/markets`, { cache: "no-store" })
+    if (!response.ok) {
+      return []
+    }
+    const payload = (await response.json()) as { markets?: NativeRouterMarket[] }
+    const rows = Array.isArray(payload.markets) ? payload.markets : []
+    return rows.map(mapNativeMarket).filter((m): m is Market => m !== null)
+  } catch {
+    return []
+  }
+}
 
-  return [...gammaMarkets]
+export async function getMergedMarkets(): Promise<Market[]> {
+  const [native, gammaMarkets] = await Promise.all([fetchNativeMarkets(), fetchGammaMarkets()])
+  const polymarket = [...gammaMarkets]
     .sort((a, b) => asNumber(b.volume24hr, 0) - asNumber(a.volume24hr, 0))
     .map((market) => mapGammaToMarket(market))
+  return [...native, ...polymarket]
 }
 
 export async function getMergedMarketByUiId(uiId: number): Promise<Market | null> {
+  const native = await fetchNativeMarkets()
+  const nativeHit = native.find((m) => m.id === uiId)
+  if (nativeHit) {
+    return nativeHit
+  }
+
   const gamma = await findGammaMarketByUiId(uiId)
   if (!gamma) {
     return null

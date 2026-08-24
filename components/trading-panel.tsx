@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useMarket } from "@/lib/use-market"
+import { submitOrder } from "@/lib/market-api-client"
 
 interface TradingPanelProps {
   marketId: string
@@ -14,6 +15,8 @@ function isHttpImage(value: string): boolean {
 export function TradingPanel({ marketId }: TradingPanelProps) {
   const [selectedOutcome, setSelectedOutcome] = useState<"yes" | "no">("yes")
   const [amount, setAmount] = useState(100)
+  const [busy, setBusy] = useState(false)
+  const [resultMsg, setResultMsg] = useState("")
   const { market, isLoading } = useMarket(marketId)
 
   if (isLoading) {
@@ -25,6 +28,37 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
   }
 
   const isPolygonNative = (market.sourceName || "").toLowerCase().includes("poly")
+  const isVeilNative = Boolean(market.veilMarketId) || (market.sourceName || "").toLowerCase().includes("veil")
+  const localWallet = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+
+  async function onTradeNative() {
+    if (!market.veilMarketId && !market.marketSlug) {
+      setResultMsg("Missing VeilVM market id")
+      return
+    }
+    setBusy(true)
+    setResultMsg("")
+    try {
+      const result = await submitOrder({
+        marketId: market.veilMarketId || market.marketSlug || String(market.id),
+        side: "buy",
+        outcome: selectedOutcome,
+        amountUsd: amount,
+        walletAddress: localWallet,
+        nativeNetwork: "veil",
+        routingFeeBps: 0,
+      })
+      if (!result) {
+        setResultMsg("Order router unreachable")
+      } else if (!result.accepted) {
+        setResultMsg(result.message || result.errorCode || "rejected")
+      } else {
+        setResultMsg(`settled ${result.veilTxHash}`)
+      }
+    } finally {
+      setBusy(false)
+    }
+  }
   const price = selectedOutcome === "yes" ? market.yesPrice / 100 : market.noPrice / 100
   const safePrice = Math.max(price, 0.0001)
   const potentialReturn = amount / safePrice
@@ -183,8 +217,23 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
           </div>
         </div>
 
-        {/* Trade on source link */}
-        {market.sourceUrl && (
+        {isVeilNative ? (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => void onTradeNative()}
+            className="block w-full py-4 text-center text-[14px] transition-all duration-500 hover:shadow-lg hover:shadow-emerald-500/15 disabled:opacity-50"
+            style={{
+              fontFamily: "var(--font-space-grotesk)",
+              fontWeight: 700,
+              borderRadius: "14px",
+              background: "linear-gradient(135deg, rgba(16, 185, 129, 0.85), rgba(20, 184, 166, 0.85))",
+              color: "rgba(255, 255, 255, 0.95)",
+            }}
+          >
+            {busy ? "Committing…" : "Trade on VeilVM"}
+          </button>
+        ) : market.sourceUrl ? (
           <a
             href={market.sourceUrl}
             target="_blank"
@@ -200,11 +249,17 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
           >
             Trade on {market.sourceName || "Polymarket"}
           </a>
+        ) : null}
+
+        {resultMsg && (
+          <div className="text-[11px] text-center break-all" style={{ fontFamily: "var(--font-figtree)", color: "rgba(16, 185, 129, 0.7)" }}>
+            {resultMsg}
+          </div>
         )}
 
         {isPolygonNative && (
           <div className="text-[11px] text-center" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255, 255, 255, 0.2)" }}>
-            VEIL native trading is staged by operator rollout policy
+            Polymarket is catalog-only. Native settlement is VeilVM.
           </div>
         )}
 

@@ -237,9 +237,14 @@ export async function POST(request: Request) {
     "content-type": "application/json",
   }
 
-  const apiKey = (process.env.VEIL_ORDER_API_KEY || "").trim()
+  const apiKey = (
+    process.env.VEIL_ORDER_API_KEY ||
+    process.env.ORDER_ROUTER_RELAY_SECRET ||
+    (process.env.NODE_ENV === "production" ? "" : "local-dev-secret")
+  ).trim()
   if (apiKey) {
     headers.authorization = `Bearer ${apiKey}`
+    headers["x-relay-secret"] = apiKey
   }
 
   const controller = new AbortController()
