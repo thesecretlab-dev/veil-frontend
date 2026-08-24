@@ -6,7 +6,7 @@ import CharReveal from "./char-reveal"
 
 export default function RoadmapSection() {
   const milestones = [
-    { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM on HyperSDK with 42 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee." },
+    { id: "M0", title: "Custom VM + Proof Pipeline", status: "In Progress", desc: "VeilVM on HyperSDK with 19 native actions (IDs 0–18). Groth16 proof-gated settlement. Not live on Fuji or mainnet." },
     { id: "M1", title: "Identity + Reputation + SDKs", status: "In Progress", desc: "ZER0ID and Bloodsworn designed/scaffolded. ANIMA SDK baseline with local coverage. Live strict-private flows in progress." },
     { id: "M2", title: "Tokenomics + Stability", status: "In Progress", desc: "COL, VAI, treasury/risk controls in design/runtime paths. Production parameter freeze pending (G4/G5)." },
     { id: "M3", title: "Production Launch Gates", status: "In Progress", desc: "Key ceremony, admin rotation, consolidated evidence bundles, end-to-end launch rehearsal." },

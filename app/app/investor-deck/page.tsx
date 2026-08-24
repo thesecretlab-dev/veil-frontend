@@ -807,7 +807,7 @@ export default function InvestorDeckPage() {
                   title: "Custom VM + Proof Pipeline",
                   current: true,
                   items: [
-                    "VeilVM on HyperSDK with 22 native actions",
+                    "VeilVM on HyperSDK with 19 native actions (not live)",
                     "Groth16 proof-gated settlement, encrypted mempool",
                     "Threshold-keyed committee, private-only admission",
                   ],

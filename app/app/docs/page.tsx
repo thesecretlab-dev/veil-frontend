@@ -314,7 +314,7 @@ export default function DocsPage() {
                 Ecosystem Scope — 2026
               </h2>
               <ul className="space-y-2 text-[14px] leading-relaxed text-white/45" style={{ fontFamily: "var(--font-figtree)" }}>
-                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> VeilVM core: 22 native actions with proof-gated settlement, encrypted batch flow, and shielded state transitions.</li>
+                <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> VeilVM core: 19 native actions (IDs 0–18) with proof-gated settlement. Not live on public Avalanche networks.</li>
                 <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Market layer: privacy-scoped prediction markets with batch auctions, oracle/dispute logic, and chain-owned liquidity support.</li>
                 <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Companion EVM rails: intent relay, token interoperability, and external integration surfaces where transparency is expected.</li>
                 <li className="flex gap-2"><span className="text-emerald-500/50 mt-0.5">›</span> Agent layer: ZER0ID identity, Bloodsworn reputation scaffolds, and ANIMA SDK/runtime for autonomous operations.</li>

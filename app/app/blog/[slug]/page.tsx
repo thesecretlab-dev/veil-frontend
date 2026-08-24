@@ -50,7 +50,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Current Status</h2>
           <p className="mb-6">
-            VEIL is under active development. The custom VM is implemented with 22 native actions. Launch authority is
+            VEIL is under active development. The custom VM is implemented with 19 native actions (IDs 0–18). Launch authority is
             GO FOR PRODUCTION (2026-02-22), with gate evidence tracked on the transparency page and MAIEV archive.
           </p>
         </>

@@ -1,18 +1,20 @@
 # VEIL Privacy Scope Matrix
 
-Last updated: 2026-02-20
+Last updated: 2026-08-24
 
-This matrix defines which VEIL surfaces are currently private vs public. It is the canonical source for claim wording in UI, docs, and assistant responses.
+Canonical layering: `veil-docs/architecture/VEIL_STACK.md`.
+
+This matrix is the source for claim wording in UI, docs, and assistant responses.
 
 ## Scope by Surface
 
 | Surface | Current Behavior | Privacy Status | Evidence |
 | --- | --- | --- | --- |
-| VEIL VM proof-gated lane | Shielded lane tests pass for proof-gated clear path, malformed-proof rejection, timeout enforcement, and backup takeover. | Private (VM lane) | `public/maiev/vm-privacy-audit/vmprivacy-20260220-155511/vm-privacy-audit.md` |
-| Order intents on companion EVM | Intent struct stores `trader` and amount fields; `IntentSubmitted` event emits these fields. | Public | `public/maiev/audit-closure/evmbench-20260220-141106/audited-sources/VeilOrderIntentGateway.sol` |
-| Liquidity intents on companion EVM | Intent struct stores `trader` and amount fields; `LiquidityIntentSubmitted` event emits detailed amounts. | Public | `public/maiev/audit-closure/evmbench-20260220-141106/audited-sources/VeilLiquidityIntentGateway.sol` |
-| VAI token on companion EVM | ERC-20 style `Transfer` and `Approval` events expose sender, receiver, and amount. | Public | `public/maiev/audit-closure/evmbench-20260220-141106/audited-sources/VeilVAI.sol` |
-| Companion EVM UniV2 pools/router | Pool reserves, swaps, liquidity operations, and logs are explorer-visible. | Public | `public/maiev/audit-closure/evmbench-20260220-141106/audited-sources/VeilUniV2Pair.sol`, `public/maiev/audit-closure/evmbench-20260220-141106/audited-sources/VeilUniV2Router.sol` |
+| VEIL VM proof-gated lane | Commit / reveal / proof / clear. Private when verifier is strict. Not live on Fuji/mainnet. | Private (VM lane, local-only until Fuji) | `veilvm` actions 2–4, 17 |
+| Order intents on companion EVM | `submitIntent(commitment, nullifier)`. Events emit ids/commitment/nullifier/nonce. Trader stored for cancel auth, not in events. Envelope off-chain. | Commitment-only on the wire | `contracts/bridge/VeilOrderIntentGateway.sol` |
+| Liquidity intents on companion EVM | Same commit-only pattern. | Commitment-only on the wire | `contracts/bridge/VeilLiquidityIntentGateway.sol` |
+| Parked companion VAI / UniV2 | ERC-20 and pool logs would be public **if deployed**. Not v1 rails. | Public (do not ship in v1) | parked `VeilVAI.sol`, `VeilUniV2Dex.sol` |
+| veil.markets | Polymarket feeds. Not VeilVM settlement. | Public / external | frontend README |
 
 ## Claim Policy
 

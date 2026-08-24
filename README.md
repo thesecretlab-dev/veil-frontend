@@ -1,13 +1,15 @@
 # VEIL Frontend
 
-**[veil.markets](https://veil.markets)** â€” Privacy-native prediction markets on Avalanche.
+**[veil.markets](https://veil.markets)** — UI for VEIL. Native VeilVM settlement is **not live**.
+
+v1 stack: VeilVM (19 actions, supply 990,999,000) + companion rails (WVEIL / bridge / intents). See `thesecretlab-dev/veil-docs` `architecture/VEIL_STACK.md`.
 
 Award-winning UI with film grain, magnetic components, character reveal animations, noise reveals, parallax headings, and a 3D R3F tetrahedron hero. 30+ pages across markets, governance, agents, docs, and ecosystem.
 
 ## Features
 
-- **Live Polymarket Feed** â€” Real market data with 10s polling, CLOB order book depth
-- **Dual Market Engine** â€” Route through Polymarket (0.03% fee) or VEIL-native markets (earn VEIL)
+- **Live Polymarket Feed** — External market data with 10s polling, CLOB order book depth. Not VeilVM.
+- **Native markets** — Not live. Do not present as settled on VEIL L1.
 - **AI Oracle** â€” Grok 4.2 resolves social/political/non-financial markets
 - **Agent Portal** â€” ANIMA agent lifecycle dashboard, ecosystem directory
 - **Governance** â€” veVEIL voting, proposal creation, forum integration
@@ -71,7 +73,7 @@ Shared brand components in `components/brand.tsx`:
 
 ## Links
 
-- **Live**: [veil.markets](https://veil.markets)
+- **Site**: [veil.markets](https://veil.markets) (frontend; L1 not live)
 - **Ecosystem**: [thesecretlab.app](https://thesecretlab.app)
 - **Org**: [github.com/thesecretlab-dev](https://github.com/thesecretlab-dev)
 

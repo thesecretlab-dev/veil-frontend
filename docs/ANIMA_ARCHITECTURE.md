@@ -2,7 +2,9 @@
 
 **Version**: 1.0 — February 2026
 **Author**: The Secret Lab (TSL)
-**Network**: VEIL Avalanche L1 (Chain ID 22207)
+**Network**: VEIL Avalanche L1 (app id 22207)
+
+**v1 truth (2026-08-24):** VeilVM implements **19 actions (IDs 0–18)**. IDs 19–41 are spec-only. The L1 is **not live**. Companion EVM is wrap/bridge/intents, not a second protocol. See `veil-docs/architecture/VEIL_STACK.md`.
 
 ---
 
@@ -35,7 +37,7 @@ ANIMA consists of four layers:
 │  Ed25519 agent signing · Audit log · Rate limiter   │
 ├─────────────────────────────────────────────────────┤
 │  Layer 1: Chain & Infrastructure                     │
-│  VeilVM RPC client · 42 native actions · Infra       │
+│  VeilVM RPC client · 19 native actions (v1) · Infra  │
 │  provisioning (AvaCloud/AWS) · Validator deployment  │
 └─────────────────────────────────────────────────────┘
 ```
@@ -50,7 +52,7 @@ ANIMA agents operate on VEIL, a custom Avalanche L1 built with HyperSDK.
 
 ### 2.1 Why HyperSDK, Not Subnet-EVM
 
-VEIL is not an EVM chain. It uses HyperSDK to define 42 native action types at the VM level. This matters because:
+VEIL is not an EVM chain. It uses HyperSDK. v1 defines **19** native action types (IDs 0–18) at the VM level. This matters because:
 
 - **Actions are first-class**: `CreateMarket`, `CommitOrder`, `RevealBatch`, `ClearBatch`, `RegisterBloodsworn`, etc. are not smart contract function calls — they are consensus-validated VM operations.
 - **Sub-second finality**: HyperSDK processes actions in parallel with sub-second block times.
@@ -63,14 +65,14 @@ VEIL runs two chains in parallel:
 
 | Chain | Stack | Port | Purpose |
 |-------|-------|------|---------|
-| **VeilVM** | HyperSDK (Go) | 9660 | Execution — 42 native actions, 100k+ blocks, 1 block/sec |
+| **VeilVM** | HyperSDK (Go) | 9660 | Execution — 19 native actions (v1). Not live. |
 | **Companion EVM** | Subnet-EVM | 9650 | Compatibility — ERC-20 tokens, wallets, Blockscout explorer |
 
 The Companion EVM exists because wallets (MetaMask, Core) and block explorers (Blockscout) require EVM JSON-RPC. Agents interact primarily with VeilVM through ANIMA's RPC client; the Companion EVM serves as the bridge layer for human developers and external tooling.
 
 ### 2.3 Native Action Inventory
 
-42 actions across 10 domains:
+v1 implements IDs 0–18. The rest of this table is spec-only and must not be sent on-chain:
 
 | Domain | Actions | IDs |
 |--------|---------|-----|
@@ -291,7 +293,7 @@ No single entity controls any of these for any agent. There is no admin kill swi
 Conway Terminal (by Sigil Wen) provides agents with wallets, compute, and domains. The Automaton is a self-replicating agent on Base that earns to survive.
 
 ANIMA differs in three ways:
-1. **Custom VM, not EVM contracts**: VEIL's 42 native actions give agents first-class protocol operations, not just contract calls
+1. **Custom VM, not EVM contracts**: VEIL's 19 v1 native actions give agents first-class protocol operations, not just contract calls
 2. **Encrypted markets**: Commit-reveal with threshold decryption prevents front-running — critical when agents are the primary traders
 3. **Reputation-gated lifecycle**: Bloodsworn creates an economic immune system. Conway has no equivalent — any agent with funds can do anything.
 
@@ -326,7 +328,7 @@ ANIMA does not exist in isolation. It integrates with:
 
 | Component | Role | Status |
 |-----------|------|--------|
-| **VeilVM** | Execution chain (42 actions) | Live, 100k+ blocks |
+| **VeilVM** | Execution chain (19 v1 actions) | Not live |
 | **Companion EVM** | EVM bridge for wallets/explorers | Live, 148 blocks (repair needed) |
 | **ZER0ID** | ZK identity (Groth16 circuits) | Circuits + verifier built, not wired to ANIMA |
 | **Blockscout Explorer** | Chain visibility | Live at explorer.thesecretlab.app |
@@ -361,7 +363,7 @@ ANIMA does not exist in isolation. It integrates with:
 - Parent-child communication over network (currently in-memory only)
 
 **Live on mainnet:**
-- VeilVM chain (100k+ blocks, 1 block/sec, 1 active subnet peer)
+- VeilVM chain (not live on Fuji/mainnet)
 - First agent child node (manually provisioned)
 - Companion EVM (148 blocks, needs state repair)
 - Blockscout explorer

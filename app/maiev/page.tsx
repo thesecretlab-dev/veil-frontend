@@ -73,7 +73,7 @@ const auditCategories = [
   {
     icon: <FileText className="w-5 h-5" />,
     title: "VM Actions & Settlement",
-    description: "VEIL's 22 native VM actions — markets, batch commit/reveal/clear, dispute, resolution, fee routing, VAI mint/burn/redeem, and AMM pool actions — run as native chain.Action state transitions inside veilvm. There are no smart contracts in this stack and nothing deployed to an EVM chain.",
+    description: "VeilVM v1 has 19 native actions (IDs 0–18): markets, commit/reveal/clear, dispute, resolution, fee routing, VAI mint/burn, AMM. Companion EVM is wrap/bridge/intents only — not a second protocol. Neither chain is live on Fuji or mainnet.",
     status: "In Progress" as const,
     owner: "VEIL Core (internal)",
     lastUpdated: "2026-02-20",

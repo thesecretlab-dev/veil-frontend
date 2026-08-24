@@ -1858,7 +1858,7 @@ export default function ExploreVeilPage() {
                   title: "VeilVM (Custom HyperSDK)",
                   accent: true,
                   items: [
-                    "22 native action types — markets, batch settlement, dispute/resolution, fee routing, VAI stablecoin, and AMM liquidity",
+                    "19 native action types (IDs 0–18) — markets, batch settlement, dispute/resolution, fee routing, VAI, and AMM. Not live on Fuji or mainnet.",
                     "ZK proof verification at consensus (Groth16/PLONK, BN254)",
                     "Private-only admission gate — public core actions rejected at consensus",
                     "Threshold-keyed encrypted mempool with committee quorum release",
@@ -1948,7 +1948,7 @@ export default function ExploreVeilPage() {
 
             <div className="space-y-4">
               {[
-                { id: "M0", title: "Custom VM + Proof Pipeline", status: "Complete", desc: "VeilVM running on HyperSDK with 22 native actions. Groth16 proof-gated settlement, encrypted mempool, threshold-keyed committee, private-only admission gate." },
+                { id: "M0", title: "Custom VM + Proof Pipeline", status: "In Progress", desc: "VeilVM on HyperSDK with 19 native actions (IDs 0–18). Groth16 proof-gated settlement. L1 not live." },
                 { id: "M1", title: "Identity + Reputation + SDKs", status: "Complete (Local Evidence)", desc: "ZER0ID/Bloodsworn scaffolds and ANIMA TypeScript SDK baseline are implemented; strict-private runtime readiness is archived as PASS (local evidence)." },
                 { id: "M2", title: "Tokenomics + Stability", status: "Complete (Local Evidence)", desc: "Tokenomics, COL, VAI, and treasury/risk controls are implemented with G4/G5 marked PASS (local) in the launch checklist snapshot." },
                 { id: "M3", title: "Production Launch Gates", status: "Complete", desc: "Key ceremony, ownership rotation, launch rehearsal, and consolidated gate evidence are complete with decision state GO FOR PRODUCTION. All 13 launch gates PASS." },
