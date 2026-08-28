@@ -45,19 +45,19 @@ export default function ArchitectureSection() {
         <div className="space-y-6">
           {[
             {
-              title: "Public L1 (Subnet-EVM)",
+              title: "VeilVM (HyperSDK)",
               items: [
-                "Commit contract receives sealed envelopes and stores Merkle roots",
-                "Batch clear contract posts price/fill summaries per window",
-                "ERC-20 assets with EIP-2612 permit for gasless approvals",
+                "19 native actions: markets, commit/reveal/proof/clear, VAI, AMM, COL, fee router",
+                "Groth16 shielded-ledger-v1 verified at consensus (digest-bound public slots)",
+                "Local testnet only. App-id 22207 is not an EVM chain id.",
               ],
             },
             {
-              title: "Private Clearing Layer",
+              title: "Privacy and rails",
               items: [
-                "TEE enclaves decrypt orders inside secure hardware",
-                "Batch auction runs privately, posts aggregate results",
-                "ZK proofs for constraints (staged rollout)",
+                "VEILENC1 order envelopes; VTG2 2-of-3 gossip (one key cannot decrypt)",
+                "Companion EVM: WVEIL + intent gateways on a separate chain (local anvil 31337)",
+                "RPC ingest on a solo node is still plaintext SubmitTx — not a private RPC mempool",
               ],
             },
           ].map((block) => (

@@ -22,6 +22,8 @@ export type SubmitOrderRequest = {
   outcome: "yes" | "no"
   amountUsd: number
   walletAddress: string
+  walletSignature?: string
+  walletNonce?: string
   nativeNetwork?: "veil" | "polygon"
   routingFeeBps?: number
 }
@@ -42,6 +44,7 @@ export type OrderSubmissionResult = {
   settlementNetwork: string
   routingFeeBps: number
   liquiditySufficient: boolean | null
+  windowId?: number
 }
 
 type LatestTradeResponse = {
@@ -121,6 +124,44 @@ export async function fetchLatestTrade(marketId: string): Promise<LatestTrade | 
   } catch (error) {
     console.error(`Failed to fetch latest trade for ${marketId}:`, safeStringError(error))
     return null
+  }
+}
+
+export type SettleBatchResult = {
+  accepted?: boolean
+  status?: string
+  message?: string
+  marketId?: string
+  windowId?: number
+  revealTxHash?: string
+  proofTxHash?: string
+  clearTxHash?: string
+  proveMs?: number
+  error?: string
+}
+
+export async function settleNativeBatch(marketId: string, windowId?: number): Promise<SettleBatchResult | null> {
+  try {
+    const response = await fetch("/api/settle-batch", {
+      method: "POST",
+      cache: "no-store",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ marketId, windowId }),
+    })
+    return (await response.json().catch(() => null)) as SettleBatchResult | null
+  } catch (error) {
+    console.error("Failed to settle native batch:", safeStringError(error))
+    return null
+  }
+}
+
+export async function fetchOrderRouterHealth(): Promise<{ ok: boolean; chainId: string }> {
+  try {
+    const response = await fetch("/api/orders", { cache: "no-store" })
+    const payload = (await response.json().catch(() => null)) as { ok?: boolean; chainId?: string } | null
+    return { ok: Boolean(payload?.ok), chainId: String(payload?.chainId || "") }
+  } catch {
+    return { ok: false, chainId: "" }
   }
 }
 

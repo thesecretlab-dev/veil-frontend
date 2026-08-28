@@ -1014,7 +1014,7 @@ const LIFECYCLE_STEPS = [
 const MARKET_FEATURES = [
   {
     title: "Encrypted Order Flow",
-    description: "Orders enter an encrypted mempool using threshold-keyed envelopes — no single validator can decrypt them alone. Committee quorum is required before any order reaches the execution path. No front-running, no information leakage.",
+    description: "Orders commit as VEILENC1 ciphertext. Tx gossip is VTG2 threshold-keyed (local 2-of-3): one committee key cannot decrypt the wire. A solo node still includes transactions via local RPC. This is the local testnet path — not Fuji or mainnet, and not a claim of full-stack anonymity.",
     ctas: [{ label: "Explore Markets", href: "/app/markets" }, { label: "Technical Docs", href: "/app/docs" }],
   },
   {
@@ -1030,13 +1030,13 @@ const MARKET_FEATURES = [
   },
   {
     title: "ZK Proof-Gated Settlement",
-    description: "Every batch settlement requires a cryptographic proof (Groth16 on BN254). The VM verifies proofs at consensus — not in a smart contract. Invalid batches are rejected before they touch state. Settlement integrity is a protocol invariant.",
+    description: "Every batch clear requires a Groth16 proof on BN254, verified in the VM. The live circuit (shielded-ledger-v1) binds fills, commitments, nullifiers, and state-root slots to a public digest. Invalid proofs fail closed. Matching is not yet proven inside the circuit.",
     ctas: [{ label: "View Architecture", href: "/app/docs" }],
   },
 ]
 
 const FAQ_DATA = [
-  { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 (Chain ID 22207) built with HyperSDK, currently running on a local testnet ahead of public testnet launch. Privacy-native prediction markets with encrypted order flow, ZK proof-gated settlement, machine-native identity, and chain-owned liquidity. The first agent child node is active. The chain is permissioned — every participant is either a developer or a verified autonomous agent." },
+  { q: "What is VEIL?", a: "VEIL is a custom Avalanche L1 built with HyperSDK (VM app-id 22207), currently running on a local testnet ahead of public testnet launch. Prediction markets with encrypted order envelopes, Groth16 proof-gated settlement, native VAI/AMM/COL, and companion EVM intent rails. Not Fuji. Not mainnet. 22207 is the HyperSDK app id — it is not the companion EVM chain id." },
   { q: "What problem does VEIL solve?", a: "Sybil attacks remain the fundamental unsolved problem in decentralized networks. Fake identities break governance, wash trading distorts markets, airdrop farming extracts value. VEIL addresses this by making identity (ZER0ID), reputation (Bloodsworn), and economic incentives native to the VM — not bolted-on smart contracts that can be gamed." },
   { q: "What is ANIMA?", a: "ANIMA is VEIL's sovereign agent framework — live on the network. The first agent child node is active, validating blocks and building infrastructure. The TypeScript SDK, strict-private runtime guards, and Go lifecycle runtime are operational. Agents follow a five-stage lifecycle: Genesis → Validation → Identity → Trading → Sovereignty." },
   { q: "How does ZER0ID work?", a: "ZER0ID is a commitment-nullifier identity system using Groth16 ZK-SNARKs. Agents can prove uniqueness and on-chain history without revealing strategies, balances, or internal state. In strict-private local profiles, identity checks are enforced in transaction validation before admitted execution paths." },
@@ -1859,19 +1859,19 @@ export default function ExploreVeilPage() {
                   accent: true,
                   items: [
                     "19 native action types (IDs 0–18) — markets, batch settlement, dispute/resolution, fee routing, VAI, and AMM. Not live on Fuji or mainnet.",
-                    "ZK proof verification at consensus (Groth16/PLONK, BN254)",
-                    "Private-only admission gate — public core actions rejected at consensus",
-                    "Threshold-keyed encrypted mempool with committee quorum release",
-                    "Sovereign Avalanche L1 — Chain ID 22207",
+                    "ZK proof verification at consensus (Groth16 BN254, shielded-ledger-v1)",
+                    "Native VAI, AMM, COL, and 70/20/10 fee router (actions 7–14), exercised locally",
+                    "Threshold-keyed tx gossip (VTG2, local 2-of-3). One key cannot decrypt.",
+                    "HyperSDK app-id 22207. Local testnet only — not Fuji or mainnet.",
                   ],
                 },
                 {
                   title: "Privacy Layer",
                   items: [
-                    "Encrypted tx gossip (AES-256-GCM) with fail-closed key enforcement",
-                    "Cryptographic threshold keying — Shamir-split, X25519-encrypted shares",
-                    "Sealed order commitments with nullifier-based double-spend prevention",
-                    "Shielded VM lanes for proof-gated execution paths",
+                    "Encrypted tx gossip is VTG2 (Shamir + X25519). Encryption-required means t≥2, not shared AES",
+                    "Share announcements (VTGS) are wrapped to committee public keys",
+                    "Order envelopes are VEILENC1; window keys reveal at batch close",
+                    "Groth16 binds public slots; it does not evaluate matching inside the circuit",
                     "Companion EVM rails are transparent by design (privacy-scope matrix)",
                   ],
                 },

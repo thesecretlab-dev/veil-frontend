@@ -525,7 +525,7 @@ export default function DefiPage() {
                   {[
                     { step: "01", text: "Submit encrypted intent via companion EVM gateway" },
                     { step: "02", text: "Relayer verifies commitment, forwards to VeilVM" },
-                    { step: "03", text: "ZK-proof-gated execution in private batch" },
+                    { step: "03", text: "VeilVM executes the native action; batch clears only with a valid Groth16 proof" },
                     { step: "04", text: "Settlement confirmed on-chain, tokens delivered" },
                   ].map(s => (
                     <div key={s.step} className="flex gap-3">

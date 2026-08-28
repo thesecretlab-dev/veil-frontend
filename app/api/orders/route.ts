@@ -6,6 +6,8 @@ type SubmitOrderBody = {
   outcome?: "yes" | "no"
   amountUsd?: number
   walletAddress?: string
+  walletSignature?: string
+  walletNonce?: string
   nativeNetwork?: "veil" | "polygon"
   routingFeeBps?: number
 }
@@ -26,6 +28,7 @@ type NormalizedOrderResult = {
   settlementNetwork: string
   routingFeeBps: number
   liquiditySufficient: boolean | null
+  windowId?: number
 }
 
 const ORDER_TIMEOUT_MS = 15_000
@@ -129,7 +132,10 @@ function normalizeOrderResult(payload: unknown): NormalizedOrderResult {
 
   const explicitAccepted = firstBoolean(source, ["accepted", "isAccepted", "ok"])
   const impliedAccepted =
-    status.toLowerCase() === "accepted" || status.toLowerCase() === "filled" || status.toLowerCase() === "executed"
+    status.toLowerCase() === "accepted" ||
+    status.toLowerCase() === "filled" ||
+    status.toLowerCase() === "executed" ||
+    status.toLowerCase() === "committed"
 
   return {
     accepted: explicitAccepted ?? impliedAccepted ?? veilTxHash.length > 0,
@@ -147,6 +153,7 @@ function normalizeOrderResult(payload: unknown): NormalizedOrderResult {
     settlementNetwork,
     routingFeeBps,
     liquiditySufficient,
+    windowId: firstNumber(source, ["windowId", "window_id"]) || undefined,
   }
 }
 
@@ -192,6 +199,24 @@ function unconfiguredResult(nativeNetwork: string, routingFeeBps: number): Norma
 
 export const dynamic = "force-dynamic"
 
+export async function GET() {
+  const localDefault = process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:9098"
+  const base = (process.env.VEIL_ORDER_API_BASE || localDefault).trim().replace(/\/+$/, "")
+  if (!base) {
+    return NextResponse.json({ error: "VEIL_ORDER_API_BASE not set" }, { status: 503 })
+  }
+  try {
+    const response = await fetch(`${base}/health`, { cache: "no-store" })
+    const payload = await response.json().catch(() => ({}))
+    return NextResponse.json(
+      { ok: Boolean((payload as { ok?: boolean }).ok), chainId: asString((payload as { chainId?: unknown }).chainId) },
+      { status: response.ok ? 200 : response.status },
+    )
+  } catch {
+    return NextResponse.json({ ok: false, chainId: "", error: "order router unreachable" }, { status: 502 })
+  }
+}
+
 export async function POST(request: Request) {
   let body: SubmitOrderBody
   try {
@@ -205,6 +230,8 @@ export async function POST(request: Request) {
   const outcome = body.outcome
   const amountUsd = typeof body.amountUsd === "number" ? body.amountUsd : Number.NaN
   const walletAddress = asString(body.walletAddress).trim()
+  const walletSignature = asString(body.walletSignature).trim()
+  const walletNonce = asString(body.walletNonce).trim()
   const nativeNetwork = body.nativeNetwork === "polygon" ? "polygon" : "veil"
   const routingFeeBps = typeof body.routingFeeBps === "number" && Number.isFinite(body.routingFeeBps) ? body.routingFeeBps : 0
 
@@ -222,6 +249,13 @@ export async function POST(request: Request) {
   if (!walletAddress) {
     return NextResponse.json(
       { result: invalidBodyResult("walletAddress is required for VEIL order execution.") },
+      { status: 400 },
+    )
+  }
+
+  if (nativeNetwork !== "polygon" && (!walletSignature || !walletNonce)) {
+    return NextResponse.json(
+      { result: invalidBodyResult("walletSignature and walletNonce are required for VEIL order execution.") },
       { status: 400 },
     )
   }
@@ -260,6 +294,8 @@ export async function POST(request: Request) {
         outcome,
         amountUsd,
         walletAddress,
+        walletSignature,
+        walletNonce,
         nativeNetwork,
         routingFeeBps,
       }),

@@ -36,9 +36,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             is either a developer or a verified autonomous agent.
           </p>
           <p className="mb-6">
-            We use threshold-keyed encrypted mempools for order privacy, Groth16 ZK-SNARKs for proof-gated settlement,
-            and a shielded ledger for balance privacy. Privacy isn&apos;t an application-layer feature — it&apos;s
-            enforced at the consensus level.
+            Local VeilVM uses VEILENC1 order envelopes, VTG2 threshold gossip (2-of-3 on the current node: one key
+            cannot decrypt the wire), and Groth16 proof-gated settlement. The live circuit binds public digest slots;
+            it does not yet prove matching inside the circuit. This is a local testnet, not Fuji or mainnet.
           </p>
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Why Avalanche HyperSDK</h2>
@@ -50,8 +50,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Current Status</h2>
           <p className="mb-6">
-            VEIL is under active development. The custom VM is implemented with 19 native actions (IDs 0–18). Launch authority is
-            GO FOR PRODUCTION (2026-02-22), with gate evidence tracked on the transparency page and MAIEV archive.
+            VEIL is under active development. The custom VM has 19 native actions (IDs 0–18). The local genesis
+            node exercises commit/reveal/proof/clear, native VAI/AMM/COL, and companion intent rails. Feb
+            &ldquo;GO FOR PRODUCTION&rdquo; packets are not launch authority. Local ≠ Fuji ≠ mainnet.
           </p>
         </>
       ),
@@ -77,21 +78,20 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">How It Works in VeilVM</h2>
           <p className="mb-6">
-            VeilVM enforces a private-only admission gate. Core market operations (CommitOrder, RevealBatch,
-            ClearBatch, SubmitBatchProof) require proof verification before execution. Public-path AMM operations
-            are rejected at consensus in strict mode.
+            ClearBatch is proof-gated at consensus: groth16 shielded-ledger-v1 must verify before the batch
+            result is stored. Native AMM and VAI actions are separate public-state paths on VeilVM; they are
+            not rejected in the current local profile.
           </p>
           <p className="mb-6">
-            The shielded ledger uses commitment-nullifier patterns. Agents prove balance sufficiency and transaction
-            validity without exposing amounts or positions. ZER0ID identity proofs use the same circuit family for
-            uniqueness verification without revealing agent state.
+            The shielded-ledger preimage includes commitment, nullifier, and state-root slots bound by SHA256
+            inside Groth16. That is digest-binding, not in-circuit merkle proofs. ZER0ID is a separate circuit
+            family in the zeroid repo and is not the settlement verifier.
           </p>
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">Implementation Status</h2>
           <p className="mb-6">
-            Proof-gated consensus (G1) passes in local validation. The shielded ledger circuit assurance (G3) is
-            archived locally. Native privacy invariants (G2) and ANIMA readiness (G12) are now marked PASS (local) in
-            the launch checklist. All implementation status is tracked in the production launch checklist.
+            Local proof-gated clears pass with shielded-ledger-v1. Gossip on the local node is VTG2 2-of-3.
+            Treat Feb gate letters as archaeology unless re-run against this tree.
           </p>
         </>
       ),
@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">HyperSDK Advantages</h2>
           <ul className="mb-6 list-disc space-y-2 pl-6">
-            <li>Custom action types (22 defined for VeilVM)</li>
+            <li>Custom action types (19 defined for VeilVM, IDs 0–18)</li>
             <li>Native proof verification in action execution</li>
             <li>Custom mempool semantics (sealed order flow, admission control)</li>
             <li>Deterministic batch clearing with configurable window timing</li>
@@ -209,10 +209,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             Sealed Order Flow
           </h2>
           <p className="mb-6">
-            VeilVM uses threshold encryption: clients encrypt under the epoch key; blocks carry ciphertexts
-            ordered before content is known; a committee posts partial decryptions the chain aggregates. This
-            addresses the worst MEV path: reordering on information. Threshold-keyed mempool privacy is locally
-            validated; production rollout evidence is pending (G2).
+            Local gossip is VTG2: Shamir-split data keys, X25519-wrapped shares, t=2 of n=3 on the current node.
+            One committee key cannot decrypt the wire. Order bodies are VEILENC1. A solo node still accepts
+            plaintext SubmitTx from the order-router. Production 13-of-20 is not this network.
           </p>
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">
@@ -228,9 +227,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             Shielded Ledger
           </h2>
           <p className="mb-6">
-            Encrypted mempool protects intents in flight; a shielded note ledger protects balances at rest.
-            The state machine moves commitments and nullifiers, not public balances. Viewing keys are
-            first-class — &ldquo;private by default, auditable by choice.&rdquo;
+            Gossip hides pending tx bytes from a single key. The groth16 statement binds commitment, nullifier,
+            and state-root slots as public digest fields. That is not yet a note ledger with in-circuit
+            inclusion proofs or viewing keys.
           </p>
 
           <h2 className="mb-4 mt-8 text-2xl font-light etched-text">
@@ -247,10 +246,9 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             Current Status
           </h2>
           <p className="mb-6">
-            These are architectural design principles. Implementation status varies by component — proof-gated
-            consensus passes locally (G1), threshold keying passes locally (G2), and shielded ledger circuits are
-            archived (G3). Current launch authority state is GO FOR PRODUCTION. See the transparency page for the
-            latest gate snapshot and operator caveats.
+            These are design principles plus a local runtime: proof-gated clears, VTG2 2-of-3 gossip, native
+            VAI/AMM/COL, companion intent rails on anvil. Feb &ldquo;GO FOR PRODUCTION&rdquo; is not current
+            launch authority. Local ≠ Fuji ≠ mainnet.
           </p>
         </>
       ),

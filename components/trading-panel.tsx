@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import { useMarket } from "@/lib/use-market"
-import { submitOrder } from "@/lib/market-api-client"
+import { fetchOrderRouterHealth, settleNativeBatch, submitOrder } from "@/lib/market-api-client"
+import { connectedWallet, nativeOrderMessage, personalSign, randomWalletNonce } from "@/lib/sign-native-order"
 
 interface TradingPanelProps {
   marketId: string
@@ -17,6 +18,7 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
   const [amount, setAmount] = useState(100)
   const [busy, setBusy] = useState(false)
   const [resultMsg, setResultMsg] = useState("")
+  const [lastWindowId, setLastWindowId] = useState<number | undefined>(undefined)
   const { market, isLoading } = useMarket(marketId)
 
   if (isLoading) {
@@ -29,7 +31,24 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
 
   const isPolygonNative = (market.sourceName || "").toLowerCase().includes("poly")
   const isVeilNative = Boolean(market.veilMarketId) || (market.sourceName || "").toLowerCase().includes("veil")
-  const localWallet = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
+
+  async function onSettleNative() {
+    const id = market.veilMarketId || market.marketSlug || String(market.id)
+    setBusy(true)
+    setResultMsg("")
+    try {
+      const result = await settleNativeBatch(id, lastWindowId)
+      if (!result) {
+        setResultMsg("Settle router unreachable")
+      } else if (!result.accepted) {
+        setResultMsg(result.message || result.error || "settle rejected")
+      } else {
+        setResultMsg(`cleared ${result.clearTxHash} proof ${result.proofTxHash}`)
+      }
+    } finally {
+      setBusy(false)
+    }
+  }
 
   async function onTradeNative() {
     if (!market.veilMarketId && !market.marketSlug) {
@@ -39,12 +58,32 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
     setBusy(true)
     setResultMsg("")
     try {
-      const result = await submitOrder({
-        marketId: market.veilMarketId || market.marketSlug || String(market.id),
+      const marketId = market.veilMarketId || market.marketSlug || String(market.id)
+      const health = await fetchOrderRouterHealth()
+      if (!health.ok || !health.chainId) {
+        setResultMsg("Order router unreachable")
+        return
+      }
+      const walletAddress = await connectedWallet()
+      const walletNonce = randomWalletNonce()
+      const message = nativeOrderMessage({
+        chainId: health.chainId,
+        marketId,
         side: "buy",
         outcome: selectedOutcome,
         amountUsd: amount,
-        walletAddress: localWallet,
+        wallet: walletAddress,
+        nonce: walletNonce,
+      })
+      const walletSignature = await personalSign(message, walletAddress)
+      const result = await submitOrder({
+        marketId,
+        side: "buy",
+        outcome: selectedOutcome,
+        amountUsd: amount,
+        walletAddress,
+        walletSignature,
+        walletNonce,
         nativeNetwork: "veil",
         routingFeeBps: 0,
       })
@@ -53,8 +92,11 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
       } else if (!result.accepted) {
         setResultMsg(result.message || result.errorCode || "rejected")
       } else {
-        setResultMsg(`settled ${result.veilTxHash}`)
+        setLastWindowId(result.windowId)
+        setResultMsg(`committed ${result.veilTxHash}${result.windowId ? ` window ${result.windowId}` : ""} — not cleared`)
       }
+    } catch (err) {
+      setResultMsg(err instanceof Error ? err.message : "wallet sign failed")
     } finally {
       setBusy(false)
     }
@@ -218,21 +260,39 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
         </div>
 
         {isVeilNative ? (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => void onTradeNative()}
-            className="block w-full py-4 text-center text-[14px] transition-all duration-500 hover:shadow-lg hover:shadow-emerald-500/15 disabled:opacity-50"
-            style={{
-              fontFamily: "var(--font-space-grotesk)",
-              fontWeight: 700,
-              borderRadius: "14px",
-              background: "linear-gradient(135deg, rgba(16, 185, 129, 0.85), rgba(20, 184, 166, 0.85))",
-              color: "rgba(255, 255, 255, 0.95)",
-            }}
-          >
-            {busy ? "Committing…" : "Trade on VeilVM"}
-          </button>
+          <div className="space-y-2">
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void onTradeNative()}
+              className="block w-full py-4 text-center text-[14px] transition-all duration-500 hover:shadow-lg hover:shadow-emerald-500/15 disabled:opacity-50"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                fontWeight: 700,
+                borderRadius: "14px",
+                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.85), rgba(20, 184, 166, 0.85))",
+                color: "rgba(255, 255, 255, 0.95)",
+              }}
+            >
+              {busy ? "Working…" : "Commit on VeilVM"}
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void onSettleNative()}
+              className="block w-full py-3 text-center text-[13px] transition-all duration-500 disabled:opacity-50"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                fontWeight: 600,
+                borderRadius: "14px",
+                background: "rgba(255, 255, 255, 0.04)",
+                border: "1px solid rgba(16, 185, 129, 0.25)",
+                color: "rgba(16, 185, 129, 0.9)",
+              }}
+            >
+              Reveal / prove / clear
+            </button>
+          </div>
         ) : market.sourceUrl ? (
           <a
             href={market.sourceUrl}
