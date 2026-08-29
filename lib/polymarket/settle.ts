@@ -388,12 +388,16 @@ export async function settlePolygonRoute(input: {
 
 export async function polymarketVenueStats(opts?: { deploy?: boolean }) {
   const store = await readStore()
-  let venue: string | null = liveVenue || store.venue || null
+  const env = (process.env.POLYMARKET_VENUE || "").trim()
+  let venue: string | null =
+    [env, LOCAL_POLYMARKET_VENUE, liveVenue, store.venue].find(
+      (a) => typeof a === "string" && /^0x[a-fA-F0-9]{40}$/.test(a) && a !== "0x0000000000000000000000000000000000000000",
+    ) || null
   let deployed = false
   let chainCount: number | null = null
   try {
     if (opts?.deploy === false) {
-      const addr = venue && /^0x[0-9a-fA-F]{40}$/.test(venue) ? (venue.toLowerCase() as Hex) : null
+      const addr = venue && /^0x[a-fA-F0-9]{40}$/.test(venue) ? (venue.toLowerCase() as Hex) : null
       deployed = addr ? await venueLive(addr) : false
       if (addr && deployed) {
         chainCount = Number(await pub.readContract({ address: addr, abi: POLYMARKET_VENUE_ABI, functionName: "count" }))

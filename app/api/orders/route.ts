@@ -260,8 +260,18 @@ export async function POST(request: Request) {
   if (nativeNetwork === "polygon") {
     if (!walletAddress || !walletSignature || !walletNonce) {
       return NextResponse.json(
-        { result: invalidBodyResult("walletAddress, walletSignature, and walletNonce are required for Polymarket routes.") },
-        { status: 400 },
+        {
+          accepted: false,
+          status: "passthrough_only",
+          message: "Unsigned Polygon routes are catalog-only. This frontend does not post CLOB orders without a signed payload. Local settlement is companion PolymarketVenue; live CLOB needs POLYMARKET_CLOB_LIVE=1.",
+          errorCode: "POLYGON_PASSTHROUGH_CATALOG_ONLY",
+          nativeNetwork: "polygon",
+          settlementNetwork: "polygon",
+          routingFeeBps: Math.max(3, routingFeeBps),
+          orderId: "",
+          veilTxHash: "",
+        },
+        { status: 501 },
       )
     }
     try {

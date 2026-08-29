@@ -19,7 +19,7 @@ const MAX_BATCH = Math.min(Number(process.env.MESH_MAX_BATCH || 20), 50)
 const RPM = Number(process.env.MESH_RPM || 240)
 const DENY_EXACT = new Set(["eth_sendTransaction", "eth_sign", "eth_signTransaction", "eth_signTypedData", "eth_signTypedData_v4"])
 const ALLOW = {
-  core: new Set(["hypersdk.ping", "hypersdk.lastAccepted", "hypersdk.network"]),
+  core: new Set(["hypersdk.ping", "hypersdk.lastAccepted", "hypersdk.network", "hypersdk.submitTx"]),
   veil: new Set(["veilvm.pool", "veilvm.treasury", "veilvm.vaistate", "veilvm.balance", "veilvm.vaibalance"]),
   indexer: new Set(["indexer.getBlock", "indexer.getTx"]),
   evm: new Set([
