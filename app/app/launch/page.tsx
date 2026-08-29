@@ -334,7 +334,7 @@ export default function LaunchPage() {
           <div className="mt-4 rounded-lg border border-white/10 bg-[#060606]/25 p-4 text-xs text-white/[0.67]">
             <p className="uppercase tracking-[0.14em] text-white/[0.78]">Surface Split</p>
             <p className="mt-1">VeilVM runtime surface: <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/app/network">/app/network</Link> and <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/app/transparency">/app/transparency</Link></p>
-            <p className="mt-1">Companion EVM explorer (Blockscout): tracks EVM rails, not VeilVM-native actions.</p>
+            <p className="mt-1">VeilVM explorer: <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/explorer">/explorer</Link> (HyperSDK). Companion rails are anvil 31337 via <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/mesh">Mesh</Link> — not Blockscout, not app-id 22207.</p>
           </div>
         </div>
 

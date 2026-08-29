@@ -1,10 +1,12 @@
 # VEIL Mainnet Launch Checklist (Ordered)
 
+> **Historical (2026-02-23).** This is not current launch posture. Local ≠ Fuji ≠ mainnet. Do not treat “GO FOR PRODUCTION” as a live public network. Canonical local status: `thesecretlab-dev/veil-docs` `specs/VEIL_LOCAL_RUNTIME_STATUS_2026-08-27.md`. Companion rails are anvil 31337; explorer is `/explorer`; Mesh is `:8787`.
+
 Last updated: 2026-02-23  
 Source-of-truth snapshot: `<local-path-removed>`
 
-This checklist is the ordered go-live path.  
-Current canonical state (2026-02-22 snapshot): **GO FOR PRODUCTION** with all gates `PASS`/`PASS (local)`.
+This checklist was the ordered go-live path as of February 2026.  
+**Do not execute against production from this file.**
 
 ## 0. Current Launch Posture (as of 2026-02-20T20:19:46.571Z)
 

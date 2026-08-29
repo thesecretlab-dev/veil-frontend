@@ -1,5 +1,7 @@
 # VEIL.markets Verbiage Audit (2026-02-23)
 
+> **Historical.** Snapshot of live-site copy on 2026-02-23. Not current product truth. Local stack + Mesh + first-party explorer superseded the “GO FOR PRODUCTION” line. See README and `runtime.example.env`.
+
 Scope: full sweep of route pages under `app/**/page.tsx`, shared copy sources, and docs surfaces in `docs/**` for launch/readiness wording alignment.
 
 ## Canonical Product Truth Used For This Audit

@@ -1,5 +1,7 @@
 # VEIL.markets Live Deploy Audit (2026-02-23)
 
+> **Historical.** Live-site crawl from 2026-02-23. Not a claim that VeilVM is on Fuji or mainnet. Current local explorer is `/explorer` (not Blockscout). Current companion RPC is anvil 31337 / Mesh `/v1/evm`.
+
 This audit was run against the live site (not local repo rendering) using the closed-alpha key gate.
 
 ## Direct Answer: Whitepaper Location

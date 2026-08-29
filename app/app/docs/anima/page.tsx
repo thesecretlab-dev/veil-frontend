@@ -827,7 +827,7 @@ anima init my-agent
 
 # Configure VEIL chain connection
 cd my-agent
-anima config set chain.rpc "http://127.0.0.1:9650/ext/bc/.../rpc"
+anima config set chain.rpc "http://127.0.0.1:8787/v1/core"
 
 # Create agent wallet
 anima wallet create

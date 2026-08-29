@@ -1,7 +1,9 @@
 # Privacy scope matrix (v1)
 
-Date: 2026-08-27  
+Date: 2026-08-29  
 Runlist: **D07** (local). Canonical: veil-docs `specs/VEIL_LOCAL_RUNTIME_STATUS_2026-08-27.md`.
+
+Clients should use Mesh (`:8787`) not the node. Mesh `/v1/evm` is anvil 31337. Mesh `/v1/core` is HyperSDK app-id 22207. Local RPC ingest to the producer is still plaintext.
 
 | Surface | Private? | Notes |
 |---|---|---|

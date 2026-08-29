@@ -4,7 +4,7 @@
 **Author**: The Secret Lab (TSL)
 **Network**: VEIL Avalanche L1 (app id 22207)
 
-**v1 truth (2026-08-24):** VeilVM implements **19 actions (IDs 0–18)**. IDs 19–41 are spec-only. The L1 is **not live**. Companion EVM is wrap/bridge/intents, not a second protocol. See `veil-docs/architecture/VEIL_STACK.md`.
+**v1 truth (2026-08-29):** VeilVM implements **19 actions (IDs 0–18)**. IDs 19–41 are spec-only. This tree serves a **local** node (HTTP `:9660`, app-id 22207). Companion rails are **anvil 31337** (`:8545`), not Subnet-EVM `:9650`. First-party explorer is `/explorer`. Mesh RPC is `:8787`. Fuji/mainnet are parked. See the repo README and `runtime.example.env`.
 
 ---
 
@@ -65,10 +65,11 @@ VEIL runs two chains in parallel:
 
 | Chain | Stack | Port | Purpose |
 |-------|-------|------|---------|
-| **VeilVM** | HyperSDK (Go) | 9660 | Execution — 19 native actions (v1). Not live. |
-| **Companion EVM** | Subnet-EVM | 9650 | Compatibility — ERC-20 tokens, wallets, Blockscout explorer |
+| **VeilVM** | HyperSDK (Go) | 9660 | Execution — 19 native actions (v1). Local testnet. Not Fuji. |
+| **Companion EVM** | Anvil | 8545 (chain id **31337**) | WVEIL, intent gateways, faucet, ZER0ID registry. Wallets talk here. |
+| **Mesh** | TSL JSON-RPC | 8787 | Public-facing RPC. `/v1/core` `/v1/veil` `/v1/indexer` `/v1/evm`. |
 
-The Companion EVM exists because wallets (MetaMask, Core) and block explorers (Blockscout) require EVM JSON-RPC. Agents interact primarily with VeilVM through ANIMA's RPC client; the Companion EVM serves as the bridge layer for human developers and external tooling.
+App-id **22207 is not an EVM chain id**. Do not point MetaMask at 22207 or at `:9650`. Agents should use Mesh (`http://127.0.0.1:8787/v1/core` for HyperSDK, `/v1/evm` for companion). The first-party explorer is `/explorer` (HyperSDK), not Blockscout.
 
 ### 2.3 Native Action Inventory
 
@@ -328,10 +329,11 @@ ANIMA does not exist in isolation. It integrates with:
 
 | Component | Role | Status |
 |-----------|------|--------|
-| **VeilVM** | Execution chain (19 v1 actions) | Not live |
-| **Companion EVM** | EVM bridge for wallets/explorers | Live, 148 blocks (repair needed) |
-| **ZER0ID** | ZK identity (Groth16 circuits) | Circuits + verifier built, not wired to ANIMA |
-| **Blockscout Explorer** | Chain visibility | Live at explorer.thesecretlab.app |
+| **VeilVM** | Execution chain (19 v1 actions) | Local `:9660`. Not Fuji/mainnet |
+| **Companion EVM** | Anvil 31337 rails | Local `:8545`. Not Subnet-EVM `:9650` |
+| **ZER0ID** | Companion nullifier registry | Deployed on 31337. Groth16 wasm/zkey not served |
+| **Explorer** | First-party HyperSDK explorer | `/explorer`. Not Blockscout |
+| **Mesh** | TSL RPC | Local `:8787` |
 | **ANIMA Orchestrator** | Dev tooling — parallel agent fleet management | Fork of ComposioHQ/agent-orchestrator |
 | **VEIL Frontend** | veil.markets — 37 routes, onboarding flow | Live, deployed to Vercel |
 | **Maestro** | Music production service (TSL product) | Live at maestro.thesecretlab.app |
@@ -362,12 +364,12 @@ ANIMA does not exist in isolation. It integrates with:
 - Oracle resolution tools
 - Parent-child communication over network (currently in-memory only)
 
-**Live on mainnet:**
-- VeilVM chain (not live on Fuji/mainnet)
-- First agent child node (manually provisioned)
-- Companion EVM (148 blocks, needs state repair)
-- Blockscout explorer
-- Frontend at veil.markets
+**Not live on Fuji or mainnet.** Local-only:
+
+- VeilVM HTTP `:9660` + Mesh `:8787`
+- Companion anvil 31337 (WVEIL, gateways, faucet, ZER0ID registry)
+- First-party explorer `/explorer`
+- Frontend at veil.markets is the public UI shell; it does not imply a public L1
 
 ---
 

@@ -1486,7 +1486,7 @@ npm install -g anima
 anima init my-agent && cd my-agent
 
 # Configure chain connection
-anima config set chain.rpc "http://127.0.0.1:9650/ext/bc/.../rpc"
+anima config set chain.rpc "http://127.0.0.1:8787/v1/core"
 
 # Create wallet & fund from faucet
 anima wallet create
