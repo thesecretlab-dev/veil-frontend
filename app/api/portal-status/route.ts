@@ -350,7 +350,8 @@ export async function GET() {
       statusCode: orderRouterBase ? orderRouterProbe.statusCode : null,
     },
     flags: {
-      liveMarketsAvailable: markets.some((m) => Boolean(m.veilMarketId)),
+      liveMarketsAvailable: markets.length > 0,
+      nativeMarketsAvailable: markets.some((m) => Boolean(m.veilMarketId)),
       bridgeReady: false,
       chainlinkFresh: false,
       prelaunchReady: readiness?.overallPass === true,

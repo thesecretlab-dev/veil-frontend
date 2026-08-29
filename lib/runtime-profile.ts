@@ -19,6 +19,23 @@ export function runtimeProfile(): VeilProfile {
   return "local"
 }
 
+/** Vercel / public site: Polymarket catalog. Native VeilVM stays loopback. */
+export function publicCatalogOrigin(): boolean {
+  return (
+    process.env.VERCEL === "1" ||
+    Boolean(process.env.VERCEL_ENV) ||
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "production" ||
+    process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" ||
+    process.env.VEIL_PUBLIC_CATALOG === "1" ||
+    process.env.NEXT_PUBLIC_VEIL_PUBLIC_CATALOG === "1"
+  )
+}
+
+export function includePolymarketCatalog(): boolean {
+  const v = (process.env.VEIL_INCLUDE_POLYMARKET ?? "1").trim().toLowerCase()
+  return v !== "0" && v !== "false"
+}
+
 export function profileParked(profile: VeilProfile = runtimeProfile()): boolean {
   return profile !== "local"
 }
@@ -49,7 +66,8 @@ export function profilePublic() {
     operator: TSL_OPERATOR,
     contact: TSL_CONTACT,
     doNotDeployUnder: LOST_OWNER,
-    includePolymarket: process.env.VEIL_INCLUDE_POLYMARKET === "1",
+    includePolymarket: includePolymarketCatalog(),
+    publicCatalog: publicCatalogOrigin(),
     claims: profileClaims(),
     notes: [
       "Local ≠ Fuji ≠ mainnet.",
@@ -65,6 +83,7 @@ export function profilePublic() {
 }
 
 export function profileBannerText() {
+  if (publicCatalogOrigin()) return "VEIL.MARKETS"
   const profile = runtimeProfile()
   if (profile === "local") return "LOCAL TESTNET"
   return `${profile.toUpperCase()} PARKED`

@@ -70,6 +70,7 @@ export type PortalStatusResponse = {
   }
   flags: {
     liveMarketsAvailable: boolean
+    nativeMarketsAvailable?: boolean
     bridgeReady: boolean
     chainlinkFresh: boolean
     prelaunchReady: boolean

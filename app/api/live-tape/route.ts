@@ -4,10 +4,14 @@ import path from "path"
 import { NextResponse } from "next/server"
 import { LOCAL_VEILVM_CHAIN_ID } from "@/lib/local-runtime"
 import { meshCall, meshNodeHealth } from "@/lib/mesh/proxy"
+import { publicCatalogOrigin } from "@/lib/runtime-profile"
 
 export const dynamic = "force-dynamic"
 
-const ROUTER = (process.env.VEIL_ORDER_API_BASE || "http://127.0.0.1:9098").replace(/\/+$/, "")
+const ROUTER = (
+  process.env.VEIL_ORDER_API_BASE ||
+  (process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:9098")
+).replace(/\/+$/, "")
 const CHAIN_ID = LOCAL_VEILVM_CHAIN_ID
 const SECRET =
   process.env.VEIL_ORDER_API_KEY ||
@@ -65,6 +69,16 @@ async function readTicks(): Promise<Tick[]> {
 }
 
 export async function GET() {
+  if (publicCatalogOrigin() || !ROUTER) {
+    return NextResponse.json({
+      ok: false,
+      origin: "vercel",
+      local: false,
+      pool: null,
+      ticks: [],
+      note: "Native tape is loopback. This origin serves the Polymarket catalog.",
+    })
+  }
   const headers: Record<string, string> = {}
   if (SECRET) headers["x-relay-secret"] = SECRET
 

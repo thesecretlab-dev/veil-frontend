@@ -15,7 +15,7 @@ import {
   veilCoreApi,
 } from "@/lib/local-runtime"
 import { polymarketVenueStats } from "@/lib/polymarket/settle"
-import { profileParked, profilePublic, runtimeProfile } from "@/lib/runtime-profile"
+import { profileParked, profilePublic, publicCatalogOrigin, runtimeProfile } from "@/lib/runtime-profile"
 import { readFileSync } from "fs"
 import { resolve } from "path"
 
@@ -64,6 +64,70 @@ function hasCode(code: unknown) {
 
 export async function probeStack() {
   const profile = profilePublic()
+  if (publicCatalogOrigin()) {
+    return {
+      ok: true,
+      readyForUsers: true,
+      local: false,
+      origin: "vercel",
+      profile,
+      timestamp: new Date().toISOString(),
+      chainId: LOCAL_VEILVM_APP_ID,
+      blockHeight: null as number | null,
+      totalPeers: 0,
+      subnetPeers: 0,
+      validators: [] as Array<{ nodeId: string; role: string; active: boolean; label: string }>,
+      veilvm: {
+        healthy: false,
+        appId: LOCAL_VEILVM_APP_ID,
+        chainId: "",
+        subnetId: "",
+        height: null as number | null,
+        blockId: null as string | null,
+        node: "",
+        nodeId: "",
+        note: "Native VeilVM is loopback. This origin serves the public catalog.",
+      },
+      companion: {
+        ok: false,
+        chainId: null as number | null,
+        expectedChainId: LOCAL_COMPANION_CHAIN_ID,
+        rpc: "",
+        orderGateway: "",
+        liquidityGateway: "",
+        wveil: "",
+        orderGatewayLive: false,
+        liquidityGatewayLive: false,
+        wveilLive: false,
+        note: "Companion anvil is not this origin.",
+      },
+      identity: {
+        product: "ZER0ID",
+        registry: "",
+        deployed: false,
+        groth16WasmServed: false,
+        registerIdentity: false,
+      },
+      mesh: { ok: false, http: "", operator: "THE SECRET LAB", note: "Mesh is loopback." },
+      router: {
+        ok: false,
+        base: "",
+        chainId: null as string | null,
+        markets: 0,
+        proverReady: false,
+      },
+      polymarket: {
+        catalog: true,
+        liveClob: process.env.POLYMARKET_CLOB_LIVE === "1",
+        venue: null as string | null,
+        deployed: false,
+        fills: 0,
+        note: "Public catalog. Prices from Polymarket Gamma/CLOB. Native settlement is not this origin.",
+      },
+      checks: [{ id: "catalog", ok: true, detail: "polymarket feed" }],
+      failed: [] as string[],
+    }
+  }
   if (profileParked()) {
     return {
       ok: false,

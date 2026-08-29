@@ -1,5 +1,5 @@
 import { LOCAL_ZEROID_REGISTRY } from "@/lib/local-runtime"
-import { profilePublic } from "@/lib/runtime-profile"
+import { profilePublic, publicCatalogOrigin } from "@/lib/runtime-profile"
 import { MESH_KEY, MESH_REQUIRE_KEY, meshOrigins, type MeshLane } from "./config"
 import { inspectMeshPayload, meshClientIp, meshCorsOrigin, meshRateLimit } from "./policy"
 
@@ -58,6 +58,9 @@ export async function meshJsonRpc(
   payload: unknown,
   timeoutMs = 8000,
 ): Promise<{ result?: unknown; error?: RpcError; jsonrpc?: string; id?: unknown }> {
+  if (publicCatalogOrigin()) {
+    return { error: { message: "Mesh is loopback. This origin is the public catalog.", code: -32001 } }
+  }
   const origins = meshOrigins()
   const url = origins[lane]
   stats.requests += 1
@@ -90,6 +93,7 @@ export async function meshCall(lane: MeshLane, method: string, params: unknown =
 }
 
 export async function meshNodeHealth(timeoutMs = 2500): Promise<unknown> {
+  if (publicCatalogOrigin()) throw new Error("Mesh is loopback. This origin is the public catalog.")
   stats.byLane.health = (stats.byLane.health || 0) + 1
   const res = await fetch(meshOrigins().nodeHealth, {
     cache: "no-store",
@@ -100,6 +104,17 @@ export async function meshNodeHealth(timeoutMs = 2500): Promise<unknown> {
 }
 
 export async function meshStatus() {
+  if (publicCatalogOrigin()) {
+    return {
+      ok: false,
+      product: "Mesh",
+      operator: "THE SECRET LAB",
+      local: false,
+      origin: "vercel",
+      profile: profilePublic(),
+      note: "Mesh is loopback. This origin is the public catalog.",
+    }
+  }
   const [health, tip, chainId, registryCode] = await Promise.all([
     meshNodeHealth().catch(() => null),
     meshCall("core", "hypersdk.lastAccepted", {}, 4000).catch(() => null),
