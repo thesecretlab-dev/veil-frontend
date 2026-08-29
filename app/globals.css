@@ -348,6 +348,12 @@ section:hover .stealth-text {
   animation: none !important;
 }
 
+/* Keep data-flow targets clear of the fixed header when scrolled into view. */
+[data-flow] {
+  scroll-margin-top: 7rem;
+  scroll-margin-bottom: 2rem;
+}
+
 /* Landing readability pass while keeping stealth tone */
 .landing-readable .veil-readability-scrim {
   background:

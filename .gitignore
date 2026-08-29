@@ -50,3 +50,7 @@ dev-server*.log
 
 # vercel (already listed above, keeping for clarity)
 .vercel
+
+# Groth16 wasm/zkey stay on disk. Local setup, not a public ceremony. Do not push.
+/public/circuits/*.wasm
+/public/circuits/*.zkey

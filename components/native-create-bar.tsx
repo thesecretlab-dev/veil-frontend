@@ -58,6 +58,7 @@ export function NativeCreateBar({ onCreated }: { onCreated?: () => void }) {
           Create native market
         </span>
         <input
+          data-flow="create-market-q"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="Enter market question..."
@@ -110,6 +111,7 @@ export function NativeCreateBar({ onCreated }: { onCreated?: () => void }) {
         </div>
         <button
           type="button"
+          data-flow="create-market-submit"
           disabled={busy}
           onClick={() => void onCreate()}
           className="shrink-0 px-4 py-2 text-[13px] disabled:opacity-50"

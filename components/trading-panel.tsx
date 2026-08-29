@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useMarket } from "@/lib/use-market"
 import { fetchOrderRouterHealth, settleNativeBatch, submitOrder } from "@/lib/market-api-client"
@@ -17,12 +17,24 @@ function isHttpImage(value: string): boolean {
 
 export function TradingPanel({ marketId }: TradingPanelProps) {
   const [selectedOutcome, setSelectedOutcome] = useState<"yes" | "no">("yes")
-  const [amount, setAmount] = useState(100)
+  const [amount, setAmount] = useState(1)
   const [busy, setBusy] = useState(false)
   const [resultMsg, setResultMsg] = useState("")
   const [lastTx, setLastTx] = useState("")
   const [lastWindowId, setLastWindowId] = useState<number | undefined>(undefined)
+  const [actor, setActor] = useState("mesh")
   const { market, isLoading } = useMarket(marketId)
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem("veil:native-actor")
+    if (saved) setActor(saved)
+    else window.localStorage.setItem("veil:native-actor", "mesh")
+  }, [])
+
+  function pickActor(id: string) {
+    setActor(id)
+    window.localStorage.setItem("veil:native-actor", id)
+  }
 
   if (isLoading) {
     return <div className="w-96 p-8" style={{ color: "rgba(255, 255, 255, 0.34)", fontFamily: "var(--font-figtree)" }}>Loading...</div>
@@ -114,18 +126,25 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
         setResultMsg("Order router unreachable")
         return
       }
-      const walletAddress = await connectedWallet()
-      const walletNonce = randomWalletNonce()
-      const message = nativeOrderMessage({
-        chainId: health.chainId,
-        marketId,
-        side: "buy",
-        outcome: selectedOutcome,
-        amountUsd: amount,
-        wallet: walletAddress,
-        nonce: walletNonce,
-      })
-      const walletSignature = await personalSign(message, walletAddress)
+      const role = actor
+      const useRole = ["2", "mesh", "anima", "zer0"].includes(role)
+      let walletAddress = role
+      let walletSignature = ""
+      let walletNonce = ""
+      if (!useRole) {
+        walletAddress = await connectedWallet()
+        walletNonce = randomWalletNonce()
+        const message = nativeOrderMessage({
+          chainId: health.chainId,
+          marketId,
+          side: "buy",
+          outcome: selectedOutcome,
+          amountUsd: amount,
+          wallet: walletAddress,
+          nonce: walletNonce,
+        })
+        walletSignature = await personalSign(message, walletAddress)
+      }
       const result = await submitOrder({
         marketId,
         side: "buy",
@@ -136,6 +155,7 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
         walletNonce,
         nativeNetwork: "veil",
         routingFeeBps: 0,
+        actor: useRole ? role : undefined,
       })
       if (!result) {
         setResultMsg("Order router unreachable")
@@ -274,9 +294,11 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
             <div className="text-[11px] mb-1.5" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.34)" }}>If you bet</div>
             <div className="text-3xl mb-2" style={{ fontFamily: "var(--font-space-grotesk)", fontWeight: 700, color: "rgba(255, 255, 255, 0.95)" }}>${amount}</div>
             <div className="flex gap-2">
-              {[10, 50, 100, 500].map((val) => (
+              {[1, 10, 50, 100, 500].map((val) => (
                 <button
                   key={val}
+                  type="button"
+                  data-flow={`bet-${val}`}
                   onClick={() => setAmount(val)}
                   className="px-3 py-1.5 text-[12px] transition-all duration-500 hover:border-emerald-500/20"
                   style={{
@@ -312,8 +334,29 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
 
         {isVeilNative ? (
           <div className="space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {(["mesh", "anima", "zer0", "2", "1"] as const).map((id) => (
+                <button
+                  key={id}
+                  type="button"
+                  data-flow={`actor-${id}`}
+                  onClick={() => pickActor(id)}
+                  className="px-2 py-1 text-[10px] uppercase tracking-wide"
+                  style={{
+                    fontFamily: "var(--font-space-grotesk)",
+                    borderRadius: 8,
+                    border: actor === id ? "1px solid rgba(16,185,129,0.4)" : "1px solid rgba(255,255,255,0.08)",
+                    color: actor === id ? "rgba(110,231,183,0.95)" : "rgba(255,255,255,0.45)",
+                    background: actor === id ? "rgba(16,185,129,0.1)" : "transparent",
+                  }}
+                >
+                  {id === "1" ? "router" : id === "2" ? "actor2" : id}
+                </button>
+              ))}
+            </div>
             <button
               type="button"
+              data-flow="commit-veilvm"
               disabled={busy}
               onClick={() => void onTradeNative()}
               className="block w-full py-4 text-center text-[14px] transition-all duration-500 hover:shadow-lg hover:shadow-emerald-500/15 disabled:opacity-50"
@@ -329,6 +372,7 @@ export function TradingPanel({ marketId }: TradingPanelProps) {
             </button>
             <button
               type="button"
+              data-flow="settle-veilvm"
               disabled={busy}
               onClick={() => void onSettleNative()}
               className="block w-full py-3 text-center text-[13px] transition-all duration-500 disabled:opacity-50"

@@ -22,8 +22,30 @@ type Health = {
   actor?: string
   veil?: number
   vai?: number
+  veil2?: number
+  meshActor?: string
+  meshVeil?: number
+  animaActor?: string
+  animaVeil?: number
+  zer0Actor?: string
+  zer0Veil?: number
   markets?: number
   note?: string
+}
+
+function actingVeil(h: Health | null, actor: string): number | null {
+  if (!h) return null
+  const n =
+    actor === "2" || actor === "actor2"
+      ? h.veil2
+      : actor === "mesh"
+        ? h.meshVeil
+        : actor === "anima"
+          ? h.animaVeil
+          : actor === "zer0" || actor === "zero" || actor === "zeroid"
+            ? h.zer0Veil
+            : h.veil
+  return typeof n === "number" ? n : null
 }
 
 const ACCENT = "#23E985"
@@ -37,6 +59,7 @@ export function WalletConnect() {
   const [menu, setMenu] = useState(false)
   const [busy, setBusy] = useState("")
   const [error, setError] = useState("")
+  const [nativeActor, setNativeActor] = useState("mesh")
 
   const pullHealth = useCallback(async () => {
     try {
@@ -54,6 +77,13 @@ export function WalletConnect() {
     const id = window.setInterval(() => void pullHealth(), 8000)
     return () => window.clearInterval(id)
   }, [pullHealth])
+
+  useEffect(() => {
+    const read = () => setNativeActor(window.localStorage.getItem("veil:native-actor") || "mesh")
+    read()
+    const id = window.setInterval(read, 1500)
+    return () => window.clearInterval(id)
+  }, [])
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -108,7 +138,7 @@ export function WalletConnect() {
       const res = await fetch("/api/native/faucet", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ to: window.localStorage.getItem("veil:native-actor") || "mesh" }),
       })
       const json = (await res.json()) as { accepted?: boolean; error?: string; veil?: number }
       if (!res.ok || json.accepted === false) {
@@ -123,16 +153,18 @@ export function WalletConnect() {
     }
   }
 
-  const veilBal = typeof health?.veil === "number" ? health.veil : null
+  const veilBal = actingVeil(health, nativeActor)
   const chipLabel = veilBal != null ? `${veilBal.toLocaleString()} VEIL` : "— VEIL"
 
   return (
     <div className="relative flex items-center gap-2">
       <button
         type="button"
+        aria-label="Connect"
         onClick={() => {
           if (!rail) {
-            chooseVeil()
+            setOpen(true)
+            return
           }
           setMenu((v) => !v)
         }}
@@ -156,6 +188,7 @@ export function WalletConnect() {
       </button>
       <button
         type="button"
+        data-flow="faucet-native"
         disabled={Boolean(busy)}
         onClick={() => void faucet()}
         className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] disabled:opacity-50"
@@ -217,6 +250,26 @@ export function WalletConnect() {
                 {busy === "faucet" ? "Dripping…" : "Native faucet"}
               </button>
             ) : null}
+            <button
+              type="button"
+              disabled={Boolean(busy)}
+              onClick={() => void chooseCompanion()}
+              className="block w-full px-4 py-2.5 text-left text-[12px] hover:bg-white/[0.03] disabled:opacity-50"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.78)" }}
+            >
+              Companion 31337
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMenu(false)
+                setOpen(true)
+              }}
+              className="block w-full px-4 py-2.5 text-left text-[12px] hover:bg-white/[0.03]"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.5)" }}
+            >
+              Switch rail
+            </button>
             <button
               type="button"
               onClick={() => {

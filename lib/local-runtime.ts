@@ -3,10 +3,22 @@
  * HyperSDK app-id 22207 is not an EVM chain id. Companion wallets talk to anvil 31337.
  */
 
-export const LOCAL_VEILVM_CHAIN_ID = "bdRGUMA7rzZFXjbn1ePTjqhAUfTjW94e69p7qZd4puZ3uEosL"
+export const LOCAL_VEILVM_CHAIN_ID = (
+  process.env.NEXT_PUBLIC_VEIL_CHAIN_ID ||
+  process.env.VEIL_CHAIN_ID ||
+  "bdRGUMA7rzZFXjbn1ePTjqhAUfTjW94e69p7qZd4puZ3uEosL"
+).trim()
 export const LOCAL_VEILVM_APP_ID = 22207
-export const LOCAL_SUBNET_ID = "AkMZ5HpwZRuB1CY7M6HvUmHuVipiRUKD1dTyLmkoQFe8qqMrC"
-export const LOCAL_NODE_ID = "NodeID-HMqe6QZg8h7Bb3minFk2YruUeGzdhy94H"
+export const LOCAL_SUBNET_ID = (
+  process.env.NEXT_PUBLIC_VEIL_SUBNET_ID ||
+  process.env.VEIL_SUBNET_ID ||
+  "AkMZ5HpwZRuB1CY7M6HvUmHuVipiRUKD1dTyLmkoQFe8qqMrC"
+).trim()
+export const LOCAL_NODE_ID = (
+  process.env.NEXT_PUBLIC_VEIL_NODE_ID ||
+  process.env.VEIL_NODE_ID ||
+  "NodeID-HMqe6QZg8h7Bb3minFk2YruUeGzdhy94H"
+).trim()
 export const LOCAL_NODE = (process.env.VEIL_NODE_URL || "http://127.0.0.1:9660").replace(/\/+$/, "")
 export const LOCAL_ROUTER = (process.env.VEIL_ORDER_API_BASE || "http://127.0.0.1:9098").replace(/\/+$/, "")
 export const LOCAL_COMPANION_RPC = (process.env.VEIL_COMPANION_RPC || "http://127.0.0.1:8545").replace(/\/+$/, "")

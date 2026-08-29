@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { FilmGrain, VeilFooter, VeilHeader } from "@/components/brand"
 import { FlowNext } from "@/components/flow-next"
@@ -11,7 +12,46 @@ const STEPS = [
   { n: "03", title: "Registry", body: "Nullifier uniqueness is written to the companion contract on anvil 31337. Duplicate issue fails closed." },
 ]
 
+type CatalogLead = {
+  groth16WasmServed?: boolean
+  companion?: { deployed?: boolean; registry?: string | null; chainCount?: number | null }
+}
+
+function shortHex(h: string, n = 4) {
+  if (!h) return "—"
+  if (h.length <= n * 2 + 3) return h
+  return `${h.slice(0, n + 2)}…${h.slice(-n)}`
+}
+
 export default function ZeroidPage() {
+  const [catalog, setCatalog] = useState<CatalogLead | null>(null)
+
+  useEffect(() => {
+    let dead = false
+    const pull = () =>
+      fetch("/api/zeroid", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((j) => {
+          if (!dead) setCatalog(j as CatalogLead)
+        })
+        .catch(() => {})
+    void pull()
+    const id = window.setInterval(() => void pull(), 8000)
+    return () => {
+      dead = true
+      window.clearInterval(id)
+    }
+  }, [])
+
+  const served = Boolean(catalog?.groth16WasmServed)
+  const deployed = Boolean(catalog?.companion?.deployed)
+  const registry = catalog?.companion?.registry || ""
+  const lead = !catalog
+    ? "Type 8004. Commitment-nullifier identity for this node. HMAC-issued here, unique on the companion registry. Groth16 probe loading…"
+    : served
+      ? `Type 8004. HMAC-issued here, unique on companion registry ${deployed ? shortHex(registry) : "(probing)"}. Local Groth16 wasm/zkey served from /circuits. Setup is local, not a public ceremony. No KYC camera.`
+      : "Type 8004. HMAC-issued here, unique on the companion registry. Groth16 wasm/zkey not on disk yet. HMAC 8004 still issues L1 uniqueness. No KYC camera."
+
   return (
     <div className="relative min-h-screen" style={{ background: "#060606", color: "white", paddingRight: 48 }}>
       <FilmGrain />
@@ -33,8 +73,7 @@ export default function ZeroidPage() {
           className="mb-10 max-w-2xl text-lg font-light leading-relaxed"
           style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.53)" }}
         >
-          Type 8004. Commitment-nullifier identity for this node. HMAC-issued here, unique on the companion registry.
-          Groth16 circuits are in-repo; wasm/zkey are not served. No KYC camera.
+          {lead}
         </p>
 
         <div className="mb-12 grid gap-3 md:grid-cols-3">

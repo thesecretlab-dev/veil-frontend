@@ -13,6 +13,8 @@ import {
 
 type Catalog = {
   note?: string
+  groth16WasmServed?: boolean
+  groth16GateLive?: boolean
   circuits?: Array<{ id: string; name: string; file: string; proves: string; status: string }>
   levels?: Array<{ id: string; name: string; proves: string }>
   bloodsworn?: {
@@ -30,6 +32,8 @@ type Catalog = {
     hmac?: string
     artifact?: string
     groth16Gate?: string
+    groth16WasmServed?: boolean
+    groth16GateLive?: boolean
   }
   veilvm?: { registerIdentity?: boolean; nativeActions?: string }
 }
@@ -101,6 +105,7 @@ export function ZeroidConsole() {
   const [catalog, setCatalog] = useState<Catalog | null>(null)
   const [busy, setBusy] = useState("")
   const [error, setError] = useState("")
+  const [groth, setGroth] = useState("")
   const [copied, setCopied] = useState("")
   const [check, setCheck] = useState<Check | null>(null)
   const [lookupHex, setLookupHex] = useState("")
@@ -200,6 +205,8 @@ export function ZeroidConsole() {
   const bound = Boolean(passport?.wallet)
   const registry = passport?.registry || catalog?.companion?.registry || "—"
   const deployed = Boolean(catalog?.companion?.deployed)
+  const wasmServed = Boolean(catalog?.groth16WasmServed || catalog?.companion?.groth16WasmServed)
+  const gateLive = Boolean(catalog?.groth16GateLive || catalog?.companion?.groth16GateLive)
 
   const identityRows = useMemo(() => {
     if (!passport) return []
@@ -242,7 +249,12 @@ export function ZeroidConsole() {
           {verified ? "Passport verified on companion registry" : minted ? "Passport on this device — verify pending" : "No 8004 passport on this device"}
         </span>
         <span className="text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.42)" }}>
-          type 8004 · app-id 22207 · {deployed ? `registry ×${catalog?.companion?.chainCount ?? 0}` : "registry down"}
+          type 8004 · app-id 22207 ·{" "}
+          {deployed
+            ? `registry ${shortHex(String(catalog?.companion?.registry || registry), 4)} ×${catalog?.companion?.chainCount ?? 0}`
+            : catalog
+              ? "registry down"
+              : "registry probing…"}
         </span>
       </div>
 
@@ -251,6 +263,9 @@ export function ZeroidConsole() {
         <Chip on={Boolean(passport?.issuerSig)} label="HMAC issued" />
         <Chip on={Boolean(passport?.onChain && check?.onChain !== false)} label="On-chain nullifier" />
         <Chip on={bound} label={bound ? "Wallet bound" : "Wallet unbound"} />
+        <Chip on={deployed} label={deployed ? "Bytecode live" : "Registry"} />
+        <Chip on={wasmServed} label={wasmServed ? "wasm/zkey served" : "wasm/zkey"} />
+        <Chip on={gateLive} label={gateLive ? "Groth16 gate live" : "Groth16 gate"} />
       </div>
 
       <div
@@ -261,6 +276,7 @@ export function ZeroidConsole() {
           <button
             key={t}
             type="button"
+            data-flow={`zeroid-tab-${t.toLowerCase()}`}
             onClick={() => setTab(t)}
             className="pb-2"
             style={{
@@ -335,6 +351,7 @@ export function ZeroidConsole() {
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
+              data-flow="zeroid-issue"
               disabled={Boolean(busy)}
               onClick={() => void mint()}
               className="rounded-full px-5 py-2.5 text-[12px] tracking-wide uppercase disabled:opacity-50"
@@ -360,6 +377,7 @@ export function ZeroidConsole() {
                 </button>
                 <button
                   type="button"
+                  data-flow="zeroid-bind"
                   disabled={Boolean(busy)}
                   onClick={() => void bind()}
                   className="rounded-full px-5 py-2.5 text-[12px] tracking-wide uppercase disabled:opacity-50"
@@ -400,8 +418,10 @@ export function ZeroidConsole() {
       {tab === "Registry" && (
         <div className="space-y-5">
           <p className="text-[15px] leading-relaxed" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.53)" }}>
-            Companion uniqueness register. VeilVM has no registerIdentity in v1 (actions 0–18). Groth16 gate is compiled
-            and unused until wasm/zkey are served.
+            Companion uniqueness register. VeilVM has no registerIdentity in v1 (actions 0–18).{" "}
+            {wasmServed
+              ? "Groth16 wasm/zkey are served from /circuits. Setup is local, not a public ceremony."
+              : "Groth16 wasm/zkey are not on disk yet. HMAC 8004 still issues L1 uniqueness."}
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
@@ -503,9 +523,45 @@ export function ZeroidConsole() {
       {tab === "Circuits" && (
         <div className="space-y-3">
           <p className="mb-4 text-[15px] leading-relaxed" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.53)" }}>
-            Groth16 on BN254 lives in the zeroid repo. Wasm/zkey are not served here. This node issues L1 uniqueness
-            via tagged SHA-256. L2–L4 are not issued.
+            Groth16 on BN254.{" "}
+            {wasmServed
+              ? "wasm/zkey served from /circuits (see /api/zeroid/groth16). Setup is local, not a public ceremony."
+              : "wasm/zkey not on disk yet."}{" "}
+            HMAC 8004 still issues L1 uniqueness on this node. L2–L4 are not issued.
           </p>
+          <button
+            type="button"
+            data-flow="zeroid-groth16"
+            disabled={Boolean(busy)}
+            onClick={() => {
+              setBusy("groth")
+              setGroth("")
+              void fetch("/api/zeroid/groth16", { cache: "no-store" })
+                .then((r) => r.json())
+                .then((j: { groth16WasmServed?: boolean; gateLive?: boolean; note?: string }) => {
+                  setGroth(
+                    j.groth16WasmServed
+                      ? `wasm/zkey served${j.gateLive ? " · gate live" : ""} · local setup, not a public ceremony`
+                      : j.note || "wasm/zkey not served",
+                  )
+                })
+                .catch((e) => setGroth(e instanceof Error ? e.message : "groth16 probe failed"))
+                .finally(() => setBusy(""))
+            }}
+            className="rounded-full px-5 py-2.5 text-[12px] tracking-wide uppercase disabled:opacity-50"
+            style={{
+              fontFamily: "var(--font-space-grotesk)",
+              border: "1px solid rgba(16,185,129,0.3)",
+              color: "rgba(110,231,183,0.95)",
+            }}
+          >
+            {busy === "groth" ? "Probing…" : "Probe Groth16"}
+          </button>
+          {groth ? (
+            <p className="text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: /served/i.test(groth) ? "rgba(110,231,183,0.9)" : "rgba(248,113,113,0.9)" }}>
+              {groth}
+            </p>
+          ) : null}
           {(catalog?.circuits || []).map((c) => (
             <Panel key={c.id}>
               <div className="flex items-center justify-between gap-3">

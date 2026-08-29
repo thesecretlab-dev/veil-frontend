@@ -25,22 +25,37 @@ type Catalog = {
   }>
 }
 
+type Signers = {
+  ok?: boolean
+  meshActor?: string
+  meshVeil?: number
+  animaActor?: string
+  animaVeil?: number
+  zer0Actor?: string
+  zer0Veil?: number
+  actor2?: string
+  veil2?: number
+}
+
 export default function MeshPage() {
   const [status, setStatus] = useState<Status | null>(null)
   const [catalog, setCatalog] = useState<Catalog | null>(null)
+  const [signers, setSigners] = useState<Signers | null>(null)
   const [copied, setCopied] = useState("")
 
   useEffect(() => {
     let dead = false
     const pull = async () => {
       try {
-        const [h, c] = await Promise.all([
+        const [h, c, s] = await Promise.all([
           fetch("/api/mesh/health", { cache: "no-store" }).then((r) => r.json()),
           fetch("/api/mesh", { cache: "no-store" }).then((r) => r.json()),
+          fetch("/api/orders", { cache: "no-store" }).then((r) => r.json()).catch(() => null),
         ])
         if (!dead) {
           setStatus(h)
           setCatalog(c)
+          setSigners(s as Signers)
         }
       } catch {
         if (!dead) setStatus({ ok: false })
@@ -124,6 +139,33 @@ export default function MeshPage() {
               </button>
             )),
           )}
+        </div>
+
+        <div
+          className="mb-8 rounded-2xl px-5 py-4"
+          data-flow="mesh-signers"
+          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
+        >
+          <div className="mb-2 text-[11px] tracking-[0.16em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.36)" }}>
+            Native signers
+          </div>
+          <div className="space-y-2 text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.72)" }}>
+            <p>
+              ANIMA signer {signers?.animaActor ? `${signers.animaActor.slice(0, 10)}…` : "—"} ·{" "}
+              {typeof signers?.animaVeil === "number" ? `${signers.animaVeil.toLocaleString()} VEIL` : "— VEIL"}
+            </p>
+            <p>
+              Mesh signer {signers?.meshActor ? `${signers.meshActor.slice(0, 10)}…` : "—"} ·{" "}
+              {typeof signers?.meshVeil === "number" ? `${signers.meshVeil.toLocaleString()} VEIL` : "— VEIL"}
+            </p>
+            <p>
+              ZER0 signer {signers?.zer0Actor ? `${signers.zer0Actor.slice(0, 10)}…` : "—"} ·{" "}
+              {typeof signers?.zer0Veil === "number" ? `${signers.zer0Veil.toLocaleString()} VEIL` : "— VEIL"}
+            </p>
+            <p className="text-[12px]" style={{ color: "rgba(255,255,255,0.38)" }}>
+              ANIMA HTTP :8080 is newborn and does not load this key. The router signs commit-as anima. Not a validator. Not Fuji.
+            </p>
+          </div>
         </div>
 
         <div className="mb-8 rounded-2xl px-5 py-4" style={{ border: "1px solid rgba(255,255,255,0.06)" }}>

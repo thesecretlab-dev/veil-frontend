@@ -26,6 +26,7 @@ export type SubmitOrderRequest = {
   walletNonce?: string
   nativeNetwork?: "veil" | "polygon"
   routingFeeBps?: number
+  actor?: string
 }
 
 export type OrderSubmissionResult = {
@@ -82,9 +83,10 @@ export async function createNativeMarket(question: string): Promise<{ accepted?:
   }
 }
 
-export async function fetchMarkets(): Promise<Market[]> {
+export async function fetchMarkets(scope?: "native"): Promise<Market[]> {
   try {
-    const response = await fetch("/api/markets", { cache: "no-store" })
+    const path = scope === "native" ? "/api/markets?scope=native" : "/api/markets"
+    const response = await fetch(path, { cache: "no-store", signal: AbortSignal.timeout(8000) })
     if (!response.ok) {
       return []
     }
@@ -155,11 +157,45 @@ export async function settleNativeBatch(marketId: string, windowId?: number): Pr
   }
 }
 
-export async function fetchOrderRouterHealth(): Promise<{ ok: boolean; chainId: string }> {
+export async function fetchOrderRouterHealth(): Promise<{
+  ok: boolean
+  chainId: string
+  meshActor?: string
+  animaActor?: string
+  zer0Actor?: string
+  zeroActor?: string
+  actor2?: string
+  meshVeil?: number
+  animaVeil?: number
+  zer0Veil?: number
+}> {
   try {
     const response = await fetch("/api/orders", { cache: "no-store" })
-    const payload = (await response.json().catch(() => null)) as { ok?: boolean; chainId?: string } | null
-    return { ok: Boolean(payload?.ok), chainId: String(payload?.chainId || "") }
+    const payload = (await response.json().catch(() => null)) as {
+      ok?: boolean
+      chainId?: string
+      meshActor?: string
+      animaActor?: string
+      zer0Actor?: string
+      zeroActor?: string
+      actor2?: string
+      meshVeil?: number
+      animaVeil?: number
+      zer0Veil?: number
+    } | null
+    const zer0 = payload?.zer0Actor || payload?.zeroActor
+    return {
+      ok: Boolean(payload?.ok),
+      chainId: String(payload?.chainId || ""),
+      meshActor: payload?.meshActor,
+      animaActor: payload?.animaActor,
+      zer0Actor: zer0,
+      zeroActor: zer0,
+      actor2: payload?.actor2,
+      meshVeil: payload?.meshVeil,
+      animaVeil: payload?.animaVeil,
+      zer0Veil: payload?.zer0Veil,
+    }
   } catch {
     return { ok: false, chainId: "" }
   }

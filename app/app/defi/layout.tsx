@@ -1,5 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
+import { Suspense } from "react"
 
 export const metadata: Metadata = {
   title: "DeFi | VEIL",
@@ -7,5 +8,5 @@ export const metadata: Metadata = {
 }
 
 export default function DefiLayout({ children }: { children: React.ReactNode }) {
-  return children
+  return <Suspense fallback={null}>{children}</Suspense>
 }

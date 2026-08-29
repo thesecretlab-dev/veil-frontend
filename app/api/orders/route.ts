@@ -11,6 +11,7 @@ type SubmitOrderBody = {
   walletNonce?: string
   nativeNetwork?: "veil" | "polygon"
   routingFeeBps?: number
+  actor?: string
 }
 
 type NormalizedOrderResult = {
@@ -216,6 +217,19 @@ export async function GET() {
         actor: asString(payload.actor),
         veil: typeof payload.veil === "number" ? payload.veil : 0,
         vai: typeof payload.vai === "number" ? payload.vai : 0,
+        actor2: asString(payload.actor2),
+        veil2: asNumber(payload.veil2),
+        vai2: asNumber(payload.vai2),
+        meshActor: asString(payload.meshActor),
+        meshVeil: asNumber(payload.meshVeil),
+        meshVai: asNumber(payload.meshVai),
+        animaActor: asString(payload.animaActor),
+        animaVeil: asNumber(payload.animaVeil),
+        animaVai: asNumber(payload.animaVai),
+        zer0Actor: asString(payload.zer0Actor) || asString(payload.zeroActor),
+        zeroActor: asString(payload.zer0Actor) || asString(payload.zeroActor),
+        zer0Veil: asNumber(payload.zer0Veil) || asNumber(payload.zeroVeil),
+        zer0Vai: asNumber(payload.zer0Vai) || asNumber(payload.zeroVai),
         markets: typeof payload.markets === "number" ? payload.markets : 0,
         proverReady: Boolean(payload.proverReady),
         note: asString(payload.note),
@@ -245,6 +259,8 @@ export async function POST(request: Request) {
   const walletNonce = asString(body.walletNonce).trim()
   const nativeNetwork = body.nativeNetwork === "polygon" ? "polygon" : "veil"
   const routingFeeBps = typeof body.routingFeeBps === "number" && Number.isFinite(body.routingFeeBps) ? body.routingFeeBps : 0
+  const actor = asString(body.actor).trim().toLowerCase()
+  const actorCommit = nativeNetwork !== "polygon" && ["2", "actor2", "mesh", "anima", "zer0", "zero", "zeroid"].includes(actor)
 
   if (!marketId || (side !== "buy" && side !== "sell") || (outcome !== "yes" && outcome !== "no")) {
     return NextResponse.json(
@@ -303,14 +319,14 @@ export async function POST(request: Request) {
     }
   }
 
-  if (!walletAddress) {
+  if (!actorCommit && !walletAddress) {
     return NextResponse.json(
       { result: invalidBodyResult("walletAddress is required for VEIL order execution.") },
       { status: 400 },
     )
   }
 
-  if (nativeNetwork !== "polygon" && (!walletSignature || !walletNonce)) {
+  if (!actorCommit && nativeNetwork !== "polygon" && (!walletSignature || !walletNonce)) {
     return NextResponse.json(
       { result: invalidBodyResult("walletSignature and walletNonce are required for VEIL order execution.") },
       { status: 400 },
@@ -354,7 +370,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const upstreamUrl = `${base}/orders`
+  const upstreamUrl = actorCommit ? `${base}/native/commit-as` : `${base}/orders`
   const headers: Record<string, string> = {
     "content-type": "application/json",
   }
@@ -370,23 +386,27 @@ export async function POST(request: Request) {
   }
 
   const controller = new AbortController()
-  const timeout = setTimeout(() => controller.abort(), ORDER_TIMEOUT_MS)
+  const timeout = setTimeout(() => controller.abort(), actorCommit ? 45_000 : ORDER_TIMEOUT_MS)
 
   try {
     const response = await fetch(upstreamUrl, {
       method: "POST",
       headers,
-      body: JSON.stringify({
-        marketId,
-        side,
-        outcome,
-        amountUsd,
-        walletAddress,
-        walletSignature,
-        walletNonce,
-        nativeNetwork,
-        routingFeeBps,
-      }),
+      body: JSON.stringify(
+        actorCommit
+          ? { marketId, side, outcome, amountUsd, actor, price: 0.5 }
+          : {
+              marketId,
+              side,
+              outcome,
+              amountUsd,
+              walletAddress,
+              walletSignature,
+              walletNonce,
+              nativeNetwork,
+              routingFeeBps,
+            },
+      ),
       cache: "no-store",
       signal: controller.signal,
     })

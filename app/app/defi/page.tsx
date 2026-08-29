@@ -3,8 +3,10 @@
 import { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence, useInView } from "framer-motion"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { VeilFooter, FilmGrain } from "@/components/brand"
 import { AppNav } from "@/components/app-nav"
+import { ProtocolMetrics, VVEIL_POLICY } from "@/components/protocol-metrics"
 
 /* ═══════════════════════════════════════════════════════════════
    HELPERS
@@ -114,9 +116,11 @@ function TokenSelector({ selected, onSelect, exclude }: { selected: Token; onSel
 function SwapTerminal({ tape }: { tape: Tape | null }) {
   const [fromToken, setFromToken] = useState(TOKENS[0])
   const [toToken, setToToken] = useState(TOKENS[1])
-  const [fromAmount, setFromAmount] = useState("")
-  const [slippage, setSlippage] = useState("0.5")
+  const [fromAmount, setFromAmount] = useState("10")
+  const [slippage, setSlippage] = useState("5.0")
   const [showSettings, setShowSettings] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState("")
 
   const r0 = tape?.pool?.reserve0 ?? 0
   const r1 = tape?.pool?.reserve1 ?? 0
@@ -139,6 +143,38 @@ function SwapTerminal({ tape }: { tape: Tape | null }) {
     setFromToken(toToken)
     setToToken(fromToken)
     setFromAmount("")
+  }
+
+  async function onSwap() {
+    if (!(amt > 0)) return
+    const slip = Math.max(Number.parseFloat(slippage) || 5, 5)
+    const amountIn = Math.max(2, Math.floor(amt))
+    const minOut = out > 0 ? Math.max(1, Math.floor(out * (1 - slip / 100))) : 1
+    setBusy(true)
+    setMsg("")
+    try {
+      const res = await fetch("/api/native/swap", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          amountIn,
+          assetIn: fromVeil ? 0 : 1,
+          assetOut: fromVeil ? 1 : 0,
+          minAmountOut: minOut,
+          actor: window.localStorage.getItem("veil:native-actor") || "1",
+        }),
+      })
+      const json = (await res.json()) as { accepted?: boolean; veilTxHash?: string; error?: string }
+      if (!res.ok || json.accepted === false) {
+        setMsg(json.error || `swap failed (${res.status})`)
+        return
+      }
+      setMsg(`swapped ${json.veilTxHash || ""}`)
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "swap failed")
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -168,7 +204,7 @@ function SwapTerminal({ tape }: { tape: Tape | null }) {
             <div className="px-6 py-4">
               <p className="text-[10px] tracking-[0.15em] uppercase text-white/[0.34] mb-3" style={{ fontFamily: "var(--font-space-grotesk)" }}>Slippage Tolerance</p>
               <div className="flex gap-2">
-                {["0.1", "0.5", "1.0"].map(s => (
+                {["0.5", "1.0", "5.0"].map(s => (
                   <button key={s} onClick={() => setSlippage(s)}
                     className="px-3 py-1.5 rounded-lg text-[12px] transition-all duration-300"
                     style={{
@@ -180,7 +216,7 @@ function SwapTerminal({ tape }: { tape: Tape | null }) {
                     {s}%
                   </button>
                 ))}
-                <input type="text" placeholder="Custom" value={!["0.1", "0.5", "1.0"].includes(slippage) ? slippage : ""}
+                <input type="text" placeholder="Custom" value={!["0.5", "1.0", "5.0"].includes(slippage) ? slippage : ""}
                   onChange={e => setSlippage(e.target.value)}
                   className="w-20 px-3 py-1.5 rounded-lg text-[12px] text-white/[0.67] bg-white/[0.02] outline-none focus:border-emerald-500/20 transition-colors"
                   style={{ fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(255,255,255,0.04)" }} />
@@ -199,7 +235,7 @@ function SwapTerminal({ tape }: { tape: Tape | null }) {
           </span>
         </div>
         <div className="flex items-center gap-3 rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
-          <input type="text" placeholder="0.0" value={fromAmount} onChange={e => setFromAmount(e.target.value)}
+          <input type="text" data-flow="swap-amount" placeholder="0.0" value={fromAmount} onChange={e => setFromAmount(e.target.value)}
             className="flex-1 bg-transparent text-2xl font-light text-white/90 outline-none placeholder:text-white/[0.17]"
             style={{ fontFamily: "var(--font-instrument-serif)" }} />
           <TokenSelector selected={fromToken} onSelect={setFromToken} exclude={toToken.symbol} />
@@ -255,20 +291,34 @@ function SwapTerminal({ tape }: { tape: Tape | null }) {
       )}
 
       {/* Action button */}
-      <div className="px-6 pb-6">
-        <Link href="/explorer">
-          <motion.button type="button" whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
-            className="w-full py-4 rounded-2xl text-[13px] tracking-wider font-semibold uppercase transition-all duration-500"
-            style={{
-              fontFamily: "var(--font-space-grotesk)",
-              background: fromAmount ? "linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.08) 100%)" : "rgba(255,255,255,0.02)",
-              border: `1px solid ${fromAmount ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.04)"}`,
-              color: fromAmount ? "rgb(52,211,153)" : "rgba(255,255,255,0.22)",
-              boxShadow: fromAmount ? "0 0 40px rgba(16,185,129,0.08)" : "none",
-            }}>
-            {fromAmount ? "Quote from live pool · explorer" : "Enter Amount"}
-          </motion.button>
-        </Link>
+      <div className="px-6 pb-6 space-y-2">
+        <motion.button
+          type="button"
+          data-flow="swap-submit"
+          disabled={busy || !fromAmount}
+          onClick={() => void onSwap()}
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          className="w-full py-4 rounded-2xl text-[13px] tracking-wider font-semibold uppercase transition-all duration-500 disabled:opacity-50"
+          style={{
+            fontFamily: "var(--font-space-grotesk)",
+            background: fromAmount ? "linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.08) 100%)" : "rgba(255,255,255,0.02)",
+            border: `1px solid ${fromAmount ? "rgba(16,185,129,0.2)" : "rgba(255,255,255,0.04)"}`,
+            color: fromAmount ? "rgb(52,211,153)" : "rgba(255,255,255,0.22)",
+            boxShadow: fromAmount ? "0 0 40px rgba(16,185,129,0.08)" : "none",
+          }}
+        >
+          {busy ? "Swapping…" : fromAmount ? "Swap on VeilVM" : "Enter Amount"}
+        </motion.button>
+        {msg ? (
+          <p className="text-[11px] break-all" style={{ fontFamily: "var(--font-figtree)", color: msg.startsWith("swapped") ? "rgba(110,231,183,0.85)" : "rgba(248,113,113,0.85)" }}>
+            {msg}
+          </p>
+        ) : (
+          <p className="text-[11px] text-white/[0.35] text-center" style={{ fontFamily: "var(--font-figtree)" }}>
+            Native SwapExactIn. Router signs as the selected VeilVM actor.
+          </p>
+        )}
       </div>
     </div>
   )
@@ -285,6 +335,45 @@ function LiquidityPanel({ tape }: { tape: Tape | null }) {
   const fee = tape?.pool?.fee_bips
   const live = Boolean(tape?.ok && typeof r0 === "number")
   const swaps = (tape?.ticks || []).filter((t) => t.kind === "swap").length
+  const [amount0, setAmount0] = useState("10")
+  const [amount1, setAmount1] = useState("")
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState("")
+
+  useEffect(() => {
+    const a0 = Number.parseFloat(amount0)
+    if (!(a0 > 0) || !(typeof r0 === "number" && r0 > 0) || !(typeof r1 === "number" && r1 > 0)) return
+    setAmount1(String(Math.max(1, Math.round((a0 * r1) / r0))))
+  }, [amount0, r0, r1])
+
+  async function onAdd() {
+    const a0 = Math.max(1, Math.floor(Number.parseFloat(amount0) || 0))
+    const a1 = Math.max(1, Math.floor(Number.parseFloat(amount1) || 0))
+    setBusy(true)
+    setMsg("")
+    try {
+      const res = await fetch("/api/native/add-liquidity", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          amount0: a0,
+          amount1: a1,
+          actor: window.localStorage.getItem("veil:native-actor") || "1",
+        }),
+      })
+      const json = (await res.json()) as { accepted?: boolean; veilTxHash?: string; error?: string }
+      if (!res.ok || json.accepted === false) {
+        setMsg(json.error || `add-liquidity failed (${res.status})`)
+        return
+      }
+      setMsg(`added ${json.veilTxHash || ""}`)
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "add-liquidity failed")
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="rounded-[24px] overflow-hidden" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
       <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
@@ -292,7 +381,6 @@ function LiquidityPanel({ tape }: { tape: Tape | null }) {
         <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>VeilVM AMM</span>
       </div>
 
-      {/* Pool card */}
       <div className="p-6">
         <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
           <div className="flex items-center justify-between mb-4">
@@ -320,16 +408,56 @@ function LiquidityPanel({ tape }: { tape: Tape | null }) {
             ))}
           </div>
 
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <label className="block">
+              <span className="mb-1 block text-[9px] tracking-[0.15em] uppercase text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>VEIL</span>
+              <input
+                type="text"
+                data-flow="add-liq-amount0"
+                value={amount0}
+                onChange={(e) => setAmount0(e.target.value)}
+                className="w-full rounded-xl bg-transparent px-3 py-2 text-[13px] text-white/80 outline-none"
+                style={{ fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(255,255,255,0.06)" }}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1 block text-[9px] tracking-[0.15em] uppercase text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>VAI</span>
+              <input
+                type="text"
+                data-flow="add-liq-amount1"
+                value={amount1}
+                onChange={(e) => setAmount1(e.target.value)}
+                className="w-full rounded-xl bg-transparent px-3 py-2 text-[13px] text-white/80 outline-none"
+                style={{ fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(255,255,255,0.06)" }}
+              />
+            </label>
+          </div>
+
           <div className="flex gap-2">
-            <Link href="/app" className="flex-1 py-2.5 rounded-xl text-[11px] tracking-wider uppercase font-medium text-center transition-all duration-300 hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]"
-              style={{ fontFamily: "var(--font-space-grotesk)", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.15)", color: "rgba(16,185,129,0.78)" }}>
-              Add Liquidity
-            </Link>
+            <button
+              type="button"
+              data-flow="add-liq-submit"
+              disabled={busy}
+              onClick={() => void onAdd()}
+              className="flex-1 py-2.5 rounded-xl text-[11px] tracking-wider uppercase font-medium text-center transition-all duration-300 disabled:opacity-50"
+              style={{ fontFamily: "var(--font-space-grotesk)", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.15)", color: "rgba(16,185,129,0.78)" }}
+            >
+              {busy ? "Adding…" : "Add Liquidity"}
+            </button>
             <Link href="/explorer" className="flex-1 py-2.5 rounded-xl text-[11px] tracking-wider uppercase font-medium text-center transition-all duration-300"
               style={{ fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.39)" }}>
               Pool tape
             </Link>
           </div>
+          {msg ? (
+            <p className="mt-3 break-all text-[11px]" style={{ fontFamily: "var(--font-figtree)", color: msg.startsWith("added") ? "rgba(110,231,183,0.85)" : "rgba(248,113,113,0.85)" }}>
+              {msg}
+            </p>
+          ) : (
+            <p className="mt-3 text-[11px] text-white/[0.35]" style={{ fontFamily: "var(--font-figtree)" }}>
+              Native AddLiquidity. Router signs as the selected VeilVM actor. Actor needs VEIL and VAI.
+            </p>
+          )}
         </div>
       </div>
     </div>
@@ -346,15 +474,17 @@ function StakingPanel() {
     <div className="rounded-[24px] overflow-hidden" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
       <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
         <span className="text-[12px] tracking-[0.1em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.90)" }}>Stake VEIL</span>
-        <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>spec</span>
+        <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>policy · no mint</span>
       </div>
 
       <div className="p-6 space-y-5">
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4">
           {[
-            { label: "APY", value: "—", sub: "variable" },
-            { label: "Index", value: "—", sub: "vVEIL" },
+            { label: "APY", value: VVEIL_POLICY.point, sub: `band ${VVEIL_POLICY.band}` },
+            { label: "Unbond", value: VVEIL_POLICY.unbond, sub: `cap ${VVEIL_POLICY.cap}` },
+            { label: "Emission", value: VVEIL_POLICY.emission, sub: "supply / year" },
+            { label: "Index", value: "unminted", sub: "vVEIL not in v1" },
           ].map(s => (
             <div key={s.label} className="rounded-xl p-4" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.03)" }}>
               <div className="text-[9px] tracking-[0.15em] uppercase text-white/[0.22] mb-1" style={{ fontFamily: "var(--font-space-grotesk)" }}>{s.label}</div>
@@ -414,37 +544,130 @@ function StakingPanel() {
    ═══════════════════════════════════════════════════════════════ */
 
 function CDPPanel({ tape }: { tape: Tape | null }) {
+  const [amount, setAmount] = useState("1000")
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState("")
+  const [hash, setHash] = useState("")
+  const [vai, setVai] = useState<number | null>(null)
+  const [debt, setDebt] = useState<string>("—")
+
+  useEffect(() => {
+    const pull = () => {
+      fetch("/api/orders", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((j) => {
+          if (typeof j?.vai === "number") setVai(j.vai)
+        })
+        .catch(() => {})
+      fetch("/api/explorer/status", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((j) => {
+          if (j?.vai) setDebt(`${Number(j.vai.total_debt).toLocaleString()} / ${Number(j.vai.debt_ceiling).toLocaleString()}`)
+        })
+        .catch(() => {})
+    }
+    pull()
+    const id = window.setInterval(pull, 8000)
+    return () => window.clearInterval(id)
+  }, [])
+
+  async function mint() {
+    const n = Math.floor(Number(amount))
+    if (!Number.isFinite(n) || n <= 0) {
+      setMsg("Enter an amount")
+      return
+    }
+    setBusy(true)
+    setMsg("")
+    setHash("")
+    try {
+      const res = await fetch("/api/native/mint-vai", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ amount: n }),
+      })
+      const json = (await res.json()) as { accepted?: boolean; veilTxHash?: string; error?: string }
+      if (!res.ok || json.accepted === false) {
+        setMsg(json.error || `mint failed (${res.status})`)
+        return
+      }
+      setHash(json.veilTxHash || "")
+      setMsg(`minted ${n.toLocaleString()} VAI`)
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : "mint failed")
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="rounded-[24px] overflow-hidden" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
       <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
         <span className="text-[12px] tracking-[0.1em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(245,158,11,0.8)" }}>Mint VAI</span>
-        <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>CDP</span>
+        <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>native action 9</span>
       </div>
 
       <div className="p-6 space-y-4">
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Stability Fee", value: "docs" },
-            { label: "Min Ratio", value: "150%" },
-            { label: "AMM VAI", value: fmt(tape?.pool?.reserve1) },
+            { label: "Your VAI", value: vai == null ? "—" : vai.toLocaleString() },
+            { label: "Debt / ceiling", value: debt },
+            { label: "Pool VAI", value: fmt(tape?.pool?.reserve1) },
           ].map(s => (
             <div key={s.label} className="text-center">
               <div className="text-[9px] tracking-[0.12em] uppercase text-white/[0.22] mb-1" style={{ fontFamily: "var(--font-space-grotesk)" }}>{s.label}</div>
-              <div className="text-sm font-medium text-white/[0.56]" style={{ fontFamily: "var(--font-space-grotesk)" }}>{s.value}</div>
+              <div className="text-sm font-medium text-white/[0.56] tabular-nums" style={{ fontFamily: "var(--font-space-grotesk)" }}>{s.value}</div>
             </div>
           ))}
         </div>
 
-        <div className="rounded-xl p-4 text-center" style={{ background: "rgba(245,158,11,0.02)", border: "1px solid rgba(245,158,11,0.08)" }}>
-          <p className="text-[12px] text-white/[0.39] leading-relaxed" style={{ fontFamily: "var(--font-figtree)" }}>
-            Native VAI mint is a VeilVM action against VEIL collateral. Liquidation is documented — not a MakerDAO Dog/Clip port, and not executing from this panel.
-          </p>
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[10px] tracking-[0.15em] uppercase text-white/[0.28]" style={{ fontFamily: "var(--font-space-grotesk)" }}>Mint amount</span>
+            <span className="text-[10px] text-white/[0.28]" style={{ fontFamily: "var(--font-space-grotesk)" }}>epoch cap 100,000</span>
+          </div>
+          <div className="flex items-center gap-3 rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}>
+            <input
+              type="text"
+              data-flow="mint-vai-amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void mint()
+              }}
+              className="flex-1 bg-transparent text-xl font-light text-white/90 outline-none"
+              style={{ fontFamily: "var(--font-instrument-serif)" }}
+            />
+            <span className="text-sm" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(245,158,11,0.8)" }}>VAI</span>
+          </div>
         </div>
 
-        <Link href="/app/docs/convertible-deposits" className="block w-full py-3 rounded-2xl text-[11px] tracking-wider uppercase font-medium text-center transition-all duration-300"
-          style={{ fontFamily: "var(--font-space-grotesk)", background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.12)", color: "rgba(245,158,11,0.6)" }}>
-          Open CDP docs
-        </Link>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={() => void mint()}
+          data-flow="mint-vai-submit"
+          className="w-full py-3.5 rounded-2xl text-[12px] tracking-wider font-semibold uppercase disabled:opacity-50"
+          style={{
+            fontFamily: "var(--font-space-grotesk)",
+            background: "linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.08) 100%)",
+            border: "1px solid rgba(245,158,11,0.22)",
+            color: "rgb(253,230,138)",
+          }}
+        >
+          {busy ? "Minting…" : "Mint VAI"}
+        </button>
+
+        {msg ? (
+          <p className="text-[12px]" style={{ fontFamily: "var(--font-figtree)", color: hash ? "rgba(110,231,183,0.85)" : "rgba(248,113,113,0.85)" }}>
+            {msg}
+            {hash ? ` · ${hash.slice(0, 10)}…` : ""}
+          </p>
+        ) : (
+          <p className="text-[12px] text-white/[0.35]" style={{ fontFamily: "var(--font-figtree)" }}>
+            Router signs MintVAI as the mint authority to the native actor (same rail as the faucet). Debt ceiling and epoch mint limit still apply. User CDPs / liquidation are not in this binary.
+          </p>
+        )}
       </div>
     </div>
   )
@@ -455,17 +678,32 @@ function CDPPanel({ tape }: { tape: Tape | null }) {
    ═══════════════════════════════════════════════════════════════ */
 
 function BondsPanel() {
+  const [col, setCol] = useState<{ locked: number; live: number; released: number } | null>(null)
+  useEffect(() => {
+    fetch("/api/explorer/status", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((j) => {
+        if (j?.treasury) setCol(j.treasury)
+      })
+      .catch(() => {})
+  }, [])
+  const amt = (n: number) => `${(n / 1_000_000).toFixed(2)}M VEIL`
   return (
     <div className="rounded-[24px] overflow-hidden" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
       <div className="px-6 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-        <span className="text-[12px] tracking-[0.1em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(168,85,247,0.8)" }}>Bond Market</span>
-        <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>spec</span>
+        <span className="text-[12px] tracking-[0.1em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(168,85,247,0.8)" }}>Bond / COL</span>
+        <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>vault live · market spec</span>
       </div>
 
       <div className="p-6 space-y-3">
+        <p className="text-[12px] text-white/[0.4] mb-2" style={{ fontFamily: "var(--font-figtree)" }}>
+          COL vault is on-chain (locked / live / released). BondDeposit and bond markets are spec IDs 19–23, not this binary.
+        </p>
         {[
-          { asset: "VEIL / VAI LP", discount: "—", vesting: "spec", icon: "◆" },
-          { asset: "VAI", discount: "—", vesting: "spec", icon: "◎" },
+          { asset: "COL vault locked", discount: col ? amt(col.locked) : "—", vesting: "no drain", icon: "◆" },
+          { asset: "COL deployable tranche", discount: col ? amt(col.live) : "—", vesting: "epoch cap", icon: "◇" },
+          { asset: "COL released", discount: col ? String(col.released) : "—", vesting: "tranches", icon: "◇" },
+          { asset: "VEIL / VAI LP bond", discount: "—", vesting: "spec", icon: "◎" },
         ].map(bond => (
           <div key={bond.asset} className="flex items-center justify-between py-3 px-4 rounded-xl hover:bg-white/[0.02] transition-colors"
             style={{ border: "1px solid rgba(255,255,255,0.03)" }}>
@@ -517,9 +755,22 @@ function ProtocolStats({ tape }: { tape: Tape | null }) {
    PAGE
    ═══════════════════════════════════════════════════════════════ */
 
+const DEFI_TABS = ["swap", "liquidity", "stake", "cdp", "bonds"] as const
+type DefiTab = (typeof DEFI_TABS)[number]
+
+function tabFromParam(value: string | null): DefiTab {
+  return DEFI_TABS.includes(value as DefiTab) ? (value as DefiTab) : "swap"
+}
+
 export default function DefiPage() {
-  const [activeTab, setActiveTab] = useState<"swap" | "liquidity" | "stake" | "cdp" | "bonds">("swap")
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get("tab")
+  const [activeTab, setActiveTab] = useState<DefiTab>(() => tabFromParam(tabParam))
   const tape = useLiveTape()
+
+  useEffect(() => {
+    setActiveTab(tabFromParam(tabParam))
+  }, [tabParam])
 
   return (
     <div className="relative min-h-screen" style={{ background: "#060606", color: "white" }}>
@@ -531,7 +782,7 @@ export default function DefiPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full" style={{ background: "radial-gradient(ellipse, rgba(16,185,129,0.03) 0%, transparent 70%)" }} />
       </div>
 
-      <main className="relative z-10 max-w-6xl mx-auto px-6 pt-28 pb-20">
+      <main className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-20">
         {/* Hero */}
         <ScrollReveal>
           <div className="mb-4">
@@ -551,38 +802,40 @@ export default function DefiPage() {
 
         {/* Protocol stats */}
         <ScrollReveal delay={0.05}>
-          <div className="mb-10">
+          <div className="mb-8">
             <ProtocolStats tape={tape} />
           </div>
         </ScrollReveal>
-
-        {/* Tab navigation */}
-        <ScrollReveal delay={0.1}>
-          <div className="flex gap-1 mb-8 p-1 rounded-2xl inline-flex" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
-            {([
-              { key: "swap", label: "Swap" },
-              { key: "liquidity", label: "Liquidity" },
-              { key: "stake", label: "Stake" },
-              { key: "cdp", label: "Mint VAI" },
-              { key: "bonds", label: "Bonds" },
-            ] as const).map(tab => (
-              <button key={tab.key} onClick={() => setActiveTab(tab.key)}
-                className="px-5 py-2.5 rounded-xl text-[11px] tracking-[0.1em] uppercase font-medium transition-all duration-300"
-                style={{
-                  fontFamily: "var(--font-space-grotesk)",
-                  background: activeTab === tab.key ? "rgba(16,185,129,0.08)" : "transparent",
-                  color: activeTab === tab.key ? "rgba(16,185,129,0.90)" : "rgba(255,255,255,0.28)",
-                  border: activeTab === tab.key ? "1px solid rgba(16,185,129,0.12)" : "1px solid transparent",
-                }}>
-                {tab.label}
-              </button>
-            ))}
+        <ScrollReveal delay={0.08}>
+          <div className="mb-10">
+            <ProtocolMetrics />
           </div>
         </ScrollReveal>
 
+        {/* Tab navigation — no scroll-reveal: these are the execute controls. */}
+        <div className="flex gap-1 mb-8 p-1 rounded-2xl inline-flex" style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}>
+          {([
+            { key: "swap", label: "Swap" },
+            { key: "liquidity", label: "Liquidity" },
+            { key: "stake", label: "Stake" },
+            { key: "cdp", label: "Mint VAI" },
+            { key: "bonds", label: "Bonds" },
+          ] as const).map(tab => (
+            <button key={tab.key} type="button" data-flow={`defi-tab-${tab.key}`} onClick={() => setActiveTab(tab.key)}
+              className="px-5 py-2.5 rounded-xl text-[11px] tracking-[0.1em] uppercase font-medium transition-all duration-300"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                background: activeTab === tab.key ? "rgba(16,185,129,0.08)" : "transparent",
+                color: activeTab === tab.key ? "rgba(16,185,129,0.90)" : "rgba(255,255,255,0.28)",
+                border: activeTab === tab.key ? "1px solid rgba(16,185,129,0.12)" : "1px solid transparent",
+              }}>
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         {/* Terminal panels */}
-        <ScrollReveal delay={0.15}>
-          <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-2 gap-6">
             <AnimatePresence mode="wait">
               <motion.div key={activeTab} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}
                 transition={{ duration: 0.3 }}>
@@ -649,7 +902,6 @@ export default function DefiPage() {
               </div>
             </div>
           </div>
-        </ScrollReveal>
       </main>
 
       <VeilFooter />
