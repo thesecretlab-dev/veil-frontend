@@ -202,6 +202,23 @@ function unconfiguredResult(nativeNetwork: string, routingFeeBps: number): Norma
 export const dynamic = "force-dynamic"
 
 export async function GET() {
+  const { publicCatalogOrigin } = await import("@/lib/runtime-profile")
+  if (publicCatalogOrigin()) {
+    const { fetchLocalSnapshot } = await import("@/lib/local-snapshot")
+    const snap = await fetchLocalSnapshot()
+    return NextResponse.json({
+      ok: Boolean(snap?.ok),
+      chainId: snap?.chainId || "",
+      veil: snap?.actors?.veil ?? 0,
+      vai: snap?.actors?.vai ?? 0,
+      meshVeil: snap?.actors?.meshVeil ?? 0,
+      animaVeil: snap?.actors?.animaVeil ?? 0,
+      zer0Veil: snap?.actors?.zer0Veil ?? 0,
+      markets: snap?.markets ?? 0,
+      proverReady: Boolean(snap?.proverReady),
+      note: "Local balances mirrored. Order router is loopback.",
+    })
+  }
   const localDefault = process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:9098"
   const base = (process.env.VEIL_ORDER_API_BASE || localDefault).trim().replace(/\/+$/, "")
   if (!base) {

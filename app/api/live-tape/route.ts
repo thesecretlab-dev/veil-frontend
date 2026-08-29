@@ -70,13 +70,27 @@ async function readTicks(): Promise<Tick[]> {
 
 export async function GET() {
   if (publicCatalogOrigin() || !ROUTER) {
+    const { fetchLocalSnapshot } = await import("@/lib/local-snapshot")
+    const snap = await fetchLocalSnapshot()
+    if (snap?.tape) {
+      return NextResponse.json({
+        ok: true,
+        origin: "vercel",
+        local: false,
+        height: snap.tape.height ?? snap.height ?? null,
+        pool: snap.tape.pool ?? null,
+        ticks: snap.tape.ticks ?? [],
+        markets: snap.markets ?? 0,
+        note: "Local tape mirrored. Not a public L1.",
+      })
+    }
     return NextResponse.json({
       ok: false,
       origin: "vercel",
       local: false,
       pool: null,
       ticks: [],
-      note: "Native tape is loopback. This origin serves the Polymarket catalog.",
+      note: "Waiting for local snapshot. Native tape is loopback.",
     })
   }
   const headers: Record<string, string> = {}

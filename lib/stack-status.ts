@@ -65,28 +65,33 @@ function hasCode(code: unknown) {
 export async function probeStack() {
   const profile = profilePublic()
   if (publicCatalogOrigin()) {
+    const { fetchLocalSnapshot } = await import("@/lib/local-snapshot")
+    const snap = await fetchLocalSnapshot()
+    const height = snap?.height ?? snap?.explorer?.height ?? null
     return {
       ok: true,
       readyForUsers: true,
       local: false,
       origin: "vercel",
       profile,
-      timestamp: new Date().toISOString(),
+      timestamp: snap?.at || new Date().toISOString(),
       chainId: LOCAL_VEILVM_APP_ID,
-      blockHeight: null as number | null,
+      blockHeight: height,
       totalPeers: 0,
       subnetPeers: 0,
-      validators: [] as Array<{ nodeId: string; role: string; active: boolean; label: string }>,
+      validators: snap?.nodeId
+        ? [{ nodeId: snap.nodeId, role: "primary", active: Boolean(height), label: "Local VeilVM (mirrored)" }]
+        : ([] as Array<{ nodeId: string; role: string; active: boolean; label: string }>),
       veilvm: {
-        healthy: false,
+        healthy: Boolean(height),
         appId: LOCAL_VEILVM_APP_ID,
-        chainId: "",
+        chainId: snap?.chainId || snap?.explorer?.chainId || "",
         subnetId: "",
-        height: null as number | null,
-        blockId: null as string | null,
+        height,
+        blockId: snap?.explorer?.blockId || null,
         node: "",
-        nodeId: "",
-        note: "Native VeilVM is loopback. This origin serves the public catalog.",
+        nodeId: snap?.nodeId || snap?.explorer?.nodeId || "",
+        note: "Local VeilVM numbers mirrored. Loopback RPC is not this origin.",
       },
       companion: {
         ok: false,
@@ -108,13 +113,18 @@ export async function probeStack() {
         groth16WasmServed: false,
         registerIdentity: false,
       },
-      mesh: { ok: false, http: "", operator: "THE SECRET LAB", note: "Mesh is loopback." },
+      mesh: {
+        ok: Boolean(height),
+        http: "",
+        operator: "THE SECRET LAB",
+        note: "Mesh is loopback. Numbers mirrored.",
+      },
       router: {
-        ok: false,
+        ok: Boolean(snap?.explorer?.routerOk || snap?.markets),
         base: "",
-        chainId: null as string | null,
-        markets: 0,
-        proverReady: false,
+        chainId: snap?.chainId || null,
+        markets: snap?.markets ?? snap?.explorer?.markets ?? 0,
+        proverReady: Boolean(snap?.proverReady ?? snap?.explorer?.proverReady),
       },
       polymarket: {
         catalog: true,
@@ -124,7 +134,10 @@ export async function probeStack() {
         fills: 0,
         note: "Public catalog. Prices from Polymarket Gamma/CLOB. Native settlement is not this origin.",
       },
-      checks: [{ id: "catalog", ok: true, detail: "polymarket feed" }],
+      checks: [
+        { id: "catalog", ok: true, detail: "polymarket feed" },
+        { id: "snapshot", ok: Boolean(height), detail: height ? `ht ${height}` : "no local snapshot yet" },
+      ],
       failed: [] as string[],
     }
   }

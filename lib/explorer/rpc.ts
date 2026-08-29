@@ -226,6 +226,31 @@ export async function fetchTx(q: string): Promise<DecodedTx> {
 }
 
 export async function fetchStatus(): Promise<ExplorerStatus> {
+  const { publicCatalogOrigin } = await import("@/lib/runtime-profile")
+  if (publicCatalogOrigin()) {
+    const { fetchLocalSnapshot, explorerFromSnapshot } = await import("@/lib/local-snapshot")
+    const snap = await fetchLocalSnapshot()
+    const fromSnap = explorerFromSnapshot(snap)
+    if (fromSnap) return { ...fromSnap, note: "Local VeilVM numbers mirrored to this catalog. Not a public L1." }
+    return {
+      ok: false,
+      local: true,
+      height: null,
+      blockId: null,
+      blockTimestamp: null,
+      chainId: "",
+      appId: EXPLORER_APP_ID,
+      node: "",
+      nodeId: "",
+      routerOk: false,
+      markets: 0,
+      proverReady: false,
+      pool: null,
+      treasury: null,
+      vai: null,
+      note: "Waiting for local snapshot. Native VeilVM is loopback.",
+    }
+  }
   const [accepted, pool, treasury, vai, router] = await Promise.all([
     lastAccepted().catch(() => null),
     veilRpc("veilvm.pool", { asset0: 0, asset1: 1 }).catch(() => null),
