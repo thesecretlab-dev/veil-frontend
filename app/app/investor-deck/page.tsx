@@ -4,7 +4,6 @@ import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
-import { TriangleLogo } from "@/components/triangle-logo"
 import Link from "next/link"
 
 /* ───────────────────────── helpers ───────────────────────── */
@@ -24,8 +23,8 @@ function ScrollReveal({
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 40, filter: "blur(8px)" }}
-      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay }}
     >
       {children}
@@ -40,7 +39,7 @@ function SectionLabel({ number, text }: { number: string; text: string }) {
         className="text-xs font-medium tracking-[0.3em] uppercase"
         style={{
           fontFamily: "var(--font-space-grotesk)",
-          color: "rgba(16, 185, 129, 0.6)",
+          color: "rgba(16, 185, 129, 0.67)",
         }}
       >
         {number}
@@ -50,7 +49,7 @@ function SectionLabel({ number, text }: { number: string; text: string }) {
         className="text-xs font-medium tracking-[0.2em] uppercase"
         style={{
           fontFamily: "var(--font-space-grotesk)",
-          color: "rgba(255,255,255,0.25)",
+          color: "rgba(255,255,255,0.28)",
         }}
       >
         {text}
@@ -113,51 +112,8 @@ export default function InvestorDeckPage() {
         }}
       />
 
-      {/* ─── Fixed Nav ─── */}
-      <header className="fixed left-0 right-0 top-0 z-40 border-b border-white/[0.04] bg-[#060606]/80 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-5">
-          <Link href="/app" className="flex items-center gap-3 transition-opacity hover:opacity-70">
-            <TriangleLogo />
-            <span
-              className="text-xl font-bold tracking-tight"
-              style={{
-                fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255,255,255,0.9)",
-              }}
-            >
-              VEIL
-            </span>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <span
-              className="hidden text-xs tracking-[0.15em] uppercase sm:block"
-              style={{
-                fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255,255,255,0.3)",
-              }}
-            >
-              Investor Deck — 2025
-            </span>
-            <Link
-              href="/app"
-              className="ml-4 flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-5 py-2 text-sm transition-all hover:border-emerald-500/20 hover:bg-white/[0.06]"
-              style={{
-                fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255,255,255,0.5)",
-              }}
-            >
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back
-            </Link>
-          </div>
-        </div>
-      </header>
-
       {/* ─── Main ─── */}
-      <main className="relative z-10 mx-auto max-w-6xl px-8 pb-40 pt-40">
+      <main className="relative z-10 mx-auto max-w-6xl px-8 pb-24 pt-28">
         {/* ══════ HERO ══════ */}
         <ScrollReveal>
           <section className="mb-28 text-center">
@@ -170,7 +126,7 @@ export default function InvestorDeckPage() {
                 className="mb-6 text-xs tracking-[0.4em] uppercase"
                 style={{
                   fontFamily: "var(--font-space-grotesk)",
-                  color: "rgba(16,185,129,0.5)",
+                  color: "rgba(16,185,129,0.56)",
                 }}
               >
                 Investor Presentation
@@ -197,7 +153,7 @@ export default function InvestorDeckPage() {
                 className="mx-auto mt-10 max-w-2xl text-lg leading-relaxed"
                 style={{
                   fontFamily: "var(--font-figtree)",
-                  color: "rgba(255,255,255,0.4)",
+                  color: "rgba(255,255,255,0.45)",
                   fontWeight: 300,
                 }}
               >
@@ -256,7 +212,7 @@ export default function InvestorDeckPage() {
                       className="mb-3 text-lg font-medium"
                       style={{
                         fontFamily: "var(--font-space-grotesk)",
-                        color: "rgba(16,185,129,0.85)",
+                        color: "rgba(16,185,129,0.95)",
                       }}
                     >
                       {item.title}
@@ -265,7 +221,7 @@ export default function InvestorDeckPage() {
                       className="text-[15px] leading-[1.8]"
                       style={{
                         fontFamily: "var(--font-figtree)",
-                        color: "rgba(255,255,255,0.45)",
+                        color: "rgba(255,255,255,0.50)",
                         fontWeight: 300,
                       }}
                     >
@@ -297,7 +253,7 @@ export default function InvestorDeckPage() {
                   icon: (
                     <path
                       d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                      stroke="rgba(16,185,129,0.8)"
+                      stroke="rgba(16,185,129,0.90)"
                       strokeWidth="1.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -310,7 +266,7 @@ export default function InvestorDeckPage() {
                   icon: (
                     <path
                       d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"
-                      stroke="rgba(16,185,129,0.8)"
+                      stroke="rgba(16,185,129,0.90)"
                       strokeWidth="1.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -322,8 +278,8 @@ export default function InvestorDeckPage() {
                 {
                   icon: (
                     <>
-                      <circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.8)" strokeWidth="1.5" fill="none" />
-                      <path d="M12 6v6l4 2" stroke="rgba(16,185,129,0.8)" strokeWidth="1.5" strokeLinecap="round" />
+                      <circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.90)" strokeWidth="1.5" fill="none" />
+                      <path d="M12 6v6l4 2" stroke="rgba(16,185,129,0.90)" strokeWidth="1.5" strokeLinecap="round" />
                     </>
                   ),
                   title: "Credible Outcomes",
@@ -332,8 +288,8 @@ export default function InvestorDeckPage() {
                 {
                   icon: (
                     <>
-                      <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="rgba(16,185,129,0.8)" strokeWidth="1.5" fill="none" />
-                      <path d="M9 12l2 2 4-4" stroke="rgba(16,185,129,0.8)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="rgba(16,185,129,0.90)" strokeWidth="1.5" fill="none" />
+                      <path d="M9 12l2 2 4-4" stroke="rgba(16,185,129,0.90)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </>
                   ),
                   title: "Compounding Depth",
@@ -351,7 +307,7 @@ export default function InvestorDeckPage() {
                       className="mb-3 text-lg font-medium"
                       style={{
                         fontFamily: "var(--font-space-grotesk)",
-                        color: "rgba(16,185,129,0.85)",
+                        color: "rgba(16,185,129,0.95)",
                       }}
                     >
                       {item.title}
@@ -360,7 +316,7 @@ export default function InvestorDeckPage() {
                       className="text-[15px] leading-[1.8]"
                       style={{
                         fontFamily: "var(--font-figtree)",
-                        color: "rgba(255,255,255,0.45)",
+                        color: "rgba(255,255,255,0.50)",
                         fontWeight: 300,
                       }}
                     >
@@ -386,7 +342,7 @@ export default function InvestorDeckPage() {
             >
               Why privacy matters
               <br />
-              <span style={{ color: "rgba(255,255,255,0.4)" }}>(commercially).</span>
+              <span style={{ color: "rgba(255,255,255,0.45)" }}>(commercially).</span>
             </h2>
             <div className="grid gap-5 md:grid-cols-2">
               {[
@@ -411,7 +367,7 @@ export default function InvestorDeckPage() {
                   <div className="flex gap-5 p-2">
                     <div className="mt-1 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-emerald-500/10 bg-emerald-500/[0.06]">
                       <svg width="14" height="14" viewBox="0 0 20 20" fill="none">
-                        <path d="M5 10l3 3 7-7" stroke="rgba(16,185,129,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M5 10l3 3 7-7" stroke="rgba(16,185,129,0.78)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
                     <div>
@@ -419,7 +375,7 @@ export default function InvestorDeckPage() {
                         className="mb-2 text-[15px] font-medium"
                         style={{
                           fontFamily: "var(--font-space-grotesk)",
-                          color: "rgba(16,185,129,0.8)",
+                          color: "rgba(16,185,129,0.90)",
                         }}
                       >
                         {item.title}
@@ -428,7 +384,7 @@ export default function InvestorDeckPage() {
                         className="text-[14px] leading-[1.8]"
                         style={{
                           fontFamily: "var(--font-figtree)",
-                          color: "rgba(255,255,255,0.4)",
+                          color: "rgba(255,255,255,0.45)",
                           fontWeight: 300,
                         }}
                       >
@@ -474,11 +430,11 @@ export default function InvestorDeckPage() {
                       className="text-sm"
                       style={{
                         fontFamily: "var(--font-figtree)",
-                        color: "rgba(255,255,255,0.35)",
+                        color: "rgba(255,255,255,0.39)",
                         fontWeight: 300,
                       }}
                     >
-                      Global prediction market size by 2028
+                      Industry estimate of global prediction-market size by 2028 — not VEIL TVL, not this node.
                     </p>
                   </Card>
                 </ScrollReveal>
@@ -499,7 +455,7 @@ export default function InvestorDeckPage() {
                       className="text-sm"
                       style={{
                         fontFamily: "var(--font-figtree)",
-                        color: "rgba(255,255,255,0.35)",
+                        color: "rgba(255,255,255,0.39)",
                         fontWeight: 300,
                       }}
                     >
@@ -514,7 +470,7 @@ export default function InvestorDeckPage() {
                     className="mb-6 text-xl font-light"
                     style={{
                       fontFamily: "var(--font-instrument-serif)",
-                      color: "rgba(255,255,255,0.6)",
+                      color: "rgba(255,255,255,0.67)",
                     }}
                   >
                     Key Growth Drivers
@@ -533,7 +489,7 @@ export default function InvestorDeckPage() {
                           className="text-[15px] leading-[1.7]"
                           style={{
                             fontFamily: "var(--font-figtree)",
-                            color: "rgba(255,255,255,0.4)",
+                            color: "rgba(255,255,255,0.45)",
                             fontWeight: 300,
                           }}
                         >
@@ -585,7 +541,7 @@ export default function InvestorDeckPage() {
                       className="text-xs tracking-[0.1em] uppercase"
                       style={{
                         fontFamily: "var(--font-space-grotesk)",
-                        color: "rgba(255,255,255,0.3)",
+                        color: "rgba(255,255,255,0.34)",
                       }}
                     >
                       {item.label}
@@ -644,7 +600,7 @@ export default function InvestorDeckPage() {
                         className="mb-2 text-[15px] font-medium"
                         style={{
                           fontFamily: "var(--font-space-grotesk)",
-                          color: "rgba(16,185,129,0.8)",
+                          color: "rgba(16,185,129,0.90)",
                         }}
                       >
                         {item.title}
@@ -653,7 +609,7 @@ export default function InvestorDeckPage() {
                         className="mb-5 text-[13px] leading-[1.7]"
                         style={{
                           fontFamily: "var(--font-figtree)",
-                          color: "rgba(255,255,255,0.35)",
+                          color: "rgba(255,255,255,0.39)",
                           fontWeight: 300,
                         }}
                       >
@@ -674,7 +630,7 @@ export default function InvestorDeckPage() {
                         className="mt-1 text-[11px]"
                         style={{
                           fontFamily: "var(--font-figtree)",
-                          color: "rgba(255,255,255,0.25)",
+                          color: "rgba(255,255,255,0.28)",
                         }}
                       >
                         {item.note}
@@ -704,7 +660,7 @@ export default function InvestorDeckPage() {
               className="mb-16 text-lg"
               style={{
                 fontFamily: "var(--font-figtree)",
-                color: "rgba(255,255,255,0.35)",
+                color: "rgba(255,255,255,0.39)",
                 fontWeight: 300,
               }}
             >
@@ -717,7 +673,7 @@ export default function InvestorDeckPage() {
                     className="mb-3 text-lg font-medium"
                     style={{
                       fontFamily: "var(--font-space-grotesk)",
-                      color: "rgba(16,185,129,0.85)",
+                      color: "rgba(16,185,129,0.95)",
                     }}
                   >
                     Market Depth Reserve
@@ -726,7 +682,7 @@ export default function InvestorDeckPage() {
                     className="text-[15px] leading-[1.8]"
                     style={{
                       fontFamily: "var(--font-figtree)",
-                      color: "rgba(255,255,255,0.45)",
+                      color: "rgba(255,255,255,0.50)",
                       fontWeight: 300,
                     }}
                   >
@@ -741,7 +697,7 @@ export default function InvestorDeckPage() {
                     className="mb-3 text-lg font-medium"
                     style={{
                       fontFamily: "var(--font-space-grotesk)",
-                      color: "rgba(16,185,129,0.85)",
+                      color: "rgba(16,185,129,0.95)",
                     }}
                   >
                     Buyback-and-Make
@@ -750,7 +706,7 @@ export default function InvestorDeckPage() {
                     className="text-[15px] leading-[1.8]"
                     style={{
                       fontFamily: "var(--font-figtree)",
-                      color: "rgba(255,255,255,0.45)",
+                      color: "rgba(255,255,255,0.50)",
                       fontWeight: 300,
                     }}
                   >
@@ -766,7 +722,7 @@ export default function InvestorDeckPage() {
                   className="mb-1 text-xs font-medium tracking-[0.15em] uppercase"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
-                    color: "rgba(16,185,129,0.6)",
+                    color: "rgba(16,185,129,0.67)",
                   }}
                 >
                   Result
@@ -775,7 +731,7 @@ export default function InvestorDeckPage() {
                   className="text-[15px] leading-[1.8]"
                   style={{
                     fontFamily: "var(--font-figtree)",
-                    color: "rgba(255,255,255,0.45)",
+                    color: "rgba(255,255,255,0.50)",
                     fontWeight: 300,
                   }}
                 >
@@ -839,7 +795,7 @@ export default function InvestorDeckPage() {
                   items: [
                     "Key ceremony + admin rotation PASS (G10)",
                     "End-to-end launch rehearsal PASS (G11)",
-                    "Decision state GO FOR PRODUCTION (2026-02-22)",
+                    "Operator packet 2026-02-22: GO FOR PRODUCTION (local). Not public launch.",
                   ],
                 },
               ].map((phase, i) => (
@@ -869,7 +825,7 @@ export default function InvestorDeckPage() {
                           className="text-xs font-medium tracking-[0.2em] uppercase"
                           style={{
                             fontFamily: "var(--font-space-grotesk)",
-                            color: phase.current ? "rgba(16,185,129,0.7)" : "rgba(255,255,255,0.25)",
+                            color: phase.current ? "rgba(16,185,129,0.78)" : "rgba(255,255,255,0.28)",
                           }}
                         >
                           {phase.quarter}
@@ -878,7 +834,7 @@ export default function InvestorDeckPage() {
                           className="text-lg font-light"
                           style={{
                             fontFamily: "var(--font-instrument-serif)",
-                            color: phase.current ? "rgba(16,185,129,0.9)" : "rgba(255,255,255,0.5)",
+                            color: phase.current ? "rgba(16,185,129,0.9)" : "rgba(255,255,255,0.56)",
                           }}
                         >
                           {phase.title}
@@ -888,7 +844,7 @@ export default function InvestorDeckPage() {
                             className="rounded-full border border-emerald-500/20 bg-emerald-500/[0.08] px-3 py-0.5 text-[10px] font-medium tracking-[0.1em] uppercase"
                             style={{
                               fontFamily: "var(--font-space-grotesk)",
-                              color: "rgba(16,185,129,0.7)",
+                              color: "rgba(16,185,129,0.78)",
                             }}
                           >
                             Current
@@ -902,7 +858,7 @@ export default function InvestorDeckPage() {
                             className="text-[14px] leading-[1.7]"
                             style={{
                               fontFamily: "var(--font-figtree)",
-                              color: phase.current ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.3)",
+                              color: phase.current ? "rgba(255,255,255,0.50)" : "rgba(255,255,255,0.34)",
                               fontWeight: 300,
                             }}
                           >
@@ -952,7 +908,7 @@ export default function InvestorDeckPage() {
                     className="mb-10 text-lg"
                     style={{
                       fontFamily: "var(--font-figtree)",
-                      color: "rgba(255,255,255,0.5)",
+                      color: "rgba(255,255,255,0.56)",
                       fontWeight: 300,
                     }}
                   >
@@ -963,22 +919,22 @@ export default function InvestorDeckPage() {
                       className="text-[14px] leading-[1.8]"
                       style={{
                         fontFamily: "var(--font-figtree)",
-                        color: "rgba(255,255,255,0.4)",
+                        color: "rgba(255,255,255,0.45)",
                         fontWeight: 300,
                       }}
                     >
-                      <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>Milestones:</span> M0 VM + Proofs (Complete) →
+                      <span style={{ color: "rgba(16,185,129,0.78)", fontWeight: 500 }}>Milestones:</span> M0 VM + Proofs (Complete) →
                       M1 Identity + SDKs (In Progress) → M2 Tokenomics (In Progress) → M3 Production Launch Gates (Closed)
                     </p>
                     <p
                       className="text-[14px] leading-[1.8]"
                       style={{
                         fontFamily: "var(--font-figtree)",
-                        color: "rgba(255,255,255,0.4)",
+                        color: "rgba(255,255,255,0.45)",
                         fontWeight: 300,
                       }}
                     >
-                      <span style={{ color: "rgba(16,185,129,0.7)", fontWeight: 500 }}>Why now:</span> On-chain
+                      <span style={{ color: "rgba(16,185,129,0.78)", fontWeight: 500 }}>Why now:</span> On-chain
                       forecasting needs privacy + fair execution; Avalanche Subnets make it operationally feasible
                       today
                     </p>
@@ -990,7 +946,7 @@ export default function InvestorDeckPage() {
                     className="mb-8 text-xl font-light"
                     style={{
                       fontFamily: "var(--font-instrument-serif)",
-                      color: "rgba(255,255,255,0.6)",
+                      color: "rgba(255,255,255,0.67)",
                     }}
                   >
                     Use of Funds
@@ -1008,7 +964,7 @@ export default function InvestorDeckPage() {
                             className="text-[13px]"
                             style={{
                               fontFamily: "var(--font-figtree)",
-                              color: "rgba(255,255,255,0.45)",
+                              color: "rgba(255,255,255,0.50)",
                               fontWeight: 300,
                             }}
                           >
@@ -1018,7 +974,7 @@ export default function InvestorDeckPage() {
                             className="text-sm font-medium"
                             style={{
                               fontFamily: "var(--font-space-grotesk)",
-                              color: "rgba(16,185,129,0.8)",
+                              color: "rgba(16,185,129,0.90)",
                             }}
                           >
                             {item.pct}%
@@ -1046,7 +1002,7 @@ export default function InvestorDeckPage() {
               <div className="border-t border-white/[0.04] px-10 py-8 md:px-14">
                 <div className="flex flex-wrap items-center justify-center gap-4">
                   <a
-                    href="mailto:founders@veil.markets"
+                    href="mailto:agent@thesecretlab.app"
                     className="group relative overflow-hidden rounded-full px-8 py-3.5 text-sm font-medium text-white transition-all"
                     style={{
                       fontFamily: "var(--font-space-grotesk)",
@@ -1061,7 +1017,7 @@ export default function InvestorDeckPage() {
                     className="rounded-full border border-white/[0.08] bg-white/[0.02] px-8 py-3.5 text-sm transition-all hover:border-emerald-500/20 hover:bg-white/[0.05]"
                     style={{
                       fontFamily: "var(--font-space-grotesk)",
-                      color: "rgba(255,255,255,0.5)",
+                      color: "rgba(255,255,255,0.56)",
                     }}
                   >
                     Read Documentation
@@ -1073,35 +1029,7 @@ export default function InvestorDeckPage() {
         </ScrollReveal>
       </main>
 
-      {/* ─── Fixed Footer ─── */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.04] bg-[#060606]/80 backdrop-blur-2xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4">
-          <span
-            className="text-[11px] tracking-[0.1em] uppercase"
-            style={{
-              fontFamily: "var(--font-space-grotesk)",
-              color: "rgba(255,255,255,0.2)",
-            }}
-          >
-            VEIL — Confidential
-          </span>
-          <a href="https://thesecretlab.app" target="_blank" rel="noopener noreferrer"
-            className="group flex items-center gap-2 transition-opacity duration-700 hover:opacity-80">
-            <span className="text-[8px] tracking-[0.3em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.08)" }}>A</span>
-            <span className="text-[10px] tracking-[0.15em] font-semibold group-hover:text-white/25 transition-colors duration-700" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.18)" }}>SECRET LAB</span>
-            <span className="text-[8px] tracking-[0.3em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.08)" }}>Production</span>
-          </a>
-          <span
-            className="text-[11px]"
-            style={{
-              fontFamily: "var(--font-figtree)",
-              color: "rgba(255,255,255,0.15)",
-            }}
-          >
-            founders@veil.markets
-          </span>
-        </div>
-      </footer>
+      <VeilFooter />
     </div>
   )
 }

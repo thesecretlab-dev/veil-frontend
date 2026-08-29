@@ -1,6 +1,7 @@
 "use client"
 
 import { VeilFooter, VeilHeader } from '@/components/brand'
+import { FlowNext } from "@/components/flow-next"
 
 import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
@@ -79,7 +80,7 @@ function isTxHash(value: string): boolean {
 
 function StatusBadge({ status }: { status: RunnerStatus }) {
   const map: Record<RunnerStatus, { label: string; className: string }> = {
-    idle: { label: "Idle", className: "border-white/20 bg-white/5 text-white/70" },
+    idle: { label: "Idle", className: "border-white/20 bg-white/5 text-white/[0.78]" },
     running: { label: "Running", className: "border-amber-400/30 bg-amber-500/10 text-amber-200" },
     succeeded: { label: "Succeeded", className: "border-emerald-400/30 bg-emerald-500/10 text-emerald-200" },
     failed: { label: "Failed", className: "border-red-400/30 bg-red-500/10 text-red-200" },
@@ -99,7 +100,7 @@ function StepBadge({ status }: { status: string | undefined }) {
   if (status === "failed") {
     return <span className="rounded-full border border-red-400/30 bg-red-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-red-200">Failed</span>
   }
-  return <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/60">Pending</span>
+  return <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/[0.67]">Pending</span>
 }
 
 function UserFlowBadge({ status }: { status: UserFlowState }) {
@@ -125,7 +126,7 @@ function UserFlowBadge({ status }: { status: UserFlowState }) {
     )
   }
   return (
-    <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/60">
+    <span className="rounded-full border border-white/20 bg-white/5 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-white/[0.67]">
       Pending
     </span>
   )
@@ -274,16 +275,17 @@ export default function LaunchPage() {
   }, [api.runner.status, steps])
 
   return (
-    <div className="min-h-screen bg-[#050505] px-6 py-10 text-white">
-      <div className="mx-auto max-w-5xl space-y-6">
+    <div className="min-h-screen bg-[#050505] px-6 py-10 text-white" style={{ paddingRight: 48 }}>
+      <VeilHeader />
+      <div className="mx-auto max-w-5xl space-y-6 pt-24">
         <div className="flex items-center justify-between">
-          <Link href="/app/agents" className="inline-flex items-center gap-2 text-sm text-white/60 transition hover:text-white">
+          <Link href="/app/onboard" className="inline-flex items-center gap-2 text-sm text-white/[0.67] transition hover:text-white">
             <ArrowLeft className="h-4 w-4" />
-            Back to Agents
+            Back to Onboard
           </Link>
           <button
             onClick={() => void refresh()}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-white/70 transition hover:border-white/35 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-white/[0.78] transition hover:border-white/35 hover:text-white"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             Refresh
@@ -301,8 +303,8 @@ export default function LaunchPage() {
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs uppercase tracking-[0.14em] text-white/60">End-User Flow (Target: &lt; 20m)</p>
-              <p className="mt-1 text-sm text-white/70">
+              <p className="text-xs uppercase tracking-[0.14em] text-white/[0.67]">End-User Flow (Target: &lt; 20m)</p>
+              <p className="mt-1 text-sm text-white/[0.78]">
                 {api.latestRun?.definition ||
                   "User sends AVAX, receives cloud runtime + Codex access, and ANIMA validates VEIL in one guided flow."}
               </p>
@@ -320,8 +322,8 @@ export default function LaunchPage() {
                   </div>
                   <UserFlowBadge status={stage.state} />
                 </div>
-                <p className="text-xs leading-relaxed text-white/60">{stage.detail}</p>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/50">
+                <p className="text-xs leading-relaxed text-white/[0.67]">{stage.detail}</p>
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/[0.56]">
                   <span>Duration: {typeof stage.durationMs === "number" ? `${stage.durationMs}ms` : "-"}</span>
                   {stage.error && <span className="text-red-200/85">Error: {stage.error}</span>}
                 </div>
@@ -329,8 +331,8 @@ export default function LaunchPage() {
             ))}
           </div>
 
-          <div className="mt-4 rounded-lg border border-white/10 bg-[#060606]/25 p-4 text-xs text-white/60">
-            <p className="uppercase tracking-[0.14em] text-white/70">Surface Split</p>
+          <div className="mt-4 rounded-lg border border-white/10 bg-[#060606]/25 p-4 text-xs text-white/[0.67]">
+            <p className="uppercase tracking-[0.14em] text-white/[0.78]">Surface Split</p>
             <p className="mt-1">VeilVM runtime surface: <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/app/network">/app/network</Link> and <Link className="text-emerald-200 underline-offset-4 hover:underline" href="/app/transparency">/app/transparency</Link></p>
             <p className="mt-1">Companion EVM explorer (Blockscout): tracks EVM rails, not VeilVM-native actions.</p>
           </div>
@@ -338,13 +340,13 @@ export default function LaunchPage() {
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-xs uppercase tracking-[0.14em] text-white/60">Runner Status</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-white/[0.67]">Runner Status</p>
             <StatusBadge status={api.runner.status} />
           </div>
 
           <div className="grid gap-4 md:grid-cols-[1fr_auto]">
             <div>
-              <label className="mb-2 block text-[11px] uppercase tracking-[0.14em] text-white/60">Payment tx hash (Avalanche C-Chain)</label>
+              <label className="mb-2 block text-[11px] uppercase tracking-[0.14em] text-white/[0.67]">Payment tx hash (Avalanche C-Chain)</label>
               <input
                 value={txHash}
                 onChange={(event) => setTxHash(event.target.value)}
@@ -362,7 +364,7 @@ export default function LaunchPage() {
             </button>
           </div>
 
-          <div className="mt-4 grid gap-2 text-xs text-white/60 md:grid-cols-2">
+          <div className="mt-4 grid gap-2 text-xs text-white/[0.67] md:grid-cols-2">
             <p>Run ID: <span className="font-mono text-white/80">{api.runner.runId || "none"}</span></p>
             <p>Started: <span className="font-mono text-white/80">{api.runner.startedAt || "-"}</span></p>
             <p>Ended: <span className="font-mono text-white/80">{api.runner.endedAt || "-"}</span></p>
@@ -388,7 +390,7 @@ export default function LaunchPage() {
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
           <div className="mb-4 flex flex-wrap items-center gap-3">
-            <p className="text-xs uppercase tracking-[0.14em] text-white/60">Latest Run Evidence</p>
+            <p className="text-xs uppercase tracking-[0.14em] text-white/[0.67]">Latest Run Evidence</p>
             {strictPassed === true && (
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-emerald-200">
                 <CheckCircle2 className="h-3.5 w-3.5" />
@@ -429,7 +431,7 @@ export default function LaunchPage() {
                   </div>
                   <StepBadge status={step.status} />
                 </div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/50">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-white/[0.56]">
                   <span>Duration: {typeof step.durationMs === "number" ? `${step.durationMs}ms` : "-"}</span>
                   {step.error && <span className="text-red-200/85">Error: {step.error}</span>}
                 </div>
@@ -439,7 +441,7 @@ export default function LaunchPage() {
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-[#060606]/30 p-6">
-          <p className="mb-2 text-xs uppercase tracking-[0.14em] text-white/60">Runner Logs (tail)</p>
+          <p className="mb-2 text-xs uppercase tracking-[0.14em] text-white/[0.67]">Runner Logs (tail)</p>
           <div className="grid gap-3 md:grid-cols-2">
             <div className="rounded-lg border border-white/10 bg-[#060606]/50 p-3">
               <p className="mb-2 text-[11px] uppercase tracking-[0.14em] text-emerald-200/70">stdout</p>
@@ -455,6 +457,8 @@ export default function LaunchPage() {
             </div>
           </div>
         </div>
+        <FlowNext />
+        <VeilFooter />
       </div>
     </div>
   )

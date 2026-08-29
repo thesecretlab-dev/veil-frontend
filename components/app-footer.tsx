@@ -32,15 +32,15 @@ export function AppFooter() {
               >
                 <defs>
                   <linearGradient id="ftGrad" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="rgba(16, 185, 129, 0.5)" />
-                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.2)" />
+                    <stop offset="0%" stopColor="rgba(16, 185, 129, 0.56)" />
+                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0.22)" />
                   </linearGradient>
                 </defs>
-                <path d="M24 42 L6 8 L42 8 Z" fill="url(#ftGrad)" stroke="rgba(16, 185, 129, 0.2)" strokeWidth="1" />
+                <path d="M24 42 L6 8 L42 8 Z" fill="url(#ftGrad)" stroke="rgba(16, 185, 129, 0.22)" strokeWidth="1" />
               </svg>
               <span
-                className="text-lg tracking-[0.2em] transition-all duration-700 group-hover:text-white/50"
-                style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.3)" }}
+                className="text-lg tracking-[0.08em] font-bold transition-all duration-700 group-hover:text-white/[0.56]"
+                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.78)" }}
               >
                 VEIL
               </span>
@@ -51,7 +51,7 @@ export function AppFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-[12px] transition-all duration-500 hover:text-emerald-400"
-                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
+                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.22)" }}
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -61,7 +61,7 @@ export function AppFooter() {
             </div>
             <span
               className="mt-4 inline-block text-[9px] uppercase tracking-[0.2em] transition-opacity duration-500 hover:opacity-40"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.15)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.17)" }}
             >
               Powered by Avalanche
             </span>
@@ -71,17 +71,33 @@ export function AppFooter() {
           <div>
             <h3
               className="mb-5 text-[11px] uppercase tracking-[0.15em]"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.34)" }}
             >
               Markets
             </h3>
             <ul className="space-y-2.5">
-              {["Politics", "Sports", "Crypto", "Tech", "Economy"].map((item) => (
+              {[
+                { label: "Native books", href: "/app?category=native" },
+                { label: "Explorer", href: "/explorer" },
+                { label: "Portfolio", href: "/app/portfolio" },
+                { label: "Onboard", href: "/app/onboard" },
+              ].map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-[12px] transition-all duration-500 hover:text-emerald-400"
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.22)" }}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+              {["Politics", "Sports", "Crypto"].map((item) => (
                 <li key={item}>
                   <button
                     onClick={() => handleCategoryClick(item)}
                     className="text-[12px] transition-all duration-500 hover:text-emerald-400"
-                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.22)" }}
                   >
                     {item}
                   </button>
@@ -94,7 +110,7 @@ export function AppFooter() {
           <div>
             <h3
               className="mb-5 text-[11px] uppercase tracking-[0.15em]"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.34)" }}
             >
               Resources
             </h3>
@@ -113,7 +129,7 @@ export function AppFooter() {
                   <Link
                     href={link.href}
                     className="text-[12px] transition-all duration-500 hover:text-emerald-400"
-                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.22)" }}
                   >
                     {link.label}
                   </Link>
@@ -126,7 +142,7 @@ export function AppFooter() {
           <div>
             <h3
               className="mb-5 text-[11px] uppercase tracking-[0.15em]"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.34)" }}
             >
               Legal
             </h3>
@@ -141,7 +157,7 @@ export function AppFooter() {
                   <Link
                     href={link.href}
                     className="text-[12px] transition-all duration-500 hover:text-emerald-400"
-                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)" }}
+                    style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.22)" }}
                   >
                     {link.label}
                   </Link>
@@ -157,16 +173,16 @@ export function AppFooter() {
           style={{
             borderTop: "1px solid rgba(255, 255, 255, 0.04)",
             fontFamily: "var(--font-space-grotesk)",
-            color: "rgba(255, 255, 255, 0.15)",
+            color: "rgba(255, 255, 255, 0.17)",
           }}
         >
           <span>© {new Date().getFullYear()} VEIL · TSL — No users. Only developers.</span>
           <a href="https://thesecretlab.app" target="_blank" rel="noopener noreferrer"
             className="group flex items-center gap-2 transition-opacity duration-700 hover:opacity-80">
             <span style={{ fontSize: "8px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.08)", textTransform: "uppercase" as const }}>Built by</span>
-            <span style={{ fontSize: "10px", letterSpacing: "0.15em", color: "rgba(255,255,255,0.18)", fontWeight: 600 }}
-              className="group-hover:text-white/30 transition-colors duration-700">THE SECRET LAB</span>
-            <span style={{ fontSize: "8px", color: "rgba(16,185,129,0.3)" }}>⬡</span>
+            <span style={{ fontSize: "10px", letterSpacing: "0.15em", color: "rgba(255,255,255,0.20)", fontWeight: 600 }}
+              className="group-hover:text-white/[0.34] transition-colors duration-700">THE SECRET LAB</span>
+            <span style={{ fontSize: "8px", color: "rgba(16,185,129,0.34)" }}>⬡</span>
           </a>
           <span>Built on Avalanche</span>
         </div>

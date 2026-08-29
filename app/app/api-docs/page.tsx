@@ -14,8 +14,8 @@ function SR({ children, delay = 0, className = "" }: { children: React.ReactNode
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       {children}
@@ -31,7 +31,7 @@ function CodeBlock({ children }: { children: string }) {
       style={{
         background: "rgba(0,0,0,0.5)",
         border: "1px solid rgba(255,255,255,0.04)",
-        color: "rgba(16,185,129,0.8)",
+        color: "rgba(16,185,129,0.90)",
         fontFamily: "monospace",
       }}
     >
@@ -48,7 +48,7 @@ function IC({ children }: { children: React.ReactNode }) {
       style={{
         background: "rgba(0,0,0,0.4)",
         border: "1px solid rgba(255,255,255,0.04)",
-        color: "rgba(16,185,129,0.8)",
+        color: "rgba(16,185,129,0.90)",
         fontFamily: "monospace",
       }}
     >
@@ -94,21 +94,21 @@ function Endpoint({
           </span>
           <span
             className="text-sm font-medium"
-            style={{ color: "rgba(255,255,255,0.7)", fontFamily: "monospace" }}
+            style={{ color: "rgba(255,255,255,0.78)", fontFamily: "monospace" }}
           >
             {path}
           </span>
         </div>
         <p
           className="text-sm leading-relaxed"
-          style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
+          style={{ color: "rgba(255,255,255,0.50)", fontFamily: "var(--font-space-grotesk)" }}
         >
           {description}
         </p>
         {params && (
           <p
             className="mt-2 text-xs"
-            style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-space-grotesk)" }}
+            style={{ color: "rgba(255,255,255,0.34)", fontFamily: "var(--font-space-grotesk)" }}
           >
             {params}
           </p>
@@ -124,7 +124,7 @@ function SectionLabel({ number, title }: { number: string; title: string }) {
     <div className="mb-8 flex items-center gap-4">
       <span
         className="text-xs font-medium tracking-[0.3em] uppercase"
-        style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)" }}
+        style={{ color: "rgba(16,185,129,0.56)", fontFamily: "var(--font-space-grotesk)" }}
       >
         {number}
       </span>
@@ -148,33 +148,12 @@ export default function ApiDocsPage() {
 
       <div className="min-h-screen" style={{ background: "#060606" }}>
       <VeilHeader />
-        {/* ─── Fixed Nav ─── */}
-        <nav
-          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5"
-          style={{
-            background: "rgba(6,6,6,0.8)",
-            backdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.04)",
-          }}
-        >
-          <Link href="/app" className="text-lg font-semibold tracking-wider" style={{ color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-instrument-serif)" }}>
-            VEIL
-          </Link>
-          <div className="flex gap-6">
-            {[{ label: "Privacy", href: "/app/privacy" }, { label: "Terms", href: "/app/terms" }].map((l) => (
-              <Link key={l.href} href={l.href} className="text-xs tracking-wider uppercase transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}>
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
-
         {/* ─── Hero ─── */}
         <header className="flex flex-col items-center justify-center px-6 pt-40 pb-20 text-center">
           <SR>
             <p
               className="mb-4 text-xs tracking-[0.4em] uppercase"
-              style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)" }}
+              style={{ color: "rgba(16,185,129,0.56)", fontFamily: "var(--font-space-grotesk)" }}
             >
               Developer Reference
             </p>
@@ -194,7 +173,7 @@ export default function ApiDocsPage() {
           <SR delay={0.2}>
             <p
               className="max-w-lg text-sm leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-figtree)" }}
+              style={{ color: "rgba(255,255,255,0.39)", fontFamily: "var(--font-figtree)" }}
             >
               Last updated February 2026
             </p>
@@ -211,7 +190,7 @@ export default function ApiDocsPage() {
                 className="mb-4 text-3xl font-light"
                 style={{
                   fontFamily: "var(--font-instrument-serif)",
-                  color: "rgba(255,255,255,0.85)",
+                  color: "rgba(255,255,255,0.95)",
                   textShadow: "0 0 30px rgba(16,185,129,0.1)",
                 }}
               >
@@ -219,7 +198,7 @@ export default function ApiDocsPage() {
               </h2>
               <p
                 className="mb-8 text-sm leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 Base URL: <IC>https://api.veil.markets/v1</IC>
               </p>
@@ -242,7 +221,7 @@ export default function ApiDocsPage() {
                 className="mb-4 text-3xl font-light"
                 style={{
                   fontFamily: "var(--font-instrument-serif)",
-                  color: "rgba(255,255,255,0.85)",
+                  color: "rgba(255,255,255,0.95)",
                   textShadow: "0 0 30px rgba(16,185,129,0.1)",
                 }}
               >
@@ -250,13 +229,13 @@ export default function ApiDocsPage() {
               </h2>
               <p
                 className="mb-4 text-sm leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 Connect to: <IC>wss://api.veil.markets/ws</IC>
               </p>
               <p
                 className="mb-8 text-sm leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 Subscribe to real-time market updates, order book changes, and trade executions via WebSocket connections.
               </p>
@@ -266,7 +245,7 @@ export default function ApiDocsPage() {
               <SR delay={0.05}>
                 <h3
                   className="mb-3 text-sm font-medium"
-                  style={{ color: "rgba(16,185,129,0.7)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(16,185,129,0.78)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   Subscribe to Market
                 </h3>
@@ -275,7 +254,7 @@ export default function ApiDocsPage() {
               <SR delay={0.1}>
                 <h3
                   className="mb-3 text-sm font-medium"
-                  style={{ color: "rgba(16,185,129,0.7)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(16,185,129,0.78)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   Subscribe to Order Book
                 </h3>
@@ -292,7 +271,7 @@ export default function ApiDocsPage() {
                 className="mb-4 text-3xl font-light"
                 style={{
                   fontFamily: "var(--font-instrument-serif)",
-                  color: "rgba(255,255,255,0.85)",
+                  color: "rgba(255,255,255,0.95)",
                   textShadow: "0 0 30px rgba(16,185,129,0.1)",
                 }}
               >
@@ -300,7 +279,7 @@ export default function ApiDocsPage() {
               </h2>
               <p
                 className="mb-6 text-sm leading-relaxed"
-                style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 VEIL uses wallet-based authentication. Sign a message with your wallet to receive an API key:
               </p>
@@ -326,7 +305,7 @@ export default function ApiDocsPage() {
                         className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold"
                         style={{
                           background: "rgba(16,185,129,0.08)",
-                          color: "rgba(16,185,129,0.7)",
+                          color: "rgba(16,185,129,0.78)",
                           border: "1px solid rgba(16,185,129,0.15)",
                           fontFamily: "var(--font-space-grotesk)",
                         }}
@@ -335,7 +314,7 @@ export default function ApiDocsPage() {
                       </span>
                       <span
                         className="text-sm leading-relaxed"
-                        style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
+                        style={{ color: "rgba(255,255,255,0.50)", fontFamily: "var(--font-space-grotesk)" }}
                       >
                         {step}
                       </span>
@@ -355,7 +334,7 @@ export default function ApiDocsPage() {
           <div className="mx-auto flex max-w-3xl items-center justify-between">
             <span
               className="text-xs"
-              style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}
+              style={{ color: "rgba(255,255,255,0.22)", fontFamily: "var(--font-space-grotesk)" }}
             >
               © 2026 VEIL
             </span>
@@ -368,7 +347,7 @@ export default function ApiDocsPage() {
                   key={l.href}
                   href={l.href}
                   className="text-xs transition-colors hover:text-white"
-                  style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(255,255,255,0.28)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   {l.label}
                 </Link>

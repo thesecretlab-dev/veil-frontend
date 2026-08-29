@@ -13,10 +13,10 @@ export default function CTASection() {
           style={{
             fontSize: "10px",
             letterSpacing: "0.5em",
-            color: "rgba(16, 185, 129, 0.35)",
+            color: "rgba(16, 185, 129, 0.39)",
             fontFamily: "var(--font-space-grotesk)",
           }}
-          whileHover={{ color: "rgba(16, 185, 129, 0.6)", transition: { duration: 0.4 } }}
+          whileHover={{ color: "rgba(16, 185, 129, 0.67)", transition: { duration: 0.4 } }}
         >
           EARLY ACCESS
         </motion.span>
@@ -26,7 +26,7 @@ export default function CTASection() {
           tag="h2"
           className="text-4xl md:text-5xl font-bold tracking-wide mt-6 mb-8 font-sans cursor-default justify-center"
           style={{
-            color: "rgba(255, 255, 255, 0.30)",
+            color: "rgba(255, 255, 255, 0.34)",
             textShadow: `
               0 0 10px rgba(16, 185, 129, 0.2),
               0 0 20px rgba(16, 185, 129, 0.1),
@@ -40,7 +40,7 @@ export default function CTASection() {
 
         <p
           className="text-base leading-relaxed mb-12 max-w-xl mx-auto"
-          style={{ color: "rgba(255, 255, 255, 0.33)", fontFamily: "var(--font-figtree)" }}
+          style={{ color: "rgba(255, 255, 255, 0.37)", fontFamily: "var(--font-figtree)" }}
         >
           Local VeilVM settles native markets. Polymarket on this site is a public catalog, not VEIL settlement.
           Fuji/mainnet are not live.
@@ -55,12 +55,12 @@ export default function CTASection() {
               background: "rgba(16, 185, 129, 0.06)",
               backdropFilter: "blur(10px)",
               border: "1px solid rgba(16, 185, 129, 0.1)",
-              color: "rgba(255, 255, 255, 0.40)",
+              color: "rgba(255, 255, 255, 0.45)",
             }}
             whileHover={{
               background: "rgba(16, 185, 129, 0.15)",
-              borderColor: "rgba(16, 185, 129, 0.3)",
-              color: "rgba(255, 255, 255, 0.8)",
+              borderColor: "rgba(16, 185, 129, 0.38)",
+              color: "rgba(255, 255, 255, 0.90)",
               boxShadow: "0 0 30px rgba(16, 185, 129, 0.15), 0 0 60px rgba(16, 185, 129, 0.05)",
               scale: 1.03,
               transition: { duration: 0.4, ease: "easeOut" },
@@ -87,16 +87,16 @@ export default function CTASection() {
                 background: "rgba(255, 255, 255, 0.02)",
                 backdropFilter: "blur(10px)",
                 border: "1px solid rgba(255, 255, 255, 0.06)",
-                color: "rgba(255, 255, 255, 0.35)",
+                color: "rgba(255, 255, 255, 0.39)",
                 transition: "all 0.6s ease",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.15)"
-                e.currentTarget.style.color = "rgba(255, 255, 255, 0.55)"
+                e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.17)"
+                e.currentTarget.style.color = "rgba(255, 255, 255, 0.62)"
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.06)"
-                e.currentTarget.style.color = "rgba(255, 255, 255, 0.35)"
+                e.currentTarget.style.color = "rgba(255, 255, 255, 0.39)"
               }}
             >
               READ DOCUMENTATION
@@ -108,13 +108,13 @@ export default function CTASection() {
         <div className="mt-20 pt-8" style={{ borderTop: "1px solid rgba(255, 255, 255, 0.04)" }}>
           <motion.p
             style={{
-              color: "rgba(255, 255, 255, 0.28)",
+              color: "rgba(255, 255, 255, 0.31)",
               fontSize: "10px",
               letterSpacing: "0.3em",
               fontFamily: "var(--font-space-grotesk)",
             }}
             whileHover={{
-              color: "rgba(255, 255, 255, 0.45)",
+              color: "rgba(255, 255, 255, 0.50)",
               transition: { duration: 0.8 },
             }}
           >

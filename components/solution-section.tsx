@@ -13,7 +13,7 @@ export default function SolutionSection() {
           tag="h2"
           className="text-4xl md:text-5xl font-bold tracking-wide mb-12 font-sans cursor-default"
           style={{
-            color: "rgba(255, 255, 255, 0.35)",
+            color: "rgba(255, 255, 255, 0.39)",
             textShadow: `
               0 0 10px rgba(16, 185, 129, 0.3),
               0 0 20px rgba(16, 185, 129, 0.2),
@@ -32,13 +32,13 @@ export default function SolutionSection() {
             <motion.h3
               className="text-3xl font-semibold mb-4 font-sans cursor-default"
               style={{
-                color: "rgba(255, 255, 255, 0.25)",
+                color: "rgba(255, 255, 255, 0.28)",
                 textShadow: "0 0 15px rgba(16, 185, 129, 0.2), inset 0 0 5px rgba(255, 255, 255, 0.1)",
                 WebkitTextStroke: "0.5px rgba(255, 255, 255, 0.15)",
                 filter: "blur(0.3px)",
               }}
               whileHover={{
-                color: "rgba(255, 255, 255, 0.45)",
+                color: "rgba(255, 255, 255, 0.50)",
                 filter: "blur(0.2px) brightness(1.4)",
                 textShadow: `
                   0 0 20px rgba(16, 185, 129, 0.7),
@@ -51,21 +51,21 @@ export default function SolutionSection() {
             >
               Batch Auctions + Sealed Orders
             </motion.h3>
-            <p className="text-lg leading-relaxed mb-6 font-sans" style={{ color: "rgba(255, 255, 255, 0.55)" }}>
+            <p className="text-lg leading-relaxed mb-6 font-sans" style={{ color: "rgba(255, 255, 255, 0.62)" }}>
               VEIL batches orders in short windows (2-5 seconds), clears them as a batch, and only publishes final
               prices and fills{"\u2014"}never individual orders. You click once, your order is sealed. A few seconds later, a
               batch price prints. No visible order trail. No mempool gossip to exploit.
             </p>
-            <div className="flex flex-wrap items-center gap-4 font-sans" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
+            <div className="flex flex-wrap items-center gap-4 font-sans" style={{ color: "rgba(255, 255, 255, 0.45)" }}>
               {["Sealed Commitments", "Batch Clearing", "Privacy First"].map((label) => (
                 <motion.div
                   key={label}
                   className="flex items-center gap-2"
-                  whileHover={{ color: "rgba(255, 255, 255, 0.65)", x: 2, transition: { duration: 0.3 } }}
+                  whileHover={{ color: "rgba(255, 255, 255, 0.73)", x: 2, transition: { duration: 0.3 } }}
                 >
                   <motion.div
                     className="w-3 h-3 rounded-full bg-emerald-500/30"
-                    whileHover={{ scale: 1.4, backgroundColor: "rgba(16,185,129,0.6)", transition: { duration: 0.3 } }}
+                    whileHover={{ scale: 1.4, backgroundColor: "rgba(16,185,129,0.67)", transition: { duration: 0.3 } }}
                   />
                   <span>{label}</span>
                 </motion.div>

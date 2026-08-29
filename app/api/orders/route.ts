@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server"
+import { settlePolygonRoute } from "@/lib/polymarket/settle"
 
 type SubmitOrderBody = {
   marketId?: string
@@ -207,9 +208,19 @@ export async function GET() {
   }
   try {
     const response = await fetch(`${base}/health`, { cache: "no-store" })
-    const payload = await response.json().catch(() => ({}))
+    const payload = (await response.json().catch(() => ({}))) as Record<string, unknown>
     return NextResponse.json(
-      { ok: Boolean((payload as { ok?: boolean }).ok), chainId: asString((payload as { chainId?: unknown }).chainId) },
+      {
+        ok: Boolean(payload.ok),
+        chainId: asString(payload.chainId),
+        actor: asString(payload.actor),
+        veil: typeof payload.veil === "number" ? payload.veil : 0,
+        vai: typeof payload.vai === "number" ? payload.vai : 0,
+        markets: typeof payload.markets === "number" ? payload.markets : 0,
+        proverReady: Boolean(payload.proverReady),
+        note: asString(payload.note),
+        local: true,
+      },
       { status: response.ok ? 200 : response.status },
     )
   } catch {
@@ -246,6 +257,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ result: invalidBodyResult("amountUsd must be a positive number.") }, { status: 400 })
   }
 
+  if (nativeNetwork === "polygon") {
+    if (!walletAddress || !walletSignature || !walletNonce) {
+      return NextResponse.json(
+        { result: invalidBodyResult("walletAddress, walletSignature, and walletNonce are required for Polymarket routes.") },
+        { status: 400 },
+      )
+    }
+    try {
+      const result = await settlePolygonRoute({
+        marketId,
+        side,
+        outcome,
+        amountUsd,
+        walletAddress,
+        walletSignature,
+        walletNonce,
+        routingFeeBps: routingFeeBps || 3,
+      })
+      return NextResponse.json({ result })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      return NextResponse.json(
+        {
+          result: {
+            ...invalidBodyResult(message),
+            nativeNetwork: "polygon",
+            settlementNetwork: "polygon",
+            routingFeeBps: Math.max(3, routingFeeBps),
+            errorCode: "POLYMARKET_ROUTE_FAILED",
+          },
+        },
+        { status: 400 },
+      )
+    }
+  }
+
   if (!walletAddress) {
     return NextResponse.json(
       { result: invalidBodyResult("walletAddress is required for VEIL order execution.") },
@@ -264,6 +311,37 @@ export async function POST(request: Request) {
   const base = (process.env.VEIL_ORDER_API_BASE || localDefault).trim().replace(/\/+$/, "")
   if (!base) {
     return NextResponse.json({ result: unconfiguredResult(nativeNetwork, routingFeeBps) }, { status: 503 })
+  }
+
+  try {
+    const healthRes = await fetch(`${base}/health`, { cache: "no-store", signal: AbortSignal.timeout(2500) })
+    const health = (await healthRes.json().catch(() => ({}))) as { ok?: boolean; chainId?: string }
+    const expected = process.env.VEIL_CHAIN_ID || "bdRGUMA7rzZFXjbn1ePTjqhAUfTjW94e69p7qZd4puZ3uEosL"
+    if (!health.ok || (health.chainId && health.chainId !== expected)) {
+      return NextResponse.json(
+        {
+          result: {
+            ...unconfiguredResult(nativeNetwork, routingFeeBps),
+            status: "router_mismatch",
+            message: "Order router is down or not this VeilVM chain.",
+            errorCode: "ORDER_ROUTER_CHAIN_MISMATCH",
+          },
+        },
+        { status: 503 },
+      )
+    }
+  } catch {
+    return NextResponse.json(
+      {
+        result: {
+          ...unconfiguredResult(nativeNetwork, routingFeeBps),
+          status: "request_failed",
+          message: "Failed to reach VEIL order router.",
+          errorCode: "ORDER_ROUTER_UNREACHABLE",
+        },
+      },
+      { status: 502 },
+    )
   }
 
   const upstreamUrl = `${base}/orders`

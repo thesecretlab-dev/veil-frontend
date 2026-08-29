@@ -1,33 +1,30 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { AppShaderBackground } from "@/components/app-shader-background"
 import { MarketGrid } from "@/components/market-grid"
 import { NativeCreateBar } from "@/components/native-create-bar"
 import { AppNav } from "@/components/app-nav"
 import { AppFooter } from "@/components/app-footer"
-import { HowItWorksModal } from "@/components/how-it-works-modal"
+import { MarketsToolbar, type MarketLayout, type MarketSort } from "@/components/markets-toolbar"
 
 const CATEGORY_MAP: Record<string, string> = {
   all: "All",
-  trending: "Trending",
-  breaking: "Breaking",
-  new: "New",
   native: "Native",
-  politics: "Politics",
-  sports: "Sports",
-  crypto: "Crypto",
-  earnings: "Earnings",
+  global: "Global",
+  world: "Global",
+  macro: "Macro",
+  economy: "Macro",
   tech: "Tech",
-  culture: "Culture",
-  world: "World",
-  economy: "Economy",
+  sports: "Sports",
+  politics: "Politics",
+  crypto: "Crypto",
 }
 
 export default function AppPage() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All")
-  const [showTutorial, setShowTutorial] = useState(false)
+  const [selectedCategory, setSelectedCategory] = useState<string>("Native")
   const [searchQuery, setSearchQuery] = useState("")
+  const [sort, setSort] = useState<MarketSort>("trending")
+  const [layout, setLayout] = useState<MarketLayout>("grid")
   const [marketTick, setMarketTick] = useState(0)
 
   useEffect(() => {
@@ -43,36 +40,31 @@ export default function AppPage() {
   }, [])
 
   return (
-    <main className="relative min-h-screen overflow-hidden" style={{ background: "#060606" }}>
-      <AppShaderBackground />
-
-      {/* Film grain overlay */}
-      <div className="pointer-events-none fixed inset-0 z-50">
-        <svg className="h-full w-full opacity-[0.035]">
-          <filter id="grain">
-            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-            <feColorMatrix type="saturate" values="0" />
-          </filter>
-          <rect width="100%" height="100%" filter="url(#grain)" />
-        </svg>
-      </div>
-
+    <main className="relative min-h-screen" style={{ background: "#000000" }}>
       <div className="relative z-10 flex min-h-screen flex-col">
-        <AppNav
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-          onShowTutorial={() => setShowTutorial(true)}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
-        <div className="pt-[140px]">
+        <AppNav />
+        <div className="pt-[72px]">
+          <MarketsToolbar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            sort={sort}
+            onSortChange={setSort}
+            layout={layout}
+            onLayoutChange={setLayout}
+          />
           <NativeCreateBar onCreated={() => setMarketTick((n) => n + 1)} />
-          <MarketGrid key={marketTick} selectedCategory={selectedCategory} searchQuery={searchQuery} />
+          <MarketGrid
+            key={marketTick}
+            selectedCategory={selectedCategory}
+            searchQuery={searchQuery}
+            sort={sort}
+            layout={layout}
+          />
         </div>
         <AppFooter />
       </div>
-
-      <HowItWorksModal isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
     </main>
   )
 }

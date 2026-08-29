@@ -6,7 +6,9 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "shaders:check": "node scripts/shader-check.mjs",
+    "mesh": "node mesh/server.mjs"
   },
   "dependencies": {
     "@ai-sdk/groq": "2.0.24",
@@ -76,6 +78,7 @@
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.183.1",
     "vaul": "^0.9.9",
+    "vgpu": "^0.3.1",
     "viem": "^2.46.2",
     "wagmi": "^3.5.0",
     "zod": "3.25.76"

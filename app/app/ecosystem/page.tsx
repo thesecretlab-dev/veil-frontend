@@ -8,7 +8,7 @@ import { motion, useInView, useScroll, useTransform } from "framer-motion"
 
 import { formatUsdCompact, type PortalStatusResponse } from "@/lib/portal-status"
 import { GeoIcon } from "@/components/geo-3d-icons"
-import { getCtaState, getLaunchStatus } from "@/app/lib/surface-translation-registry"
+import { getCtaState } from "@/app/lib/surface-translation-registry"
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TYPES
@@ -38,8 +38,8 @@ function ScrollReveal({
   const isInView = useInView(ref, { once: true, margin: "-80px" })
   return (
     <motion.div ref={ref} className={className}
-      initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 1, delay, ease: [0.25, 0.46, 0.45, 0.94] }}>
       {children}
     </motion.div>
@@ -60,12 +60,12 @@ function SectionLabel({ number, text }: { number: string; text: string }) {
   return (
     <div className="flex items-center gap-3 mb-4">
       <span style={{
-        fontSize: "9px", letterSpacing: "0.4em", color: "rgba(16,185,129,0.4)",
+        fontSize: "9px", letterSpacing: "0.4em", color: "rgba(16,185,129,0.45)",
         fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
       }}>{number}</span>
       <span style={{ width: "20px", height: "1px", background: "rgba(16,185,129,0.15)" }} />
       <span style={{
-        fontSize: "8px", letterSpacing: "0.4em", color: "rgba(255,255,255,0.2)",
+        fontSize: "8px", letterSpacing: "0.4em", color: "rgba(255,255,255,0.22)",
         fontFamily: "var(--font-space-grotesk)", textTransform: "uppercase",
       }}>{text}</span>
     </div>
@@ -98,8 +98,8 @@ function StatusPill({ status }: { status: PortalLink["status"] }) {
     live: {
       bg: "rgba(16,185,129,0.06)",
       border: "rgba(16,185,129,0.18)",
-      color: "rgba(16,185,129,0.8)",
-      dot: "rgba(16,185,129,0.6)",
+      color: "rgba(16,185,129,0.90)",
+      dot: "rgba(16,185,129,0.67)",
     },
     ops: {
       bg: "rgba(251,191,36,0.06)",
@@ -110,8 +110,8 @@ function StatusPill({ status }: { status: PortalLink["status"] }) {
     linked: {
       bg: "rgba(255,255,255,0.02)",
       border: "rgba(255,255,255,0.06)",
-      color: "rgba(255,255,255,0.4)",
-      dot: "rgba(255,255,255,0.2)",
+      color: "rgba(255,255,255,0.45)",
+      dot: "rgba(255,255,255,0.22)",
     },
   }
   const s = styles[status]
@@ -129,7 +129,7 @@ function StatusPill({ status }: { status: PortalLink["status"] }) {
         />
       )}
       {status !== "live" && <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.dot }} />}
-      {status}
+      {status === "live" ? "local" : status}
     </span>
   )
 }
@@ -186,12 +186,12 @@ function PortalCard({ portal, delay = 0 }: { portal: PortalLink; delay?: number 
               <StatusPill status={portal.status} />
             </div>
             <p className="flex-1 mb-3" style={{
-              fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
+              fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)",
               fontSize: "0.875rem", lineHeight: 1.7, fontWeight: 300,
             }}>{portal.description}</p>
             <p className="text-[11px] tracking-wide transition-colors duration-700 group-hover:text-emerald-400/60"
               style={{
-                fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.3)",
+                fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.34)",
               }}>{portal.href}</p>
 
             {/* Ambient glow on hover */}
@@ -236,7 +236,7 @@ function StatCard({ label, value, sub, delay = 0 }: {
             transition: "box-shadow 0.7s ease",
           }}>
           <p className="text-[9px] tracking-[0.35em] uppercase mb-4" style={{
-            fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)", fontWeight: 600,
+            fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.28)", fontWeight: 600,
           }}>{label}</p>
           <motion.p className="text-3xl md:text-4xl mb-2 tracking-tight"
             style={{
@@ -248,7 +248,7 @@ function StatCard({ label, value, sub, delay = 0 }: {
             {value}
           </motion.p>
           <p style={{
-            fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.2)",
+            fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.22)",
             fontSize: "0.8rem", fontWeight: 300,
           }}>{sub}</p>
         </div>
@@ -292,16 +292,13 @@ export default function EcosystemPage() {
     if (cta === "disabled" || cta === "hidden") return "ops"
     return fallback
   }
-  const launch = getLaunchStatus()
-  const launchGo = launch.decision === "GO FOR PRODUCTION"
-
   const groups: PortalGroup[] = [
     {
       title: "Core Trading",
       subtitle: "Indexed market and status surfaces.",
       portals: [
-        { name: "Markets", href: "/app/markets", description: "Primary prediction market trading interface.", status: status?.flags.liveMarketsAvailable && launchGo ? "live" : "ops" },
-        { name: "Market Detail", href: status?.markets.topMarkets[0] ? `/app/market/${status.markets.topMarkets[0].id}` : "/app", description: "Orderbook and trading panel for individual markets.", status: status?.flags.liveMarketsAvailable && launchGo ? "live" : "ops" },
+        { name: "Markets", href: "/app/markets", description: "Primary prediction market trading interface on this node.", status: status?.flags.liveMarketsAvailable ? "live" : "ops" },
+        { name: "Market Detail", href: status?.markets.topMarkets[0] ? `/app/market/${status.markets.topMarkets[0].id}` : "/app", description: "Orderbook and trading panel for individual markets.", status: status?.flags.liveMarketsAvailable ? "live" : "ops" },
         { name: "Insights", href: "/app/insights", description: "Research and strategy dashboards.", status: ctaToPortal("developer_sdk_docs", "linked") },
       ],
     },
@@ -379,12 +376,11 @@ export default function EcosystemPage() {
 
           <ScrollReveal delay={0.1}>
             <p className="max-w-2xl mb-16" style={{
-              fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)",
+              fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)",
               fontSize: "1.05rem", lineHeight: 1.8, fontWeight: 300,
             }}>
-              Unified access to markets, governance, docs, and MAIEV evidence surfaces.
-              Launch authority is GO FOR PRODUCTION; some routes remain preview/docs-only while operator rollout
-              policy is staged.
+              Directory of surfaces on this node. Local ≠ Fuji ≠ mainnet. The 2026-02-22 GO FOR PRODUCTION
+              line is an operator packet — not a public launch. Some routes stay docs-only.
             </p>
           </ScrollReveal>
 
@@ -440,7 +436,7 @@ export default function EcosystemPage() {
 
               <ScrollReveal delay={0.08}>
                 <p className="mb-12 max-w-xl" style={{
-                  fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.3)",
+                  fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.34)",
                   fontSize: "0.95rem", lineHeight: 1.7, fontWeight: 300,
                 }}>{group.subtitle}</p>
               </ScrollReveal>
@@ -471,17 +467,17 @@ export default function EcosystemPage() {
               <ScrollReveal>
                 <div className="flex items-center gap-3 mb-6">
                   <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-                    <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.3)" strokeWidth="1.5" />
+                    <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.34)" strokeWidth="1.5" />
                   </svg>
                   <span style={{
-                    fontSize: "12px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.25)",
+                    fontSize: "12px", letterSpacing: "0.3em", color: "rgba(255,255,255,0.28)",
                     fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
                   }}>VEIL PROTOCOL</span>
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={0.05}>
                 <p style={{
-                  fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.2)",
+                  fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.22)",
                   fontSize: "0.85rem", lineHeight: 1.7, fontWeight: 300, maxWidth: "360px",
                 }}>
                   Sovereign agent infrastructure on Avalanche L1.
@@ -503,7 +499,7 @@ export default function EcosystemPage() {
                   <Link key={link.label} href={link.href}
                     className="text-xs tracking-[0.12em] uppercase transition-colors duration-700 hover:text-emerald-400/60"
                     style={{
-                      fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.2)",
+                      fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.22)",
                     }}>
                     {link.label}
                   </Link>
@@ -524,7 +520,7 @@ export default function EcosystemPage() {
               © 2026 VEIL · TSL — No users. Only developers.
             </p>
             <p style={{
-              fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.2)",
+              fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.22)",
               fontSize: "0.65rem", letterSpacing: "0.2em",
             }}>
               CHAIN ID 22207

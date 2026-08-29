@@ -1,32 +1,40 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-import { motion } from 'framer-motion'
+import Link from "next/link"
+import dynamic from "next/dynamic"
+import { motion } from "framer-motion"
+import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
 
 const WalletGate = dynamic(
-  () => import('../components/WalletGate').then((mod) => mod.WalletGate),
+  () => import("../components/WalletGate").then((mod) => mod.WalletGate),
   { ssr: false },
 )
 const ConnectWalletButton = dynamic(
-  () => import('../components/WalletGate').then((mod) => mod.ConnectWalletButton),
+  () => import("../components/WalletGate").then((mod) => mod.ConnectWalletButton),
   { ssr: false },
 )
 const ProposalForm = dynamic(
-  () => import('../components/ProposalForm').then((mod) => mod.ProposalForm),
+  () => import("../components/ProposalForm").then((mod) => mod.ProposalForm),
   { ssr: false },
 )
 
 export default function NewProposalPage() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative">
-      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.03]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noise\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noise)\' opacity=\'1\'/%3E%3C/svg%3E")' }} />
+    <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <FilmGrain />
+      <VeilHeader />
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center justify-between mb-8">
-            <Link href="/app/gov" className="text-sm text-white/30 hover:text-white/50 transition-colors">
-              ← Back to Governance
+      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 pt-28 pb-20">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <p
+            className="mb-6 text-[13px]"
+            style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)" }}
+          >
+            Local draft only. Submitting here does not create an on-chain vote.
+          </p>
+          <div className="mb-8 flex items-center justify-between">
+            <Link href="/app/gov" className="text-sm text-white/[0.34] hover:text-white/[0.56] transition-colors">
+              ← Governance
             </Link>
             <ConnectWalletButton />
           </div>
@@ -36,6 +44,7 @@ export default function NewProposalPage() {
           </WalletGate>
         </motion.div>
       </div>
+      <VeilFooter />
     </div>
   )
 }

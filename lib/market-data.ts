@@ -6,12 +6,18 @@ export interface Market {
   yesPrice: number
   noPrice: number
   volume: string
+  volumeNum?: number
+  liquidityNum?: number
   endDate: string
   image: string
   sourceName?: string
   sourceUrl?: string
   marketSlug?: string
   veilMarketId?: string
+  conditionId?: string
+  yesTokenId?: string
+  noTokenId?: string
+  settlement?: "veil" | "polygon" | "polygon-local"
   status?: "active" | "closed"
   volume24h?: string
   liquidity?: string

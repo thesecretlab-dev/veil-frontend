@@ -21,8 +21,8 @@ function ScrollReveal({
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94], delay }}
     >
       {children}
@@ -39,8 +39,8 @@ const metrics = [
   },
   {
     label: "Production Decision",
-    value: "GO FOR PRODUCTION",
-    target: "Authority: launch checklist decision line (2026-02-22)",
+    value: "GO (local packet)",
+    target: "2026-02-22 operator checklist — not public launch authority",
     status: "healthy" as const,
   },
   {
@@ -442,11 +442,11 @@ const launchBlockers = [
 function statusColor(status: string) {
   if (status === "healthy") return "rgba(16, 185, 129, 0.9)"
   if (status === "warning") return "rgba(234, 179, 8, 0.9)"
-  return "rgba(255, 255, 255, 0.7)"
+  return "rgba(255, 255, 255, 0.78)"
 }
 
 function statusBorder(status: string) {
-  if (status === "healthy") return "rgba(16, 185, 129, 0.15)"
+  if (status === "healthy") return "rgba(16, 185, 129, 0.17)"
   if (status === "warning") return "rgba(234, 179, 8, 0.15)"
   return "rgba(255, 255, 255, 0.04)"
 }
@@ -456,7 +456,7 @@ function typeBadge(type: string) {
     Feature: {
       bg: "rgba(16, 185, 129, 0.06)",
       border: "rgba(16, 185, 129, 0.15)",
-      color: "rgba(16, 185, 129, 0.85)",
+      color: "rgba(16, 185, 129, 0.95)",
     },
     Policy: {
       bg: "rgba(59, 130, 246, 0.06)",
@@ -523,7 +523,7 @@ export default function TransparencyPage() {
               <div>
                 <p
                   className="mb-4 text-xs uppercase tracking-[0.34em]"
-                  style={{ color: "rgba(16,185,129,0.62)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(16,185,129,0.69)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   Operational Transparency
                 </p>
@@ -539,10 +539,10 @@ export default function TransparencyPage() {
                 </h1>
                 <p
                   className="max-w-2xl text-base font-light leading-[1.9] md:text-lg"
-                  style={{ color: "rgba(255,255,255,0.52)", fontFamily: "var(--font-figtree)" }}
+                  style={{ color: "rgba(255,255,255,0.58)", fontFamily: "var(--font-figtree)" }}
                 >
-                  Live engineering ledger for VEIL mainnet infrastructure, companion EVM recovery, validator
-                  operations, and launch-gate evidence status.
+                  Operator journal for this local node. The 2026-02-22 GO FOR PRODUCTION line is an
+                  operator packet — not public mainnet, not Fuji. Archive the evidence; do not read it as a launch.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-3">
                   <Link
@@ -561,7 +561,7 @@ export default function TransparencyPage() {
                     href="/app/launch"
                     className="inline-flex items-center rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors hover:bg-white/8"
                     style={{
-                      color: "rgba(255,255,255,0.78)",
+                      color: "rgba(255,255,255,0.87)",
                       border: "1px solid rgba(255,255,255,0.16)",
                       background: "rgba(255,255,255,0.04)",
                       fontFamily: "var(--font-space-grotesk)",
@@ -573,7 +573,7 @@ export default function TransparencyPage() {
                     href="/app/docs"
                     className="inline-flex items-center rounded-full px-4 py-2 text-xs uppercase tracking-[0.16em] transition-colors hover:bg-white/8"
                     style={{
-                      color: "rgba(255,255,255,0.78)",
+                      color: "rgba(255,255,255,0.87)",
                       border: "1px solid rgba(255,255,255,0.16)",
                       background: "rgba(255,255,255,0.04)",
                       fontFamily: "var(--font-space-grotesk)",
@@ -594,7 +594,7 @@ export default function TransparencyPage() {
               >
                 <p
                   className="text-[10px] uppercase tracking-[0.22em]"
-                  style={{ color: "rgba(16,185,129,0.82)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(16,185,129,0.92)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   Latest Entry
                 </p>
@@ -606,7 +606,7 @@ export default function TransparencyPage() {
                 </h2>
                 <p
                   className="mt-2 text-sm font-light leading-[1.8]"
-                  style={{ color: "rgba(255,255,255,0.5)", fontFamily: "var(--font-figtree)" }}
+                  style={{ color: "rgba(255,255,255,0.56)", fontFamily: "var(--font-figtree)" }}
                 >
                   {latestEntry?.briefing}
                 </p>
@@ -617,7 +617,7 @@ export default function TransparencyPage() {
                   >
                     <p
                       className="text-[10px] uppercase tracking-[0.14em]"
-                      style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                      style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
                     >
                       Decision
                     </p>
@@ -625,7 +625,7 @@ export default function TransparencyPage() {
                       className="mt-1 text-xs"
                       style={{ color: "rgba(16,185,129,0.9)", fontFamily: "var(--font-space-grotesk)" }}
                     >
-                      GO FOR PRODUCTION
+                      GO (local, 2026-02-22)
                     </p>
                   </div>
                   <div
@@ -634,7 +634,7 @@ export default function TransparencyPage() {
                   >
                     <p
                       className="text-[10px] uppercase tracking-[0.14em]"
-                      style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                      style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
                     >
                       Open Gates
                     </p>
@@ -651,7 +651,7 @@ export default function TransparencyPage() {
                   >
                     <p
                       className="text-[10px] uppercase tracking-[0.14em]"
-                      style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                      style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
                     >
                       Journal Entries
                     </p>
@@ -668,7 +668,7 @@ export default function TransparencyPage() {
                   >
                     <p
                       className="text-[10px] uppercase tracking-[0.14em]"
-                      style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                      style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}
                     >
                       Last Update
                     </p>
@@ -690,7 +690,7 @@ export default function TransparencyPage() {
             <div className="mb-7 flex items-baseline gap-4">
               <span
                 className="text-xs tracking-[0.2em]"
-                style={{ color: "rgba(16, 185, 129, 0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(16, 185, 129, 0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 01
               </span>
@@ -723,13 +723,13 @@ export default function TransparencyPage() {
                   </div>
                   <div
                     className="mt-3 text-sm font-light"
-                    style={{ color: "rgba(255,255,255,0.68)", fontFamily: "var(--font-figtree)" }}
+                    style={{ color: "rgba(255,255,255,0.76)", fontFamily: "var(--font-figtree)" }}
                   >
                     {m.label}
                   </div>
                   <div
                     className="mt-2 text-xs font-light leading-[1.6]"
-                    style={{ color: "rgba(255,255,255,0.34)", fontFamily: "var(--font-space-grotesk)" }}
+                    style={{ color: "rgba(255,255,255,0.38)", fontFamily: "var(--font-space-grotesk)" }}
                   >
                     {m.target}
                   </div>
@@ -744,7 +744,7 @@ export default function TransparencyPage() {
             <div className="mb-7 flex items-baseline gap-4">
               <span
                 className="text-xs tracking-[0.2em]"
-                style={{ color: "rgba(16, 185, 129, 0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(16, 185, 129, 0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 02
               </span>
@@ -769,7 +769,7 @@ export default function TransparencyPage() {
                 >
                   <p
                     className="mb-2 text-[10px] uppercase tracking-[0.18em]"
-                    style={{ color: "rgba(16,185,129,0.68)", fontFamily: "var(--font-space-grotesk)" }}
+                    style={{ color: "rgba(16,185,129,0.76)", fontFamily: "var(--font-space-grotesk)" }}
                   >
                     Principle {String(i + 1).padStart(2, "0")}
                   </p>
@@ -781,7 +781,7 @@ export default function TransparencyPage() {
                   </h3>
                   <p
                     className="text-[15px] font-light leading-[1.85]"
-                    style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-figtree)" }}
+                    style={{ color: "rgba(255,255,255,0.50)", fontFamily: "var(--font-figtree)" }}
                   >
                     {p.description}
                   </p>
@@ -796,7 +796,7 @@ export default function TransparencyPage() {
             <div className="mb-7 flex items-baseline gap-4">
               <span
                 className="text-xs tracking-[0.2em]"
-                style={{ color: "rgba(16, 185, 129, 0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(16, 185, 129, 0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 03
               </span>
@@ -854,7 +854,7 @@ export default function TransparencyPage() {
                       </span>
                       <span
                         className="text-xs"
-                        style={{ color: "rgba(255,255,255,0.34)", fontFamily: "var(--font-space-grotesk)" }}
+                        style={{ color: "rgba(255,255,255,0.38)", fontFamily: "var(--font-space-grotesk)" }}
                       >
                         {entry.date}
                       </span>
@@ -867,13 +867,13 @@ export default function TransparencyPage() {
                     </h3>
                     <p
                       className="text-[15px] leading-[1.85] font-light"
-                      style={{ color: "rgba(255,255,255,0.47)", fontFamily: "var(--font-figtree)" }}
+                      style={{ color: "rgba(255,255,255,0.53)", fontFamily: "var(--font-figtree)" }}
                     >
                       {entry.summary}
                     </p>
                     <p
                       className="mt-4 text-sm font-light"
-                      style={{ color: "rgba(16,185,129,0.86)", fontFamily: "var(--font-space-grotesk)" }}
+                      style={{ color: "rgba(16,185,129,0.96)", fontFamily: "var(--font-space-grotesk)" }}
                     >
                       Dev briefing: {entry.briefing}
                     </p>
@@ -889,7 +889,7 @@ export default function TransparencyPage() {
             <div className="mb-7 flex flex-wrap items-baseline gap-4">
               <span
                 className="text-xs tracking-[0.2em]"
-                style={{ color: "rgba(16, 185, 129, 0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(16, 185, 129, 0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 04
               </span>
@@ -901,7 +901,7 @@ export default function TransparencyPage() {
               </h2>
               <p
                 className="text-xs font-light"
-                style={{ color: "rgba(255, 255, 255, 0.42)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(255, 255, 255, 0.47)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 PASS (local) = validated local evidence profile. PASS = checklist gate closed.
               </p>
@@ -919,7 +919,7 @@ export default function TransparencyPage() {
               >
                 <p
                   className="text-[10px] uppercase tracking-[0.18em]"
-                  style={{ color: "rgba(16,185,129,0.78)", fontFamily: "var(--font-space-grotesk)" }}
+                  style={{ color: "rgba(16,185,129,0.87)", fontFamily: "var(--font-space-grotesk)" }}
                 >
                   Gate Totals
                 </p>
@@ -939,7 +939,7 @@ export default function TransparencyPage() {
                 </div>
                 <p
                   className="mt-5 text-sm leading-[1.75]"
-                  style={{ color: "rgba(255,255,255,0.44)", fontFamily: "var(--font-figtree)" }}
+                  style={{ color: "rgba(255,255,255,0.49)", fontFamily: "var(--font-figtree)" }}
                 >
                   Companion EVM bootstrap remains the only active gate. VEILvm validator connectivity and private
                   admission controls are live and evidence-linked.
@@ -993,7 +993,7 @@ export default function TransparencyPage() {
                                 ? "rgba(96,165,250,0.96)"
                                 : item.status === "In Progress"
                                   ? "rgba(251,191,36,0.96)"
-                                  : "rgba(255,255,255,0.7)",
+                                  : "rgba(255,255,255,0.78)",
                           fontFamily: "var(--font-space-grotesk)",
                         }}
                       >
@@ -1001,14 +1001,14 @@ export default function TransparencyPage() {
                       </span>
                       <h3
                         className="text-sm font-light"
-                        style={{ color: "rgba(255,255,255,0.86)", fontFamily: "var(--font-instrument-serif)" }}
+                        style={{ color: "rgba(255,255,255,0.96)", fontFamily: "var(--font-instrument-serif)" }}
                       >
                         {item.gate}
                       </h3>
                     </div>
                     <p
                       className="text-sm leading-[1.8]"
-                      style={{ color: "rgba(255,255,255,0.46)", fontFamily: "var(--font-figtree)" }}
+                      style={{ color: "rgba(255,255,255,0.52)", fontFamily: "var(--font-figtree)" }}
                     >
                       {item.detail}
                     </p>
@@ -1025,7 +1025,7 @@ export default function TransparencyPage() {
             <div className="mb-7 flex items-baseline gap-4">
               <span
                 className="text-xs tracking-[0.2em]"
-                style={{ color: "rgba(16, 185, 129, 0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(16, 185, 129, 0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 05
               </span>
@@ -1072,13 +1072,13 @@ export default function TransparencyPage() {
                       <div className="flex-1">
                         <p
                           className="text-sm font-light leading-[1.75]"
-                          style={{ color: "rgba(255,255,255,0.62)", fontFamily: "var(--font-figtree)" }}
+                          style={{ color: "rgba(255,255,255,0.69)", fontFamily: "var(--font-figtree)" }}
                         >
                           {item.change}
                         </p>
                         <p
                           className="mt-1 text-[11px]"
-                          style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-space-grotesk)" }}
+                          style={{ color: "rgba(255,255,255,0.34)", fontFamily: "var(--font-space-grotesk)" }}
                         >
                           {item.date}
                         </p>

@@ -22,7 +22,7 @@ export default function HeroContent() {
         </h1>
 
         {/* Description */}
-        <p className="text-xs font-light text-white/70 mb-4 leading-relaxed">
+        <p className="text-xs font-light text-white/[0.78] mb-4 leading-relaxed">
           Create stunning visual experiences with our advanced shader technology. Interactive lighting, smooth
           animations, and beautiful effects that respond to your every move.
         </p>

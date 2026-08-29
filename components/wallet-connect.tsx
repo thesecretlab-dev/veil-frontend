@@ -1,8 +1,8 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
-import { TriangleLogo } from "./triangle-logo"
-import { createClient } from "@/lib/client"
+import { useCallback, useEffect, useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import { VeilLogo } from "./brand"
 
 declare global {
   interface Window {
@@ -10,471 +10,324 @@ declare global {
   }
 }
 
-type WalletOptionId = "veil" | "metamask" | "coinbase" | "walletconnect"
-
-type WalletOption = {
-  id: WalletOptionId
-  name: string
-  subtitle: string
-  status: "ready" | "install" | "coming_soon"
-  installUrl?: string
+function formatAddress(addr: string) {
+  if (!addr) return "—"
+  if (addr.length <= 16) return addr
+  return `${addr.slice(0, 8)}…${addr.slice(-6)}`
 }
 
-const METAMASK_INSTALL_URL = "https://metamask.io/download/"
-const COINBASE_WALLET_INSTALL_URL = "https://www.coinbase.com/wallet/downloads"
+type Rail = "veilvm" | "companion"
+type Health = {
+  ok?: boolean
+  actor?: string
+  veil?: number
+  vai?: number
+  markets?: number
+  note?: string
+}
+
+const ACCENT = "#23E985"
+const CHIP_BORDER = "1px solid rgba(35, 233, 133, 0.65)"
 
 export function WalletConnect() {
-  const [isConnected, setIsConnected] = useState(false)
-  const [address, setAddress] = useState("")
-  const [connectedWalletName, setConnectedWalletName] = useState("Wallet")
-  const [showWhitelistModal, setShowWhitelistModal] = useState(false)
-  const [showWalletModal, setShowWalletModal] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [rail, setRail] = useState<Rail | "">("")
+  const [evmAddr, setEvmAddr] = useState("")
+  const [health, setHealth] = useState<Health | null>(null)
+  const [open, setOpen] = useState(false)
+  const [menu, setMenu] = useState(false)
+  const [busy, setBusy] = useState("")
   const [error, setError] = useState("")
 
-  const walletOptions = useMemo<WalletOption[]>(() => {
-    const veilWalletUrl = process.env.NEXT_PUBLIC_VEIL_WALLET_URL || "https://veil.markets/wallet"
-    return [
-      {
-        id: "veil",
-        name: "VEIL Wallet",
-        subtitle: "Privacy-first MetaMask fork for VEIL",
-        status: "install",
-        installUrl: veilWalletUrl,
-      },
-      {
-        id: "metamask",
-        name: "MetaMask",
-        subtitle: "Battle-tested EVM wallet",
-        status: "ready",
-        installUrl: METAMASK_INSTALL_URL,
-      },
-      {
-        id: "coinbase",
-        name: "Coinbase Wallet",
-        subtitle: "Use extension or mobile wallet browser",
-        status: "ready",
-        installUrl: COINBASE_WALLET_INSTALL_URL,
-      },
-      {
-        id: "walletconnect",
-        name: "WalletConnect",
-        subtitle: "QR flow support rolling out next",
-        status: "coming_soon",
-      },
-    ]
+  const pullHealth = useCallback(async () => {
+    try {
+      const j = (await fetch("/api/orders", { cache: "no-store" }).then((r) => r.json())) as Health
+      setHealth(j)
+      return j
+    } catch {
+      setHealth({ ok: false })
+      return null
+    }
   }, [])
 
   useEffect(() => {
-    checkIfWalletIsConnected()
+    void pullHealth()
+    const id = window.setInterval(() => void pullHealth(), 8000)
+    return () => window.clearInterval(id)
+  }, [pullHealth])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    const saved = window.localStorage.getItem("veil:connect-rail")
+    if (saved === "veilvm" || saved === "companion") setRail(saved)
+    else setRail("veilvm")
+    const eth = window.ethereum
+    if (!eth?.request) return
+    eth.request({ method: "eth_accounts" }).then((accounts: string[]) => {
+      if (accounts?.[0] && saved === "companion") setEvmAddr(accounts[0])
+    }).catch(() => {})
   }, [])
 
-  const formatAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-  }
-
-  const detectWalletName = (provider: any) => {
-    if (!provider) return "Wallet"
-    if (provider.isVeilWallet) return "VEIL Wallet"
-    if (provider.isMetaMask) return "MetaMask"
-    if (provider.isCoinbaseWallet) return "Coinbase Wallet"
-    return "Browser Wallet"
-  }
-
-  const getInjectedProvider = (walletId: WalletOptionId | null = null) => {
-    if (typeof window.ethereum === "undefined") {
-      return null
-    }
-
-    const ethereum = window.ethereum
-    const providers = Array.isArray(ethereum.providers) ? ethereum.providers : null
-
-    if (!providers || providers.length === 0) {
-      return ethereum
-    }
-
-    if (walletId === "veil") {
-      return providers.find((provider: any) => provider.isVeilWallet) || null
-    }
-    if (walletId === "metamask") {
-      return providers.find((provider: any) => provider.isMetaMask) || null
-    }
-    if (walletId === "coinbase") {
-      return providers.find((provider: any) => provider.isCoinbaseWallet) || null
-    }
-
-    return providers[0]
-  }
-
-  const checkIfWalletIsConnected = async () => {
-    const provider = getInjectedProvider()
-    if (!provider) {
-      return
-    }
-
-    try {
-      const accounts = await provider.request({ method: "eth_accounts" })
-      if (accounts.length > 0) {
-        setIsConnected(true)
-        setAddress(formatAddress(accounts[0]))
-        setConnectedWalletName(detectWalletName(provider))
-      }
-    } catch (err) {
-      console.error("[v0] Error checking wallet connection:", err)
-    }
-  }
-
-  const connectWallet = async (wallet: WalletOption) => {
-    if (wallet.status === "coming_soon") {
-      setError(`${wallet.name} support is coming soon.`)
-      setTimeout(() => setError(""), 5000)
-      return
-    }
-
-    const provider = getInjectedProvider(wallet.id)
-    if (!provider) {
-      if (wallet.installUrl) {
-        window.open(wallet.installUrl, "_blank", "noopener,noreferrer")
-      }
-      setError(`${wallet.name} was not detected. Install it and try again.`)
-      setTimeout(() => setError(""), 5000)
-      return
-    }
-
-    setIsLoading(true)
+  const chooseVeil = () => {
+    setRail("veilvm")
+    window.localStorage.setItem("veil:connect-rail", "veilvm")
+    setOpen(false)
+    setMenu(false)
     setError("")
-
-    try {
-      const accounts = await provider.request({
-        method: "eth_requestAccounts",
-      })
-
-      if (accounts.length > 0) {
-        setIsConnected(true)
-        setAddress(formatAddress(accounts[0]))
-        setConnectedWalletName(wallet.name)
-        setShowWalletModal(false)
-      }
-    } catch (err: any) {
-      console.error("[v0] Error connecting wallet:", err)
-      if (err.code === 4001) {
-        setError("Connection rejected. Please try again.")
-      } else {
-        setError("Failed to connect wallet. Please try again.")
-      }
-      setTimeout(() => setError(""), 5000)
-    } finally {
-      setIsLoading(false)
-    }
+    void pullHealth()
   }
 
-  const signForWhitelist = async () => {
-    const provider = getInjectedProvider()
-    if (!provider) {
-      setError("Wallet not found.")
+  const chooseCompanion = async () => {
+    setError("")
+    const eth = window.ethereum
+    if (!eth?.request) {
+      setError("No injected EVM wallet. Companion rails are anvil 31337 — not VeilVM.")
       return
     }
-
-    setIsLoading(true)
-    setError("")
-
+    setBusy("evm")
     try {
-      const accounts = await provider.request({ method: "eth_accounts" })
-      const account = accounts[0]
-      if (!account) {
-        setError("Connect a wallet first.")
-        setTimeout(() => setError(""), 5000)
+      const accounts: string[] = await eth.request({ method: "eth_requestAccounts" })
+      if (!accounts?.[0]) {
+        setError("No account returned.")
         return
       }
-
-      const message = `Sign this message to verify your wallet and get whitelisted for VEIL Airdrops.\n\nWallet: ${account}\nTimestamp: ${Date.now()}`
-
-      const signature = await provider.request({
-        method: "personal_sign",
-        params: [message, account],
-      })
-
-      const supabase = createClient()
-      const { error: dbError } = await supabase
-        .from("whitelist_signups")
-        .insert({
-          wallet_address: account,
-          signature,
-          message,
-        })
-        .select()
-
-      if (dbError) {
-        if (dbError.code === "23505") {
-          setShowWhitelistModal(false)
-          alert("You're already whitelisted for VEIL Airdrops!")
-          return
-        }
-        throw dbError
-      }
-
-      setShowWhitelistModal(false)
-      alert("Successfully signed! You are now whitelisted for VEIL Airdrops.")
+      setEvmAddr(accounts[0])
+      setRail("companion")
+      window.localStorage.setItem("veil:connect-rail", "companion")
+      setOpen(false)
     } catch (err: any) {
-      console.error("[v0] Error signing message:", err)
-      if (err.code === 4001) {
-        setError("Signature rejected.")
-      } else {
-        setError("Failed to sign message. Please try again.")
-      }
-      setTimeout(() => setError(""), 5000)
+      setError(err?.code === 4001 ? "Request rejected." : "Could not connect companion wallet.")
     } finally {
-      setIsLoading(false)
+      setBusy("")
     }
   }
 
+  const faucet = async () => {
+    setBusy("faucet")
+    setError("")
+    try {
+      const res = await fetch("/api/native/faucet", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({}),
+      })
+      const json = (await res.json()) as { accepted?: boolean; error?: string; veil?: number }
+      if (!res.ok || json.accepted === false) {
+        setError(json.error || "faucet failed")
+        return
+      }
+      await pullHealth()
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "faucet failed")
+    } finally {
+      setBusy("")
+    }
+  }
+
+  const veilBal = typeof health?.veil === "number" ? health.veil : null
+  const chipLabel = veilBal != null ? `${veilBal.toLocaleString()} VEIL` : "— VEIL"
+
   return (
-    <>
-      {error && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-3 rounded-lg bg-red-500/20 backdrop-blur-md border border-red-500/30 text-red-300 text-sm">
+    <div className="relative flex items-center gap-2">
+      <button
+        type="button"
+        onClick={() => {
+          if (!rail) {
+            chooseVeil()
+          }
+          setMenu((v) => !v)
+        }}
+        className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-[12px] tracking-wide transition-colors duration-300"
+        style={{
+          fontFamily: "var(--font-space-grotesk)",
+          color: "#FFFFFF",
+          border: CHIP_BORDER,
+          background: "transparent",
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="1.8" aria-hidden>
+          <rect x="3" y="6" width="18" height="13" rx="2" />
+          <path d="M3 10h18" />
+          <circle cx="16.5" cy="14.5" r="1.1" fill={ACCENT} stroke="none" />
+        </svg>
+        {chipLabel}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="2" aria-hidden>
+          <path d="M6 9l6 6 6-6" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        disabled={Boolean(busy)}
+        onClick={() => void faucet()}
+        className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] disabled:opacity-50"
+        style={{
+          fontFamily: "var(--font-space-grotesk)",
+          color: "#FFFFFF",
+          border: CHIP_BORDER,
+          background: "transparent",
+        }}
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="M4 10h12.5a2.5 2.5 0 0 1 0 5H15" />
+          <path d="M8 10V6h5a2 2 0 0 1 0 4" />
+          <path d="M15 15v2" />
+          <path d="M15 20.2c0 .7-.6 1.3-1.3 1.3s-1.3-.6-1.3-1.3c0-.8 1.3-2.2 1.3-2.2s1.3 1.4 1.3 2.2z" />
+        </svg>
+        {busy === "faucet" ? "Dripping…" : "Faucet"}
+      </button>
+      {error ? (
+        <span className="hidden max-w-[160px] truncate text-[10px] lg:inline" style={{ color: "rgba(248,113,113,0.85)", fontFamily: "var(--font-figtree)" }} title={error}>
           {error}
-        </div>
-      )}
+        </span>
+      ) : null}
 
-      {!isConnected ? (
-        <button
-          onClick={() => setShowWalletModal(true)}
-          disabled={isLoading}
-          className="px-6 py-2 rounded-lg font-sans text-sm font-medium
-            bg-white/5 backdrop-blur-md border border-white/10
-            text-white/90 hover:text-white
-            hover:bg-white/10 hover:border-emerald-500/30
-            transition-all duration-300
-            shadow-[0_0_20px_rgba(16,185,129,0.1)]
-            hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]
-            disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            textShadow: "0 0 10px rgba(255,255,255,0.3), 0 0 20px rgba(16,185,129,0.2)",
-          }}
-        >
-          {isLoading ? "Connecting..." : "Connect Wallet"}
-        </button>
-      ) : (
-        <div className="flex items-center gap-3">
-          <span
-            className="px-4 py-2 rounded-lg font-sans text-xs font-medium
-              bg-emerald-500/10 backdrop-blur-md border border-emerald-500/20
-              text-emerald-400/90"
-            style={{
-              textShadow: "0 0 10px rgba(16,185,129,0.3)",
-            }}
+      <AnimatePresence>
+        {rail && menu && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            className="absolute right-0 top-[calc(100%+8px)] z-[95] w-64 overflow-hidden rounded-2xl"
+            style={{ background: "#0a0c0b", border: "1px solid rgba(255,255,255,0.06)" }}
           >
-            Preview Mode
-          </span>
-          <div
-            className="px-4 py-2 rounded-lg font-mono text-xs
-            bg-white/5 backdrop-blur-md border border-white/10
-            text-white/70"
-            style={{
-              textShadow: "0 0 10px rgba(255,255,255,0.2)",
-            }}
-          >
-            {connectedWalletName} | {address}
-          </div>
-        </div>
-      )}
-
-      {showWalletModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-          <div
-            className="max-w-lg w-full p-8 rounded-2xl
-            bg-slate-900/90 backdrop-blur-2xl border border-white/10
-            shadow-[0_0_80px_rgba(16,185,129,0.12),inset_0_0_60px_rgba(255,255,255,0.02)]
-            relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent pointer-events-none" />
-
-            <div className="flex justify-center mb-6">
-              <TriangleLogo size={36} />
+            <div className="px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+              <div className="text-[9px] tracking-[0.2em] uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.31)" }}>
+                {rail === "veilvm" ? "VeilVM relayer" : "Companion EVM"}
+              </div>
+              <div className="mt-1 break-all font-mono text-[10px]" style={{ color: "rgba(255,255,255,0.62)" }}>
+                {rail === "veilvm" ? health?.actor || "—" : evmAddr || "—"}
+              </div>
+              {rail === "veilvm" ? (
+                <div className="mt-1 text-[11px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.5)" }}>
+                  {health?.veil ?? "—"} VEIL · {health?.vai ?? "—"} VAI
+                </div>
+              ) : (
+                <div className="mt-1 text-[11px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)" }}>
+                  chain 31337 · not app-id 22207
+                </div>
+              )}
             </div>
-
-            <h3
-              className="text-2xl font-sans font-light text-center mb-2 text-white/95 tracking-wide"
-              style={{
-                textShadow: "0 0 30px rgba(255,255,255,0.4), 0 0 50px rgba(16,185,129,0.25), 0 2px 8px rgba(0,0,0,0.5)",
-                filter: "blur(0.3px)",
+            {rail === "veilvm" ? (
+              <button
+                type="button"
+                disabled={Boolean(busy)}
+                onClick={() => void faucet()}
+                className="block w-full px-4 py-2.5 text-left text-[12px] hover:bg-white/[0.03] disabled:opacity-50"
+                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(110,231,183,0.9)" }}
+              >
+                {busy === "faucet" ? "Dripping…" : "Native faucet"}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => {
+                setRail("")
+                setMenu(false)
+                window.localStorage.removeItem("veil:connect-rail")
               }}
+              className="block w-full px-4 py-2.5 text-left text-[12px] hover:bg-white/[0.03]"
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.5)" }}
             >
-              Connect Wallet
-            </h3>
+              Disconnect
+            </button>
+            {error ? (
+              <p className="px-4 py-2 text-[11px]" style={{ color: "rgba(248,113,113,0.85)", fontFamily: "var(--font-figtree)" }}>
+                {error}
+              </p>
+            ) : null}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-            <p
-              className="text-center text-sm text-white/60 mb-6 font-sans font-light"
-              style={{
-                textShadow: "0 0 10px rgba(255,255,255,0.2)",
-                filter: "blur(0.2px)",
-              }}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.button
+              type="button"
+              aria-label="Close connect"
+              className="fixed inset-0 z-[90]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setOpen(false)}
+              style={{ background: "rgba(4,6,5,0.72)" }}
+            />
+            <motion.div
+              role="dialog"
+              className="fixed left-1/2 top-1/2 z-[95] w-[min(420px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 rounded-[20px] p-8"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              style={{ background: "#0a0c0b", border: "1px solid rgba(255,255,255,0.06)" }}
             >
-              Choose your wallet provider to access VEIL Markets
-            </p>
-
-            <div className="space-y-3 mb-5">
-              {walletOptions.map((wallet) => (
+              <div className="mb-6 flex justify-center">
+                <VeilLogo size={22} opacity={0.55} />
+              </div>
+              <h3 className="text-center text-[28px]" style={{ fontFamily: "var(--font-instrument-serif)" }}>
+                Connect
+              </h3>
+              <p className="mt-3 mb-7 text-center text-[13px] font-light leading-relaxed" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.48)" }}>
+                VeilVM is HyperSDK app-id 22207. It is not an EVM chain. MetaMask talks to companion 31337 only.
+              </p>
+              <div className="space-y-2">
                 <button
-                  key={wallet.id}
-                  onClick={() => connectWallet(wallet)}
-                  disabled={isLoading}
-                  className="w-full px-4 py-4 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.06]
-                  transition-all duration-300 text-left flex items-center justify-between
-                  disabled:opacity-50 disabled:cursor-not-allowed"
+                  type="button"
+                  onClick={chooseVeil}
+                  className="flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left hover:bg-white/[0.03]"
+                  style={{ border: "1px solid rgba(16,185,129,0.25)" }}
                 >
-                  <div>
-                    <div className="text-sm text-white/90 font-medium">{wallet.name}</div>
-                    <div className="text-xs text-white/50 mt-1">{wallet.subtitle}</div>
-                  </div>
-                  <span
-                    className={`text-[10px] px-2 py-1 rounded-full border ${
-                      wallet.status === "coming_soon"
-                        ? "text-amber-300/90 border-amber-400/40 bg-amber-500/10"
-                        : wallet.status === "install"
-                          ? "text-cyan-300/90 border-cyan-400/40 bg-cyan-500/10"
-                          : "text-emerald-300/90 border-emerald-400/40 bg-emerald-500/10"
-                    }`}
-                  >
-                    {wallet.status === "coming_soon"
-                      ? "Coming Soon"
-                      : wallet.status === "install"
-                        ? "Install"
-                        : "Ready"}
+                  <span>
+                    <span className="block text-[14px]" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+                      VeilVM on this node
+                    </span>
+                    <span className="mt-0.5 block text-[11px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.42)" }}>
+                      Relayer {formatAddress(health?.actor || "")} · {health?.veil ?? "—"} VEIL
+                    </span>
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.16em]" style={{ color: "rgba(16,185,129,0.84)" }}>
+                    Native
                   </span>
                 </button>
-              ))}
-            </div>
-
-            <p
-              className="text-xs text-white/35 text-center mb-5"
-              style={{
-                textShadow: "0 0 8px rgba(255,255,255,0.15)",
-              }}
-            >
-              Wallet connectivity is staged by operator policy and route-level rollout controls.
-            </p>
-
-            <button
-              onClick={() => setShowWalletModal(false)}
-              disabled={isLoading}
-              className="w-full px-6 py-3 rounded-xl font-sans text-sm font-light tracking-wide
-                bg-white/[0.03] backdrop-blur-md border border-white/10
-                text-white/60 hover:text-white/80
-                hover:bg-white/[0.05] hover:border-white/20
-                transition-all duration-300
-                disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                textShadow: "0 0 10px rgba(255,255,255,0.2)",
-                filter: "blur(0.2px)",
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
-      {showWhitelistModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-          <div
-            className="max-w-md w-full p-8 rounded-2xl
-            bg-slate-900/85 backdrop-blur-2xl border border-white/10
-            shadow-[0_0_80px_rgba(16,185,129,0.15),inset_0_0_60px_rgba(255,255,255,0.02)]
-            relative overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent pointer-events-none" />
-
-            <div className="flex justify-center mb-6">
-              <TriangleLogo size={40} />
-            </div>
-
-            <h3
-              className="text-2xl font-sans font-light text-center mb-2 text-white/95 tracking-wide"
-              style={{
-                textShadow: "0 0 30px rgba(255,255,255,0.4), 0 0 50px rgba(16,185,129,0.3), 0 2px 8px rgba(0,0,0,0.5)",
-                filter: "blur(0.3px)",
-              }}
-            >
-              Airdrop Whitelist
-            </h3>
-
-            <p
-              className="text-center text-sm text-emerald-400/80 mb-6 font-sans font-light tracking-wide"
-              style={{
-                textShadow: "0 0 15px rgba(16,185,129,0.4)",
-                filter: "blur(0.2px)",
-              }}
-            >
-              Join the VEIL community
-            </p>
-
-            <p
-              className="text-sm text-white/60 mb-6 leading-relaxed text-center font-sans font-light"
-              style={{
-                textShadow: "0 0 10px rgba(255,255,255,0.2)",
-                filter: "blur(0.2px)",
-              }}
-            >
-              Sign a message to verify your wallet and secure your spot for future VEIL token airdrops. This is a
-              gasless signature - no transaction fees required.
-            </p>
-
-            {error && (
-              <div className="mb-6 px-4 py-3 rounded-xl bg-red-500/10 backdrop-blur-md border border-red-500/20 text-red-300/90 text-sm text-center">
-                {error}
+                <button
+                  type="button"
+                  disabled={Boolean(busy)}
+                  onClick={() => void chooseCompanion()}
+                  className="flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left hover:bg-white/[0.03] disabled:opacity-40"
+                  style={{ border: "1px solid rgba(255,255,255,0.05)" }}
+                >
+                  <span>
+                    <span className="block text-[14px]" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+                      Companion wallet
+                    </span>
+                    <span className="mt-0.5 block text-[11px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.42)" }}>
+                      Injected EVM · anvil 31337 · not VEIL
+                    </span>
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.16em]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                    Rails
+                  </span>
+                </button>
               </div>
-            )}
-
-            <div className="flex gap-3">
+              {error ? (
+                <p className="mt-4 text-center text-[11px]" style={{ color: "rgba(248,113,113,0.85)", fontFamily: "var(--font-figtree)" }}>
+                  {error}
+                </p>
+              ) : (
+                <p className="mt-4 text-center text-[11px]" style={{ color: "rgba(255,255,255,0.32)", fontFamily: "var(--font-figtree)" }}>
+                  Native orders are signed by the local router. Faucet drips HyperSDK VEIL, not ETH.
+                </p>
+              )}
               <button
-                onClick={signForWhitelist}
-                disabled={isLoading}
-                className="flex-1 px-6 py-3 rounded-xl font-sans text-sm font-light tracking-wide
-                  bg-emerald-500/15 backdrop-blur-md border border-emerald-500/30
-                  text-emerald-300/95 hover:text-emerald-200
-                  hover:bg-emerald-500/25 hover:border-emerald-500/50
-                  transition-all duration-300
-                  shadow-[0_0_30px_rgba(16,185,129,0.2)]
-                  hover:shadow-[0_0_50px_rgba(16,185,129,0.35)]
-                  disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  textShadow: "0 0 20px rgba(16,185,129,0.5)",
-                  filter: "blur(0.2px)",
-                }}
+                type="button"
+                onClick={() => setOpen(false)}
+                className="mt-5 w-full rounded-full py-3 text-[10px] tracking-[0.22em] uppercase"
+                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.34)", border: "1px solid rgba(255,255,255,0.06)" }}
               >
-                {isLoading ? "Signing..." : "Sign & Verify"}
+                Close
               </button>
-              <button
-                onClick={() => setShowWhitelistModal(false)}
-                disabled={isLoading}
-                className="px-6 py-3 rounded-xl font-sans text-sm font-light tracking-wide
-                  bg-white/[0.03] backdrop-blur-md border border-white/10
-                  text-white/60 hover:text-white/80
-                  hover:bg-white/[0.05] hover:border-white/20
-                  transition-all duration-300
-                  disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  textShadow: "0 0 10px rgba(255,255,255,0.2)",
-                  filter: "blur(0.2px)",
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-
-            <p
-              className="text-xs text-white/30 mt-5 text-center font-sans font-light"
-              style={{
-                textShadow: "0 0 8px rgba(255,255,255,0.15)",
-                filter: "blur(0.15px)",
-              }}
-            >
-              Your signature is secure and never leaves your wallet
-            </p>
-          </div>
-        </div>
-      )}
-    </>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }

@@ -6,7 +6,7 @@ export default function Hero() {
       <h1
         className="text-[12rem] font-bold tracking-[0.3em] font-[family-name:var(--font-space-grotesk)] uppercase"
         style={{
-          color: "rgba(255, 255, 255, 0.15)",
+          color: "rgba(255, 255, 255, 0.17)",
           textShadow: `
             0 2px 4px rgba(255, 255, 255, 0.8),
             0 -2px 4px rgba(0, 0, 0, 0.5),

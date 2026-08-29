@@ -2,8 +2,9 @@
 
 import type React from "react"
 import Link from "next/link"
-import { TriangleLogo } from "./triangle-logo"
 import { AppShaderBackground } from "./app-shader-background"
+import { VeilFooter, VeilHeader } from "./brand"
+import { FlowNext } from "./flow-next"
 
 interface LegalPageLayoutProps {
   title: string
@@ -16,45 +17,9 @@ export function LegalPageLayout({ title, lastUpdated, children }: LegalPageLayou
     <div className="relative min-h-screen">
       <AppShaderBackground />
 
-      {/* Header with VEIL branding */}
-      <header className="relative border-b border-white/10 bg-black/20 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-8 py-6">
-          <div className="flex items-center justify-between">
-            <Link href="/app" className="flex items-center gap-3 transition-all hover:opacity-80">
-              <div className="flex items-center gap-3">
-                <TriangleLogo />
-                <span
-                  className="text-2xl font-bold tracking-tight"
-                  style={{
-                    fontFamily: "var(--font-space-grotesk)",
-                    color: "rgba(255, 255, 255, 0.95)",
-                    textShadow: "0 0 30px rgba(16, 185, 129, 0.4), 0 2px 4px rgba(0, 0, 0, 0.3)",
-                  }}
-                >
-                  VEIL
-                </span>
-              </div>
-            </Link>
+      <VeilHeader />
 
-            <Link
-              href="/app"
-              className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-xl transition-all hover:border-emerald-400/30 hover:bg-white/10"
-              style={{
-                fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255, 255, 255, 0.7)",
-              }}
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Markets
-            </Link>
-          </div>
-        </div>
-      </header>
-
-      {/* Main content */}
-      <main className="relative mx-auto max-w-4xl px-8 py-16">
+      <main className="relative mx-auto max-w-4xl px-8 pb-16 pt-32">
         {/* Title section */}
         <div className="mb-12">
           <h1
@@ -72,7 +37,7 @@ export function LegalPageLayout({ title, lastUpdated, children }: LegalPageLayou
             className="text-sm"
             style={{
               fontFamily: "var(--font-space-grotesk)",
-              color: "rgba(255, 255, 255, 0.4)",
+              color: "rgba(255, 255, 255, 0.45)",
             }}
           >
             {lastUpdated && <>Last updated: {lastUpdated}</>}
@@ -96,7 +61,7 @@ export function LegalPageLayout({ title, lastUpdated, children }: LegalPageLayou
               className="mb-1 text-sm font-semibold"
               style={{
                 fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255, 255, 255, 0.7)",
+                color: "rgba(255, 255, 255, 0.78)",
               }}
             >
               Questions?
@@ -105,12 +70,12 @@ export function LegalPageLayout({ title, lastUpdated, children }: LegalPageLayou
               className="text-sm"
               style={{
                 fontFamily: "var(--font-space-grotesk)",
-                color: "rgba(255, 255, 255, 0.4)",
+                color: "rgba(255, 255, 255, 0.45)",
               }}
             >
               Contact us at{" "}
-              <a href="mailto:legal@veil.markets" className="text-emerald-400 hover:text-emerald-300 transition-colors">
-                legal@veil.markets
+              <a href="mailto:agent@thesecretlab.app" className="text-emerald-400 hover:text-emerald-300 transition-colors">
+                agent@thesecretlab.app
               </a>
             </p>
           </div>
@@ -125,6 +90,8 @@ export function LegalPageLayout({ title, lastUpdated, children }: LegalPageLayou
           </Link>
         </div>
       </main>
+      <FlowNext />
+      <VeilFooter />
     </div>
   )
 }
@@ -151,7 +118,7 @@ export function LegalSection({ title, children }: SectionProps) {
         className="space-y-4 leading-relaxed"
         style={{
           fontFamily: "var(--font-space-grotesk)",
-          color: "rgba(255, 255, 255, 0.6)",
+          color: "rgba(255, 255, 255, 0.67)",
           lineHeight: "1.8",
         }}
       >

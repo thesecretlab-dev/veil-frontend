@@ -19,7 +19,7 @@ export function VoteBar({ votesFor, votesAgainst, votesAbstain, compact }: VoteB
     return (
       <div className={compact ? '' : 'space-y-2'}>
         <div className={`w-full ${compact ? 'h-1.5' : 'h-2'} rounded-full bg-white/5`} />
-        {!compact && <p className="text-xs text-white/30">No votes yet</p>}
+        {!compact && <p className="text-xs text-white/[0.34]">No votes yet</p>}
       </div>
     )
   }
@@ -47,10 +47,10 @@ export function VoteBar({ votesFor, votesAgainst, votesAbstain, compact }: VoteB
         />
       </div>
       {!compact && (
-        <div className="flex justify-between text-xs text-white/50">
+        <div className="flex justify-between text-xs text-white/[0.56]">
           <span className="text-emerald-400">For {votesFor} ({pctFor.toFixed(0)}%)</span>
           <span className="text-red-400">Against {votesAgainst} ({pctAgainst.toFixed(0)}%)</span>
-          <span className="text-white/40">Abstain {votesAbstain} ({pctAbstain.toFixed(0)}%)</span>
+          <span className="text-white/[0.45]">Abstain {votesAbstain} ({pctAbstain.toFixed(0)}%)</span>
         </div>
       )}
     </div>

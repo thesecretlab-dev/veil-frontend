@@ -6,17 +6,17 @@
 :root {
   /* Updated color tokens to match dramatic lighting design brief */
   --background: #0a0a0a; /* Very dark gray for light mode (still dark but distinguishable) */
-  --foreground: rgba(255, 255, 255, 0.95); /* Slightly translucent white */
+  --foreground: rgba(255, 255, 255, 0.97); /* Slightly translucent white */
   --card: rgba(255, 255, 255, 0.05); /* Subtle card background */
-  --card-foreground: rgba(255, 255, 255, 0.9); /* Light text on cards */
+  --card-foreground: rgba(255, 255, 255, 0.95); /* Light text on cards */
   --popover: rgba(10, 10, 10, 0.95); /* Dark popover */
-  --popover-foreground: rgba(255, 255, 255, 0.95); /* Light text in popovers */
+  --popover-foreground: rgba(255, 255, 255, 0.97); /* Light text in popovers */
   --primary: oklch(0.7 0.15 165); /* Minty green primary (emerald) */
   --primary-foreground: rgba(0, 0, 0, 0.95); /* Dark text on green */
   --secondary: rgba(255, 255, 255, 0.1); /* Subtle secondary */
-  --secondary-foreground: rgba(255, 255, 255, 0.9); /* Light text on secondary */
+  --secondary-foreground: rgba(255, 255, 255, 0.95); /* Light text on secondary */
   --muted: rgba(255, 255, 255, 0.1); /* Muted elements */
-  --muted-foreground: rgba(255, 255, 255, 0.6); /* Muted text */
+  --muted-foreground: rgba(255, 255, 255, 0.67); /* Muted text */
   --accent: oklch(0.7 0.15 165); /* Minty green accent */
   --accent-foreground: rgba(0, 0, 0, 0.95); /* Dark text on accent */
   --destructive: oklch(0.6 0.2 40); /* Amber for destructive */
@@ -31,11 +31,11 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.5rem; /* Softer rounded corners */
   --sidebar: rgba(10, 10, 10, 0.95); /* Dark sidebar */
-  --sidebar-foreground: rgba(255, 255, 255, 0.95); /* Light sidebar text */
+  --sidebar-foreground: rgba(255, 255, 255, 0.97); /* Light sidebar text */
   --sidebar-primary: oklch(0.7 0.15 165); /* Minty green sidebar primary */
   --sidebar-primary-foreground: rgba(0, 0, 0, 0.95); /* Dark text on sidebar primary */
   --sidebar-accent: rgba(255, 255, 255, 0.1); /* Subtle sidebar accent */
-  --sidebar-accent-foreground: rgba(255, 255, 255, 0.9); /* Light text on sidebar accent */
+  --sidebar-accent-foreground: rgba(255, 255, 255, 0.95); /* Light text on sidebar accent */
   --sidebar-border: rgba(16, 185, 129, 0.2); /* Minty green sidebar border */
   --sidebar-ring: oklch(0.7 0.15 165); /* Minty green sidebar focus */
   --font-instrument-serif: "Instrument Serif", serif; /* Instrument Serif font family configuration */
@@ -46,17 +46,17 @@
 .dark {
   /* Dark mode maintains the same dramatic black background theme */
   --background: #000000; /* Pure black for dark mode */
-  --foreground: rgba(255, 255, 255, 0.95);
+  --foreground: rgba(255, 255, 255, 0.97);
   --card: rgba(255, 255, 255, 0.03);
-  --card-foreground: rgba(255, 255, 255, 0.9);
+  --card-foreground: rgba(255, 255, 255, 0.95);
   --popover: rgba(0, 0, 0, 0.95);
-  --popover-foreground: rgba(255, 255, 255, 0.95);
+  --popover-foreground: rgba(255, 255, 255, 0.97);
   --primary: oklch(0.75 0.18 165); /* Brighter minty green for dark mode */
   --primary-foreground: rgba(0, 0, 0, 0.95);
   --secondary: rgba(255, 255, 255, 0.08);
-  --secondary-foreground: rgba(255, 255, 255, 0.9);
+  --secondary-foreground: rgba(255, 255, 255, 0.95);
   --muted: rgba(255, 255, 255, 0.08);
-  --muted-foreground: rgba(255, 255, 255, 0.55);
+  --muted-foreground: rgba(255, 255, 255, 0.62);
   --accent: oklch(0.75 0.18 165); /* Brighter minty green accent */
   --accent-foreground: rgba(0, 0, 0, 0.95);
   --destructive: oklch(0.6 0.2 40);
@@ -70,11 +70,11 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: rgba(0, 0, 0, 0.95);
-  --sidebar-foreground: rgba(255, 255, 255, 0.95);
+  --sidebar-foreground: rgba(255, 255, 255, 0.97);
   --sidebar-primary: oklch(0.75 0.18 165);
   --sidebar-primary-foreground: rgba(0, 0, 0, 0.95);
   --sidebar-accent: rgba(255, 255, 255, 0.08);
-  --sidebar-accent-foreground: rgba(255, 255, 255, 0.9);
+  --sidebar-accent-foreground: rgba(255, 255, 255, 0.95);
   --sidebar-border: rgba(16, 185, 129, 0.15);
   --sidebar-ring: oklch(0.75 0.18 165);
   --font-instrument-serif: "Instrument Serif", serif; /* Instrument Serif font family configuration */
@@ -253,7 +253,7 @@ section:hover .stealth-text {
 }
 .veil-launch-btn:hover {
   background: rgba(16, 185, 129, 0.08);
-  border-color: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.22);
   box-shadow: 0 0 30px rgba(16, 185, 129, 0.1), 0 0 60px rgba(16, 185, 129, 0.04);
 }
 .veil-launch-btn:not(:hover) {
@@ -274,11 +274,11 @@ section:hover .stealth-text {
   font-size: 11px;
   letter-spacing: 0.2em;
   font-family: var(--font-space-grotesk);
-  color: rgba(255, 255, 255, 0.68);
+  color: rgba(255, 255, 255, 0.76);
   transition: all 1.5s ease;
 }
 .veil-launch-btn:hover .veil-launch-text {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.78);
   text-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
 }
 .veil-launch-btn:not(:hover) .veil-launch-text {
@@ -286,12 +286,12 @@ section:hover .stealth-text {
 }
 .veil-launch-arrow {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.26);
+  color: rgba(255, 255, 255, 0.29);
   transition: all 1.5s ease;
   transform: translateX(0);
 }
 .veil-launch-btn:hover .veil-launch-arrow {
-  color: rgba(16, 185, 129, 0.5);
+  color: rgba(16, 185, 129, 0.56);
   transform: translateX(3px);
 }
 .veil-launch-btn:not(:hover) .veil-launch-arrow {
@@ -314,13 +314,38 @@ section:hover .stealth-text {
   isolation: isolate;
 }
 
-/* Subtle page load fade */
-@keyframes page-enter {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Google AI / Gemini RGB glow for TSL spine mark */
+@keyframes tsl-google-rgb {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
-body > * {
-  animation: page-enter 0.6s ease-out;
+.tsl-rgb {
+  background-image: linear-gradient(
+    120deg,
+    #4285f4 0%,
+    #9b72cb 16%,
+    #d96570 32%,
+    #ea4335 48%,
+    #fbbc05 66%,
+    #34a853 82%,
+    #4285f4 100%
+  );
+  background-size: 240% 240%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: tsl-google-rgb 2.8s linear infinite;
+  filter:
+    drop-shadow(0 0 3px rgba(66, 133, 244, 0.95))
+    drop-shadow(0 0 7px rgba(234, 67, 53, 0.55))
+    drop-shadow(0 0 9px rgba(251, 188, 5, 0.45))
+    drop-shadow(0 0 8px rgba(52, 168, 83, 0.6));
+}
+
+#veil-index,
+#veil-index-scrim {
+  animation: none !important;
 }
 
 /* Landing readability pass while keeping stealth tone */

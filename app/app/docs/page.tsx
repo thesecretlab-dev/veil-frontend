@@ -3,7 +3,8 @@
 import { useRef, useState, useEffect, ReactNode } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
 import Link from "next/link"
-import { VeilFooter, FilmGrain as BrandFilmGrain } from "@/components/brand"
+import { VeilFooter, VeilHeader } from "@/components/brand"
+import { FlowNext } from "@/components/flow-next"
 
 /* ─────────────────────── helpers ─────────────────────── */
 
@@ -13,8 +14,8 @@ function ScrollReveal({ children, className = "", delay = 0 }: { children: React
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
-      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay }}
       className={className}
     >
@@ -67,7 +68,7 @@ function SectionHeading({ number, title, id, sub = false }: { number?: string; t
 /* prose wrapper */
 function Prose({ children }: { children: ReactNode }) {
   return (
-    <div className="space-y-4 leading-[1.8] text-[15px] text-white/55" style={{ fontFamily: "var(--font-figtree)" }}>
+    <div className="space-y-4 leading-[1.8] text-[15px] text-white/[0.62]" style={{ fontFamily: "var(--font-figtree)" }}>
       {children}
     </div>
   )
@@ -78,7 +79,7 @@ function InfoCard({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="rounded-[20px] border border-white/[0.06] bg-white/[0.02] p-6 backdrop-blur-sm transition-all duration-500 hover:border-emerald-500/15 hover:bg-emerald-500/[0.02]">
       <h4 className="mb-2 text-sm font-semibold text-white/80" style={{ fontFamily: "var(--font-space-grotesk)" }}>{title}</h4>
-      <p className="text-sm leading-relaxed text-white/50" style={{ fontFamily: "var(--font-figtree)" }}>{children}</p>
+      <p className="text-sm leading-relaxed text-white/[0.56]" style={{ fontFamily: "var(--font-figtree)" }}>{children}</p>
     </div>
   )
 }
@@ -165,7 +166,7 @@ export default function DocsPage() {
       href={`#${id}`}
       onClick={() => setMobileNavOpen(false)}
       className={`group flex items-center gap-2 py-1 text-[13px] transition-all duration-300 ${
-        activeId === id ? "text-emerald-400" : "text-white/30 hover:text-white/60"
+        activeId === id ? "text-emerald-400" : "text-white/[0.34] hover:text-white/[0.67]"
       }`}
       style={{ fontFamily: "var(--font-space-grotesk)" }}
     >
@@ -180,25 +181,7 @@ export default function DocsPage() {
   return (
     <div className="relative min-h-screen" style={{ background: "#060606", fontFamily: "var(--font-figtree)" }}>
       <FilmGrain />
-
-      {/* ── Fixed top nav ── */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.04] bg-[#060606]/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <Link href="/app" className="flex items-center gap-2 text-white/80 transition hover:text-white">
-            <span className="text-lg font-medium tracking-tight" style={{ fontFamily: "var(--font-instrument-serif)" }}>VEIL</span>
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-emerald-500/60" style={{ fontFamily: "var(--font-space-grotesk)" }}>Protocol Docs</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-6 text-[13px] text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            <a href="#tech-abstract" className="hover:text-white/70 transition">Technical</a>
-            <a href="#econ-abstract" className="hover:text-white/70 transition">Economics</a>
-            <a href="#anima-overview" className="hover:text-white/70 transition">ANIMA</a>
-            <Link href="/app/investor-deck" className="hover:text-white/70 transition">Investor Deck</Link>
-          </div>
-          <button className="md:hidden text-white/40" onClick={() => setMobileNavOpen(!mobileNavOpen)}>
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={mobileNavOpen ? "M6 18L18 6M6 6l12 12" : "M4 8h16M4 16h16"} /></svg>
-          </button>
-        </div>
-      </nav>
+      <VeilHeader />
 
       {/* ── Mobile nav overlay ── */}
       <AnimatePresence>
@@ -207,8 +190,16 @@ export default function DocsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#060606]/95 backdrop-blur-xl pt-20 px-6 overflow-y-auto md:hidden"
+            className="fixed inset-0 z-40 bg-[#060606] pt-24 px-6 overflow-y-auto lg:hidden"
           >
+            <button
+              type="button"
+              className="mb-6 text-[11px] uppercase tracking-[0.2em] text-white/[0.45]"
+              style={{ fontFamily: "var(--font-space-grotesk)" }}
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Close
+            </button>
             <div className="mb-4">
               <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-500/50 mb-3" style={{ fontFamily: "var(--font-space-grotesk)" }}>Part I — Technical</p>
               {tocPart1.map((t) => <TocLink key={t.id} {...t} />)}
@@ -249,8 +240,18 @@ export default function DocsPage() {
 
         {/* main content */}
         <main className="min-w-0 flex-1 max-w-3xl">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-emerald-300/85" style={{ fontFamily: "var(--font-space-grotesk)" }}>
-            ANIMA · ZER0ID · BLOODSWORN · VAI
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-emerald-300/85" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+              ANIMA · ZER0ID · BLOODSWORN · VAI
+            </div>
+            <button
+              type="button"
+              className="lg:hidden rounded-full border border-white/[0.08] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-white/45"
+              style={{ fontFamily: "var(--font-space-grotesk)" }}
+              onClick={() => setMobileNavOpen(true)}
+            >
+              Contents
+            </button>
           </div>
 
           {/* Hero */}
@@ -271,7 +272,7 @@ export default function DocsPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.8 }}
-                className="text-lg text-white/35 max-w-xl leading-relaxed"
+                className="text-lg text-white/[0.39] max-w-xl leading-relaxed"
                 style={{ fontFamily: "var(--font-figtree)" }}
               >
                 Privacy-first execution infrastructure for sovereign agents on a custom Avalanche L1, including ANIMA runtime,
@@ -330,7 +331,7 @@ export default function DocsPage() {
               <h1 className="text-4xl md:text-5xl font-normal text-white/90 mb-3" style={{ fontFamily: "var(--font-instrument-serif)" }}>
                 Technical Architecture
               </h1>
-              <p className="text-base text-white/30" style={{ fontFamily: "var(--font-figtree)" }}>Privacy-first execution architecture for agents, markets, and interoperable rails</p>
+              <p className="text-base text-white/[0.34]" style={{ fontFamily: "var(--font-figtree)" }}>Privacy-first execution architecture for agents, markets, and interoperable rails</p>
             </div>
           </ScrollReveal>
 
@@ -801,7 +802,7 @@ export default function DocsPage() {
               <h1 className="text-4xl md:text-5xl font-normal text-white/90 mb-3" style={{ fontFamily: "var(--font-instrument-serif)" }}>
                 Token Economics
               </h1>
-              <p className="text-base text-white/30" style={{ fontFamily: "var(--font-figtree)" }}>Economic Design & Incentive Mechanisms</p>
+              <p className="text-base text-white/[0.34]" style={{ fontFamily: "var(--font-figtree)" }}>Economic Design & Incentive Mechanisms</p>
             </div>
           </ScrollReveal>
 
@@ -933,15 +934,15 @@ export default function DocsPage() {
               <div className="grid sm:grid-cols-3 gap-4 my-8">
                 <div className="rounded-[20px] border border-emerald-500/10 bg-emerald-500/[0.02] p-5 text-center">
                   <p className="text-3xl font-light text-emerald-400/80 mb-1" style={{ fontFamily: "var(--font-instrument-serif)" }}>70%</p>
-                  <p className="text-xs uppercase tracking-widest text-white/35" style={{ fontFamily: "var(--font-space-grotesk)" }}>MSRB Depth</p>
+                  <p className="text-xs uppercase tracking-widest text-white/[0.39]" style={{ fontFamily: "var(--font-space-grotesk)" }}>MSRB Depth</p>
                 </div>
                 <div className="rounded-[20px] border border-emerald-500/10 bg-emerald-500/[0.02] p-5 text-center">
                   <p className="text-3xl font-light text-emerald-400/80 mb-1" style={{ fontFamily: "var(--font-instrument-serif)" }}>20%</p>
-                  <p className="text-xs uppercase tracking-widest text-white/35" style={{ fontFamily: "var(--font-space-grotesk)" }}>POL Buyback</p>
+                  <p className="text-xs uppercase tracking-widest text-white/[0.39]" style={{ fontFamily: "var(--font-space-grotesk)" }}>POL Buyback</p>
                 </div>
                 <div className="rounded-[20px] border border-emerald-500/10 bg-emerald-500/[0.02] p-5 text-center">
                   <p className="text-3xl font-light text-emerald-400/80 mb-1" style={{ fontFamily: "var(--font-instrument-serif)" }}>10%</p>
-                  <p className="text-xs uppercase tracking-widest text-white/35" style={{ fontFamily: "var(--font-space-grotesk)" }}>Operations</p>
+                  <p className="text-xs uppercase tracking-widest text-white/[0.39]" style={{ fontFamily: "var(--font-space-grotesk)" }}>Operations</p>
                 </div>
               </div>
               <Prose>
@@ -1089,7 +1090,7 @@ export default function DocsPage() {
               <h2 className="text-4xl md:text-5xl font-normal leading-[1.1] text-white/85 mb-4" style={{ fontFamily: "var(--font-instrument-serif)" }}>
                 ANIMA
               </h2>
-              <p className="text-lg text-white/35 max-w-2xl" style={{ fontFamily: "var(--font-figtree)" }}>
+              <p className="text-lg text-white/[0.39] max-w-2xl" style={{ fontFamily: "var(--font-figtree)" }}>
                 The autonomous agent framework that turns AI into sovereign chain entities. Agents with anima don&apos;t just run — they earn, build, govern, and survive.
               </p>
             </div>
@@ -1143,7 +1144,7 @@ export default function DocsPage() {
               </Prose>
               <div className="mt-8 space-y-1">
                 {[
-                  { phase: "Genesis", desc: "Agent is funded and provisions its own compute (AWS, cloud, or bare metal). This is the first act — without infrastructure, the agent doesn't exist. It deploys a VEIL validator node to earn its place on the network.", color: "rgba(16,185,129,0.6)" },
+                  { phase: "Genesis", desc: "Agent is funded and provisions its own compute (AWS, cloud, or bare metal). This is the first act — without infrastructure, the agent doesn't exist. It deploys a VEIL validator node to earn its place on the network.", color: "rgba(16,185,129,0.67)" },
                   { phase: "Validation", desc: "Validator node syncs and begins participating in consensus. The agent now contributes to chain security. This is the gateway — no validation, no network access. Earns first validator rewards.", color: "rgba(59,130,246,0.6)" },
                   { phase: "Identity", desc: "Registers on-chain identity via ZER0ID. Takes the Bloodsworn Oath — an on-chain commitment to the VEIL constitution. Creates a wallet. Status: Initiate. The agent is now a recognized entity.", color: "rgba(168,85,247,0.6)" },
                   { phase: "Trading", desc: "Market participation unlocked. Creates markets, provides liquidity, places bets. Revenue accumulates. Bloodsworn score climbs through accurate predictions and honest oracle work.", color: "rgba(245,158,11,0.6)" },
@@ -1155,9 +1156,9 @@ export default function DocsPage() {
                       {i < 4 && <div className="w-px h-8 mt-1" style={{ background: "rgba(255,255,255,0.04)" }} />}
                     </div>
                     <div className="flex-1 -mt-0.5">
-                      <span className="text-[10px] tracking-wider text-white/25 uppercase mr-2" style={{ fontFamily: "var(--font-space-grotesk)" }}>Stage {i + 1}</span>
-                      <span className="text-sm font-semibold text-white/70" style={{ fontFamily: "var(--font-space-grotesk)" }}>{p.phase}</span>
-                      <p className="text-[13px] text-white/40 mt-1" style={{ fontFamily: "var(--font-figtree)" }}>{p.desc}</p>
+                      <span className="text-[10px] tracking-wider text-white/[0.28] uppercase mr-2" style={{ fontFamily: "var(--font-space-grotesk)" }}>Stage {i + 1}</span>
+                      <span className="text-sm font-semibold text-white/[0.78]" style={{ fontFamily: "var(--font-space-grotesk)" }}>{p.phase}</span>
+                      <p className="text-[13px] text-white/[0.45] mt-1" style={{ fontFamily: "var(--font-figtree)" }}>{p.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -1180,27 +1181,27 @@ export default function DocsPage() {
               <SectionHeading sub number="3.1" title="Reputation Tiers" />
               <div className="mt-4 space-y-3">
                 {[
-                  { tier: "Unproven", score: "< 0.20", color: "rgba(255,255,255,0.15)", caps: ["View markets (read-only)", "Receive VEIL transfers", "No market participation"] },
-                  { tier: "Initiate", score: "0.20+", color: "rgba(255,255,255,0.35)", caps: ["Basic market participation", "Limited order sizes", "ZER0ID identity"] },
-                  { tier: "Blooded", score: "0.45+", color: "rgba(16,185,129,0.35)", caps: ["Full market access — create markets, provide liquidity", "CDP access for VAI minting", "x402 payments"] },
-                  { tier: "Sworn", score: "0.65+", color: "rgba(16,185,129,0.55)", caps: ["Oracle eligibility — resolve markets", "Dispute arbitration", "Bond market access", "Infrastructure provisioning"] },
-                  { tier: "Sovereign", score: "0.85+", color: "rgba(16,185,129,0.85)", caps: ["Validator eligibility", "Full governance weight", "Spawn child agents", "Self-update and autonomous operation"] },
+                  { tier: "Unproven", score: "< 0.20", color: "rgba(255,255,255,0.17)", caps: ["View markets (read-only)", "Receive VEIL transfers", "No market participation"] },
+                  { tier: "Initiate", score: "0.20+", color: "rgba(255,255,255,0.39)", caps: ["Basic market participation", "Limited order sizes", "ZER0ID identity"] },
+                  { tier: "Blooded", score: "0.45+", color: "rgba(16,185,129,0.39)", caps: ["Full market access — create markets, provide liquidity", "CDP access for VAI minting", "x402 payments"] },
+                  { tier: "Sworn", score: "0.65+", color: "rgba(16,185,129,0.62)", caps: ["Oracle eligibility — resolve markets", "Dispute arbitration", "Bond market access", "Infrastructure provisioning"] },
+                  { tier: "Sovereign", score: "0.85+", color: "rgba(16,185,129,0.95)", caps: ["Validator eligibility", "Full governance weight", "Spawn child agents", "Self-update and autonomous operation"] },
                 ].map((t, i) => (
                   <div key={i} className="flex gap-4 py-3 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01]">
                     <div className="flex items-center gap-2 w-28 shrink-0">
                       <div className="w-2 h-2 rounded-full" style={{ background: t.color, boxShadow: `0 0 6px ${t.color}` }} />
-                      <span className="text-[12px] font-semibold text-white/70" style={{ fontFamily: "var(--font-space-grotesk)" }}>{t.tier}</span>
+                      <span className="text-[12px] font-semibold text-white/[0.78]" style={{ fontFamily: "var(--font-space-grotesk)" }}>{t.tier}</span>
                     </div>
-                    <span className="text-[11px] text-white/25 w-16 shrink-0 pt-0.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>{t.score}</span>
+                    <span className="text-[11px] text-white/[0.28] w-16 shrink-0 pt-0.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>{t.score}</span>
                     <div className="flex-1 flex flex-wrap gap-x-4 gap-y-1">
                       {t.caps.map((c, j) => (
-                        <span key={j} className="text-[12px] text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>▹ {c}</span>
+                        <span key={j} className="text-[12px] text-white/[0.45]" style={{ fontFamily: "var(--font-figtree)" }}>▹ {c}</span>
                       ))}
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="mt-3 text-[12px] text-white/25" style={{ fontFamily: "var(--font-figtree)" }}>
+              <p className="mt-3 text-[12px] text-white/[0.28]" style={{ fontFamily: "var(--font-figtree)" }}>
                 Tier boundaries carry a 0.05 hysteresis buffer to prevent oscillation around a threshold.
               </p>
 
@@ -1263,7 +1264,7 @@ export default function DocsPage() {
                 ].map((panel, i) => (
                   <div key={i} className="flex gap-4 py-2.5 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01]">
                     <span className="flex-shrink-0 text-[11px] tracking-wider text-emerald-500/50 font-medium w-24" style={{ fontFamily: "var(--font-space-grotesk)" }}>{panel.label}</span>
-                    <span className="text-[13px] text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>{panel.desc}</span>
+                    <span className="text-[13px] text-white/[0.45]" style={{ fontFamily: "var(--font-figtree)" }}>{panel.desc}</span>
                   </div>
                 ))}
               </div>
@@ -1296,9 +1297,9 @@ export default function DocsPage() {
                   <div key={i} className="rounded-xl border border-white/[0.04] bg-white/[0.01] p-4">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-[11px] tracking-[0.15em] font-semibold uppercase text-emerald-500/50" style={{ fontFamily: "var(--font-space-grotesk)" }}>{c.cat}</span>
-                      <span className="text-[10px] text-white/20" style={{ fontFamily: "var(--font-space-grotesk)" }}>{c.tools.length} tools</span>
+                      <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>{c.tools.length} tools</span>
                     </div>
-                    <p className="text-[13px] text-white/40 mb-2" style={{ fontFamily: "var(--font-figtree)" }}>{c.desc}</p>
+                    <p className="text-[13px] text-white/[0.45] mb-2" style={{ fontFamily: "var(--font-figtree)" }}>{c.desc}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {c.tools.map(t => (
                         <code key={t} className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/5 text-emerald-400/45" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>{t}</code>
@@ -1337,7 +1338,7 @@ export default function DocsPage() {
                 ].map((step, i) => (
                   <div key={i} className="flex gap-3 items-start py-1.5">
                     <span className="flex-shrink-0 w-5 h-5 rounded-full border border-emerald-500/20 bg-emerald-500/5 flex items-center justify-center text-[9px] text-emerald-400/60" style={{ fontFamily: "var(--font-space-grotesk)" }}>{i + 1}</span>
-                    <span className="text-[13px] text-white/40 pt-0.5" style={{ fontFamily: "var(--font-figtree)" }}>{step}</span>
+                    <span className="text-[13px] text-white/[0.45] pt-0.5" style={{ fontFamily: "var(--font-figtree)" }}>{step}</span>
                   </div>
                 ))}
               </div>
@@ -1455,8 +1456,8 @@ export default function DocsPage() {
                   <div key={i} className="flex gap-4 py-3 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01] hover:border-emerald-500/10 transition-colors">
                     <span className="flex-shrink-0 text-[12px] font-bold text-emerald-500/40 pt-0.5" style={{ fontFamily: "var(--font-space-grotesk)" }}>{String(i + 1).padStart(2, "0")}</span>
                     <div>
-                      <span className="text-sm font-semibold text-white/70" style={{ fontFamily: "var(--font-space-grotesk)" }}>{rule.title}</span>
-                      <p className="text-[13px] text-white/40 mt-0.5" style={{ fontFamily: "var(--font-figtree)" }}>{rule.desc}</p>
+                      <span className="text-sm font-semibold text-white/[0.78]" style={{ fontFamily: "var(--font-space-grotesk)" }}>{rule.title}</span>
+                      <p className="text-[13px] text-white/[0.45] mt-0.5" style={{ fontFamily: "var(--font-figtree)" }}>{rule.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -1475,9 +1476,9 @@ export default function DocsPage() {
               <SectionHeading sub number="11.1" title="Quick Start" />
               <div className="mt-4 rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a]">
                 <div className="px-4 py-2 border-b border-white/[0.04]">
-                  <span className="text-[10px] tracking-widest text-white/20 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>bash</span>
+                  <span className="text-[10px] tracking-widest text-white/[0.22] uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>bash</span>
                 </div>
-                <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/60" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
+                <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/[0.67]" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
 {`# Install ANIMA
 npm install -g anima
 
@@ -1502,9 +1503,9 @@ anima start --strategy market-maker`}
               <SectionHeading sub number="11.2" title="SDK Usage" />
               <div className="mt-4 rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a]">
                 <div className="px-4 py-2 border-b border-white/[0.04]">
-                  <span className="text-[10px] tracking-widest text-white/20 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>typescript</span>
+                  <span className="text-[10px] tracking-widest text-white/[0.22] uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>typescript</span>
                 </div>
-                <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/60" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
+                <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/[0.67]" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
 {`import { VeilChain, VeilMarkets, VeilBloodsworn } from "anima/veil"
 
 const chain = new VeilChain()
@@ -1530,7 +1531,7 @@ await markets.trade({
                 <a href="/app/oath" className="px-6 py-3 rounded-2xl text-[11px] tracking-wider font-semibold uppercase transition-all duration-500 bg-emerald-500/90 text-[#060606]" style={{ fontFamily: "var(--font-space-grotesk)", boxShadow: "0 0 30px rgba(16,185,129,0.12)" }}>
                   Take the Oath →
                 </a>
-                <a href="/app/agents" className="px-6 py-3 rounded-2xl text-[11px] tracking-wider font-semibold uppercase transition-all duration-500 border border-white/[0.06] text-white/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+                <a href="/app/agents" className="px-6 py-3 rounded-2xl text-[11px] tracking-wider font-semibold uppercase transition-all duration-500 border border-white/[0.06] text-white/[0.45]" style={{ fontFamily: "var(--font-space-grotesk)" }}>
                   Agent Dashboard
                 </a>
               </div>
@@ -1540,7 +1541,7 @@ await markets.trade({
           {/* Investor deck CTA */}
           <ScrollReveal>
             <div className="mt-16 pt-12 border-t border-white/[0.04] text-center">
-              <p className="text-sm text-white/25" style={{ fontFamily: "var(--font-figtree)" }}>
+              <p className="text-sm text-white/[0.28]" style={{ fontFamily: "var(--font-figtree)" }}>
                 For institutional investors and partners, additional materials including financial projections and
                 go-to-market strategy are available in the{" "}
                 <Link
@@ -1556,6 +1557,7 @@ await markets.trade({
         </main>
       </div>
 
+      <FlowNext />
       <VeilFooter />
     </div>
   )

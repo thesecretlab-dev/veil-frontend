@@ -1,8 +1,12 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { motion, useInView } from "framer-motion"
 import { useRef, type ReactNode } from "react"
+import { ECOSYSTEM_FLOW, flowActive } from "@/lib/flow-nav"
+import { RuntimeBanner } from "@/components/runtime-banner"
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    VEIL BRAND SYSTEM — Shared Components
@@ -35,7 +39,7 @@ import { useRef, type ReactNode } from "react"
 export function FilmGrain() {
   return (
     <div
-      className="pointer-events-none fixed inset-0 z-[9999] opacity-[0.035]"
+      className="pointer-events-none fixed inset-0 z-[1] opacity-[0.03]"
       style={{
         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
         backgroundRepeat: "repeat",
@@ -63,8 +67,8 @@ export function ScrollReveal({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
-      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94], delay }}
       className={className}
     >
@@ -78,12 +82,12 @@ export function SectionLabel({ number, text }: { number: string; text: string })
   return (
     <div className="flex items-center gap-3 mb-4">
       <span style={{
-        fontSize: "9px", letterSpacing: "0.4em", color: "rgba(16,185,129,0.4)",
+        fontSize: "9px", letterSpacing: "0.4em", color: "rgba(16,185,129,0.45)",
         fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
       }}>{number}</span>
       <span style={{ width: "20px", height: "1px", background: "rgba(16,185,129,0.15)" }} />
       <span style={{
-        fontSize: "8px", letterSpacing: "0.4em", color: "rgba(255,255,255,0.2)",
+        fontSize: "8px", letterSpacing: "0.4em", color: "rgba(255,255,255,0.22)",
         fontFamily: "var(--font-space-grotesk)", textTransform: "uppercase",
       }}>{text}</span>
     </div>
@@ -111,48 +115,48 @@ export function Divider({ variant = "default" }: { variant?: "default" | "emeral
 }
 
 /* ─── VEIL Nav Header (matches landing page nav) ─── */
-export function VeilHeader({ current }: { current?: string }) {
+export function VeilHeader({ current: _current }: { current?: string }) {
+  const path = usePathname() || "/"
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-5 flex items-center justify-between"
-      style={{ background: "linear-gradient(180deg, rgba(6,6,6,0.9) 0%, transparent 100%)" }}
+      className="fixed top-0 left-0 right-0 z-[120] px-6 md:px-10 py-5 flex items-center justify-between gap-4"
+      style={{
+        background: "linear-gradient(180deg, rgba(6,6,6,0.92) 0%, rgba(6,6,6,0.72) 70%, transparent 100%)",
+        paddingRight: 64,
+        pointerEvents: "auto",
+      }}
     >
-      <Link href="/" className="flex items-center gap-3 group">
+      <Link href="/" className="flex items-center gap-3 group shrink-0">
         <div className="w-6 h-6 relative">
           <svg viewBox="0 0 24 24" fill="none" className="w-full h-full">
-            <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5"
+            <path d="M12 22L2 4H22L12 22Z" stroke="rgba(16,185,129,0.45)" strokeWidth="1.5"
               className="group-hover:stroke-emerald-400/60 transition-all duration-700" />
           </svg>
         </div>
         <span style={{
-          fontSize: "13px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.5)",
+          fontSize: "13px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.56)",
           fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
-        }} className="group-hover:text-white/70 transition-colors duration-700">VEIL</span>
+        }} className="group-hover:text-white/[0.78] transition-colors duration-700">VEIL</span>
       </Link>
-      <div className="flex items-center gap-6">
-        {[
-          { label: "Docs", href: "/app/docs" },
-          { label: "Ecosystem", href: "/app/ecosystem" },
-          { label: "Blog", href: "/app/blog" },
-        ].map(link => (
-          <Link key={link.label} href={link.href}
-            className="hidden md:block text-xs tracking-[0.15em] uppercase transition-colors duration-700 hover:text-emerald-400/70"
-            style={{
-              fontFamily: "var(--font-space-grotesk)",
-              color: current === link.label.toLowerCase() ? "rgba(16,185,129,0.7)" : "rgba(255,255,255,0.3)",
-            }}>
-            {link.label}
-          </Link>
-        ))}
-        <Link href="/app"
-          className="px-5 py-2 rounded-full text-xs tracking-wider transition-all duration-700 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]"
-          style={{
-            fontFamily: "var(--font-space-grotesk)", fontWeight: 500,
-            background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.7)",
-            border: "1px solid rgba(16,185,129,0.15)",
-          }}>
-          Enter Chain
-        </Link>
+      <div className="hidden md:flex items-center gap-5">
+        <RuntimeBanner compact />
+        {ECOSYSTEM_FLOW.map((item) => {
+          const on = flowActive(path, item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="text-[12px] tracking-wide transition-colors duration-500 hover:text-emerald-400"
+              style={{
+                fontFamily: "var(--font-space-grotesk)",
+                color: on ? "rgba(255,255,255,0.92)" : "rgba(255,255,255,0.45)",
+                fontWeight: on ? 600 : 400,
+              }}
+            >
+              {item.label}
+            </Link>
+          )
+        })}
       </div>
     </nav>
   )
@@ -168,7 +172,7 @@ export function VeilFooter() {
             <VeilLogo opacity={0.3} />
             <span style={{
               fontFamily: "var(--font-space-grotesk)", fontSize: "12px",
-              letterSpacing: "0.2em", color: "rgba(255,255,255,0.2)",
+              letterSpacing: "0.2em", color: "rgba(255,255,255,0.22)",
             }}>VEIL</span>
           </div>
           <div className="flex items-center gap-8 flex-wrap">
@@ -180,7 +184,7 @@ export function VeilFooter() {
             ].map(link => (
               <Link key={link.label} href={link.href}
                 className="text-[11px] tracking-[0.15em] uppercase transition-colors duration-500 hover:text-emerald-400/50"
-                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.2)" }}>
+                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.22)" }}>
                 {link.label}
               </Link>
             ))}
@@ -192,6 +196,8 @@ export function VeilFooter() {
               { label: "Docs", href: "/app/docs" },
               { label: "Blog", href: "/app/blog" },
               { label: "Ecosystem", href: "/app/ecosystem" },
+              { label: "ZER0ID", href: "/app/zeroid" },
+              { label: "Mesh", href: "/mesh" },
               { label: "MAIEV", href: "/maiev" },
               { label: "Transparency", href: "/app/transparency" },
               { label: "Investor Deck", href: "/app/investor-deck" },
@@ -211,18 +217,33 @@ export function VeilFooter() {
               { label: "Support", href: "/app/support" },
             ].map(link => (
               <Link key={link.label} href={link.href}
-                className="text-[10px] tracking-[0.12em] uppercase transition-colors duration-500 hover:text-white/20"
+                className="text-[10px] tracking-[0.12em] uppercase transition-colors duration-500 hover:text-white/[0.22]"
                 style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.07)" }}>
                 {link.label}
               </Link>
             ))}
           </div>
         </div>
-        <div className="mt-8 text-center">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
           <p style={{
             fontFamily: "var(--font-space-grotesk)", fontSize: "10px",
-            letterSpacing: "0.2em", color: "rgba(255,255,255,0.08)",
-          }}>© 2026 VEIL · Built by <Link href="https://thesecretlab.app" className="hover:text-white/15 transition-colors">THE SECRET LAB</Link></p>
+            letterSpacing: "0.2em", color: "rgba(255,255,255,0.25)",
+          }}>© 2026 VEIL</p>
+          <Link href="https://thesecretlab.app" target="_blank" rel="noopener noreferrer"
+            className="text-[10px] tracking-[0.16em] uppercase transition-colors duration-500 hover:text-emerald-400/70"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.39)" }}>
+            Built by THE SECRET LAB
+          </Link>
+          <Link href="https://github.com/thesecretlab-dev" target="_blank" rel="noopener noreferrer"
+            className="text-[10px] tracking-[0.14em] uppercase transition-colors duration-500 hover:text-emerald-400/70"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.31)" }}>
+            GitHub
+          </Link>
+          <Link href="https://x.com/veilmarkets" target="_blank" rel="noopener noreferrer"
+            className="text-[10px] tracking-[0.14em] uppercase transition-colors duration-500 hover:text-emerald-400/70"
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.31)" }}>
+            X
+          </Link>
         </div>
       </div>
     </footer>

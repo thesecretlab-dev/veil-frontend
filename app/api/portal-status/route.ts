@@ -270,7 +270,7 @@ export async function GET() {
   return NextResponse.json({
     timestamp: new Date().toISOString(),
     markets: {
-      source: "polymarket",
+      source: (process.env.VEIL_INCLUDE_POLYMARKET ?? "1") === "0" ? "veil-native" : "veil-native+polymarket",
       total: markets.length,
       active: activeMarkets.length,
       totalLiquidityUsd,
@@ -350,9 +350,9 @@ export async function GET() {
       statusCode: orderRouterBase ? orderRouterProbe.statusCode : null,
     },
     flags: {
-      liveMarketsAvailable: markets.length > 0,
-      bridgeReady: bridgeStatus?.overallPass === true,
-      chainlinkFresh: chainlinkFeeds.length > 0 && staleFeeds === 0,
+      liveMarketsAvailable: markets.some((m) => Boolean(m.veilMarketId)),
+      bridgeReady: false,
+      chainlinkFresh: false,
       prelaunchReady: readiness?.overallPass === true,
       mvpReady:
         (mvpRun?.meta?.strictPassed ?? mvpRun?.meta?.passed ?? false) === true,

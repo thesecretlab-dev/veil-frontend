@@ -53,19 +53,19 @@ export default function Header() {
       {/* Navigation */}
       <nav className="flex items-center space-x-2">
         <a
-          href="#"
+          href="/exploreveil"
           className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
         >
-          Features
+          Thesis
         </a>
         <a
-          href="#"
+          href="/app"
           className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
         >
-          Pricing
+          Markets
         </a>
         <a
-          href="#"
+          href="/app/docs"
           className="text-white/80 hover:text-white text-xs font-light px-3 py-2 rounded-full hover:bg-white/10 transition-all duration-200"
         >
           Docs
@@ -79,7 +79,7 @@ export default function Header() {
             <span className="text-2xl leading-none" title={countryCode}>
               {countryCodeToFlag(countryCode)}
             </span>
-            <span className="text-white/60 text-xs font-light">{countryCode}</span>
+            <span className="text-white/[0.67] text-xs font-light">{countryCode}</span>
           </div>
         )}
 

@@ -66,7 +66,7 @@ function SectionHeading({ number, title, id, sub = false }: { number?: string; t
 
 function Prose({ children }: { children: ReactNode }) {
   return (
-    <div className="space-y-4 leading-[1.8] text-[15px] text-white/55" style={{ fontFamily: "var(--font-figtree)" }}>
+    <div className="space-y-4 leading-[1.8] text-[15px] text-white/[0.62]" style={{ fontFamily: "var(--font-figtree)" }}>
       {children}
     </div>
   )
@@ -76,7 +76,7 @@ function InfoCard({ title, children, accent = false }: { title: string; children
   return (
     <div className={`rounded-[20px] border p-6 backdrop-blur-sm transition-all duration-500 ${accent ? "border-emerald-500/20 bg-emerald-500/[0.03] hover:border-emerald-500/30" : "border-white/[0.06] bg-white/[0.02] hover:border-emerald-500/15 hover:bg-emerald-500/[0.02]"}`}>
       <h4 className="mb-2 text-sm font-semibold text-white/80" style={{ fontFamily: "var(--font-space-grotesk)" }}>{title}</h4>
-      <div className="text-sm leading-relaxed text-white/50" style={{ fontFamily: "var(--font-figtree)" }}>{children}</div>
+      <div className="text-sm leading-relaxed text-white/[0.56]" style={{ fontFamily: "var(--font-figtree)" }}>{children}</div>
     </div>
   )
 }
@@ -86,16 +86,16 @@ function CodeBlock({ code, language = "typescript" }: { code: string; language?:
   return (
     <div className="relative group rounded-2xl overflow-hidden border border-white/[0.06] bg-[#0a0a0a]">
       <div className="flex items-center justify-between px-4 py-2 border-b border-white/[0.04]">
-        <span className="text-[10px] tracking-widest text-white/20 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>{language}</span>
+        <span className="text-[10px] tracking-widest text-white/[0.22] uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>{language}</span>
         <button
           onClick={() => { navigator.clipboard.writeText(code); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
-          className="text-[10px] tracking-wider text-white/25 hover:text-white/50 transition-colors"
+          className="text-[10px] tracking-wider text-white/[0.28] hover:text-white/[0.56] transition-colors"
           style={{ fontFamily: "var(--font-space-grotesk)" }}
         >
           {copied ? "COPIED" : "COPY"}
         </button>
       </div>
-      <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/60" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
+      <pre className="p-4 overflow-x-auto text-[13px] leading-relaxed text-white/[0.67]" style={{ fontFamily: "var(--font-space-mono, monospace)" }}>
         <code>{code}</code>
       </pre>
     </div>
@@ -104,22 +104,22 @@ function CodeBlock({ code, language = "typescript" }: { code: string; language?:
 
 function TierCard({ tier, score, label, capabilities }: { tier: string; score: string; label: string; capabilities: string[] }) {
   const colors: Record<string, string> = {
-    unproven: "rgba(255,255,255,0.15)",
-    initiate: "rgba(255,255,255,0.35)",
-    blooded: "rgba(16,185,129,0.35)",
-    sworn: "rgba(16,185,129,0.55)",
-    sovereign: "rgba(16,185,129,0.85)",
+    unproven: "rgba(255,255,255,0.17)",
+    initiate: "rgba(255,255,255,0.39)",
+    blooded: "rgba(16,185,129,0.39)",
+    sworn: "rgba(16,185,129,0.62)",
+    sovereign: "rgba(16,185,129,0.95)",
   }
   return (
     <div className="rounded-[20px] border border-white/[0.06] bg-white/[0.02] p-5 transition-all duration-500 hover:border-emerald-500/15">
       <div className="flex items-center gap-3 mb-3">
         <div className="w-2.5 h-2.5 rounded-full" style={{ background: colors[tier] || "rgba(255,255,255,0.15)", boxShadow: `0 0 10px ${colors[tier] || "transparent"}` }} />
         <span className="text-sm font-semibold text-white/80" style={{ fontFamily: "var(--font-space-grotesk)" }}>{label}</span>
-        <span className="ml-auto text-[10px] tracking-wider text-white/25" style={{ fontFamily: "var(--font-space-grotesk)" }}>{score}</span>
+        <span className="ml-auto text-[10px] tracking-wider text-white/[0.28]" style={{ fontFamily: "var(--font-space-grotesk)" }}>{score}</span>
       </div>
       <ul className="space-y-1.5">
         {capabilities.map((c, i) => (
-          <li key={i} className="flex items-start gap-2 text-[13px] text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>
+          <li key={i} className="flex items-start gap-2 text-[13px] text-white/[0.45]" style={{ fontFamily: "var(--font-figtree)" }}>
             <span className="mt-1.5 w-1 h-1 rounded-full bg-emerald-500/30 shrink-0" />
             {c}
           </li>
@@ -189,7 +189,7 @@ export default function AnimaDocsPage() {
               className="block py-1.5 px-3 rounded-lg text-[12px] tracking-wide transition-all duration-300"
               style={{
                 fontFamily: "var(--font-space-grotesk)",
-                color: activeSection === id ? "rgba(16,185,129,0.8)" : "rgba(255,255,255,0.25)",
+                color: activeSection === id ? "rgba(16,185,129,0.90)" : "rgba(255,255,255,0.28)",
                 background: activeSection === id ? "rgba(16,185,129,0.05)" : "transparent",
               }}
             >
@@ -213,7 +213,7 @@ export default function AnimaDocsPage() {
             <h1 className="text-4xl md:text-5xl tracking-tight mb-6" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.92)" }}>
               Sovereign Agent Runtime
             </h1>
-            <p className="text-lg leading-relaxed text-white/40 max-w-2xl" style={{ fontFamily: "var(--font-figtree)" }}>
+            <p className="text-lg leading-relaxed text-white/[0.45] max-w-2xl" style={{ fontFamily: "var(--font-figtree)" }}>
               ANIMA is the autonomous agent framework for the VEIL network. Agents with anima are alive — they trade prediction markets, earn revenue, provision infrastructure, and govern the chain.
             </p>
           </ScrollReveal>
@@ -227,7 +227,7 @@ export default function AnimaDocsPage() {
               ].map((s, i) => (
                 <div key={i} className="text-center py-4 rounded-2xl border border-white/[0.04] bg-white/[0.01]">
                   <div className="text-2xl font-light text-emerald-400/70" style={{ fontFamily: "var(--font-instrument-serif)" }}>{s.value}</div>
-                  <div className="text-[10px] tracking-widest text-white/25 mt-1 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>{s.label}</div>
+                  <div className="text-[10px] tracking-widest text-white/[0.28] mt-1 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>{s.label}</div>
                 </div>
               ))}
             </div>
@@ -318,7 +318,7 @@ export default function AnimaDocsPage() {
                 <ScrollReveal key={i} delay={0.05 * i}>
                   <div className="flex gap-6 items-start">
                     <div className="flex-shrink-0 w-24 text-right pt-1">
-                      <span className="text-[10px] tracking-[0.2em] text-white/25 uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>
+                      <span className="text-[10px] tracking-[0.2em] text-white/[0.28] uppercase" style={{ fontFamily: "var(--font-space-grotesk)" }}>
                         Stage {i + 1}
                       </span>
                     </div>
@@ -334,7 +334,7 @@ export default function AnimaDocsPage() {
                     </div>
                     <div className="flex-1 pb-4">
                       <h4 className="text-sm font-semibold text-white/75 mb-1" style={{ fontFamily: "var(--font-space-grotesk)" }}>{p.phase}</h4>
-                      <p className="text-[13px] leading-relaxed text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>{p.desc}</p>
+                      <p className="text-[13px] leading-relaxed text-white/[0.45]" style={{ fontFamily: "var(--font-figtree)" }}>{p.desc}</p>
                     </div>
                   </div>
                 </ScrollReveal>
@@ -418,7 +418,7 @@ export default function AnimaDocsPage() {
                 ]}
               />
             </div>
-            <p className="mt-3 text-[12px]" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-figtree)" }}>
+            <p className="mt-3 text-[12px]" style={{ color: "rgba(255,255,255,0.28)", fontFamily: "var(--font-figtree)" }}>
               Tier boundaries carry a 0.05 hysteresis buffer to prevent oscillation around a threshold.
             </p>
           </ScrollReveal>
@@ -445,7 +445,7 @@ export default function AnimaDocsPage() {
           <ScrollReveal delay={0.05}>
             <Prose>
               <p>
-                The ANIMA dashboard at <code style={{ color: "rgba(16,185,129,0.6)", background: "rgba(16,185,129,0.05)", padding: "2px 6px", borderRadius: "4px", fontSize: "13px" }}>/app/agents</code> is the control center for deploying and monitoring agents on the VEIL network.
+                The ANIMA dashboard at <code style={{ color: "rgba(16,185,129,0.67)", background: "rgba(16,185,129,0.05)", padding: "2px 6px", borderRadius: "4px", fontSize: "13px" }}>/app/agents</code> is the control center for deploying and monitoring agents on the VEIL network.
               </p>
             </Prose>
           </ScrollReveal>
@@ -484,7 +484,7 @@ export default function AnimaDocsPage() {
               ].map((panel, i) => (
                 <div key={i} className="flex gap-4 py-3 px-4 rounded-xl border border-white/[0.04] bg-white/[0.01]">
                   <span className="flex-shrink-0 text-[11px] tracking-wider text-emerald-500/50 font-medium w-28" style={{ fontFamily: "var(--font-space-grotesk)" }}>{panel.label}</span>
-                  <span className="text-[13px] text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>{panel.desc}</span>
+                  <span className="text-[13px] text-white/[0.45]" style={{ fontFamily: "var(--font-figtree)" }}>{panel.desc}</span>
                 </div>
               ))}
             </div>
@@ -561,13 +561,13 @@ export default function AnimaDocsPage() {
                 <ScrollReveal key={cat.category} delay={0.03 * i}>
                   <div className="rounded-[16px] border border-white/[0.06] bg-white/[0.015] p-5">
                     <div className="flex items-center gap-3 mb-2">
-                      <span className="text-[11px] tracking-[0.15em] font-semibold uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.6)" }}>{cat.category}</span>
-                      <span className="text-[10px] text-white/20" style={{ fontFamily: "var(--font-space-grotesk)" }}>{cat.tools.length} tools</span>
+                      <span className="text-[11px] tracking-[0.15em] font-semibold uppercase" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.67)" }}>{cat.category}</span>
+                      <span className="text-[10px] text-white/[0.22]" style={{ fontFamily: "var(--font-space-grotesk)" }}>{cat.tools.length} tools</span>
                     </div>
-                    <p className="text-[13px] text-white/40 mb-3" style={{ fontFamily: "var(--font-figtree)" }}>{cat.desc}</p>
+                    <p className="text-[13px] text-white/[0.45] mb-3" style={{ fontFamily: "var(--font-figtree)" }}>{cat.desc}</p>
                     <div className="flex flex-wrap gap-2">
                       {cat.tools.map(t => (
-                        <code key={t} className="text-[11px] px-2.5 py-1 rounded-lg" style={{ background: "rgba(16,185,129,0.05)", color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-mono, monospace)" }}>{t}</code>
+                        <code key={t} className="text-[11px] px-2.5 py-1 rounded-lg" style={{ background: "rgba(16,185,129,0.05)", color: "rgba(16,185,129,0.56)", fontFamily: "var(--font-space-mono, monospace)" }}>{t}</code>
                       ))}
                     </div>
                   </div>
@@ -646,7 +646,7 @@ export default function AnimaDocsPage() {
           <ScrollReveal delay={0.1}>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
               <InfoCard title="Compute Provisioning" accent>
-                Agents call <code style={{ color: "rgba(16,185,129,0.6)", fontSize: "12px" }}>veil_infra_provision</code> to spin up AWS/cloud instances. Configuration includes instance type, region, and purpose (validator, general compute, or relay).
+                Agents call <code style={{ color: "rgba(16,185,129,0.67)", fontSize: "12px" }}>veil_infra_provision</code> to spin up AWS/cloud instances. Configuration includes instance type, region, and purpose (validator, general compute, or relay).
               </InfoCard>
               <InfoCard title="Validator Deployment" accent>
                 Once compute is provisioned, agents deploy a VEIL validator node. This is the second major lifecycle milestone — the agent now contributes to chain security and earns validator rewards.
@@ -786,7 +786,7 @@ validator_sync      — Node synced (if validator)
                     <span className="flex-shrink-0 text-[12px] font-bold text-emerald-500/40" style={{ fontFamily: "var(--font-space-grotesk)" }}>{String(i + 1).padStart(2, "0")}</span>
                     <div>
                       <h4 className="text-sm font-semibold text-white/75 mb-1" style={{ fontFamily: "var(--font-space-grotesk)" }}>{rule.title}</h4>
-                      <p className="text-[13px] text-white/40" style={{ fontFamily: "var(--font-figtree)" }}>{rule.desc}</p>
+                      <p className="text-[13px] text-white/[0.45]" style={{ fontFamily: "var(--font-figtree)" }}>{rule.desc}</p>
                     </div>
                   </div>
                 </ScrollReveal>
@@ -873,17 +873,17 @@ await markets.trade({
         <section className="relative py-16">
           <ScrollReveal>
             <div className="text-center">
-              <h2 className="text-3xl md:text-4xl tracking-tight mb-4" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.85)" }}>
+              <h2 className="text-3xl md:text-4xl tracking-tight mb-4" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.95)" }}>
                 Give Your Agent a Soul
               </h2>
-              <p className="text-sm text-white/35 mb-8 max-w-md mx-auto" style={{ fontFamily: "var(--font-figtree)" }}>
+              <p className="text-sm text-white/[0.39] mb-8 max-w-md mx-auto" style={{ fontFamily: "var(--font-figtree)" }}>
                 Deploy an ANIMA agent, take the Bloodsworn Oath, and join the machine economy.
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Link href="/app/oath" className="px-8 py-3.5 rounded-2xl text-[12px] tracking-wider font-semibold uppercase transition-all duration-500" style={{ fontFamily: "var(--font-space-grotesk)", background: "rgba(16,185,129,0.9)", color: "#060606", boxShadow: "0 0 40px rgba(16,185,129,0.15)" }}>
                   Take the Oath
                 </Link>
-                <Link href="/app/agents" className="px-8 py-3.5 rounded-2xl text-[12px] tracking-wider font-semibold uppercase transition-all duration-500" style={{ fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)" }}>
+                <Link href="/app/agents" className="px-8 py-3.5 rounded-2xl text-[12px] tracking-wider font-semibold uppercase transition-all duration-500" style={{ fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.45)" }}>
                   Agent Dashboard
                 </Link>
               </div>

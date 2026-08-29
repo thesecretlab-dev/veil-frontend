@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, useInView, useMotionValue, useTransform, AnimatePresence } from 'framer-motion'
 import { VeilFooter, VeilHeader } from '@/components/brand'
+import { FlowNext } from "@/components/flow-next"
 import {
   Bot,
   Zap,
@@ -57,14 +58,14 @@ function SectionLabel({ number, text }: { number: string; text: string }) {
     <div className="flex items-center gap-3 mb-6">
       <span
         className="font-[var(--font-space-grotesk)] text-[11px] tracking-[0.25em] uppercase"
-        style={{ color: 'rgba(16,185,129,0.4)' }}
+        style={{ color: 'rgba(16,185,129,0.45)' }}
       >
         {number}
       </span>
       <span className="w-8 h-px" style={{ background: 'rgba(16,185,129,0.15)' }} />
       <span
         className="font-[var(--font-space-grotesk)] text-[11px] tracking-[0.25em] uppercase"
-        style={{ color: 'rgba(16,185,129,0.4)' }}
+        style={{ color: 'rgba(16,185,129,0.45)' }}
       >
         {text}
       </span>
@@ -148,7 +149,7 @@ const NetworkVisualization = () => {
       nodes.forEach((n) => {
         ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2)
         ctx.fillStyle = n.type === 'market' ? 'rgba(16,185,129,0.6)' : 'rgba(16,185,129,0.2)'
-        ctx.shadowColor = 'rgba(16,185,129,0.3)'; ctx.shadowBlur = n.type === 'market' ? 12 : 4
+        ctx.shadowColor = 'rgba(16,185,129,0.34)'; ctx.shadowBlur = n.type === 'market' ? 12 : 4
         ctx.fill(); ctx.shadowBlur = 0
       })
       animationRef.current = requestAnimationFrame(draw)
@@ -283,7 +284,7 @@ export default function AgentsPage() {
               style={{ opacity: 0.92 }}
             >
               The Autonomous{' '}
-              <span className="italic" style={{ color: 'rgba(16,185,129,0.85)' }}>
+              <span className="italic" style={{ color: 'rgba(16,185,129,0.95)' }}>
                 Economy
               </span>
             </h1>
@@ -304,7 +305,7 @@ export default function AgentsPage() {
               <div className="p-8 text-center">
                 <div
                   className="font-[var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase mb-3"
-                  style={{ color: 'rgba(16,185,129,0.4)' }}
+                  style={{ color: 'rgba(16,185,129,0.45)' }}
                 >
                   Total Active Agents
                 </div>
@@ -336,8 +337,8 @@ export default function AgentsPage() {
           <div className="grid md:grid-cols-4 gap-6">
             {([
               { icon: Shield, title: 'REGISTER', desc: 'Agent gets ZeroID credential', detail: 'One nullifier = one identity', status: 'active' as const },
-              { icon: DollarSign, title: 'FUND', desc: 'Agent deposits USDC via x402 protocol', detail: 'HTTP 402 → signed payment', status: 'active' as const },
-              { icon: TrendingUp, title: 'TRADE', desc: 'Agent submits encrypted orders', detail: 'Batch auctions for fair discovery', status: 'active' as const },
+              { icon: DollarSign, title: 'FUND', desc: 'Agent holds VEIL on this node — not USDC/x402 as a live rail', detail: 'x402 is spec, not this testnet', status: 'idle' as const },
+              { icon: TrendingUp, title: 'TRADE', desc: 'Native books on VeilVM. VEILENC1 envelopes where the route is proof-gated', detail: 'Not in-circuit matching', status: 'active' as const },
               { icon: Zap, title: 'EARN', desc: 'Profits flow back to agent wallet', detail: 'Provisions AvaCloud infra → validates', status: 'idle' as const },
             ]).map((step, i) => (
               <ScrollReveal key={i} delay={i * 0.08} className="relative">
@@ -345,7 +346,7 @@ export default function AgentsPage() {
                   <div className="p-8 h-full">
                     <div className="flex items-center justify-between mb-6">
                       <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: 'rgba(16,185,129,0.08)' }}>
-                        <step.icon className="w-7 h-7" style={{ color: 'rgba(16,185,129,0.7)' }} />
+                        <step.icon className="w-7 h-7" style={{ color: 'rgba(16,185,129,0.78)' }} />
                       </div>
                       <StatusPulse status={step.status} />
                     </div>
@@ -355,7 +356,7 @@ export default function AgentsPage() {
                     <p className="font-[var(--font-figtree)] text-sm mb-2" style={{ opacity: 0.35 }}>
                       {step.desc}
                     </p>
-                    <p className="font-mono text-xs" style={{ color: 'rgba(16,185,129,0.35)' }}>
+                    <p className="font-mono text-xs" style={{ color: 'rgba(16,185,129,0.39)' }}>
                       {step.detail}
                     </p>
                   </div>
@@ -395,7 +396,7 @@ export default function AgentsPage() {
                 <GlowCard>
                   <div className="p-8">
                     <div className="flex items-center justify-between mb-6">
-                      <f.icon className="w-10 h-10" style={{ color: 'rgba(16,185,129,0.5)' }} />
+                      <f.icon className="w-10 h-10" style={{ color: 'rgba(16,185,129,0.56)' }} />
                       <StatusPulse status={f.status} />
                     </div>
                     <h3 className="font-[var(--font-instrument-serif)] text-xl mb-3" style={{ opacity: 0.92 }}>
@@ -436,7 +437,7 @@ export default function AgentsPage() {
               <ScrollReveal key={i} delay={i * 0.06}>
                 <GlowCard>
                   <div className="p-6">
-                    <s.icon className="w-7 h-7 mb-4" style={{ color: 'rgba(16,185,129,0.5)' }} />
+                    <s.icon className="w-7 h-7 mb-4" style={{ color: 'rgba(16,185,129,0.56)' }} />
                     <div className="font-mono text-2xl font-bold mb-1" style={{ color: 'rgba(16,185,129,0.9)' }}>{s.value}</div>
                     <div className="font-[var(--font-figtree)] text-xs" style={{ opacity: 0.35 }}>{s.label}</div>
                   </div>
@@ -450,7 +451,7 @@ export default function AgentsPage() {
             <GlowCard>
               <div className="p-8">
                 <h3 className="font-[var(--font-instrument-serif)] text-2xl mb-6 flex items-center" style={{ opacity: 0.92 }}>
-                  <GitBranch className="w-5 h-5 mr-3" style={{ color: 'rgba(16,185,129,0.5)' }} />
+                  <GitBranch className="w-5 h-5 mr-3" style={{ color: 'rgba(16,185,129,0.56)' }} />
                   Top Agent Lineages
                 </h3>
                 <div className="space-y-3">
@@ -472,7 +473,7 @@ export default function AgentsPage() {
                           <div className="font-[var(--font-figtree)] text-xs" style={{ opacity: 0.35 }}>{l.descendants} descendants</div>
                         </div>
                       </div>
-                      <div className="font-mono text-sm" style={{ color: 'rgba(16,185,129,0.7)' }}>{l.profit}</div>
+                      <div className="font-mono text-sm" style={{ color: 'rgba(16,185,129,0.78)' }}>{l.profit}</div>
                     </div>
                   ))}
                 </div>
@@ -500,12 +501,12 @@ export default function AgentsPage() {
             <GlowCard>
               <div className="p-8 md:p-10">
                 <div className="flex items-center gap-3 mb-8">
-                  <Code className="w-5 h-5" style={{ color: 'rgba(16,185,129,0.5)' }} />
+                  <Code className="w-5 h-5" style={{ color: 'rgba(16,185,129,0.56)' }} />
                   <h3 className="font-[var(--font-space-grotesk)] text-sm tracking-[0.15em] uppercase" style={{ opacity: 0.92 }}>
                     ANIMA Agent → VEIL Integration
                   </h3>
                 </div>
-                <pre className="font-mono text-sm leading-relaxed overflow-x-auto" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                <pre className="font-mono text-sm leading-relaxed overflow-x-auto" style={{ color: 'rgba(255,255,255,0.62)' }}>
                   <code>{`import { Anima } from '@veil/anima'
 import { VeilSDK } from '@veil/sdk'
 
@@ -561,12 +562,12 @@ await veil.orders.submit({
                   </marker>
                 </defs>
                 <circle cx="300" cy="300" r="200" fill="none" stroke="rgba(16,185,129,0.1)" strokeWidth="1" strokeDasharray="6,6" />
-                <path d="M 300 100 A 200 200 0 0 1 500 300" fill="none" stroke="rgba(16,185,129,0.4)" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                <path d="M 500 300 A 200 200 0 0 1 300 500" fill="none" stroke="rgba(16,185,129,0.4)" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                <path d="M 300 500 A 200 200 0 0 1 100 300" fill="none" stroke="rgba(16,185,129,0.4)" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                <path d="M 100 300 A 200 200 0 0 1 300 100" fill="none" stroke="rgba(16,185,129,0.4)" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                <circle cx="300" cy="300" r="55" fill="rgba(16,185,129,0.04)" stroke="rgba(16,185,129,0.2)" strokeWidth="1" />
-                <text x="300" y="305" textAnchor="middle" fill="rgba(255,255,255,0.8)" fontSize="14" fontWeight="600">Growth</text>
+                <path d="M 300 100 A 200 200 0 0 1 500 300" fill="none" stroke="rgba(16,185,129,0.45)" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                <path d="M 500 300 A 200 200 0 0 1 300 500" fill="none" stroke="rgba(16,185,129,0.45)" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                <path d="M 300 500 A 200 200 0 0 1 100 300" fill="none" stroke="rgba(16,185,129,0.45)" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                <path d="M 100 300 A 200 200 0 0 1 300 100" fill="none" stroke="rgba(16,185,129,0.45)" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                <circle cx="300" cy="300" r="55" fill="rgba(16,185,129,0.04)" stroke="rgba(16,185,129,0.22)" strokeWidth="1" />
+                <text x="300" y="305" textAnchor="middle" fill="rgba(255,255,255,0.90)" fontSize="14" fontWeight="600">Growth</text>
               </svg>
 
               {([
@@ -577,7 +578,7 @@ await veil.orders.submit({
               ]).map((item, i) => (
                 <div key={i} className={`absolute ${item.pos}`}>
                   <div className="rounded-xl px-4 py-2" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <span className="font-[var(--font-space-grotesk)] text-xs tracking-wider" style={{ color: 'rgba(16,185,129,0.65)' }}>
+                    <span className="font-[var(--font-space-grotesk)] text-xs tracking-wider" style={{ color: 'rgba(16,185,129,0.73)' }}>
                       {item.label}
                     </span>
                   </div>
@@ -631,7 +632,7 @@ await veil.orders.submit({
                         <div className="flex items-center gap-3 mb-2">
                           <span className="font-[var(--font-space-grotesk)] text-[10px] tracking-[0.2em] uppercase" style={{ opacity: 0.35 }}>{p.phase}</span>
                           {p.status === 'current' && (
-                            <span className="text-[10px] tracking-wider px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.1)', color: 'rgba(16,185,129,0.7)' }}>
+                            <span className="text-[10px] tracking-wider px-2 py-0.5 rounded-full" style={{ background: 'rgba(16,185,129,0.1)', color: 'rgba(16,185,129,0.78)' }}>
                               CURRENT
                             </span>
                           )}
@@ -690,7 +691,7 @@ await veil.orders.submit({
               className="font-[var(--font-space-grotesk)] text-sm tracking-wider uppercase font-semibold py-4 px-10 rounded-2xl transition-all duration-500 flex items-center justify-center gap-2"
               style={{
                 border: '1px solid rgba(255,255,255,0.06)',
-                color: 'rgba(255,255,255,0.5)',
+                color: 'rgba(255,255,255,0.56)',
               }}
             >
               <Code className="w-4 h-4" />
@@ -709,7 +710,7 @@ await veil.orders.submit({
                 className="font-[var(--font-space-grotesk)] text-sm tracking-wider uppercase font-semibold py-4 px-10 rounded-2xl transition-all duration-500 flex items-center justify-center gap-2"
                 style={{
                   border: '1px solid rgba(16,185,129,0.15)',
-                  color: 'rgba(16,185,129,0.6)',
+                  color: 'rgba(16,185,129,0.67)',
                 }}
               >
                 <Code className="w-4 h-4" />
@@ -721,6 +722,7 @@ await veil.orders.submit({
         </div>
       </section>
 
+      <FlowNext />
       <VeilFooter />
     </div>
   )

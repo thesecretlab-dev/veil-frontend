@@ -50,7 +50,7 @@ export function ProposalForm() {
         <h1 className="text-2xl font-serif text-white">New Proposal</h1>
         <button
           onClick={() => setPreview(!preview)}
-          className="text-sm text-white/40 hover:text-white/60 transition-colors"
+          className="text-sm text-white/[0.45] hover:text-white/[0.67] transition-colors"
         >
           {preview ? 'Edit' : 'Preview'}
         </button>
@@ -66,13 +66,13 @@ export function ProposalForm() {
             className="space-y-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6"
           >
             <h2 className="text-xl text-white font-medium">{title || 'Untitled'}</h2>
-            <div className="text-sm text-white/60 whitespace-pre-wrap">{description || 'No description'}</div>
+            <div className="text-sm text-white/[0.67] whitespace-pre-wrap">{description || 'No description'}</div>
             {discussionUrl && (
               <a href={discussionUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-emerald-400 hover:underline">
                 Discussion Link ↗
               </a>
             )}
-            <p className="text-xs text-white/30">Voting period: {votingDays} days</p>
+            <p className="text-xs text-white/[0.34]">Voting period: {votingDays} days</p>
           </motion.div>
         ) : (
           <motion.div
@@ -83,38 +83,38 @@ export function ProposalForm() {
             className="space-y-4"
           >
             <div>
-              <label className="text-sm text-white/40 mb-1.5 block">Title</label>
+              <label className="text-sm text-white/[0.45] mb-1.5 block">Title</label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Proposal title"
-                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30"
+                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-white placeholder:text-white/[0.22] focus:outline-none focus:border-emerald-500/30"
               />
             </div>
 
             <div>
-              <label className="text-sm text-white/40 mb-1.5 block">Description (Markdown)</label>
+              <label className="text-sm text-white/[0.45] mb-1.5 block">Description (Markdown)</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe your proposal..."
                 rows={12}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 resize-none font-mono"
+                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/[0.22] focus:outline-none focus:border-emerald-500/30 resize-none font-mono"
               />
             </div>
 
             <div>
-              <label className="text-sm text-white/40 mb-1.5 block">Discussion Link (optional)</label>
+              <label className="text-sm text-white/[0.45] mb-1.5 block">Discussion Link (optional)</label>
               <input
                 value={discussionUrl}
                 onChange={(e) => setDiscussionUrl(e.target.value)}
-                placeholder="https://forum.veil.markets/..."
-                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30"
+                placeholder="https://github.com/thesecretlab-dev/veilvm/discussions/..."
+                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-4 py-3 text-sm text-white placeholder:text-white/[0.22] focus:outline-none focus:border-emerald-500/30"
               />
             </div>
 
             <div>
-              <label className="text-sm text-white/40 mb-1.5 block">Voting Period</label>
+              <label className="text-sm text-white/[0.45] mb-1.5 block">Voting Period</label>
               <select
                 value={votingDays}
                 onChange={(e) => setVotingDays(Number(e.target.value))}
@@ -134,7 +134,7 @@ export function ProposalForm() {
       <div className="flex gap-3 justify-end">
         <button
           onClick={() => router.push('/app/gov')}
-          className="px-4 py-2.5 text-sm text-white/40 hover:text-white/60 transition-colors"
+          className="px-4 py-2.5 text-sm text-white/[0.45] hover:text-white/[0.67] transition-colors"
         >
           Cancel
         </button>

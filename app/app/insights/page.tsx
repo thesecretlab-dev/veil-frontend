@@ -4,7 +4,7 @@ import { VeilFooter, VeilHeader } from '@/components/brand'
 
 import { useState, useRef } from "react"
 import { motion, useInView, AnimatePresence } from "framer-motion"
-import { Copy, Download, Plus, Trash2, ArrowLeft, ExternalLink } from "lucide-react"
+import { Copy, Download, Plus, Trash2, ExternalLink } from "lucide-react"
 import Link from "next/link"
 import { INSIGHTS_PRODUCTS } from "@/lib/products"
 import { InsightsCheckout } from "@/components/insights-checkout"
@@ -17,8 +17,8 @@ function ScrollReveal({ children, className, delay = 0 }: { children: React.Reac
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 32, filter: "blur(8px)" }}
-      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay }}
     >
       {children}
@@ -32,14 +32,14 @@ function SectionLabel({ number, label }: { number: string; label: string }) {
     <div className="flex items-center gap-3 mb-6">
       <span
         className="text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "rgba(16, 185, 129, 0.5)", fontFamily: "var(--font-space-grotesk)" }}
+        style={{ color: "rgba(16, 185, 129, 0.56)", fontFamily: "var(--font-space-grotesk)" }}
       >
         {number}
       </span>
       <div className="h-px flex-1" style={{ background: "rgba(255,255,255,0.06)" }} />
       <span
         className="text-[11px] tracking-[0.15em] uppercase"
-        style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-space-grotesk)" }}
+        style={{ color: "rgba(255,255,255,0.28)", fontFamily: "var(--font-space-grotesk)" }}
       >
         {label}
       </span>
@@ -84,36 +84,29 @@ export default function InsightsPage() {
   const [activeTab, setActiveTab] = useState<"dashboards" | "api" | "receipts" | "packages">("dashboards")
   const [checkoutProductId, setCheckoutProductId] = useState<string | null>(null)
   const [currentPlan, setCurrentPlan] = useState<string>("insights-standard")
-  const [showNewKeyModal, setShowNewKeyModal] = useState(false)
+  const [checkoutNote, setCheckoutNote] = useState("")
 
-  const apiKeys = [
-    { id: "1", name: "Preview API", key: "veil_preview_••••••••••••3x9k", created: "2025-01-15", lastUsed: "2 hours ago" },
-    { id: "2", name: "Development", key: "veil_test_••••••••••••7m2p", created: "2025-01-10", lastUsed: "5 days ago" },
-  ]
+  const apiKeys: { id: string; name: string; key: string; created: string; lastUsed: string }[] = []
 
-  const markets = [
-    { id: 1, name: "Trump wins 2024", odds: "62%", confidence: "±3%", change: "+2%", health: "Healthy", lastUpdate: "5m ago" },
-    { id: 2, name: "Bitcoin > $100k by EOY", odds: "45%", confidence: "±5%", change: "-1%", health: "Healthy", lastUpdate: "5m ago" },
-    { id: 3, name: "Lakers win NBA Finals", odds: "18%", confidence: "±4%", change: "+3%", health: "Thin", lastUpdate: "5m ago" },
-    { id: 4, name: "Fed cuts rates in Q1", odds: "73%", confidence: "±2%", change: "0%", health: "Healthy", lastUpdate: "5m ago" },
-  ]
+  const markets: { id: number; name: string; odds: string; confidence: string; change: string; health: string; lastUpdate: string }[] = []
 
-  const receipts = [
-    { id: "0x7f3a...9b2c", market: "Trump wins 2024", action: "Fill", timestamp: "2025-01-17 14:32:18", status: "Verified" },
-    { id: "0x4e1d...5k8p", market: "Bitcoin > $100k", action: "Settlement", timestamp: "2025-01-17 12:15:42", status: "Verified" },
-    { id: "0x9c2f...3n7q", market: "Lakers win Finals", action: "Fill", timestamp: "2025-01-17 09:48:55", status: "Verified" },
-  ]
+  const receipts: { id: string; market: string; action: string; timestamp: string; status: string }[] = []
 
   const handleUpgrade = (productId: string) => {
     if (productId === "insights-standard") {
       setCurrentPlan(productId)
-    } else {
-      setCheckoutProductId(productId)
+      setCheckoutNote("")
+      return
     }
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      setCheckoutNote("Paid insights are not enabled on this local node. Use the free surface or open Markets.")
+      return
+    }
+    setCheckoutProductId(productId)
   }
 
   const tabs = [
-    { id: "dashboards", label: "Live Dashboards" },
+    { id: "dashboards", label: "Dashboards" },
     { id: "api", label: "API" },
     { id: "receipts", label: "Receipts" },
     { id: "packages", label: "Packages" },
@@ -136,37 +129,8 @@ export default function InsightsPage() {
         />
       </div>
 
-      {/* ─── Fixed Nav ─── */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-2xl"
-        style={{
-          background: "rgba(6,6,6,0.8)",
-          borderBottom: "1px solid rgba(255,255,255,0.04)",
-        }}
-      >
-        <div className="mx-auto max-w-7xl px-8 h-16 flex items-center justify-between">
-          <Link
-            href="/app"
-            className="inline-flex items-center gap-2 text-[13px] tracking-wide transition-all duration-300 group"
-            style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}
-          >
-            <ArrowLeft className="h-3.5 w-3.5 transition-transform duration-300 group-hover:-translate-x-1" />
-            Back to Markets
-          </Link>
-          <span
-            className="text-[11px] tracking-[0.3em] uppercase"
-            style={{ color: "rgba(16,185,129,0.4)", fontFamily: "var(--font-space-grotesk)" }}
-          >
-            Insights
-          </span>
-        </div>
-      </motion.nav>
-
       {/* ─── Main Content ─── */}
-      <div className="relative z-10 min-h-screen px-8 pt-32 pb-32">
+      <div className="relative z-10 min-h-screen px-8 pt-28 pb-32">
         <div className="mx-auto max-w-7xl">
 
           {/* ─── Hero ─── */}
@@ -190,15 +154,15 @@ export default function InsightsPage() {
               </motion.div>
               <p
                 className="text-lg font-light max-w-xl mx-auto mb-3"
-                style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.35)" }}
+                style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)" }}
               >
-                We sell probabilities, not people.
+                Probabilities, not people — when there is a tape to sell. This node has no insight feed.
               </p>
               <p
                 className="text-[13px] font-light tracking-wide"
-                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.5)" }}
+                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.56)" }}
               >
-                No wallet data · Aggregated · Delayed · Verified
+                Local testnet · no billed packages · no delayed public feed
               </p>
             </div>
           </ScrollReveal>
@@ -213,7 +177,7 @@ export default function InsightsPage() {
                   className="relative px-6 py-3.5 text-[13px] tracking-wide transition-colors duration-300"
                   style={{
                     fontFamily: "var(--font-space-grotesk)",
-                    color: activeTab === tab.id ? "rgba(16,185,129,0.9)" : "rgba(255,255,255,0.3)",
+                    color: activeTab === tab.id ? "rgba(16,185,129,0.9)" : "rgba(255,255,255,0.34)",
                   }}
                 >
                   {tab.label}
@@ -251,11 +215,22 @@ export default function InsightsPage() {
                         >
                           Market Odds
                         </h2>
-                        <p className="text-[12px] tracking-wide" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.3)" }}>
-                          Aggregated from all sealed windows · Delayed 5m · No individual order data
+                        <p className="text-[12px] tracking-wide" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.34)" }}>
+                          Empty on this node. A CSV of an empty book is still empty.
                         </p>
                       </div>
                       <button
+                        type="button"
+                        onClick={() => {
+                          const rows = [["market", "odds", "confidence", "change", "health", "updated"], ...markets.map((m) => [m.name, m.odds, m.confidence, m.change, m.health, m.lastUpdate])]
+                          const blob = new Blob([rows.map((r) => r.join(",")).join("\n")], { type: "text/csv" })
+                          const url = URL.createObjectURL(blob)
+                          const a = document.createElement("a")
+                          a.href = url
+                          a.download = `veil-insights-${new Date().toISOString().slice(0, 10)}.csv`
+                          a.click()
+                          URL.revokeObjectURL(url)
+                        }}
                         className="flex items-center gap-2.5 px-5 py-2.5 rounded-full text-[12px] tracking-wide transition-all duration-300 hover:scale-[1.03]"
                         style={{
                           fontFamily: "var(--font-space-grotesk)",
@@ -277,7 +252,7 @@ export default function InsightsPage() {
                               <th
                                 key={h}
                                 className="text-left py-3 px-4 text-[11px] tracking-[0.12em] uppercase"
-                                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}
+                                style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.28)" }}
                               >
                                 {h}
                               </th>
@@ -285,6 +260,16 @@ export default function InsightsPage() {
                           </tr>
                         </thead>
                         <tbody>
+                          {markets.length === 0 && (
+                            <tr>
+                              <td colSpan={6} className="py-10 px-4 text-center" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)" }}>
+                                No insight rows. Native books are on{" "}
+                                <Link href="/app" style={{ color: "rgba(16,185,129,0.84)" }}>Markets</Link>
+                                {" "}and the{" "}
+                                <Link href="/explorer" style={{ color: "rgba(16,185,129,0.84)" }}>explorer tape</Link>.
+                              </td>
+                            </tr>
+                          )}
                           {markets.map((market, i) => (
                             <motion.tr
                               key={market.id}
@@ -296,13 +281,13 @@ export default function InsightsPage() {
                               onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.02)")}
                               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                             >
-                              <td className="py-4 px-4 text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.75)" }}>
+                              <td className="py-4 px-4 text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.84)" }}>
                                 {market.name}
                               </td>
                               <td className="py-4 px-4 text-[13px] tabular-nums" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.9)" }}>
                                 {market.odds}
                               </td>
-                              <td className="py-4 px-4 text-[13px] tabular-nums" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.4)" }}>
+                              <td className="py-4 px-4 text-[13px] tabular-nums" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.45)" }}>
                                 {market.confidence}
                               </td>
                               <td
@@ -313,7 +298,7 @@ export default function InsightsPage() {
                                     ? "rgba(16,185,129,0.9)"
                                     : market.change.startsWith("-")
                                       ? "rgba(239,68,68,0.8)"
-                                      : "rgba(255,255,255,0.4)",
+                                      : "rgba(255,255,255,0.45)",
                                 }}
                               >
                                 {market.change}
@@ -325,13 +310,13 @@ export default function InsightsPage() {
                                     fontFamily: "var(--font-space-grotesk)",
                                     background: market.health === "Healthy" ? "rgba(16,185,129,0.08)" : "rgba(234,179,8,0.08)",
                                     border: `1px solid ${market.health === "Healthy" ? "rgba(16,185,129,0.15)" : "rgba(234,179,8,0.15)"}`,
-                                    color: market.health === "Healthy" ? "rgba(16,185,129,0.85)" : "rgba(234,179,8,0.85)",
+                                    color: market.health === "Healthy" ? "rgba(16,185,129,0.95)" : "rgba(234,179,8,0.85)",
                                   }}
                                 >
                                   {market.health}
                                 </span>
                               </td>
-                              <td className="py-4 px-4 text-[12px]" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}>
+                              <td className="py-4 px-4 text-[12px]" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.28)" }}>
                                 {market.lastUpdate}
                               </td>
                             </motion.tr>
@@ -345,7 +330,7 @@ export default function InsightsPage() {
                         href="/app/docs"
                         target="_blank"
                         className="inline-flex items-center gap-2 text-[11px] tracking-wide transition-colors duration-300 hover:text-emerald-400"
-                        style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.3)" }}
+                        style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.34)" }}
                         rel="noreferrer"
                       >
                         <ExternalLink className="h-3 w-3" />
@@ -378,8 +363,8 @@ export default function InsightsPage() {
                       >
                         API Keys
                       </h2>
-                      <button
-                        onClick={() => setShowNewKeyModal(true)}
+                      <Link
+                        href="/app/api-docs"
                         className="flex items-center gap-2.5 px-5 py-2.5 rounded-full text-[12px] tracking-wide transition-all duration-300 hover:scale-[1.03]"
                         style={{
                           fontFamily: "var(--font-space-grotesk)",
@@ -389,11 +374,17 @@ export default function InsightsPage() {
                         }}
                       >
                         <Plus className="h-3.5 w-3.5" />
-                        Create New Key
-                      </button>
+                        API reference
+                      </Link>
                     </div>
 
                     <div className="space-y-3">
+                      {apiKeys.length === 0 && (
+                        <p className="py-8 text-[14px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)" }}>
+                          No API keys on this local node. Reference is in{" "}
+                          <Link href="/app/api-docs" style={{ color: "rgba(16,185,129,0.84)" }}>API docs</Link>.
+                        </p>
+                      )}
                       {apiKeys.map((key, i) => (
                         <motion.div
                           key={key.id}
@@ -408,7 +399,7 @@ export default function InsightsPage() {
                         >
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <span className="text-[14px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.85)" }}>
+                              <span className="text-[14px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.95)" }}>
                                 {key.name}
                               </span>
                               <span
@@ -417,13 +408,13 @@ export default function InsightsPage() {
                                   fontFamily: "var(--font-space-grotesk)",
                                   background: "rgba(16,185,129,0.08)",
                                   border: "1px solid rgba(16,185,129,0.15)",
-                                  color: "rgba(16,185,129,0.85)",
+                                  color: "rgba(16,185,129,0.95)",
                                 }}
                               >
                                 Active
                               </span>
                             </div>
-                            <div className="flex items-center gap-3 text-[11px] tracking-wide" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}>
+                            <div className="flex items-center gap-3 text-[11px] tracking-wide" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.28)" }}>
                               <span>Created {key.created}</span>
                               <span style={{ color: "rgba(255,255,255,0.1)" }}>·</span>
                               <span>Last used {key.lastUsed}</span>
@@ -432,11 +423,11 @@ export default function InsightsPage() {
                           <div className="flex items-center gap-2">
                             <code
                               className="px-4 py-2 rounded-xl font-mono text-[12px]"
-                              style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.5)" }}
+                              style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.56)" }}
                             >
                               {key.key}
                             </code>
-                            <button className="p-2.5 rounded-xl transition-colors duration-300 hover:bg-white/[0.04]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                            <button className="p-2.5 rounded-xl transition-colors duration-300 hover:bg-white/[0.04]" style={{ color: "rgba(255,255,255,0.39)" }}>
                               <Copy className="h-4 w-4" />
                             </button>
                             <button className="p-2.5 rounded-xl transition-colors duration-300 hover:bg-red-500/[0.06]" style={{ color: "rgba(239,68,68,0.5)" }}>
@@ -461,7 +452,7 @@ export default function InsightsPage() {
                     </h2>
                     <pre
                       className="p-6 rounded-2xl overflow-x-auto text-[12px] font-mono leading-relaxed"
-                      style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.04)" }}
+                      style={{ background: "rgba(0,0,0,0.4)", color: "rgba(255,255,255,0.62)", border: "1px solid rgba(255,255,255,0.04)" }}
                     >
                       {`curl -H "Authorization: Bearer YOUR_API_KEY" \\
   https://api.veil.markets/v1/markets
@@ -493,10 +484,10 @@ export default function InsightsPage() {
                     </h2>
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.5)" }}>
+                        <span className="text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.56)" }}>
                           API Calls
                         </span>
-                        <span className="text-[13px] tabular-nums" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.85)" }}>
+                        <span className="text-[13px] tabular-nums" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.95)" }}>
                           12,450 / 50,000
                         </span>
                       </div>
@@ -535,6 +526,12 @@ export default function InsightsPage() {
                     </h2>
 
                     <div className="space-y-3">
+                      {receipts.length === 0 && (
+                        <p className="py-8 text-[14px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)" }}>
+                          No receipts here. Native commits print on the{" "}
+                          <Link href="/explorer" style={{ color: "rgba(16,185,129,0.84)" }}>explorer</Link>.
+                        </p>
+                      )}
                       {receipts.map((receipt, i) => (
                         <motion.div
                           key={receipt.id}
@@ -551,7 +548,7 @@ export default function InsightsPage() {
                             <div className="flex items-center gap-3 mb-2">
                               <code
                                 className="px-3 py-1.5 rounded-xl font-mono text-[11px]"
-                                style={{ background: "rgba(0,0,0,0.4)", color: "rgba(16,185,129,0.85)" }}
+                                style={{ background: "rgba(0,0,0,0.4)", color: "rgba(16,185,129,0.95)" }}
                               >
                                 {receipt.id}
                               </code>
@@ -561,13 +558,13 @@ export default function InsightsPage() {
                                   fontFamily: "var(--font-space-grotesk)",
                                   background: "rgba(16,185,129,0.08)",
                                   border: "1px solid rgba(16,185,129,0.15)",
-                                  color: "rgba(16,185,129,0.85)",
+                                  color: "rgba(16,185,129,0.95)",
                                 }}
                               >
                                 {receipt.status}
                               </span>
                             </div>
-                            <div className="flex items-center gap-3 text-[11px] tracking-wide" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.25)" }}>
+                            <div className="flex items-center gap-3 text-[11px] tracking-wide" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.28)" }}>
                               <span>{receipt.market}</span>
                               <span style={{ color: "rgba(255,255,255,0.1)" }}>·</span>
                               <span>{receipt.action}</span>
@@ -575,7 +572,7 @@ export default function InsightsPage() {
                               <span>{receipt.timestamp}</span>
                             </div>
                           </div>
-                          <button className="p-2.5 rounded-xl transition-colors duration-300 hover:bg-white/[0.04]" style={{ color: "rgba(255,255,255,0.35)" }}>
+                          <button className="p-2.5 rounded-xl transition-colors duration-300 hover:bg-white/[0.04]" style={{ color: "rgba(255,255,255,0.39)" }}>
                             <Copy className="h-4 w-4" />
                           </button>
                         </motion.div>
@@ -596,8 +593,16 @@ export default function InsightsPage() {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               >
                 <ScrollReveal>
-                  <SectionLabel number="01" label="Choose Your Plan" />
+                  <SectionLabel number="01" label="Planned tiers — not billed here" />
                 </ScrollReveal>
+                {checkoutNote && (
+                  <p className="mb-6 text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(251,191,36,0.75)" }}>
+                    {checkoutNote}{" "}
+                    <Link href="/app" className="underline" style={{ color: "rgba(16,185,129,0.90)" }}>
+                      Open Markets
+                    </Link>
+                  </p>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {INSIGHTS_PRODUCTS.map((pkg, i) => {
                     const isCurrentPlan = currentPlan === pkg.id
@@ -634,7 +639,7 @@ export default function InsightsPage() {
                               {isFree ? "Free" : `$${(pkg.priceInCents / 100).toFixed(0)}`}
                             </span>
                             {!isFree && (
-                              <span className="text-[13px] ml-1" style={{ color: "rgba(255,255,255,0.25)" }}>/mo</span>
+                              <span className="text-[13px] ml-1" style={{ color: "rgba(255,255,255,0.28)" }}>/mo</span>
                             )}
                           </div>
                           <div
@@ -643,7 +648,7 @@ export default function InsightsPage() {
                               fontFamily: "var(--font-space-grotesk)",
                               background: "rgba(16,185,129,0.06)",
                               border: "1px solid rgba(16,185,129,0.1)",
-                              color: "rgba(16,185,129,0.7)",
+                              color: "rgba(16,185,129,0.78)",
                             }}
                           >
                             Delay: {pkg.delay}
@@ -653,7 +658,7 @@ export default function InsightsPage() {
                               <li
                                 key={feature}
                                 className="text-[13px] flex items-start gap-3"
-                                style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.55)" }}
+                                style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.62)" }}
                               >
                                 <div className="w-1 h-1 rounded-full mt-2 shrink-0" style={{ background: "rgba(16,185,129,0.5)" }} />
                                 {feature}
@@ -684,23 +689,7 @@ export default function InsightsPage() {
         </div>
       </div>
 
-      {/* ─── Fixed Footer ─── */}
-      <div
-        className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-2xl"
-        style={{
-          background: "rgba(6,6,6,0.8)",
-          borderTop: "1px solid rgba(255,255,255,0.04)",
-        }}
-      >
-        <div className="mx-auto max-w-7xl px-8 h-12 flex items-center justify-between">
-          <span className="text-[11px] tracking-wide" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.15)" }}>
-            © VEIL � TSL
-          </span>
-          <span className="text-[11px] tracking-wide" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.15)" }}>
-            Privacy-first prediction data
-          </span>
-        </div>
-      </div>
+      <VeilFooter />
 
       {checkoutProductId && (
         <InsightsCheckout productId={checkoutProductId} onClose={() => setCheckoutProductId(null)} />

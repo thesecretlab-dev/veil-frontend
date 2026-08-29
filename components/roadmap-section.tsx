@@ -21,7 +21,7 @@ export default function RoadmapSection() {
           tag="h2"
           className="text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center font-sans cursor-default"
           style={{
-            color: "rgba(255, 255, 255, 0.35)",
+            color: "rgba(255, 255, 255, 0.39)",
             textShadow: `
               0 0 10px rgba(16, 185, 129, 0.3),
               0 0 20px rgba(16, 185, 129, 0.2),
@@ -47,13 +47,13 @@ export default function RoadmapSection() {
                   }}
                   whileHover={{
                     background: "rgba(16, 185, 129, 0.18)",
-                    borderColor: "rgba(16, 185, 129, 0.35)",
+                    borderColor: "rgba(16, 185, 129, 0.44)",
                     scale: 1.08,
                     rotate: 2,
                     transition: { duration: 0.3, type: "spring", stiffness: 400, damping: 20 },
                   }}
                 >
-                  <span className="text-xl font-bold font-sans" style={{ color: "rgba(16, 185, 129, 0.5)" }}>
+                  <span className="text-xl font-bold font-sans" style={{ color: "rgba(16, 185, 129, 0.56)" }}>
                     {milestone.id}
                   </span>
                 </motion.div>
@@ -63,12 +63,12 @@ export default function RoadmapSection() {
                   <motion.h3
                     className="text-xl font-semibold font-sans"
                     style={{
-                      color: "rgba(255, 255, 255, 0.30)",
+                      color: "rgba(255, 255, 255, 0.34)",
                       textShadow: "0 0 10px rgba(16, 185, 129, 0.15)",
                       WebkitTextStroke: "0.3px rgba(255, 255, 255, 0.15)",
                     }}
                     whileHover={{
-                      color: "rgba(255, 255, 255, 0.50)",
+                      color: "rgba(255, 255, 255, 0.56)",
                       textShadow: "0 0 15px rgba(16, 185, 129, 0.4)",
                       transition: { duration: 0.4 },
                     }}
@@ -79,7 +79,7 @@ export default function RoadmapSection() {
                     className="px-3 py-1 rounded-full text-xs font-medium font-sans"
                     style={{
                       background: milestone.status === "Complete" ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.05)",
-                      color: milestone.status === "Complete" ? "rgba(16, 185, 129, 0.7)" : "rgba(255, 255, 255, 0.55)",
+                      color: milestone.status === "Complete" ? "rgba(16, 185, 129, 0.78)" : "rgba(255, 255, 255, 0.62)",
                     }}
                     whileHover={{
                       scale: 1.05,
@@ -90,7 +90,7 @@ export default function RoadmapSection() {
                     {milestone.status}
                   </motion.span>
                 </div>
-                <p className="font-sans" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
+                <p className="font-sans" style={{ color: "rgba(255, 255, 255, 0.45)" }}>
                   {milestone.desc}
                 </p>
               </div>

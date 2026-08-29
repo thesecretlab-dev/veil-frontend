@@ -9,7 +9,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
   const uiId = Number.parseInt(id, 10)
 
   if (Number.isNaN(uiId)) {
-    return NextResponse.json({ error: "Invalid market id" }, { status: 400 })
+    return NextResponse.json({ trade: null })
   }
 
   const trade = await getLatestTradeByUiId(uiId)

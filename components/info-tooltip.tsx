@@ -17,7 +17,7 @@ export function InfoTooltip({ content, side = "top" }: InfoTooltipProps) {
             className="inline-flex items-center justify-center rounded-full p-0.5 transition-colors hover:bg-white/10"
             onClick={(e) => e.preventDefault()}
           >
-            <Info className="h-3.5 w-3.5" style={{ color: "rgba(255, 255, 255, 0.4)" }} />
+            <Info className="h-3.5 w-3.5" style={{ color: "rgba(255, 255, 255, 0.45)" }} />
           </button>
         </TooltipTrigger>
         <TooltipContent

@@ -72,10 +72,10 @@ export default function TreasuryFlowchart() {
       className="w-full my-8"
     >
       <div className="border border-white/10 rounded-xl bg-black/40 backdrop-blur-sm p-6 overflow-x-auto">
-        <h3 className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-1">
+        <h3 className="text-sm font-semibold text-white/[0.78] uppercase tracking-widest mb-1">
           Treasury Allocation Process
         </h3>
-        <p className="text-xs text-white/40 mb-4">
+        <p className="text-xs text-white/[0.45] mb-4">
           Every decision must go through a rigorous process prior to execution which includes internal consensus as well as public governance.
         </p>
 

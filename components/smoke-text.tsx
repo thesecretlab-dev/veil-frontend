@@ -108,7 +108,7 @@ export default function SmokeText({ text, author }: SmokeTextProps) {
                     "--y-start": yStart,
                     "--x-end": xEnd,
                     "--y-end": yEnd,
-                    color: "rgba(255, 255, 255, 0.66)",
+                    color: "rgba(255, 255, 255, 0.74)",
                     textShadow: `
                     0 0 10px rgba(16, 185, 129, 0.22),
                     0 0 20px rgba(16, 185, 129, 0.12),
@@ -141,7 +141,7 @@ export default function SmokeText({ text, author }: SmokeTextProps) {
                     "--y-start": yStart,
                     "--x-end": xEnd,
                     "--y-end": yEnd,
-                    color: "rgba(255, 255, 255, 0.55)",
+                    color: "rgba(255, 255, 255, 0.62)",
                     textShadow: `
                     0 0 8px rgba(16, 185, 129, 0.15),
                     2px 2px 5px rgba(0, 0, 0, 0.45)

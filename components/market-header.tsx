@@ -17,7 +17,7 @@ export function MarketHeader({ marketId }: MarketHeaderProps) {
 
   if (isLoading) {
     return (
-      <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.3)", fontFamily: "var(--font-figtree)" }}>
+      <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.34)", fontFamily: "var(--font-figtree)" }}>
         Loading market...
       </div>
     )
@@ -25,7 +25,7 @@ export function MarketHeader({ marketId }: MarketHeaderProps) {
 
   if (!market) {
     return (
-      <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.3)", fontFamily: "var(--font-figtree)" }}>
+      <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.34)", fontFamily: "var(--font-figtree)" }}>
         Market not found
       </div>
     )
@@ -48,7 +48,7 @@ export function MarketHeader({ marketId }: MarketHeaderProps) {
           <Link
             href="/app"
             className="inline-flex items-center gap-2 text-[13px] transition-colors duration-500 hover:text-emerald-400"
-            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.35)" }}
+            style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.39)" }}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
@@ -62,17 +62,32 @@ export function MarketHeader({ marketId }: MarketHeaderProps) {
                 href={market.sourceUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="px-2.5 py-1 text-[10px] transition-colors duration-500 hover:text-white/70"
+                className="px-2.5 py-1 text-[10px] transition-colors duration-500 hover:text-white/[0.78]"
                 style={{
                   fontFamily: "var(--font-space-grotesk)",
                   borderRadius: "100px",
                   background: "rgba(255, 255, 255, 0.02)",
                   border: "1px solid rgba(255, 255, 255, 0.06)",
-                  color: "rgba(255, 255, 255, 0.35)",
+                  color: "rgba(255, 255, 255, 0.39)",
                 }}
               >
                 {market.sourceName || "Source"}
               </a>
+            ) : null}
+            {market.veilMarketId ? (
+              <Link
+                href="/explorer"
+                className="px-2.5 py-1 text-[10px] transition-colors duration-500 hover:text-emerald-400"
+                style={{
+                  fontFamily: "var(--font-space-grotesk)",
+                  borderRadius: "100px",
+                  background: "rgba(16, 185, 129, 0.06)",
+                  border: "1px solid rgba(16, 185, 129, 0.12)",
+                  color: "rgba(16, 185, 129, 0.78)",
+                }}
+              >
+                Explorer
+              </Link>
             ) : null}
             <span
               className="px-2.5 py-1 text-[10px]"
@@ -81,10 +96,10 @@ export function MarketHeader({ marketId }: MarketHeaderProps) {
                 borderRadius: "100px",
                 background: market.status === "closed" ? "rgba(239, 68, 68, 0.06)" : "rgba(16, 185, 129, 0.06)",
                 border: market.status === "closed" ? "1px solid rgba(239, 68, 68, 0.12)" : "1px solid rgba(16, 185, 129, 0.12)",
-                color: market.status === "closed" ? "rgba(239, 68, 68, 0.7)" : "rgba(16, 185, 129, 0.7)",
+                color: market.status === "closed" ? "rgba(239, 68, 68, 0.7)" : "rgba(16, 185, 129, 0.78)",
               }}
             >
-              {market.status === "closed" ? "Closed" : "Live"}
+              {market.status === "closed" ? "Closed" : market.veilMarketId ? "Local" : "Catalog"}
             </span>
             <span
               className="px-2.5 py-1 text-[10px]"
@@ -93,7 +108,7 @@ export function MarketHeader({ marketId }: MarketHeaderProps) {
                 borderRadius: "100px",
                 background: isPolygonNative ? "rgba(99, 102, 241, 0.06)" : "rgba(16, 185, 129, 0.06)",
                 border: isPolygonNative ? "1px solid rgba(99, 102, 241, 0.12)" : "1px solid rgba(16, 185, 129, 0.12)",
-                color: isPolygonNative ? "rgba(99, 102, 241, 0.7)" : "rgba(16, 185, 129, 0.7)",
+                color: isPolygonNative ? "rgba(99, 102, 241, 0.7)" : "rgba(16, 185, 129, 0.78)",
               }}
             >
               {isPolygonNative ? "Polymarket" : "VEIL native"}
@@ -125,7 +140,7 @@ export function MarketHeader({ marketId }: MarketHeaderProps) {
           >
             {market.title}
           </h1>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-[13px]" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[13px]" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.34)" }}>
             <span>{market.volume} Vol.</span>
             <span>·</span>
             <span>{market.volume24h} 24h</span>

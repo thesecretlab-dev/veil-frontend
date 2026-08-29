@@ -200,18 +200,36 @@ function inferCategory(input: string): string {
     return "Crypto"
   }
 
-  // Economy
-  const economyPatterns = [
-    "fed ", "federal reserve", "interest rate", "recession", "inflation",
-    "gdp", "unemployment", "jobs report", "cpi", "ppi", "stock",
-    "s&p", "nasdaq", "dow jones", "wall street", "ipo", "earnings",
-    "housing", "real estate", "oil price", "gas price", "commodity",
+  const techPatterns = [
+    "nvidia", "apple", "microsoft", "google", "openai", "ai ", "gpt",
+    "semiconductor", "chip", "iphone", "tesla", "spacex", "meta ",
+    "amazon", "netflix", "intel", "amd ", "tsmc", "software",
   ]
-  if (economyPatterns.some((p) => lower.includes(p))) {
-    return "Economy"
+  if (techPatterns.some((p) => lower.includes(p))) {
+    return "Tech"
   }
 
-  return "World"
+  const macroPatterns = [
+    "fed ", "federal reserve", "interest rate", "recession", "inflation",
+    "gdp", "unemployment", "jobs report", "cpi", "ppi", "stock",
+    "s&p", "nasdaq", "dow jones", "wall street", "ipo", "fomc",
+    "housing", "real estate", "oil price", "gas price", "commodity",
+    "yield", "treasury", "rate cut", "rate hike",
+  ]
+  if (macroPatterns.some((p) => lower.includes(p))) {
+    return "Macro"
+  }
+
+  const globalPatterns = [
+    "war", "china", "russia", "ukraine", "israel", "gaza", "nato",
+    "united nations", "climate", "who ", "wto", "eu ", "brexit",
+    "taiwan", "iran", "north korea", "sanctions",
+  ]
+  if (globalPatterns.some((p) => lower.includes(p))) {
+    return "Global"
+  }
+
+  return "Global"
 }
 
 function stableUiId(input: string): number {
@@ -273,14 +291,20 @@ function mapGammaToMarket(market: GammaMarket): Market {
     yesPrice,
     noPrice,
     volume: formatVolume(volumeRaw),
+    volumeNum: volumeRaw,
     volume24h: formatVolume(asNumber(market.volume24hr, 0)),
     liquidity: formatVolume(asNumber(market.liquidity, 0)),
+    liquidityNum: asNumber(market.liquidity, 0),
     change24h: asNumber(market.oneDayPriceChange, 0) * 100,
     updatedAt: market.updatedAt,
     status: market.closed ? "closed" : market.acceptingOrders === false ? "closed" : "active",
     sourceName: "Polymarket",
     sourceUrl: market.slug ? `https://polymarket.com/event/${market.slug}` : "https://polymarket.com",
     marketSlug: market.slug,
+    conditionId: market.conditionId,
+    yesTokenId: parseTokenIds(market.clobTokenIds)[0],
+    noTokenId: parseTokenIds(market.clobTokenIds)[1],
+    settlement: "polygon",
     endDate: formatDate(market.endDate, "TBD"),
     image: market.icon || market.image || "MKT",
     details: {
@@ -389,13 +413,18 @@ function mapNativeMarket(row: NativeRouterMarket): Market | null {
     type: "binary",
     yesPrice: 50,
     noPrice: 50,
-    volume: "$0",
-    endDate: "open",
+    volume: "0 VEIL",
+    volumeNum: 0,
+    liquidity: "0 VEIL",
+    liquidityNum: 0,
+    change24h: 0,
+    endDate: "",
     image: "VEIL",
     sourceName: row.sourceName || "VEIL native",
     sourceUrl: "",
     marketSlug: marketId,
     veilMarketId: marketId,
+    settlement: "veil",
     status: "active",
     details: {
       description: "Settles on VeilVM (commit-reveal). Not Polymarket.",
@@ -426,12 +455,38 @@ async function fetchNativeMarkets(): Promise<Market[]> {
   }
 }
 
+function includePolymarket(): boolean {
+  const v = (process.env.VEIL_INCLUDE_POLYMARKET ?? "1").trim().toLowerCase()
+  return v !== "0" && v !== "false"
+}
+
 export async function getMergedMarkets(): Promise<Market[]> {
-  const [native, gammaMarkets] = await Promise.all([fetchNativeMarkets(), fetchGammaMarkets()])
+  const native = await fetchNativeMarkets()
+  if (!includePolymarket()) return native
+  const gammaMarkets = await fetchGammaMarkets()
   const polymarket = [...gammaMarkets]
     .sort((a, b) => asNumber(b.volume24hr, 0) - asNumber(a.volume24hr, 0))
     .map((market) => mapGammaToMarket(market))
   return [...native, ...polymarket]
+}
+
+export async function getMergedMarketByKey(id: string): Promise<Market | null> {
+  const raw = decodeURIComponent(id).trim()
+  const native = await fetchNativeMarkets()
+  const nativeHit = native.find(
+    (m) =>
+      String(m.id) === raw ||
+      m.veilMarketId === raw ||
+      m.marketSlug === raw,
+  )
+  if (nativeHit) {
+    return nativeHit
+  }
+  const uiId = Number.parseInt(raw, 10)
+  if (!Number.isNaN(uiId)) {
+    return getMergedMarketByUiId(uiId)
+  }
+  return null
 }
 
 export async function getMergedMarketByUiId(uiId: number): Promise<Market | null> {
@@ -439,6 +494,10 @@ export async function getMergedMarketByUiId(uiId: number): Promise<Market | null
   const nativeHit = native.find((m) => m.id === uiId)
   if (nativeHit) {
     return nativeHit
+  }
+
+  if (!includePolymarket()) {
+    return null
   }
 
   const gamma = await findGammaMarketByUiId(uiId)
@@ -466,7 +525,55 @@ export async function getMergedMarketByUiId(uiId: number): Promise<Market | null
   }
 }
 
+export async function getPolymarketSettlementMeta(marketId: string): Promise<{
+  conditionId: string
+  tokens: string[]
+  question: string
+  closed: boolean
+} | null> {
+  const raw = decodeURIComponent(marketId).trim()
+  const markets = await fetchGammaMarkets()
+  const ui = Number.parseInt(raw, 10)
+  for (const m of markets) {
+    const seed = m.conditionId || m.id || m.slug || m.question || ""
+    if (!seed) continue
+    if (m.conditionId === raw || m.id === raw || m.slug === raw) {
+      return {
+        conditionId: m.conditionId || m.id || "",
+        tokens: parseTokenIds(m.clobTokenIds),
+        question: m.question || "",
+        closed: Boolean(m.closed || m.acceptingOrders === false),
+      }
+    }
+    if (Number.isFinite(ui) && stableUiId(seed) === ui) {
+      return {
+        conditionId: m.conditionId || m.id || "",
+        tokens: parseTokenIds(m.clobTokenIds),
+        question: m.question || "",
+        closed: Boolean(m.closed || m.acceptingOrders === false),
+      }
+    }
+  }
+  return null
+}
+
 export async function getLatestTradeByUiId(uiId: number): Promise<LatestTradeResult | null> {
+  try {
+    const { latestPolygonFill } = await import("@/lib/polymarket/settle")
+    const fill = await latestPolygonFill(String(uiId))
+    if (fill) {
+      return {
+        transactionHash: fill.txHash || fill.clobOrderId,
+        price: fill.price,
+        side: fill.side,
+        outcome: fill.yes ? "Yes" : "No",
+        timestamp: Date.parse(fill.createdAt) || 0,
+      }
+    }
+  } catch {
+    /* venue optional */
+  }
+  if (!includePolymarket()) return null
   const gamma = await findGammaMarketByUiId(uiId)
   if (!gamma?.conditionId) {
     return null

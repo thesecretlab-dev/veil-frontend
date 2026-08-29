@@ -19,7 +19,11 @@ function relaySecret(): string {
 
 export async function GET() {
   const markets = await getMergedMarkets()
-  return NextResponse.json({ markets })
+  return NextResponse.json({
+    markets,
+    source: (process.env.VEIL_INCLUDE_POLYMARKET ?? "1") === "0" ? "veil-native" : "veil-native+polymarket",
+    local: true,
+  })
 }
 
 export async function POST(request: Request) {

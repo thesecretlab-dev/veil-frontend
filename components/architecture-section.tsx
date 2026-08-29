@@ -13,7 +13,7 @@ export default function ArchitectureSection() {
           tag="h2"
           className="text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center font-sans cursor-default"
           style={{
-            color: "rgba(255, 255, 255, 0.35)",
+            color: "rgba(255, 255, 255, 0.39)",
             textShadow: `
               0 0 10px rgba(16, 185, 129, 0.3),
               0 0 20px rgba(16, 185, 129, 0.2),
@@ -65,13 +65,13 @@ export default function ArchitectureSection() {
               <motion.h3
                 className="text-2xl font-semibold mb-4 font-sans cursor-default"
                 style={{
-                  color: "rgba(16, 185, 129, 0.4)",
+                  color: "rgba(16, 185, 129, 0.45)",
                   textShadow: "0 0 15px rgba(16, 185, 129, 0.3)",
                   WebkitTextStroke: "0.3px rgba(16, 185, 129, 0.2)",
                   filter: "blur(0.2px)",
                 }}
                 whileHover={{
-                  color: "rgba(16, 185, 129, 0.65)",
+                  color: "rgba(16, 185, 129, 0.73)",
                   filter: "blur(0.1px) brightness(1.4)",
                   textShadow: `
                     0 0 20px rgba(16, 185, 129, 0.7),
@@ -83,12 +83,12 @@ export default function ArchitectureSection() {
               >
                 {block.title}
               </motion.h3>
-              <ul className="space-y-2 font-sans" style={{ color: "rgba(255, 255, 255, 0.55)" }}>
+              <ul className="space-y-2 font-sans" style={{ color: "rgba(255, 255, 255, 0.62)" }}>
                 {block.items.map((item, j) => (
                   <motion.li
                     key={j}
                     className="flex items-start gap-3"
-                    whileHover={{ x: 4, color: "rgba(255, 255, 255, 0.7)", transition: { duration: 0.3 } }}
+                    whileHover={{ x: 4, color: "rgba(255, 255, 255, 0.78)", transition: { duration: 0.3 } }}
                   >
                     <span className="text-emerald-500/40 mt-1">{"\u25B8"}</span>
                     <span>{item}</span>

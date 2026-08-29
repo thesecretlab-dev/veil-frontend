@@ -19,7 +19,7 @@ export function PortfolioChart({ data }: PortfolioChartProps) {
           <Line
             type="monotone"
             dataKey="value"
-            stroke="rgba(16, 185, 129, 0.6)"
+            stroke="rgba(16, 185, 129, 0.67)"
             strokeWidth={1.5}
             dot={false}
             animationDuration={1000}
@@ -32,7 +32,7 @@ export function PortfolioChart({ data }: PortfolioChartProps) {
         <span
           className="text-xs"
           style={{
-            color: "rgba(255, 255, 255, 0.2)",
+            color: "rgba(255, 255, 255, 0.22)",
             fontFamily: "var(--font-space-grotesk)",
           }}
         >
@@ -41,7 +41,7 @@ export function PortfolioChart({ data }: PortfolioChartProps) {
         <span
           className="text-xs"
           style={{
-            color: "rgba(255, 255, 255, 0.2)",
+            color: "rgba(255, 255, 255, 0.22)",
             fontFamily: "var(--font-space-grotesk)",
           }}
         >

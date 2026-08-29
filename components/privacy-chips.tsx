@@ -27,7 +27,7 @@ export function PrivacyChips({ delayMinutes = 5, crowdMet = true, fairPrice = tr
               style={{
                 background: "rgba(16, 185, 129, 0.1)",
                 border: "1px solid rgba(16, 185, 129, 0.2)",
-                color: "rgba(16, 185, 129, 0.8)",
+                color: "rgba(16, 185, 129, 0.90)",
               }}
             >
               Delay {delayMinutes}m
@@ -50,7 +50,7 @@ export function PrivacyChips({ delayMinutes = 5, crowdMet = true, fairPrice = tr
                 style={{
                   background: "rgba(16, 185, 129, 0.1)",
                   border: "1px solid rgba(16, 185, 129, 0.2)",
-                  color: "rgba(16, 185, 129, 0.8)",
+                  color: "rgba(16, 185, 129, 0.90)",
                 }}
               >
                 Crowd <Check className="h-2.5 w-2.5" />
@@ -74,7 +74,7 @@ export function PrivacyChips({ delayMinutes = 5, crowdMet = true, fairPrice = tr
                 style={{
                   background: "rgba(16, 185, 129, 0.1)",
                   border: "1px solid rgba(16, 185, 129, 0.2)",
-                  color: "rgba(16, 185, 129, 0.8)",
+                  color: "rgba(16, 185, 129, 0.90)",
                 }}
               >
                 Fair-Price

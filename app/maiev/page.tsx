@@ -31,14 +31,14 @@ function SectionLabel({ num, label }: { num: string; label: string }) {
     <div className="flex items-center gap-3 mb-10">
       <span
         className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.25em] uppercase"
-        style={{ color: "rgba(16,185,129,0.6)" }}
+        style={{ color: "rgba(16,185,129,0.67)" }}
       >
         {num}
       </span>
       <div className="h-px flex-1 max-w-[60px]" style={{ background: "rgba(16,185,129,0.2)" }} />
       <span
         className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.25em] uppercase"
-        style={{ color: "rgba(255,255,255,0.35)" }}
+        style={{ color: "rgba(255,255,255,0.39)" }}
       >
         {label}
       </span>
@@ -209,7 +209,7 @@ export default function MaievPage() {
           >
             <div className="flex items-center gap-3 mb-8">
               <div className="w-2 h-2 rounded-full" style={{ background: "rgba(16,185,129,0.8)", boxShadow: "0 0 12px rgba(16,185,129,0.4)" }} />
-              <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.3em] uppercase text-white/40">
+              <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.3em] uppercase text-white/[0.45]">
                 Evidence + Validation Archive
               </span>
             </div>
@@ -219,11 +219,11 @@ export default function MaievPage() {
             >
               MAIEV
             </h1>
-            <p className="font-[family-name:var(--font-figtree)] text-lg leading-relaxed text-white/50 max-w-2xl">
+            <p className="font-[family-name:var(--font-figtree)] text-lg leading-relaxed text-white/[0.56] max-w-2xl">
               Trust is not declared — it is demonstrated. MAIEV is VEIL&apos;s evidence and validation archive. It tracks local and staged verification artifacts, remediation notes, and launch-gate evidence. External third-party audits are listed only when publicly published.
             </p>
             <p className="mt-4 font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.14em] uppercase text-amber-300/70">
-              Current status: 0 external third-party audits published. Launch posture: {getLaunchStatus().decision} ({getLaunchStatus().gates_passing_local}/{getLaunchStatus().gates_total} gates local PASS).
+              Current status: 0 external third-party audits published. Operator packet {getLaunchStatus().decision} ({getLaunchStatus().gates_passing_local}/{getLaunchStatus().gates_total} gates local PASS) — not public launch.
             </p>
           </motion.div>
 
@@ -238,7 +238,7 @@ export default function MaievPage() {
               { label: "Gates Passing (Local)", value: `${getLaunchStatus().gates_passing_local}/${getLaunchStatus().gates_total}` },
               { label: "Critical Findings", value: "0" },
               { label: "External Audits Published", value: "0" },
-              { label: "Launch Decision", value: getLaunchStatus().decision },
+              { label: "Operator packet", value: getLaunchStatus().decision },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -248,7 +248,7 @@ export default function MaievPage() {
                 <div className="font-[family-name:var(--font-instrument-serif)] text-3xl mb-1" style={{ color: "rgba(16,185,129,0.9)" }}>
                   {stat.value}
                 </div>
-                <div className="font-[family-name:var(--font-space-grotesk)] text-[10px] tracking-[0.2em] uppercase text-white/30">
+                <div className="font-[family-name:var(--font-space-grotesk)] text-[10px] tracking-[0.2em] uppercase text-white/[0.34]">
                   {stat.label}
                 </div>
               </div>
@@ -278,15 +278,15 @@ export default function MaievPage() {
                 >
                   <div className="flex items-start justify-between mb-5">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-xl" style={{ background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.7)" }}>
+                      <div className="p-2 rounded-xl" style={{ background: "rgba(16,185,129,0.08)", color: "rgba(16,185,129,0.78)" }}>
                         {cat.icon}
                       </div>
                       <h3 className="font-[family-name:var(--font-instrument-serif)] text-xl text-white/90">{cat.title}</h3>
                     </div>
                     <StatusBadge status={cat.status} />
                   </div>
-                  <p className="font-[family-name:var(--font-figtree)] text-[14px] leading-relaxed text-white/40 mb-5">{cat.description}</p>
-                  <div className="flex items-center gap-6 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/25">
+                  <p className="font-[family-name:var(--font-figtree)] text-[14px] leading-relaxed text-white/[0.45] mb-5">{cat.description}</p>
+                  <div className="flex items-center gap-6 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/[0.28]">
                     <span>Review Owner: <span className="text-white/45">{cat.owner}</span></span>
                     <span>Updated: <span className="text-white/45">{cat.lastUpdated}</span></span>
                   </div>
@@ -302,7 +302,7 @@ export default function MaievPage() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <SectionLabel num="02" label="Launch-Gate Evidence (Local)" />
-            <p className="font-[family-name:var(--font-figtree)] text-white/40 text-[15px] leading-relaxed max-w-2xl mb-12">
+            <p className="font-[family-name:var(--font-figtree)] text-white/[0.45] text-[15px] leading-relaxed max-w-2xl mb-12">
               No external audit firm has reviewed VEIL. What exists instead is a reproducible local launch-gate
               suite run against a real protocol-45 testnet. Bundle{" "}
               <code className="font-mono text-[12px] text-emerald-400/60">{launchGateRun.bundleId}</code>{" "}
@@ -314,7 +314,7 @@ export default function MaievPage() {
             style={{ background: "rgba(255,255,255,0.015)", border: "1px solid rgba(255,255,255,0.04)" }}
           >
             <div className="flex items-center justify-between px-7 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-              <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase text-white/40">
+              <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase text-white/[0.45]">
                 Overall verdict
               </span>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium border bg-emerald-500/15 text-emerald-400 border-emerald-500/20">
@@ -331,8 +331,8 @@ export default function MaievPage() {
                       </span>
                       <code className="font-[family-name:var(--font-space-grotesk)] text-[13px] text-white/75">{check.id}</code>
                     </div>
-                    <p className="font-[family-name:var(--font-figtree)] text-[13px] text-white/40 flex-1">{check.detail}</p>
-                    <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] text-white/25 shrink-0">{check.durationS}s</span>
+                    <p className="font-[family-name:var(--font-figtree)] text-[13px] text-white/[0.45] flex-1">{check.detail}</p>
+                    <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] text-white/[0.28] shrink-0">{check.durationS}s</span>
                   </div>
                 </ScrollReveal>
               ))}
@@ -346,7 +346,7 @@ export default function MaievPage() {
         <div className="max-w-6xl mx-auto">
           <ScrollReveal>
             <SectionLabel num="03" label="Evidence Bundles" />
-            <p className="font-[family-name:var(--font-figtree)] text-white/40 text-[15px] leading-relaxed max-w-2xl mb-12">
+            <p className="font-[family-name:var(--font-figtree)] text-white/[0.45] text-[15px] leading-relaxed max-w-2xl mb-12">
               Every local launch-gate run publishes its bundle under <code className="font-mono text-[12px] text-emerald-400/60">public/maiev/*-launch-gate-evidence/</code>.
               These are real, unaltered files from this repository — open them directly.
             </p>
@@ -363,25 +363,25 @@ export default function MaievPage() {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <h3 className="font-[family-name:var(--font-instrument-serif)] text-[17px] text-white/90 leading-snug pr-4">{bundle.name}</h3>
-                    <span className="p-2 rounded-xl shrink-0" style={{ color: "rgba(16,185,129,0.6)" }}>
+                    <span className="p-2 rounded-xl shrink-0" style={{ color: "rgba(16,185,129,0.67)" }}>
                       <Download className="w-4 h-4" />
                     </span>
                   </div>
-                  <div className="flex items-center gap-4 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/25 mb-4">
+                  <div className="flex items-center gap-4 text-[11px] font-[family-name:var(--font-space-grotesk)] tracking-wide text-white/[0.28] mb-4">
                     <span>{bundle.version}</span>
                     <span>{bundle.date}</span>
                     <span>{bundle.size}</span>
                   </div>
                   <div className="mb-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Lock className="w-3 h-3 text-white/20" />
-                      <span className="font-[family-name:var(--font-space-grotesk)] text-[10px] tracking-wider text-white/25 uppercase">SHA-256</span>
+                      <Lock className="w-3 h-3 text-white/[0.22]" />
+                      <span className="font-[family-name:var(--font-space-grotesk)] text-[10px] tracking-wider text-white/[0.28] uppercase">SHA-256</span>
                     </div>
                     <code className="font-mono text-[11px] text-emerald-400/50 break-all">{bundle.sha256}</code>
                   </div>
                   <ul className="space-y-1">
                     {bundle.contents.map((item) => (
-                      <li key={item} className="flex items-center gap-2 font-[family-name:var(--font-figtree)] text-[13px] text-white/35">
+                      <li key={item} className="flex items-center gap-2 font-[family-name:var(--font-figtree)] text-[13px] text-white/[0.39]">
                         <div className="w-1 h-1 rounded-full bg-emerald-500/30" />
                         {item}
                       </li>
@@ -409,12 +409,12 @@ export default function MaievPage() {
                 >
                   <div
                     className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase mb-4"
-                    style={{ color: "rgba(16,185,129,0.5)" }}
+                    style={{ color: "rgba(16,185,129,0.56)" }}
                   >
                     {String(i + 1).padStart(2, "0")}
                   </div>
                   <h3 className="font-[family-name:var(--font-instrument-serif)] text-lg text-white/90 mb-3">{item.title}</h3>
-                  <p className="font-[family-name:var(--font-figtree)] text-[14px] leading-relaxed text-white/40">{item.description}</p>
+                  <p className="font-[family-name:var(--font-figtree)] text-[14px] leading-relaxed text-white/[0.45]">{item.description}</p>
                 </div>
               </ScrollReveal>
             ))}
@@ -437,17 +437,17 @@ export default function MaievPage() {
                 <ScrollReveal key={i} delay={i * 0.05}>
                   <div className="flex gap-6 md:gap-8 items-start">
                     <div className="hidden md:block w-[100px] shrink-0 text-right">
-                      <span className="font-[family-name:var(--font-space-grotesk)] text-[12px] text-white/25">{entry.date}</span>
+                      <span className="font-[family-name:var(--font-space-grotesk)] text-[12px] text-white/[0.28]">{entry.date}</span>
                     </div>
                     <div className="relative shrink-0">
-                      <div className="w-[14px] h-[14px] rounded-full border-2 mt-1" style={{ borderColor: "rgba(16,185,129,0.4)", background: "#060606" }}>
+                      <div className="w-[14px] h-[14px] rounded-full border-2 mt-1" style={{ borderColor: "rgba(16,185,129,0.45)", background: "#060606" }}>
                         <div className="w-[6px] h-[6px] rounded-full mx-auto mt-[2px]" style={{ background: "rgba(16,185,129,0.6)" }} />
                       </div>
                     </div>
                     <div className="pb-2">
-                      <span className="md:hidden font-[family-name:var(--font-space-grotesk)] text-[11px] text-white/25 block mb-1">{entry.date}</span>
+                      <span className="md:hidden font-[family-name:var(--font-space-grotesk)] text-[11px] text-white/[0.28] block mb-1">{entry.date}</span>
                       <h4 className="font-[family-name:var(--font-instrument-serif)] text-[16px] text-white/85 mb-1">{entry.event}</h4>
-                      <p className="font-[family-name:var(--font-figtree)] text-[13px] text-white/35">{entry.detail}</p>
+                      <p className="font-[family-name:var(--font-figtree)] text-[13px] text-white/[0.39]">{entry.detail}</p>
                     </div>
                   </div>
                 </ScrollReveal>
@@ -465,14 +465,14 @@ export default function MaievPage() {
               className="inline-block rounded-full px-4 py-1.5 mb-8"
               style={{ background: "rgba(16,185,129,0.06)", border: "1px solid rgba(16,185,129,0.12)" }}
             >
-              <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.25em] uppercase" style={{ color: "rgba(16,185,129,0.7)" }}>
+              <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.25em] uppercase" style={{ color: "rgba(16,185,129,0.78)" }}>
                 Verify Everything
               </span>
             </div>
             <h2 className="font-[family-name:var(--font-instrument-serif)] text-[clamp(2rem,5vw,3.5rem)] leading-tight mb-6 text-white/90">
               Review the Evidence
             </h2>
-            <p className="font-[family-name:var(--font-figtree)] text-white/40 text-lg max-w-xl mx-auto mb-10">
+            <p className="font-[family-name:var(--font-figtree)] text-white/[0.45] text-lg max-w-xl mx-auto mb-10">
               MAIEV tracks staged validation evidence and launch-gate artifacts. Review documentation and evidence bundles directly before relying on any readiness claim.
             </p>
             <div className="flex items-center justify-center gap-4">
@@ -487,7 +487,7 @@ export default function MaievPage() {
               <Link
                 href="https://github.com/thesecretlab-dev/veilvm"
                 target="_blank"
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-[family-name:var(--font-space-grotesk)] text-[13px] tracking-wide text-white/50 hover:text-white/70 transition-colors duration-300"
+                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full font-[family-name:var(--font-space-grotesk)] text-[13px] tracking-wide text-white/[0.56] hover:text-white/[0.78] transition-colors duration-300"
                 style={{ border: "1px solid rgba(255,255,255,0.06)" }}
               >
                 View Source
@@ -502,19 +502,19 @@ export default function MaievPage() {
       <footer className="border-t px-6 py-8" style={{ borderColor: "rgba(255,255,255,0.04)", background: "rgba(6,6,6,0.9)" }}>
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Shield className="w-3.5 h-3.5" style={{ color: "rgba(16,185,129,0.4)" }} />
-            <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase text-white/20">
+            <Shield className="w-3.5 h-3.5" style={{ color: "rgba(16,185,129,0.45)" }} />
+            <span className="font-[family-name:var(--font-space-grotesk)] text-[11px] tracking-[0.2em] uppercase text-white/[0.22]">
               MAIEV — VEIL Evidence System
             </span>
           </div>
           <div className="flex items-center gap-6">
-            <span className="font-[family-name:var(--font-figtree)] text-[12px] text-white/15">
+            <span className="font-[family-name:var(--font-figtree)] text-[12px] text-white/[0.17]">
               Published evidence bundles are provided under project documentation licensing terms.
             </span>
             <a href="https://thesecretlab.app" target="_blank" rel="noopener noreferrer"
               className="group flex items-center gap-1.5 shrink-0">
               <span className="font-[family-name:var(--font-space-grotesk)] text-[8px] tracking-[0.3em] uppercase text-white/8">Built by</span>
-              <span className="font-[family-name:var(--font-space-grotesk)] text-[10px] tracking-[0.15em] text-white/15 font-semibold group-hover:text-white/25 transition-colors duration-700">TSL</span>
+              <span className="font-[family-name:var(--font-space-grotesk)] text-[10px] tracking-[0.15em] text-white/[0.17] font-semibold group-hover:text-white/[0.28] transition-colors duration-700">TSL</span>
             </a>
           </div>
         </div>

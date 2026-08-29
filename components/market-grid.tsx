@@ -1,48 +1,34 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-
+import { AnimatePresence } from "framer-motion"
 import type { Market } from "@/lib/market-data"
 import { fetchMarkets } from "@/lib/market-api-client"
 import { MarketCard } from "./market-card"
+import type { MarketLayout, MarketSort } from "./markets-toolbar"
 
 interface MarketGridProps {
   selectedCategory: string
   searchQuery: string
+  sort?: MarketSort
+  layout?: MarketLayout
 }
 
-function MarketCardSkeleton({ index }: { index: number }) {
+const PAGE_SIZE_GRID = 4
+const PAGE_SIZE_LIST = 6
+
+function MarketCardSkeleton() {
   return (
     <div
       className="animate-pulse"
       style={{
-        borderRadius: "20px",
-        background: "rgba(255, 255, 255, 0.015)",
-        border: "1px solid rgba(255, 255, 255, 0.04)",
-        padding: "1.5rem",
+        borderRadius: "18px",
+        background: "#0a0a0a",
+        border: "1px solid rgba(255, 255, 255, 0.06)",
+        padding: "1.4rem",
+        minHeight: 240,
       }}
-    >
-      <div className="mb-3 flex items-center justify-between">
-        <div className="h-5 w-16 rounded-full" style={{ background: "rgba(255, 255, 255, 0.05)" }} />
-        <div className="h-5 w-20 rounded-full" style={{ background: "rgba(255, 255, 255, 0.04)" }} />
-      </div>
-      <div className="mb-5 flex gap-3.5">
-        <div className="h-11 w-11 shrink-0" style={{ borderRadius: "12px", background: "rgba(255, 255, 255, 0.04)" }} />
-        <div className="flex-1 space-y-2">
-          <div className="h-4 w-full rounded" style={{ background: "rgba(255, 255, 255, 0.05)" }} />
-          <div className="h-3 w-1/2 rounded" style={{ background: "rgba(255, 255, 255, 0.03)" }} />
-        </div>
-      </div>
-      <div className="mb-4 grid grid-cols-2 gap-2.5">
-        <div className="h-14" style={{ borderRadius: "12px", background: "rgba(16, 185, 129, 0.04)" }} />
-        <div className="h-14" style={{ borderRadius: "12px", background: "rgba(239, 68, 68, 0.03)" }} />
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="h-3 w-20 rounded" style={{ background: "rgba(255, 255, 255, 0.03)" }} />
-        <div className="h-3 w-16 rounded" style={{ background: "rgba(255, 255, 255, 0.03)" }} />
-      </div>
-    </div>
+    />
   )
 }
 
@@ -50,9 +36,78 @@ function normalizeCategory(category: string): string {
   return category.toLowerCase()
 }
 
-export function MarketGrid({ selectedCategory, searchQuery }: MarketGridProps) {
+function aliases(category: string): string[] {
+  const c = normalizeCategory(category)
+  if (c === "global") return ["global", "world"]
+  if (c === "macro") return ["macro", "economy"]
+  return [c]
+}
+
+function Pagination({ page, pages, onPage }: { page: number; pages: number; onPage: (n: number) => void }) {
+  if (pages <= 1) return null
+  const last = pages
+  const wanted = new Set([1, 2, 3, page, page - 1, page + 1, last])
+  const nums = [...wanted].filter((n) => n >= 1 && n <= last).sort((a, b) => a - b)
+  const items: (number | "gap")[] = []
+  for (const n of nums) {
+    const prev = items[items.length - 1]
+    if (typeof prev === "number" && n - prev > 1) items.push("gap")
+    items.push(n)
+  }
+
+  return (
+    <div className="mt-10 flex items-center justify-center gap-1.5">
+      <button
+        type="button"
+        aria-label="Previous page"
+        disabled={page <= 1}
+        onClick={() => onPage(page - 1)}
+        className="flex h-8 w-8 items-center justify-center text-[14px] disabled:opacity-30"
+        style={{ color: "rgba(255,255,255,0.55)" }}
+      >
+        ‹
+      </button>
+      {items.map((it, i) =>
+        it === "gap" ? (
+          <span key={`g-${i}`} className="px-1 text-[13px]" style={{ color: "rgba(255,255,255,0.35)" }}>
+            …
+          </span>
+        ) : (
+          <button
+            key={it}
+            type="button"
+            onClick={() => onPage(it)}
+            className="flex h-8 w-8 items-center justify-center text-[13px]"
+            style={{
+              fontFamily: "var(--font-space-grotesk)",
+              borderRadius: 8,
+              background: it === page ? "#22c55e" : "transparent",
+              color: it === page ? "#04140c" : "rgba(255,255,255,0.7)",
+              fontWeight: it === page ? 700 : 400,
+            }}
+          >
+            {it}
+          </button>
+        ),
+      )}
+      <button
+        type="button"
+        aria-label="Next page"
+        disabled={page >= pages}
+        onClick={() => onPage(page + 1)}
+        className="flex h-8 w-8 items-center justify-center text-[14px] disabled:opacity-30"
+        style={{ color: "rgba(255,255,255,0.55)" }}
+      >
+        ›
+      </button>
+    </div>
+  )
+}
+
+export function MarketGrid({ selectedCategory, searchQuery, sort = "trending", layout = "grid" }: MarketGridProps) {
   const [markets, setMarkets] = useState<Market[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     let cancelled = false
@@ -64,17 +119,24 @@ export function MarketGrid({ selectedCategory, searchQuery }: MarketGridProps) {
       }
     }
     void loadMarkets(true)
-    const interval = setInterval(() => void loadMarkets(false), 15_000)
-    return () => { cancelled = true; clearInterval(interval) }
+    const interval = setInterval(() => void loadMarkets(false), 5_000)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
   }, [])
+
+  useEffect(() => {
+    setPage(1)
+  }, [selectedCategory, searchQuery, sort, layout])
 
   const filteredMarkets = useMemo(() => {
     const categoryFiltered =
       selectedCategory === "Native"
         ? markets.filter((market) => Boolean(market.veilMarketId) || normalizeCategory(market.category) === "native")
-        : selectedCategory === "All" || selectedCategory === "Trending" || selectedCategory === "Breaking" || selectedCategory === "New"
-        ? markets
-        : markets.filter((market) => normalizeCategory(market.category) === normalizeCategory(selectedCategory))
+        : selectedCategory === "All"
+          ? markets
+          : markets.filter((market) => aliases(selectedCategory).includes(normalizeCategory(market.category)))
 
     const query = searchQuery.trim().toLowerCase()
     const textFiltered =
@@ -88,70 +150,50 @@ export function MarketGrid({ selectedCategory, searchQuery }: MarketGridProps) {
             return title.includes(query) || description.includes(query) || category.includes(query) || slug.includes(query)
           })
 
-    if (selectedCategory === "Breaking") {
-      return [...textFiltered].sort((a, b) => Math.abs(b.change24h || 0) - Math.abs(a.change24h || 0))
-    }
-    if (selectedCategory === "New") {
-      return [...textFiltered].sort((a, b) => {
+    const sorted = [...textFiltered]
+    if (sort === "new") {
+      sorted.sort((a, b) => {
         const aTs = a.updatedAt ? new Date(a.updatedAt).getTime() : 0
         const bTs = b.updatedAt ? new Date(b.updatedAt).getTime() : 0
         return bTs - aTs
       })
+    } else if (sort === "volume") {
+      sorted.sort((a, b) => (b.volumeNum || 0) - (a.volumeNum || 0))
+    } else {
+      sorted.sort((a, b) => Math.abs(b.change24h || 0) - Math.abs(a.change24h || 0))
     }
-    if (selectedCategory === "Trending") {
-      return [...textFiltered].sort((a, b) => Math.abs(b.change24h || 0) - Math.abs(a.change24h || 0))
-    }
-    return textFiltered
-  }, [markets, searchQuery, selectedCategory])
+    return sorted
+  }, [markets, searchQuery, selectedCategory, sort])
+
+  const pageSize = layout === "list" ? PAGE_SIZE_LIST : PAGE_SIZE_GRID
+  const pages = Math.max(1, Math.ceil(filteredMarkets.length / pageSize))
+  const current = Math.min(page, pages)
+  const slice = filteredMarkets.slice((current - 1) * pageSize, current * pageSize)
 
   return (
-    <div className="mx-auto max-w-[1440px] px-6 py-8 md:px-10">
-      {/* Status bar */}
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div
-          className="text-[13px]"
-          style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}
-        >
-          {isLoading ? "Loading live markets..." : `${filteredMarkets.length} ${filteredMarkets.length === 1 ? "market" : "markets"}`}
-          {selectedCategory !== "All" && selectedCategory !== "Trending" && selectedCategory !== "Breaking" && selectedCategory !== "New" && (
-            <span> in {selectedCategory}</span>
-          )}
-        </div>
-        <div
-          className="flex items-center gap-1.5 px-3 py-1 text-[10px] tracking-[0.1em] uppercase"
-          style={{
-            fontFamily: "var(--font-space-grotesk)",
-            borderRadius: "100px",
-            background: "rgba(16, 185, 129, 0.06)",
-            border: "1px solid rgba(16, 185, 129, 0.12)",
-            color: "rgba(16, 185, 129, 0.7)",
-          }}
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/60 animate-pulse" />
-          Live feed: Polymarket
-        </div>
-      </div>
-
-      {/* Grid */}
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <div className="mx-auto max-w-[1100px] px-6 pb-16 md:px-10">
+      <div className={layout === "list" ? "flex flex-col gap-4" : "grid grid-cols-1 gap-6 md:grid-cols-2"}>
         <AnimatePresence mode="popLayout">
           {isLoading
-            ? Array.from({ length: 8 }).map((_, index) => <MarketCardSkeleton key={`skeleton-${index}`} index={index} />)
-            : filteredMarkets.map((market) => <MarketCard key={market.id} market={market} />)}
+            ? Array.from({ length: 4 }).map((_, index) => <MarketCardSkeleton key={`skeleton-${index}`} />)
+            : slice.map((market) => <MarketCard key={market.id} market={market} layout={layout} />)}
         </AnimatePresence>
       </div>
 
       {!isLoading && filteredMarkets.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24">
-          <p
-            className="text-lg"
-            style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.25)" }}
-          >
-            No markets found
-            {searchQuery.trim() ? ` for "${searchQuery}"` : ` in ${selectedCategory}`}
+          <p className="text-lg" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.28)" }}>
+            No books
+            {searchQuery.trim()
+              ? ` for "${searchQuery}"`
+              : selectedCategory === "Native"
+                ? " on this router. Create one above."
+                : ` in ${selectedCategory}`}
           </p>
         </div>
       )}
+
+      <Pagination page={current} pages={pages} onPage={setPage} />
     </div>
   )
 }

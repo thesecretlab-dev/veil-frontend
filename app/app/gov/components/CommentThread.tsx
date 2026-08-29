@@ -63,22 +63,22 @@ function CommentItem({
       <div className="py-3">
         <div className="flex items-center gap-2 mb-1.5">
           <AddressAvatar address={comment.author_address} />
-          <span className="text-xs font-mono text-white/50">{truncateAddress(comment.author_address)}</span>
-          <span className="text-xs text-white/20">·</span>
-          <span className="text-xs text-white/20">{timeAgo(comment.created_at)}</span>
+          <span className="text-xs font-mono text-white/[0.56]">{truncateAddress(comment.author_address)}</span>
+          <span className="text-xs text-white/[0.22]">·</span>
+          <span className="text-xs text-white/[0.22]">{timeAgo(comment.created_at)}</span>
         </div>
-        <p className="text-sm text-white/70 mb-2">{comment.content}</p>
+        <p className="text-sm text-white/[0.78] mb-2">{comment.content}</p>
         <div className="flex items-center gap-3">
           {depth === 0 && isConnected && (
             <button
               onClick={() => setShowReply(!showReply)}
-              className="text-xs text-white/20 hover:text-white/50 transition-colors"
+              className="text-xs text-white/[0.22] hover:text-white/[0.56] transition-colors"
             >
               Reply
             </button>
           )}
           {comment.upvotes > 0 && (
-            <span className="text-xs text-white/20">▲ {comment.upvotes}</span>
+            <span className="text-xs text-white/[0.22]">▲ {comment.upvotes}</span>
           )}
         </div>
 
@@ -95,10 +95,10 @@ function CommentItem({
                 onChange={(e) => setReplyText(e.target.value)}
                 placeholder="Write a reply..."
                 rows={2}
-                className="w-full bg-white/[0.03] border border-white/10 rounded-lg p-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 resize-none"
+                className="w-full bg-white/[0.03] border border-white/10 rounded-lg p-3 text-sm text-white placeholder:text-white/[0.22] focus:outline-none focus:border-emerald-500/30 resize-none"
               />
               <div className="flex justify-end gap-2 mt-2">
-                <button onClick={() => setShowReply(false)} className="text-xs text-white/30 hover:text-white/50 px-3 py-1.5">Cancel</button>
+                <button onClick={() => setShowReply(false)} className="text-xs text-white/[0.34] hover:text-white/[0.56] px-3 py-1.5">Cancel</button>
                 <button
                   onClick={handleReply}
                   disabled={submitting || !replyText.trim()}
@@ -156,7 +156,7 @@ export function CommentThread({
 
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider">
+      <h3 className="text-sm font-medium text-white/[0.56] uppercase tracking-wider">
         Discussion ({comments.length})
       </h3>
 
@@ -167,7 +167,7 @@ export function CommentThread({
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Share your thoughts..."
             rows={3}
-            className="w-full bg-white/[0.03] border border-white/10 rounded-lg p-3 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/30 resize-none"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-lg p-3 text-sm text-white placeholder:text-white/[0.22] focus:outline-none focus:border-emerald-500/30 resize-none"
           />
           <div className="flex justify-end mt-2">
             <button
@@ -182,7 +182,7 @@ export function CommentThread({
       )}
 
       {comments.length === 0 ? (
-        <p className="text-sm text-white/20 py-4">No comments yet. Be the first to share your thoughts.</p>
+        <p className="text-sm text-white/[0.22] py-4">No comments yet. Be the first to share your thoughts.</p>
       ) : (
         <div className="divide-y divide-white/[0.04]">
           {comments.map((c) => (

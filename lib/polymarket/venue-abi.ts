@@ -1,0 +1,40 @@
+export const POLYMARKET_VENUE_ABI = [
+  {
+    type: "function",
+    name: "fill",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "orderId", type: "bytes32" },
+      { name: "conditionId", type: "bytes32" },
+      { name: "tokenId", type: "bytes32" },
+      { name: "trader", type: "address" },
+      { name: "yes", type: "bool" },
+      { name: "usdcIn", type: "uint256" },
+      { name: "sharesOut", type: "uint256" },
+      { name: "feeBps", type: "uint16" },
+      { name: "priceE6", type: "uint256" },
+    ],
+    outputs: [],
+  },
+  {
+    type: "function",
+    name: "used",
+    stateMutability: "view",
+    inputs: [{ name: "", type: "bytes32" }],
+    outputs: [{ type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "count",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "issuer",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "address" }],
+  },
+] as const

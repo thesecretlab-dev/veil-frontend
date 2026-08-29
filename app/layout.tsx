@@ -4,7 +4,13 @@ import { Figtree } from "next/font/google"
 import { Instrument_Serif } from "next/font/google"
 import { Space_Grotesk } from "next/font/google"
 import "./globals.css"
+import dynamic from "next/dynamic"
 import { ThemeProvider } from "@/components/theme-provider"
+
+const VeilStackedNav = dynamic(
+  () => import("@/components/stacked-drawer").then((m) => m.VeilStackedNav),
+  { ssr: true },
+)
 
 const figtree = Figtree({
   subsets: ["latin"],
@@ -141,6 +147,7 @@ html {
       <body className={`${figtree.variable} ${instrumentSerif.variable} ${spaceGrotesk.variable}`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
+          <VeilStackedNav />
         </ThemeProvider>
       </body>
     </html>

@@ -2,19 +2,23 @@ import { http, createConfig } from 'wagmi'
 import { injected, walletConnect, coinbaseWallet } from 'wagmi/connectors'
 import { defineChain } from 'viem'
 
-export const veil2 = defineChain({
-  id: 22207,
-  name: 'VEIL2',
-  nativeCurrency: { name: 'VEIL', symbol: 'VEIL', decimals: 18 },
+/** Companion EVM rails (local anvil). HyperSDK app-id 22207 is not an EVM chain. */
+export const veilCompanion = defineChain({
+  id: 31337,
+  name: 'VEIL companion (local)',
+  nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: {
-      http: [process.env.NEXT_PUBLIC_VEIL_RPC_URL || 'http://127.0.0.1:9650/ext/bc/2L5JWLhXnDm8dPyBFMjBuqsbPSytL4bfbGJJj37jk5ri1KdXhd/rpc'],
+      http: [process.env.NEXT_PUBLIC_COMPANION_RPC_URL || 'http://127.0.0.1:3000/api/mesh/v1/evm'],
     },
   },
 })
 
+/** @deprecated Use veilCompanion. Kept so existing imports compile. */
+export const veil2 = veilCompanion
+
 export const wagmiConfig = createConfig({
-  chains: [veil2],
+  chains: [veilCompanion],
   connectors: [
     injected({ target: 'metaMask' }),
     injected({ target: { id: 'phantom', name: 'Phantom', provider: (window: any) => (window as any)?.phantom?.ethereum } }),
@@ -23,6 +27,6 @@ export const wagmiConfig = createConfig({
     injected({ target: { id: 'veil-wallet', name: 'VEIL Wallet', provider: (window: any) => (window as any)?.veilWallet } }),
   ],
   transports: {
-    [veil2.id]: http(),
+    [veilCompanion.id]: http(),
   },
 })

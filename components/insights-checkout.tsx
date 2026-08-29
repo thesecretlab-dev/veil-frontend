@@ -40,7 +40,7 @@ export function InsightsCheckout({ productId, onClose }: { productId: string; on
           <button
             onClick={onClose}
             className="p-2 rounded-lg transition-all hover:bg-white/5"
-            style={{ color: "rgba(255, 255, 255, 0.5)" }}
+            style={{ color: "rgba(255, 255, 255, 0.56)" }}
           >
             <X className="h-5 w-5" />
           </button>

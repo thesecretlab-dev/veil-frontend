@@ -12,11 +12,11 @@ export function MarketContent({ marketId }: MarketContentProps) {
   const { market, isLoading } = useMarket(marketId)
 
   if (isLoading) {
-    return <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.3)", fontFamily: "var(--font-figtree)" }}>Loading market details...</div>
+    return <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.34)", fontFamily: "var(--font-figtree)" }}>Loading market details...</div>
   }
 
   if (!market || !market.details) {
-    return <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.3)", fontFamily: "var(--font-figtree)" }}>Market details not available</div>
+    return <div className="p-8" style={{ color: "rgba(255, 255, 255, 0.34)", fontFamily: "var(--font-figtree)" }}>Market details not available</div>
   }
 
   const orders = market.details.orderBook || []
@@ -32,7 +32,7 @@ export function MarketContent({ marketId }: MarketContentProps) {
             className="pb-3 px-1 text-[13px] capitalize transition-all duration-500"
             style={{
               fontFamily: "var(--font-space-grotesk)",
-              color: activeTab === tab ? "rgba(255, 255, 255, 0.9)" : "rgba(255, 255, 255, 0.35)",
+              color: activeTab === tab ? "rgba(255, 255, 255, 0.9)" : "rgba(255, 255, 255, 0.39)",
               borderBottom: activeTab === tab ? "2px solid rgba(16, 185, 129, 0.7)" : "2px solid transparent",
             }}
           >
@@ -54,7 +54,7 @@ export function MarketContent({ marketId }: MarketContentProps) {
             className="grid grid-cols-3 gap-4 p-4 text-[11px] uppercase tracking-[0.1em]"
             style={{
               fontFamily: "var(--font-space-grotesk)",
-              color: "rgba(255, 255, 255, 0.3)",
+              color: "rgba(255, 255, 255, 0.34)",
               borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
             }}
           >
@@ -64,8 +64,10 @@ export function MarketContent({ marketId }: MarketContentProps) {
           </div>
 
           {orders.length === 0 ? (
-            <div className="p-10 text-center text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255, 255, 255, 0.3)" }}>
-              No order book data available for this market.
+            <div className="p-10 text-center text-[13px]" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255, 255, 255, 0.34)" }}>
+              {market.veilMarketId
+                ? "No CLOB on VeilVM. Commit from the panel into the next batch window, then reveal / prove / clear."
+                : "No order book for this catalog row."}
             </div>
           ) : (
             <div>
@@ -90,22 +92,22 @@ export function MarketContent({ marketId }: MarketContentProps) {
                         order.type === "sell" || order.type === "ask"
                           ? "rgba(239, 68, 68, 0.8)"
                           : order.type === "buy" || order.type === "bid"
-                            ? "rgba(16, 185, 129, 0.8)"
-                            : "rgba(255, 255, 255, 0.3)",
+                            ? "rgba(16, 185, 129, 0.90)"
+                            : "rgba(255, 255, 255, 0.34)",
                     }}
                   >
                     {order.price}
                   </div>
-                  <div className="text-right" style={{ color: "rgba(255, 255, 255, 0.55)" }}>{order.shares.toLocaleString()}</div>
-                  <div className="text-right" style={{ color: "rgba(255, 255, 255, 0.35)" }}>{order.total}</div>
+                  <div className="text-right" style={{ color: "rgba(255, 255, 255, 0.62)" }}>{order.shares.toLocaleString()}</div>
+                  <div className="text-right" style={{ color: "rgba(255, 255, 255, 0.39)" }}>{order.total}</div>
                 </div>
               ))}
             </div>
           )}
 
           {orders.length > 0 && (
-            <div className="px-4 py-3 text-[10px]" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.2)", borderTop: "1px solid rgba(255, 255, 255, 0.03)" }}>
-              Live order book from Polymarket CLOB · Refreshes every 10s
+            <div className="px-4 py-3 text-[10px]" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.22)", borderTop: "1px solid rgba(255, 255, 255, 0.03)" }}>
+              {market.veilMarketId ? "Native batch book · VeilVM" : "Catalog CLOB · not this chain"}
             </div>
           )}
         </div>
@@ -120,16 +122,16 @@ export function MarketContent({ marketId }: MarketContentProps) {
             border: "1px solid rgba(255, 255, 255, 0.04)",
           }}
         >
-          <h3 className="mb-3 text-lg" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.8)" }}>
+          <h3 className="mb-3 text-lg" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255, 255, 255, 0.90)" }}>
             Resolution Details
           </h3>
           <p
             className="whitespace-pre-wrap text-[13px] leading-relaxed"
-            style={{ fontFamily: "var(--font-figtree)", color: "rgba(255, 255, 255, 0.5)" }}
+            style={{ fontFamily: "var(--font-figtree)", color: "rgba(255, 255, 255, 0.56)" }}
           >
             {market.details.description || "No additional market description provided."}
           </p>
-          <div className="mt-5 grid gap-2 text-[12px] md:grid-cols-2" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.3)" }}>
+          <div className="mt-5 grid gap-2 text-[12px] md:grid-cols-2" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255, 255, 255, 0.34)" }}>
             <div>Category: {market.category}</div>
             <div>Status: {market.status || "active"}</div>
             <div>24h Volume: {market.volume24h || "n/a"}</div>
@@ -143,7 +145,7 @@ export function MarketContent({ marketId }: MarketContentProps) {
               target="_blank"
               rel="noreferrer"
               className="mt-4 inline-flex items-center gap-2 text-[12px] transition-colors duration-500 hover:text-emerald-400"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16, 185, 129, 0.6)" }}
+              style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16, 185, 129, 0.67)" }}
             >
               View on {market.sourceName || "source"} →
             </a>

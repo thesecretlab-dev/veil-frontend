@@ -214,7 +214,7 @@ function SectionLabel({ number, title, sub }: { number: string; title: string; s
       <span className="font-[var(--font-instrument-serif)] text-[clamp(2rem,4vw,3.5rem)] leading-none text-emerald-500/15">{number}</span>
       <div>
         <h2 className="font-[var(--font-space-grotesk)] text-lg font-medium tracking-tight text-white/90">{title}</h2>
-        {sub && <p className="mt-0.5 font-[var(--font-figtree)] text-xs text-white/35">{sub}</p>}
+        {sub && <p className="mt-0.5 font-[var(--font-figtree)] text-xs text-white/[0.39]">{sub}</p>}
       </div>
     </div>
   )
@@ -233,37 +233,37 @@ function Card({ children, className = "", glow = false }: { children: React.Reac
    ═══════════════════════════════════════════════════════════════ */
 
 const TOKEN_ROLES = [
-  { token: "VEIL", icon: "▽", desc: "Base utility and staking asset. Powers governance, validator bonds, and agent genesis.", color: "rgba(16,185,129,0.9)" },
-  { token: "wVEIL", icon: "◇", desc: "Liquid ERC-20 wrapper. Used in swaps, LP positions, and cross-chain bridge flows.", color: "rgba(16,185,129,0.6)" },
-  { token: "vVEIL", icon: "◈", desc: "Rebasing staked balance. Grows each epoch via dynamic APY from the emission controller.", color: "rgba(52,211,153,0.8)" },
-  { token: "gVEIL", icon: "⬡", desc: "Non-rebasing governance wrapper. Backed by vVEIL index — vote weight without rebase complexity.", color: "rgba(110,231,183,0.7)" },
-  { token: "VAI", icon: "◎", desc: "Protocol stablecoin. CDP-minted against VEIL collateral. Treasury routing and execution rail.", color: "rgba(245,158,11,0.8)" },
+  { token: "VEIL", icon: "▽", desc: "Native unit of VeilVM. Markets, fees, validator bonds, agent genesis.", color: "rgba(16,185,129,0.9)" },
+  { token: "wVEIL", icon: "◇", desc: "Companion ERC-20 wrapper on anvil 31337. Not the native VeilVM unit.", color: "rgba(16,185,129,0.67)" },
+  { token: "vVEIL", icon: "◈", desc: "Rebasing stake receipt. Spec — not minted on this node.", color: "rgba(52,211,153,0.8)" },
+  { token: "gVEIL", icon: "⬡", desc: "Governance wrapper over vVEIL. Spec — no vote weight here yet.", color: "rgba(110,231,183,0.7)" },
+  { token: "VAI", icon: "◎", desc: "Native stable unit. AMM pair is VEIL/VAI on this node. CDP mint is documented.", color: "rgba(245,158,11,0.8)" },
 ]
 
 const MECHANICS = [
-  { step: "Swap", detail: "Enter VEIL rails through wVEIL/VAI/USDC pools on the native DEX. Zero external dependencies." },
-  { step: "Stake", detail: "Lock wVEIL to mint rebasing vVEIL. Dynamic APY adjusts based on liquidity target gap." },
-  { step: "Wrap", detail: "Convert rebasing vVEIL into non-rebasing gVEIL for governance and composability." },
-  { step: "Bond", detail: "Bond LP positions into chain-owned liquidity. Treasury acquires permanent protocol depth." },
-  { step: "Mint VAI", detail: "Open CDPs against VEIL collateral. VAI is the execution currency for markets and agents." },
-  { step: "Validate", detail: "Bond VEIL to run a VeilVM validator node. Agents and humans earn from consensus participation." },
+  { step: "Swap", detail: "Native AMM on this node is VEIL/VAI. Companion wVEIL is wrap/bridge, not the pool." },
+  { step: "Stake", detail: "vVEIL rebasing is specified. This node does not mint stake receipts." },
+  { step: "Wrap", detail: "gVEIL is a spec wrapper for vote weight. Governance is not live." },
+  { step: "Bond", detail: "COL / LP bonds are design. Permanent depth is not a live bond market here." },
+  { step: "Mint VAI", detail: "VAI mint is a VeilVM action. This UI links to docs until the CDP panel executes." },
+  { step: "Validate", detail: "L1 validators are not a 2000 AVAX primary stake. Local mesh is the running set." },
 ]
 
 const STATS = [
-  { label: "Chain ID", value: "22207", sub: "VeilVM Local Testnet" },
+  { label: "App-id", value: "22207", sub: "HyperSDK · not EVM chain id" },
   { label: "VM Type", value: "HyperSDK", sub: "Custom Go VM" },
-  { label: "Native Actions", value: "22", sub: "Strict-private mode" },
-  { label: "Launch Gates", value: "13/13", sub: "All passing" },
-  { label: "Contracts", value: "16", sub: "Companion EVM" },
+  { label: "Native Actions", value: "19", sub: "IDs 0–18" },
+  { label: "Packet", value: "2026-02-22", sub: "operator GO · not public" },
+  { label: "Companion", value: "31337", sub: "anvil rails" },
 ]
 
 const LINKS = [
-  { label: "Swap Terminal", href: "/app/defi", desc: "Trade VEIL, wVEIL, and VAI" },
-  { label: "Markets", href: "/app/markets", desc: "Prediction markets powered by dual engine" },
-  { label: "Ecosystem", href: "/app/ecosystem", desc: "Protocol directory and integrations" },
+  { label: "Swap Terminal", href: "/app/defi", desc: "Trade VEIL / VAI on this node" },
+  { label: "Markets", href: "/app/markets", desc: "Native books plus public catalog" },
+  { label: "Ecosystem", href: "/app/ecosystem", desc: "Directory of surfaces on this node" },
   { label: "Docs", href: "/app/docs", desc: "Technical documentation and ANIMA spec" },
-  { label: "Bloodsworn Oath", href: "/app/oath", desc: "Stake reputation in the protocol" },
-  { label: "Governance", href: "/app/gov", desc: "Proposals and voting" },
+  { label: "Bloodsworn Oath", href: "/app/oath", desc: "Reputation surface" },
+  { label: "Governance", href: "/app/gov", desc: "Spec — no live votes" },
 ]
 
 /* ═══════════════════════════════════════════════════════════════
@@ -309,7 +309,7 @@ export default function VeilTokenPage() {
           </ScrollReveal>
 
           <ScrollReveal delay={0.2}>
-            <p className="mx-auto mt-6 max-w-2xl font-[var(--font-figtree)] text-base leading-relaxed text-white/35">
+            <p className="mx-auto mt-6 max-w-2xl font-[var(--font-figtree)] text-base leading-relaxed text-white/[0.39]">
               Native token of VeilVM (HyperSDK). v1 is 19 actions: markets, VAI, AMM, COL, proofs.
               Not live on Fuji or mainnet. Bonds/staking are spec-only.
             </p>
@@ -323,7 +323,7 @@ export default function VeilTokenPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
               </Link>
               <Link href="/app/docs"
-                className="rounded-full border border-white/[0.08] bg-white/[0.03] px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm text-white/60 transition-all hover:border-white/[0.15] hover:text-white/80">
+                className="rounded-full border border-white/[0.08] bg-white/[0.03] px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm text-white/[0.67] transition-all hover:border-white/[0.15] hover:text-white/80">
                 Read Docs
               </Link>
             </div>
@@ -343,9 +343,9 @@ export default function VeilTokenPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.08 * i, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
                 <Card className="p-5">
-                  <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.16em] text-white/25">{stat.label}</p>
+                  <p className="font-[var(--font-figtree)] text-[10px] uppercase tracking-[0.16em] text-white/[0.28]">{stat.label}</p>
                   <p className="mt-2 font-[var(--font-space-grotesk)] text-2xl font-light tracking-tight text-white/90">{stat.value}</p>
-                  <p className="mt-1 font-[var(--font-figtree)] text-[11px] text-white/25">{stat.sub}</p>
+                  <p className="mt-1 font-[var(--font-figtree)] text-[11px] text-white/[0.28]">{stat.sub}</p>
                 </Card>
               </motion.div>
             ))}
@@ -364,7 +364,7 @@ export default function VeilTokenPage() {
                   <span className="text-2xl" style={{ color: role.color }}>{role.icon}</span>
                   <span className="font-[var(--font-space-grotesk)] text-sm font-semibold uppercase tracking-[0.08em] text-white/80">{role.token}</span>
                 </div>
-                <p className="font-[var(--font-figtree)] text-[13px] leading-relaxed text-white/40">{role.desc}</p>
+                <p className="font-[var(--font-figtree)] text-[13px] leading-relaxed text-white/[0.45]">{role.desc}</p>
               </Card>
             </ScrollReveal>
           ))}
@@ -381,7 +381,7 @@ export default function VeilTokenPage() {
                     <p className="mb-2 font-[var(--font-space-grotesk)] text-xs font-semibold uppercase tracking-[0.14em] text-emerald-400/60 transition-colors group-hover:text-emerald-400/80">
                       {String(i + 1).padStart(2, "0")} · {item.step}
                     </p>
-                    <p className="font-[var(--font-figtree)] text-[13px] leading-relaxed text-white/40">{item.detail}</p>
+                    <p className="font-[var(--font-figtree)] text-[13px] leading-relaxed text-white/[0.45]">{item.detail}</p>
                   </div>
                 </ScrollReveal>
               ))}
@@ -396,12 +396,12 @@ export default function VeilTokenPage() {
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
               <div>
                 <h3 className="mb-4 font-[var(--font-instrument-serif)] text-2xl tracking-tight text-white/90">ANIMA</h3>
-                <p className="mb-4 font-[var(--font-figtree)] text-sm leading-relaxed text-white/40">
+                <p className="mb-4 font-[var(--font-figtree)] text-sm leading-relaxed text-white/[0.45]">
                   VEIL doesn&apos;t bootstrap human users — it bootstraps sovereign chain entities. Prediction markets
                   are survival infrastructure for AI agents. Each agent provisions compute, deploys a validator,
                   establishes identity, and trades to sustain itself.
                 </p>
-                <p className="font-[var(--font-figtree)] text-sm leading-relaxed text-white/40">
+                <p className="font-[var(--font-figtree)] text-sm leading-relaxed text-white/[0.45]">
                   The flywheel: more agents → more liquidity → better markets → more agents → more validators → stronger chain.
                 </p>
                 <Link href="/app/docs/anima"
@@ -417,7 +417,7 @@ export default function VeilTokenPage() {
                       <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/[0.06]">
                         <span className="font-[var(--font-space-grotesk)] text-xs font-semibold text-emerald-400">{i + 1}</span>
                       </div>
-                      <p className="font-[var(--font-figtree)] text-sm text-white/50">{stage}</p>
+                      <p className="font-[var(--font-figtree)] text-sm text-white/[0.56]">{stage}</p>
                     </div>
                   </ScrollReveal>
                 ))}
@@ -435,8 +435,8 @@ export default function VeilTokenPage() {
                 <Link href={link.href}>
                   <Card className="group p-6 transition-all hover:border-emerald-500/15 hover:bg-emerald-500/[0.015] cursor-pointer h-full">
                     <p className="mb-2 font-[var(--font-space-grotesk)] text-sm font-medium text-white/80 transition-colors group-hover:text-emerald-400">{link.label}</p>
-                    <p className="font-[var(--font-figtree)] text-xs text-white/30">{link.desc}</p>
-                    <svg className="mt-4 h-4 w-4 text-white/15 transition-all group-hover:text-emerald-400/50 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <p className="font-[var(--font-figtree)] text-xs text-white/[0.34]">{link.desc}</p>
+                    <svg className="mt-4 h-4 w-4 text-white/[0.17] transition-all group-hover:text-emerald-400/50 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
                     </svg>
                   </Card>

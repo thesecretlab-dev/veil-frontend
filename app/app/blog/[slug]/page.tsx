@@ -1,7 +1,6 @@
 import type React from "react"
 import Link from "next/link"
-import { AppShaderBackground } from "@/components/app-shader-background"
-import { TriangleLogo } from "@/components/triangle-logo"
+import { VeilFooter, VeilHeader } from "@/components/brand"
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -259,54 +258,47 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   if (!post) {
     return (
-      <div className="relative min-h-screen">
-        <AppShaderBackground />
+      <div className="relative min-h-screen" style={{ background: "#060606" }}>
+        <VeilHeader />
         <div className="relative flex min-h-screen items-center justify-center">
-          <p className="etched-text">Post not found</p>
+          <div className="text-center">
+            <p className="mb-6" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.78)" }}>Post not found</p>
+            <Link href="/app/blog" className="text-sm" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.84)" }}>
+              Back to Blog
+            </Link>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="relative min-h-screen">
-      <AppShaderBackground />
+    <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <VeilHeader />
 
-      <div className="relative">
-        <div className="border-b border-white/5 bg-[#060606]/20 backdrop-blur-md">
-          <div className="container mx-auto flex items-center justify-between px-6 py-4">
-            <Link href="/app" className="flex items-center gap-3">
-              <TriangleLogo size={32} />
-              <span className="text-xl font-light tracking-wider etched-text">VEIL</span>
-            </Link>
-            <Link
-              href="/app/blog"
-              className="flex items-center gap-2 text-sm transition-colors hover:text-emerald-400 etched-text"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back to Blog
-            </Link>
+      <article className="relative mx-auto max-w-3xl px-6 pt-28 pb-20">
+        <Link
+          href="/app/blog"
+          className="mb-10 inline-block text-sm"
+          style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.78)" }}
+        >
+          ← Blog
+        </Link>
+        <div className="mb-8 flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/10">
+            <span className="text-lg font-light text-emerald-400">{post.author.name.charAt(0)}</span>
+          </div>
+          <div>
+            <p style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.95)" }}>{post.author.name}</p>
+            <p className="text-sm" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.39)" }}>{post.author.role}</p>
           </div>
         </div>
 
-        <article className="container mx-auto max-w-3xl px-6 py-16">
-          <div className="mb-8 flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
-              <span className="text-lg font-light text-emerald-400">{post.author.name.charAt(0)}</span>
-            </div>
-            <div>
-              <p className="font-light etched-text">{post.author.name}</p>
-              <p className="text-sm etched-text opacity-40">{post.author.role}</p>
-            </div>
-          </div>
-
-          <h1 className="mb-2 text-4xl font-light tracking-tight etched-text">{post.title}</h1>
-          <p className="mb-12 text-sm etched-text opacity-40">{post.date}</p>
-          <div className="prose-custom space-y-6 font-light leading-relaxed etched-text">{post.content}</div>
-        </article>
-      </div>
+        <h1 className="mb-2 text-4xl font-light tracking-tight" style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.92)" }}>{post.title}</h1>
+        <p className="mb-12 text-sm" style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(255,255,255,0.39)" }}>{post.date}</p>
+        <div className="space-y-6 font-light leading-relaxed" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.62)" }}>{post.content}</div>
+      </article>
+      <VeilFooter />
     </div>
   )
 }

@@ -6,6 +6,7 @@ import Link from "next/link"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
+import { FlowNext } from "@/components/flow-next"
 
 /* ===========================================================================
    VEIL DEVELOPER APPLICATION — AAA CINEMATIC EXPERIENCE
@@ -285,7 +286,7 @@ function GlowInput({ label, value, onChange, placeholder, mono, icon }: {
   const [focused, setFocused] = useState(false)
   return (
     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-      <label className="block text-[10px] uppercase tracking-[0.2em] text-white/30 font-[var(--font-space-grotesk)] mb-2">
+      <label className="block text-[10px] uppercase tracking-[0.2em] text-white/[0.34] font-[var(--font-space-grotesk)] mb-2">
         {icon && <span className="mr-1">{icon}</span>}{label}
       </label>
       <div className="relative">
@@ -295,7 +296,7 @@ function GlowInput({ label, value, onChange, placeholder, mono, icon }: {
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={placeholder}
-          className={`w-full rounded-[16px] border bg-[#060606]/80 backdrop-blur-sm px-5 py-4 text-sm text-white/90 outline-none transition-all duration-300 placeholder:text-white/15 ${
+          className={`w-full rounded-[16px] border bg-[#060606]/80 backdrop-blur-sm px-5 py-4 text-sm text-white/90 outline-none transition-all duration-300 placeholder:text-white/[0.17] ${
             mono ? "font-mono text-xs" : ""
           } ${focused ? "border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.08)]" : "border-white/[0.06]"}`}
         />
@@ -318,7 +319,7 @@ function GlowTextArea({ label, value, onChange, placeholder, rows }: {
   const [focused, setFocused] = useState(false)
   return (
     <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-      <label className="block text-[10px] uppercase tracking-[0.2em] text-white/30 font-[var(--font-space-grotesk)] mb-2">{label}</label>
+      <label className="block text-[10px] uppercase tracking-[0.2em] text-white/[0.34] font-[var(--font-space-grotesk)] mb-2">{label}</label>
       <textarea
         value={value}
         onChange={e => onChange(e.target.value)}
@@ -326,7 +327,7 @@ function GlowTextArea({ label, value, onChange, placeholder, rows }: {
         onBlur={() => setFocused(false)}
         placeholder={placeholder}
         rows={rows || 4}
-        className={`w-full rounded-[16px] border bg-[#060606]/80 backdrop-blur-sm px-5 py-4 text-sm text-white/90 outline-none transition-all duration-300 placeholder:text-white/15 resize-none leading-relaxed ${
+        className={`w-full rounded-[16px] border bg-[#060606]/80 backdrop-blur-sm px-5 py-4 text-sm text-white/90 outline-none transition-all duration-300 placeholder:text-white/[0.17] resize-none leading-relaxed ${
           focused ? "border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.08)]" : "border-white/[0.06]"
         }`}
       />
@@ -357,15 +358,15 @@ function HexCard({ selected, onClick, icon, label, desc, delay }: {
       )}
       <div className="relative z-10">
         <div className="flex items-center gap-3 mb-1">
-          <span className={`text-xl transition-colors ${selected ? "text-emerald-400" : "text-white/30"}`}>{icon}</span>
+          <span className={`text-xl transition-colors ${selected ? "text-emerald-400" : "text-white/[0.34]"}`}>{icon}</span>
           <span className={`font-[var(--font-space-grotesk)] text-sm font-medium transition-colors ${
-            selected ? "text-emerald-300" : "text-white/70"
+            selected ? "text-emerald-300" : "text-white/[0.78]"
           }`}>{label}</span>
           {selected && (
             <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto text-emerald-400 text-xs">✓</motion.span>
           )}
         </div>
-        {desc && <p className={`text-[11px] mt-1 transition-colors ${selected ? "text-emerald-400/40" : "text-white/20"}`}>{desc}</p>}
+        {desc && <p className={`text-[11px] mt-1 transition-colors ${selected ? "text-emerald-400/40" : "text-white/[0.22]"}`}>{desc}</p>}
       </div>
     </motion.button>
   )
@@ -385,7 +386,7 @@ function SkillChip({ selected, onClick, label, delay }: {
       className={`rounded-full border px-5 py-2.5 text-sm font-[var(--font-space-grotesk)] transition-all duration-300 ${
         selected
           ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.08)]"
-          : "border-white/[0.06] bg-white/[0.01] text-white/40 hover:border-white/[0.12] hover:text-white/60"
+          : "border-white/[0.06] bg-white/[0.01] text-white/[0.45] hover:border-white/[0.12] hover:text-white/[0.67]"
       }`}
     >
       {label}
@@ -403,7 +404,7 @@ function GlowCheckbox({ label, checked, onChange }: {
       className="flex items-start gap-4 text-left group"
     >
       <motion.div
-        animate={checked ? { borderColor: "rgba(16,185,129,0.4)", backgroundColor: "rgba(16,185,129,0.1)" } : { borderColor: "rgba(255,255,255,0.08)", backgroundColor: "rgba(255,255,255,0.01)" }}
+        animate={checked ? { borderColor: "rgba(16,185,129,0.45)", backgroundColor: "rgba(16,185,129,0.1)" } : { borderColor: "rgba(255,255,255,0.08)", backgroundColor: "rgba(255,255,255,0.01)" }}
         className="mt-0.5 flex-shrink-0 w-6 h-6 rounded-lg border flex items-center justify-center"
       >
         <AnimatePresence>
@@ -412,7 +413,7 @@ function GlowCheckbox({ label, checked, onChange }: {
           )}
         </AnimatePresence>
       </motion.div>
-      <span className="text-[13px] text-white/35 leading-relaxed group-hover:text-white/50 transition-colors">{label}</span>
+      <span className="text-[13px] text-white/[0.39] leading-relaxed group-hover:text-white/[0.56] transition-colors">{label}</span>
     </motion.button>
   )
 }
@@ -478,7 +479,7 @@ function SubmissionSequence({ applicationId, onComplete }: { applicationId: stri
             {phases[phase]}
           </motion.p>
         </AnimatePresence>
-        <p className="font-mono text-[10px] text-white/15">{applicationId}</p>
+        <p className="font-mono text-[10px] text-white/[0.17]">{applicationId}</p>
       </div>
 
       {/* Progress bar */}
@@ -581,10 +582,20 @@ export default function ApplyPage() {
   const handleSubmit = useCallback(() => {
     const t = Date.now().toString(36).padStart(9, "0")
     const r = Array.from({ length: 8 }, () => Math.floor(Math.random() * 36).toString(36)).join("")
-    setApplicationId(`veil_app_${t}${r}`)
-    setReferralGenerated(`veil_ref_${Array.from({ length: 12 }, () => Math.floor(Math.random() * 36).toString(36)).join("")}`)
+    const id = `veil_app_${t}${r}`
+    const ref = `veil_ref_${Array.from({ length: 12 }, () => Math.floor(Math.random() * 36).toString(36)).join("")}`
+    setApplicationId(id)
+    setReferralGenerated(ref)
+    try {
+      localStorage.setItem(
+        "veil.local.apply",
+        JSON.stringify({ ...app, applicationId: id, referralGenerated: ref, at: Date.now() }),
+      )
+    } catch {
+      /* private mode */
+    }
     setStep("submitting")
-  }, [])
+  }, [app])
 
   return (
     <div className="relative min-h-screen bg-[#060606] text-white overflow-hidden">
@@ -612,14 +623,14 @@ export default function ApplyPage() {
               transition={{ duration: 0.8 }} className="min-h-[70vh] flex flex-col items-center justify-center text-center space-y-8">
               <motion.div initial={{ y: 30 }} animate={{ y: 0 }} transition={{ delay: 0.3, duration: 0.8 }}>
                 <p className="text-[10px] tracking-[0.5em] uppercase mb-6"
-                  style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.5)" }}>
+                  style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.56)" }}>
                   Permissioned Access · Avalanche L1 · Chain 22207
                 </p>
                 <h1 className="text-5xl md:text-7xl font-light leading-[1.05] mb-6"
                   style={{ fontFamily: "var(--font-instrument-serif)", color: "rgba(255,255,255,0.95)" }}>
                   Request Entry
                 </h1>
-                <p className="text-[16px] text-white/30 max-w-lg mx-auto leading-relaxed"
+                <p className="text-[16px] text-white/[0.34] max-w-lg mx-auto leading-relaxed"
                   style={{ fontFamily: "var(--font-figtree)" }}>
                   No users. No spectators. Every human builds.<br />
                   Every agent operates. The gate opens for builders.
@@ -635,7 +646,14 @@ export default function ApplyPage() {
                   <span className="relative z-10">Approach the Gate</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />
                 </button>
-                <p className="text-[11px] text-white/15">0.5 AVAX stake · ~5 min · Reviewed in ≤72h</p>
+                <p className="text-[11px] text-white/[0.17]">0.5 AVAX stake · ~5 min · local testnet, not Fuji</p>
+                <Link
+                  href="/app/onboard"
+                  className="text-[12px] tracking-wide"
+                  style={{ fontFamily: "var(--font-space-grotesk)", color: "rgba(16,185,129,0.7)" }}
+                >
+                  Already enrolled? Onboard →
+                </Link>
               </motion.div>
             </motion.div>
           )}
@@ -646,7 +664,7 @@ export default function ApplyPage() {
               transition={{ duration: 0.5 }} className="space-y-8">
               <div>
                 <h2 className="text-3xl font-light" style={{ fontFamily: "var(--font-instrument-serif)" }}>Who are you?</h2>
-                <p className="text-[13px] text-white/25 mt-2">Pseudonyms welcome. This is a permissioned network, not a surveillance state.</p>
+                <p className="text-[13px] text-white/[0.28] mt-2">Pseudonyms welcome. This is a permissioned network, not a surveillance state.</p>
               </div>
               <div className="space-y-5">
                 <GlowInput icon="◇" label="Name or Pseudonym" value={app.name} onChange={v => update("name", v)} placeholder="How should the network know you?" />
@@ -654,10 +672,10 @@ export default function ApplyPage() {
                 <GlowInput icon="⬡" label="Wallet Address" value={app.walletAddress} onChange={v => update("walletAddress", v)} placeholder="0x... (optional — connect during onboarding)" mono />
               </div>
               <div className="flex items-center gap-4 pt-4">
-                <button onClick={prevStep} className="text-[11px] text-white/20 hover:text-white/40 transition-colors font-[var(--font-space-grotesk)]">← Back</button>
+                <button onClick={prevStep} className="text-[11px] text-white/[0.22] hover:text-white/[0.45] transition-colors font-[var(--font-space-grotesk)]">← Back</button>
                 <button onClick={nextStep} disabled={!canAdvance("identity")}
                   className={`ml-auto rounded-full px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium transition-all ${
-                    canAdvance("identity") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/15 cursor-not-allowed"
+                    canAdvance("identity") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/[0.17] cursor-not-allowed"
                   }`}>Continue →</button>
               </div>
             </motion.div>
@@ -669,11 +687,11 @@ export default function ApplyPage() {
               transition={{ duration: 0.5 }} className="space-y-8">
               <div>
                 <h2 className="text-3xl font-light" style={{ fontFamily: "var(--font-instrument-serif)" }}>What do you know?</h2>
-                <p className="text-[13px] text-white/25 mt-2">Beginners build too. Be honest — we'll match you to the right path.</p>
+                <p className="text-[13px] text-white/[0.28] mt-2">Beginners build too. Be honest — we'll match you to the right path.</p>
               </div>
               <div className="space-y-6">
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/25 font-[var(--font-space-grotesk)] mb-3">Experience Level</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/[0.28] font-[var(--font-space-grotesk)] mb-3">Experience Level</p>
                   <div className="grid grid-cols-2 gap-2">
                     {EXPERIENCE_LEVELS.map((exp, i) => (
                       <HexCard key={exp.id} icon={exp.icon} label={exp.label} desc={exp.desc}
@@ -682,7 +700,7 @@ export default function ApplyPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/25 font-[var(--font-space-grotesk)] mb-3">Skills <span className="text-white/10">(select all)</span></p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-white/[0.28] font-[var(--font-space-grotesk)] mb-3">Skills <span className="text-white/10">(select all)</span></p>
                   <div className="flex flex-wrap gap-2">
                     {SKILLS.map((skill, i) => (
                       <SkillChip key={skill} label={skill} selected={app.background.includes(skill)}
@@ -692,10 +710,10 @@ export default function ApplyPage() {
                 </div>
               </div>
               <div className="flex items-center gap-4 pt-4">
-                <button onClick={prevStep} className="text-[11px] text-white/20 hover:text-white/40 transition-colors font-[var(--font-space-grotesk)]">← Back</button>
+                <button onClick={prevStep} className="text-[11px] text-white/[0.22] hover:text-white/[0.45] transition-colors font-[var(--font-space-grotesk)]">← Back</button>
                 <button onClick={nextStep} disabled={!canAdvance("technical")}
                   className={`ml-auto rounded-full px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium transition-all ${
-                    canAdvance("technical") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/15 cursor-not-allowed"
+                    canAdvance("technical") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/[0.17] cursor-not-allowed"
                   }`}>Continue →</button>
               </div>
             </motion.div>
@@ -707,7 +725,7 @@ export default function ApplyPage() {
               transition={{ duration: 0.5 }} className="space-y-8">
               <div>
                 <h2 className="text-3xl font-light" style={{ fontFamily: "var(--font-instrument-serif)" }}>What will you build?</h2>
-                <p className="text-[13px] text-white/25 mt-2">The network needs purpose. Tell us yours.</p>
+                <p className="text-[13px] text-white/[0.28] mt-2">The network needs purpose. Tell us yours.</p>
               </div>
               <div className="space-y-6">
                 <div className="grid grid-cols-1 gap-2">
@@ -728,10 +746,10 @@ export default function ApplyPage() {
                 )}
               </div>
               <div className="flex items-center gap-4 pt-4">
-                <button onClick={prevStep} className="text-[11px] text-white/20 hover:text-white/40 transition-colors font-[var(--font-space-grotesk)]">← Back</button>
+                <button onClick={prevStep} className="text-[11px] text-white/[0.22] hover:text-white/[0.45] transition-colors font-[var(--font-space-grotesk)]">← Back</button>
                 <button onClick={nextStep} disabled={!canAdvance("intent")}
                   className={`ml-auto rounded-full px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium transition-all ${
-                    canAdvance("intent") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/15 cursor-not-allowed"
+                    canAdvance("intent") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/[0.17] cursor-not-allowed"
                   }`}>Continue →</button>
               </div>
             </motion.div>
@@ -743,7 +761,7 @@ export default function ApplyPage() {
               transition={{ duration: 0.5 }} className="space-y-8">
               <div>
                 <h2 className="text-3xl font-light" style={{ fontFamily: "var(--font-instrument-serif)" }}>Where will your node live?</h2>
-                <p className="text-[13px] text-white/25 mt-2">Infrastructure first. Agents need a home before they can exist.</p>
+                <p className="text-[13px] text-white/[0.28] mt-2">Infrastructure first. Agents need a home before they can exist.</p>
               </div>
               <div className="grid grid-cols-1 gap-3">
                 {INFRA.map((opt, i) => (
@@ -755,17 +773,17 @@ export default function ApplyPage() {
                 <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
                   className="rounded-[16px] border border-emerald-500/10 bg-emerald-500/[0.02] p-5">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-400/50 font-[var(--font-space-grotesk)] mb-2">Recommended Hardware</p>
-                  <p className="text-[12px] text-white/30 leading-relaxed">
+                  <p className="text-[12px] text-white/[0.34] leading-relaxed">
                     Any mini PC: Intel N100+, 8GB RAM, 128GB SSD. ~$50-80 on Amazon.
                     We'll guide you through the full setup during onboarding.
                   </p>
                 </motion.div>
               )}
               <div className="flex items-center gap-4 pt-4">
-                <button onClick={prevStep} className="text-[11px] text-white/20 hover:text-white/40 transition-colors font-[var(--font-space-grotesk)]">← Back</button>
+                <button onClick={prevStep} className="text-[11px] text-white/[0.22] hover:text-white/[0.45] transition-colors font-[var(--font-space-grotesk)]">← Back</button>
                 <button onClick={nextStep} disabled={!canAdvance("infra")}
                   className={`ml-auto rounded-full px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium transition-all ${
-                    canAdvance("infra") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/15 cursor-not-allowed"
+                    canAdvance("infra") ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30" : "bg-white/[0.02] text-white/[0.17] cursor-not-allowed"
                   }`}>Continue →</button>
               </div>
             </motion.div>
@@ -777,27 +795,27 @@ export default function ApplyPage() {
               transition={{ duration: 0.5 }} className="space-y-8">
               <div>
                 <h2 className="text-3xl font-light" style={{ fontFamily: "var(--font-instrument-serif)" }}>The Network Effect</h2>
-                <p className="text-[13px] text-white/25 mt-2">VEIL grows through its builders. Referrals accelerate your review.</p>
+                <p className="text-[13px] text-white/[0.28] mt-2">VEIL grows through its builders. Referrals accelerate your review.</p>
               </div>
 
               <div className="rounded-[20px] border border-emerald-500/10 bg-emerald-500/[0.02] p-6 space-y-4">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-emerald-400/50 font-[var(--font-space-grotesk)]">How Referrals Work</p>
-                <div className="space-y-3 text-[13px] text-white/35 leading-relaxed">
+                <div className="space-y-3 text-[13px] text-white/[0.39] leading-relaxed">
                   <div className="flex items-start gap-3">
                     <span className="text-emerald-400/50 font-mono text-sm mt-0.5">01</span>
-                    <span><strong className="text-white/50">Priority Review</strong> — Referred applications jump the queue. Existing network members vouch for you.</span>
+                    <span><strong className="text-white/[0.56]">Priority Review</strong> — Referred applications jump the queue. Existing network members vouch for you.</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-emerald-400/50 font-mono text-sm mt-0.5">02</span>
-                    <span><strong className="text-white/50">Bloodsworn Bonus</strong> — Both referrer and referee get a Bloodsworn score boost toward Initiate tier.</span>
+                    <span><strong className="text-white/[0.56]">Bloodsworn Bonus</strong> — Both referrer and referee get a Bloodsworn score boost toward Initiate tier.</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-emerald-400/50 font-mono text-sm mt-0.5">03</span>
-                    <span><strong className="text-white/50">Network Growth</strong> — Every successful referral strengthens the referrer's Bloodsworn score. Sovereign-tier members can refer unlimited builders.</span>
+                    <span><strong className="text-white/[0.56]">Network Growth</strong> — Every successful referral strengthens the referrer's Bloodsworn score. Sovereign-tier members can refer unlimited builders.</span>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-emerald-400/50 font-mono text-sm mt-0.5">04</span>
-                    <span><strong className="text-white/50">Your Code</strong> — Once accepted, you'll receive your own referral code. Share it. Grow the network. Earn reputation.</span>
+                    <span><strong className="text-white/[0.56]">Your Code</strong> — Once accepted, you'll receive your own referral code. Share it. Grow the network. Earn reputation.</span>
                   </div>
                 </div>
               </div>
@@ -808,11 +826,11 @@ export default function ApplyPage() {
                 placeholder="Their handle or wallet address" />
 
               {!app.referralCode && (
-                <p className="text-[11px] text-white/15">No referral? No problem. Applications without referrals take slightly longer to review but are treated equally.</p>
+                <p className="text-[11px] text-white/[0.17]">No referral? No problem. Applications without referrals take slightly longer to review but are treated equally.</p>
               )}
 
               <div className="flex items-center gap-4 pt-4">
-                <button onClick={prevStep} className="text-[11px] text-white/20 hover:text-white/40 transition-colors font-[var(--font-space-grotesk)]">← Back</button>
+                <button onClick={prevStep} className="text-[11px] text-white/[0.22] hover:text-white/[0.45] transition-colors font-[var(--font-space-grotesk)]">← Back</button>
                 <button onClick={nextStep}
                   className="ml-auto rounded-full px-8 py-3.5 font-[var(--font-space-grotesk)] text-sm font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/30 transition-all">
                   Continue →
@@ -827,7 +845,7 @@ export default function ApplyPage() {
               transition={{ duration: 0.5 }} className="space-y-8">
               <div>
                 <h2 className="text-3xl font-light" style={{ fontFamily: "var(--font-instrument-serif)" }}>Seal Your Application</h2>
-                <p className="text-[13px] text-white/25 mt-2">Review. Agree. Submit to the network.</p>
+                <p className="text-[13px] text-white/[0.28] mt-2">Review. Agree. Submit to the network.</p>
               </div>
 
               <div className="rounded-[20px] border border-white/[0.04] bg-[#060606]/60 backdrop-blur-sm p-6 space-y-4">
@@ -841,13 +859,13 @@ export default function ApplyPage() {
                 ].map((item, i) => (
                   <motion.div key={item.l} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                     className="flex justify-between items-start py-2 border-b border-white/[0.03] last:border-0">
-                    <span className="text-[10px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)]">{item.l}</span>
-                    <span className="text-[13px] text-white/60 text-right max-w-[60%]">{item.v}</span>
+                    <span className="text-[10px] uppercase tracking-[0.15em] text-white/[0.22] font-[var(--font-space-grotesk)]">{item.l}</span>
+                    <span className="text-[13px] text-white/[0.67] text-right max-w-[60%]">{item.v}</span>
                   </motion.div>
                 ))}
                 <div className="pt-2">
-                  <span className="text-[10px] uppercase tracking-[0.15em] text-white/20 font-[var(--font-space-grotesk)] block mb-2">Proposal</span>
-                  <p className="text-[13px] text-white/40 leading-relaxed">{app.proposal}</p>
+                  <span className="text-[10px] uppercase tracking-[0.15em] text-white/[0.22] font-[var(--font-space-grotesk)] block mb-2">Proposal</span>
+                  <p className="text-[13px] text-white/[0.45] leading-relaxed">{app.proposal}</p>
                 </div>
               </div>
 
@@ -865,14 +883,14 @@ export default function ApplyPage() {
               </div>
 
               <div className="flex items-center gap-4 pt-4">
-                <button onClick={prevStep} className="text-[11px] text-white/20 hover:text-white/40 transition-colors font-[var(--font-space-grotesk)]">← Edit</button>
+                <button onClick={prevStep} className="text-[11px] text-white/[0.22] hover:text-white/[0.45] transition-colors font-[var(--font-space-grotesk)]">← Edit</button>
                 <button onClick={handleSubmit} disabled={!canAdvance("review")}
                   className={`ml-auto group relative overflow-hidden rounded-full px-12 py-4 font-[var(--font-space-grotesk)] text-sm font-semibold tracking-[0.15em] uppercase transition-all ${
                     canAdvance("review")
                       ? "bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:shadow-[0_0_60px_rgba(16,185,129,0.3)]"
-                      : "bg-white/[0.02] text-white/15 cursor-not-allowed"
+                      : "bg-white/[0.02] text-white/[0.17] cursor-not-allowed"
                   }`}>
-                  <span className="relative z-10">Submit to IPFS</span>
+                  <span className="relative z-10">Record locally</span>
                   {canAdvance("review") && <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-emerald-400 opacity-0 transition-opacity group-hover:opacity-100" />}
                 </button>
               </div>
@@ -899,19 +917,18 @@ export default function ApplyPage() {
               </motion.div>
 
               <div>
-                <h2 className="text-4xl font-light mb-3" style={{ fontFamily: "var(--font-instrument-serif)" }}>Application Sealed</h2>
-                <p className="text-[15px] text-white/30 max-w-md mx-auto">
-                  Encrypted. Pinned to IPFS. Queued for committee review.<br />
-                  The gate will open if you belong here.
+                <h2 className="text-4xl font-light mb-3" style={{ fontFamily: "var(--font-instrument-serif)" }}>Application stored</h2>
+                <p className="text-[15px] text-white/[0.34] max-w-md mx-auto">
+                  Saved in this browser. There is no public IPFS queue or committee on the local testnet.
                 </p>
               </div>
 
               <div className="rounded-[20px] border border-emerald-500/10 bg-emerald-500/[0.02] p-6 w-full max-w-md space-y-3 text-left">
                 {[
                   { l: "Application", v: applicationId },
-                  { l: "Status", v: "Pending Review", color: "text-amber-400/70" },
-                  { l: "Storage", v: "VEILdb · IPFS · OrbitDB" },
-                  { l: "Response", v: app.referralCode ? "≤24h (referred)" : "≤72h" },
+                  { l: "Status", v: "Local only", color: "text-amber-400/70" },
+                  { l: "Storage", v: "this browser (localStorage)" },
+                  { l: "Network", v: "local testnet — not Fuji" },
                 ].map(item => (
                   <div key={item.l} className="flex justify-between">
                     <span className="text-[10px] uppercase tracking-[0.15em] text-emerald-400/30 font-[var(--font-space-grotesk)]">{item.l}</span>
@@ -922,8 +939,8 @@ export default function ApplyPage() {
 
               {/* Referral code generation */}
               <div className="rounded-[20px] border border-white/[0.04] bg-white/[0.01] p-6 w-full max-w-md text-left space-y-3">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-white/25 font-[var(--font-space-grotesk)]">Your Referral Code</p>
-                <p className="text-[12px] text-white/30 leading-relaxed">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-white/[0.28] font-[var(--font-space-grotesk)]">Your Referral Code</p>
+                <p className="text-[12px] text-white/[0.34] leading-relaxed">
                   Once accepted, this code activates. Share it with other builders.
                   Both of you start with +50 Bloodsworn reputation.
                 </p>
@@ -933,19 +950,23 @@ export default function ApplyPage() {
                   </code>
                   <button
                     onClick={() => navigator.clipboard?.writeText(referralGenerated)}
-                    className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-[10px] text-white/30 hover:text-white/60 transition-colors font-[var(--font-space-grotesk)]"
+                    className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5 text-[10px] text-white/[0.34] hover:text-white/[0.67] transition-colors font-[var(--font-space-grotesk)]"
                   >Copy</button>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 pt-4">
-                <Link href="/exploreveil"
-                  className="rounded-full border border-white/[0.06] bg-white/[0.01] px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-white/30 hover:text-white/50 transition-colors">
-                  ← Back to VEIL
+              <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
+                <Link href="/app/onboard"
+                  className="rounded-full border border-emerald-500/15 bg-emerald-500/[0.03] px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400/70 hover:text-emerald-400 transition-colors">
+                  Continue to Onboard →
+                </Link>
+                <Link href="/explorer"
+                  className="rounded-full border border-white/[0.06] bg-white/[0.01] px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-white/[0.34] hover:text-white/[0.56] transition-colors">
+                  Explorer
                 </Link>
                 <Link href="/app/docs"
-                  className="rounded-full border border-emerald-500/15 bg-emerald-500/[0.03] px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-emerald-400/50 hover:text-emerald-400/70 transition-colors">
-                  Read the Docs →
+                  className="rounded-full border border-white/[0.06] px-6 py-3 font-[var(--font-space-grotesk)] text-sm text-white/[0.34] hover:text-white/[0.56] transition-colors">
+                  Docs
                 </Link>
               </div>
             </motion.div>
@@ -953,6 +974,7 @@ export default function ApplyPage() {
         </AnimatePresence>
       </main>
 
+      <FlowNext />
       <VeilFooter />
     </div>
   )

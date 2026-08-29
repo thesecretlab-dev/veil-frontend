@@ -31,10 +31,10 @@ export function WalletIdentity() {
   return (
     <div className="flex items-center gap-2">
       <AddressAvatar address={address} />
-      <span className="text-sm text-white/70 font-mono">{truncateAddress(address)}</span>
+      <span className="text-sm text-white/[0.78] font-mono">{truncateAddress(address)}</span>
       <button
         onClick={() => disconnect()}
-        className="text-xs text-white/30 hover:text-white/60 transition-colors ml-1"
+        className="text-xs text-white/[0.34] hover:text-white/[0.67] transition-colors ml-1"
       >
         ✕
       </button>
@@ -58,7 +58,7 @@ export function ConnectWalletButton() {
           <button
             key={connector.uid}
             onClick={() => connect({ connector })}
-            className="w-full text-left px-3 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+            className="w-full text-left px-3 py-2.5 text-sm text-white/[0.78] hover:text-white hover:bg-white/5 rounded-lg transition-colors"
           >
             {connector.name}
           </button>
@@ -81,8 +81,8 @@ export function WalletGate({ children, fallback }: { children: React.ReactNode; 
         <svg viewBox="0 0 48 48" className="w-12 h-12 mb-4 text-emerald-500/30">
           <path d="M24 40 L8 12 L40 12 Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
         </svg>
-        <h3 className="text-lg font-medium text-white/60 mb-2">Wallet Required</h3>
-        <p className="text-sm text-white/30 mb-6 max-w-xs">Connect your wallet to participate in VEIL governance.</p>
+        <h3 className="text-lg font-medium text-white/[0.67] mb-2">Wallet Required</h3>
+        <p className="text-sm text-white/[0.34] mb-6 max-w-xs">Connect your wallet to participate in VEIL governance.</p>
         <ConnectWalletButton />
       </motion.div>
     )

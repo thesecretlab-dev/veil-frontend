@@ -12,7 +12,7 @@ type VoteType = 'for' | 'against' | 'abstain'
 const voteConfig: Record<VoteType, { label: string; color: string; hoverBg: string }> = {
   for: { label: 'For', color: 'text-emerald-400', hoverBg: 'hover:bg-emerald-500/20 hover:border-emerald-500/40' },
   against: { label: 'Against', color: 'text-red-400', hoverBg: 'hover:bg-red-500/20 hover:border-red-500/40' },
-  abstain: { label: 'Abstain', color: 'text-white/50', hoverBg: 'hover:bg-white/10 hover:border-white/20' },
+  abstain: { label: 'Abstain', color: 'text-white/[0.56]', hoverBg: 'hover:bg-white/10 hover:border-white/20' },
 }
 
 export function VotePanel({ proposal, userVote, onVoted }: {
@@ -52,13 +52,13 @@ export function VotePanel({ proposal, userVote, onVoted }: {
 
   return (
     <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 space-y-5">
-      <h3 className="text-sm font-medium text-white/50 uppercase tracking-wider">Votes</h3>
+      <h3 className="text-sm font-medium text-white/[0.56] uppercase tracking-wider">Votes</h3>
 
       <VoteBar votesFor={votesFor} votesAgainst={votesAgainst} votesAbstain={votesAbstain} />
 
       {isActive && isConnected && !userVote && (
         <div className="space-y-3">
-          <p className="text-sm text-white/40">Cast your vote</p>
+          <p className="text-sm text-white/[0.45]">Cast your vote</p>
           <div className="flex gap-2">
             {(Object.keys(voteConfig) as VoteType[]).map((type) => (
               <button
@@ -82,14 +82,14 @@ export function VotePanel({ proposal, userVote, onVoted }: {
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-sm text-white/40"
+          className="text-sm text-white/[0.45]"
         >
-          You voted <span className={voteConfig[userVote as VoteType]?.color || 'text-white/60'}>{voteConfig[userVote as VoteType]?.label || userVote}</span>
+          You voted <span className={voteConfig[userVote as VoteType]?.color || 'text-white/[0.67]'}>{voteConfig[userVote as VoteType]?.label || userVote}</span>
         </motion.p>
       )}
 
       {!isActive && (
-        <p className="text-sm text-white/30">Voting has ended.</p>
+        <p className="text-sm text-white/[0.34]">Voting has ended.</p>
       )}
 
       <AnimatePresence>

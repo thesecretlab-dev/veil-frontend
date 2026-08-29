@@ -1,6 +1,7 @@
 "use client"
 
-import { VeilFooter, VeilHeader } from '@/components/brand'
+import { VeilFooter } from '@/components/brand'
+import { AppNav } from "@/components/app-nav"
 
 import { useState, useRef, useEffect, ReactNode } from "react"
 import Link from "next/link"
@@ -44,14 +45,14 @@ function SectionLabel({ number, label }: { number: string; label: string }) {
     <div className="flex items-center gap-4 mb-10">
       <span
         className="text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)" }}
+        style={{ color: "rgba(16,185,129,0.56)", fontFamily: "var(--font-space-grotesk)" }}
       >
         {number}
       </span>
       <div className="h-px flex-1 max-w-[40px]" style={{ background: "rgba(255,255,255,0.06)" }} />
       <span
         className="text-[11px] tracking-[0.2em] uppercase"
-        style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-space-grotesk)" }}
+        style={{ color: "rgba(255,255,255,0.34)", fontFamily: "var(--font-space-grotesk)" }}
       >
         {label}
       </span>
@@ -75,7 +76,7 @@ function StatCard({ label, value, color, sub }: { label: string; value: string; 
       />
       <div
         className="text-[11px] tracking-[0.15em] uppercase mb-4 relative z-10"
-        style={{ color: "rgba(255,255,255,0.3)", fontFamily: "var(--font-space-grotesk)" }}
+        style={{ color: "rgba(255,255,255,0.34)", fontFamily: "var(--font-space-grotesk)" }}
       >
         {label}
       </div>
@@ -88,7 +89,7 @@ function StatCard({ label, value, color, sub }: { label: string; value: string; 
       {sub && (
         <div
           className="text-sm mt-2 relative z-10"
-          style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-figtree)" }}
+          style={{ color: "rgba(255,255,255,0.22)", fontFamily: "var(--font-figtree)" }}
         >
           {sub}
         </div>
@@ -103,14 +104,14 @@ function DetailRow({ label, value, accent = false }: { label: string; value: str
     <div className="flex justify-between items-center py-2">
       <span
         className="text-[13px]"
-        style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}
+        style={{ color: "rgba(255,255,255,0.39)", fontFamily: "var(--font-space-grotesk)" }}
       >
         {label}
       </span>
       <span
         className="text-[13px]"
         style={{
-          color: accent ? "rgba(16,185,129,0.8)" : "rgba(255,255,255,0.7)",
+          color: accent ? "rgba(16,185,129,0.90)" : "rgba(255,255,255,0.78)",
           fontFamily: accent ? "monospace" : "var(--font-figtree)",
         }}
       >
@@ -126,45 +127,24 @@ export default function PortfolioPage() {
   const [expandedTrade, setExpandedTrade] = useState<number | null>(null)
   const [copiedReceipt, setCopiedReceipt] = useState<string | null>(null)
 
-  const positions = [
-    {
-      id: 1, question: "Will Bitcoin reach $100k by end of 2024?", outcome: "Yes",
-      shares: 250, avgPrice: 0.45, currentPrice: 0.62, value: 155, pnl: 42.5, pnlPercent: 37.8,
-      entryDate: "2024-01-08", marketVolume: "$2.4M", totalShares: 5420000, yourOwnership: "0.0046%",
-      fees: 1.25, breakEven: 0.45, roi: 37.8, daysHeld: 37, lastUpdate: "2 hours ago", receiptId: "0x7f3a...9b2c",
-    },
-    {
-      id: 2, question: "Will there be a US recession in 2024?", outcome: "No",
-      shares: 180, avgPrice: 0.38, currentPrice: 0.51, value: 91.8, pnl: 23.4, pnlPercent: 34.2,
-      entryDate: "2024-01-12", marketVolume: "$1.8M", totalShares: 3890000, yourOwnership: "0.0046%",
-      fees: 0.95, breakEven: 0.38, roi: 34.2, daysHeld: 33, lastUpdate: "5 hours ago", receiptId: "0x4e1d...5k8p",
-    },
-    {
-      id: 3, question: "Will Trump win the 2024 election?", outcome: "Yes",
-      shares: 320, avgPrice: 0.52, currentPrice: 0.48, value: 153.6, pnl: -12.8, pnlPercent: -7.7,
-      entryDate: "2024-01-05", marketVolume: "$8.2M", totalShares: 18500000, yourOwnership: "0.0017%",
-      fees: 1.85, breakEven: 0.52, roi: -7.7, daysHeld: 40, lastUpdate: "1 hour ago", receiptId: "0x9c2f...3n7q",
-    },
-  ]
+  const positions: {
+    id: number; question: string; outcome: string; shares: number; avgPrice: number; currentPrice: number
+    value: number; pnl: number; pnlPercent: number; entryDate: string; marketVolume: string
+    totalShares: number; yourOwnership: string; fees: number; breakEven: number; roi: number
+    daysHeld: number; lastUpdate: string; receiptId: string
+  }[] = []
 
-  const history = [
-    {
-      id: 1, date: "2024-01-15", time: "14:32 EST", question: "Will AI replace 50% of jobs by 2030?",
-      outcome: "No", type: "Sell", shares: 150, price: 0.68, total: 102, pnl: 28.5,
-      entryPrice: 0.49, entryDate: "2023-12-20", exitPrice: 0.68, fees: 1.15, netPnl: 27.35,
-      holdingPeriod: "26 days", roi: 38.8, transactionHash: "0x7a9f...3c2d", receiptId: "0x7a9f...3c2d",
-    },
-    {
-      id: 2, date: "2024-01-14", time: "09:15 EST", question: "Will Ethereum reach $5k in 2024?",
-      outcome: "Yes", type: "Buy", shares: 200, price: 0.42, total: 84, pnl: 0,
-      entryPrice: 0.42, entryDate: "2024-01-14", exitPrice: null, fees: 0.84, netPnl: 0,
-      holdingPeriod: "31 days", roi: 0, transactionHash: "0x4b8e...9f1a", receiptId: "0x4b8e...9f1a",
-    },
-  ]
+  const history: {
+    id: number; date: string; time: string; question: string; outcome: string; type: string
+    shares: number; price: number; total: number; pnl: number; entryPrice: number; entryDate: string
+    exitPrice: number | null; fees: number; netPnl: number; holdingPeriod: string; roi: number
+    transactionHash: string; receiptId: string
+  }[] = []
 
   const totalValue = positions.reduce((sum, pos) => sum + pos.value, 0)
   const totalPnL = positions.reduce((sum, pos) => sum + pos.pnl, 0)
-  const totalPnLPercent = (totalPnL / (totalValue - totalPnL)) * 100
+  const costBasis = totalValue - totalPnL
+  const totalPnLPercent = costBasis === 0 ? 0 : (totalPnL / costBasis) * 100
 
   const portfolioHistory = [
     { date: "Jan 1", value: 320 }, { date: "Jan 5", value: 335 }, { date: "Jan 10", value: 328 },
@@ -201,34 +181,16 @@ export default function PortfolioPage() {
   return (
     <div className="relative min-h-screen" style={{ background: "#060606" }}>
       <FilmGrain />
-      <VeilHeader />
+      <AppNav />
 
-      {/* ─── Fixed Nav ─── */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
-        style={{ background: "rgba(6,6,6,0.85)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-      >
-        <div className="mx-auto max-w-6xl px-8 h-16 flex items-center justify-between">
-          <Link
-            href="/app"
-            className="flex items-center gap-3 group"
-          >
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" className="opacity-40 group-hover:opacity-70 transition-opacity">
-              <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            <span
-              className="text-[13px] tracking-wide opacity-40 group-hover:opacity-70 transition-opacity"
-              style={{ fontFamily: "var(--font-space-grotesk)", color: "#fff" }}
-            >
-              Markets
+      {/* ─── Preview Banner ─── */}
+      <div className="relative z-10 pt-28 mx-auto max-w-6xl px-8">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="rounded-[16px] border border-amber-500/20 bg-amber-500/5 px-5 py-3">
+            <span className="font-[var(--font-space-grotesk)] text-[11px] tracking-[0.15em] uppercase text-amber-300/70">
+              Local book is empty. Native fills live on Markets — this page does not invent positions.
             </span>
-          </Link>
-          <span
-            className="text-[13px] tracking-[0.15em] uppercase"
-            style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}
-          >
-            Portfolio
-          </span>
+          </div>
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
@@ -237,22 +199,13 @@ export default function PortfolioPage() {
             style={{
               background: "rgba(16,185,129,0.08)",
               border: "1px solid rgba(16,185,129,0.15)",
-              color: "rgba(16,185,129,0.85)",
+              color: "rgba(16,185,129,0.95)",
               fontFamily: "var(--font-space-grotesk)",
             }}
           >
             <Download className="h-3.5 w-3.5" />
             Export
           </motion.button>
-        </div>
-      </nav>
-
-      {/* ─── Preview Banner ─── */}
-      <div className="relative z-10 pt-24 mx-auto max-w-6xl px-8">
-        <div className="rounded-[16px] border border-amber-500/20 bg-amber-500/5 px-5 py-3 text-center mb-4">
-          <span className="font-[var(--font-space-grotesk)] text-[11px] tracking-[0.15em] uppercase text-amber-300/70">
-            Demo Data — All positions and values shown are illustrative only. No live trading is active.
-          </span>
         </div>
       </div>
 
@@ -267,7 +220,7 @@ export default function PortfolioPage() {
             >
               <div
                 className="text-[11px] tracking-[0.3em] uppercase mb-6"
-                style={{ color: "rgba(16,185,129,0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                style={{ color: "rgba(16,185,129,0.45)", fontFamily: "var(--font-space-grotesk)" }}
               >
                 Total Portfolio Value
               </div>
@@ -308,9 +261,28 @@ export default function PortfolioPage() {
         <ScrollReveal delay={0.1}>
           <div className="grid gap-5 md:grid-cols-3 mb-24">
             <StatCard label="Positions" value={String(positions.length)} color="rgba(255,255,255,0.9)" sub="Active markets" />
-            <StatCard label="Best Performer" value="+37.8%" color={emerald} sub="BTC $100k" />
-            <StatCard label="Total Trades" value={String(positions.length + history.length)} color="rgba(255,255,255,0.9)" sub="All time" />
+            <StatCard label="Best Performer" value="—" color={emerald} sub="No fills yet" />
+            <StatCard label="Total Trades" value={String(positions.length + history.length)} color="rgba(255,255,255,0.9)" sub="This node" />
           </div>
+          {positions.length === 0 && (
+            <div className="mb-16 rounded-[20px] p-10 text-center" style={{ border: "1px solid rgba(255,255,255,0.06)" }}>
+              <p className="mb-6 text-lg" style={{ fontFamily: "var(--font-figtree)", color: "rgba(255,255,255,0.45)" }}>
+                No native positions on this browser. Open Markets to commit on local VeilVM.
+              </p>
+              <Link
+                href="/app"
+                className="inline-flex rounded-full px-6 py-3 text-sm"
+                style={{
+                  fontFamily: "var(--font-space-grotesk)",
+                  background: "rgba(16,185,129,0.12)",
+                  border: "1px solid rgba(16,185,129,0.25)",
+                  color: "rgb(52,211,153)",
+                }}
+              >
+                Open Markets
+              </Link>
+            </div>
+          )}
         </ScrollReveal>
 
         {/* ─── 01 / Chart ─── */}
@@ -384,16 +356,16 @@ export default function PortfolioPage() {
                           className="text-[12px] px-2.5 py-0.5 rounded-full"
                           style={{
                             background: "rgba(16,185,129,0.08)",
-                            color: "rgba(16,185,129,0.8)",
+                            color: "rgba(16,185,129,0.90)",
                             fontFamily: "var(--font-space-grotesk)",
                           }}
                         >
                           {position.outcome}
                         </span>
-                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-space-grotesk)" }}>
+                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.28)", fontFamily: "var(--font-space-grotesk)" }}>
                           {position.shares} shares
                         </span>
-                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}>
+                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.22)", fontFamily: "var(--font-space-grotesk)" }}>
                           {position.avgPrice.toFixed(2)}¢ → {position.currentPrice.toFixed(2)}¢
                         </span>
                       </div>
@@ -417,7 +389,7 @@ export default function PortfolioPage() {
                         animate={{ rotate: expandedPosition === position.id ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <ChevronDown className="w-4 h-4" style={{ color: "rgba(255,255,255,0.2)" }} />
+                        <ChevronDown className="w-4 h-4" style={{ color: "rgba(255,255,255,0.22)" }} />
                       </motion.div>
                     </div>
                   </div>
@@ -435,13 +407,13 @@ export default function PortfolioPage() {
                         <div className="mt-7 pt-7 grid gap-8 md:grid-cols-2" style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
                           <div>
                             <div className="flex justify-between items-center py-2">
-                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}>Receipt ID</span>
+                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.39)", fontFamily: "var(--font-space-grotesk)" }}>Receipt ID</span>
                               <div className="flex items-center gap-2">
-                                <code className="text-[13px]" style={{ color: "rgba(16,185,129,0.8)" }}>{position.receiptId}</code>
+                                <code className="text-[13px]" style={{ color: "rgba(16,185,129,0.90)" }}>{position.receiptId}</code>
                                 <button
                                   onClick={() => handleCopyReceipt(position.receiptId)}
                                   className="p-1 rounded-md transition-all hover:bg-white/5"
-                                  style={{ color: "rgba(16,185,129,0.6)" }}
+                                  style={{ color: "rgba(16,185,129,0.67)" }}
                                 >
                                   {copiedReceipt === position.receiptId ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                                 </button>
@@ -512,19 +484,19 @@ export default function PortfolioPage() {
                           className="text-[12px] px-2.5 py-0.5 rounded-full"
                           style={{
                             background: trade.type === "Buy" ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.08)",
-                            color: trade.type === "Buy" ? "rgba(16,185,129,0.8)" : "rgba(239,68,68,0.8)",
+                            color: trade.type === "Buy" ? "rgba(16,185,129,0.90)" : "rgba(239,68,68,0.8)",
                             fontFamily: "var(--font-space-grotesk)",
                           }}
                         >
                           {trade.type}
                         </span>
-                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.4)", fontFamily: "var(--font-space-grotesk)" }}>
+                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.45)", fontFamily: "var(--font-space-grotesk)" }}>
                           {trade.outcome}
                         </span>
-                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-space-grotesk)" }}>
+                        <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.28)", fontFamily: "var(--font-space-grotesk)" }}>
                           {trade.shares} shares @ {trade.price.toFixed(2)}¢
                         </span>
-                        <span className="text-[12px]" style={{ color: "rgba(255,255,255,0.15)", fontFamily: "var(--font-space-grotesk)" }}>
+                        <span className="text-[12px]" style={{ color: "rgba(255,255,255,0.17)", fontFamily: "var(--font-space-grotesk)" }}>
                           {trade.date}
                         </span>
                       </div>
@@ -542,7 +514,7 @@ export default function PortfolioPage() {
                         animate={{ rotate: expandedTrade === trade.id ? 180 : 0 }}
                         transition={{ duration: 0.3 }}
                       >
-                        <ChevronDown className="w-4 h-4" style={{ color: "rgba(255,255,255,0.2)" }} />
+                        <ChevronDown className="w-4 h-4" style={{ color: "rgba(255,255,255,0.22)" }} />
                       </motion.div>
                     </div>
                   </div>
@@ -560,13 +532,13 @@ export default function PortfolioPage() {
                         <div className="mt-7 pt-7 grid gap-8 md:grid-cols-2" style={{ borderTop: "1px solid rgba(255,255,255,0.04)" }}>
                           <div>
                             <div className="flex justify-between items-center py-2">
-                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}>Receipt ID</span>
+                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.39)", fontFamily: "var(--font-space-grotesk)" }}>Receipt ID</span>
                               <div className="flex items-center gap-2">
-                                <code className="text-[13px]" style={{ color: "rgba(16,185,129,0.8)" }}>{trade.receiptId}</code>
+                                <code className="text-[13px]" style={{ color: "rgba(16,185,129,0.90)" }}>{trade.receiptId}</code>
                                 <button
                                   onClick={() => handleCopyReceipt(trade.receiptId)}
                                   className="p-1 rounded-md transition-all hover:bg-white/5"
-                                  style={{ color: "rgba(16,185,129,0.6)" }}
+                                  style={{ color: "rgba(16,185,129,0.67)" }}
                                 >
                                   {copiedReceipt === trade.receiptId ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                                 </button>
@@ -580,13 +552,13 @@ export default function PortfolioPage() {
                           <div>
                             <DetailRow label="Fees" value={`$${trade.fees.toFixed(2)}`} />
                             <div className="flex justify-between items-center py-2">
-                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}>Net P&L</span>
+                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.39)", fontFamily: "var(--font-space-grotesk)" }}>Net P&L</span>
                               <span className="text-[13px]" style={{ color: pnlColor(trade.netPnl), fontFamily: "var(--font-figtree)" }}>
                                 {trade.netPnl >= 0 ? "+" : ""}${trade.netPnl.toFixed(2)}
                               </span>
                             </div>
                             <div className="flex justify-between items-center py-2">
-                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}>ROI</span>
+                              <span className="text-[13px]" style={{ color: "rgba(255,255,255,0.39)", fontFamily: "var(--font-space-grotesk)" }}>ROI</span>
                               <span className="text-[13px]" style={{ color: pnlColor(trade.roi), fontFamily: "var(--font-figtree)" }}>
                                 {trade.roi >= 0 ? "+" : ""}{trade.roi.toFixed(1)}%
                               </span>
@@ -604,20 +576,7 @@ export default function PortfolioPage() {
         </div>
       </div>
 
-      {/* ─── Fixed Footer ─── */}
-      <footer
-        className="fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl"
-        style={{ background: "rgba(6,6,6,0.85)", borderTop: "1px solid rgba(255,255,255,0.04)" }}
-      >
-        <div className="mx-auto max-w-6xl px-8 h-12 flex items-center justify-between">
-          <span className="text-[11px] tracking-[0.15em] uppercase" style={{ color: "rgba(255,255,255,0.15)", fontFamily: "var(--font-space-grotesk)" }}>
-            Veil
-          </span>
-          <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.1)", fontFamily: "var(--font-space-grotesk)" }}>
-            {positions.length} active positions · ${totalValue.toFixed(2)} total value
-          </span>
-        </div>
-      </footer>
+      <VeilFooter />
     </div>
   )
 }

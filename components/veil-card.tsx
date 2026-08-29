@@ -36,7 +36,7 @@ export default function VeilCard({
 
   const base = emerald ? "rgba(16, 185, 129, 0.03)" : "rgba(0, 0, 0, 0.3)"
   const border = emerald ? "rgba(16, 185, 129, 0.08)" : "rgba(16, 185, 129, 0.1)"
-  const hoverBorder = emerald ? "rgba(16, 185, 129, 0.25)" : "rgba(16, 185, 129, 0.2)"
+  const hoverBorder = emerald ? "rgba(16, 185, 129, 0.28)" : "rgba(16, 185, 129, 0.22)"
   const hoverShadow = "0 0 30px rgba(16,185,129,0.08), 0 4px 20px rgba(0,0,0,0.3)"
 
   return (

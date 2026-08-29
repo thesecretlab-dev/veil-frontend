@@ -182,12 +182,12 @@ function SectionLabel({ number, text }: { number: string; text: string }) {
   return (
     <div className="flex items-center justify-center gap-3 pb-2">
       <span style={{
-        fontSize: "9px", letterSpacing: "0.4em", color: "rgba(16,185,129,0.35)",
+        fontSize: "9px", letterSpacing: "0.4em", color: "rgba(16,185,129,0.39)",
         fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
       }}>{number}</span>
       <span style={{ width: "20px", height: "1px", background: "rgba(16,185,129,0.1)" }} />
       <span style={{
-        fontSize: "8px", letterSpacing: "0.4em", color: "rgba(255,255,255,0.26)",
+        fontSize: "8px", letterSpacing: "0.4em", color: "rgba(255,255,255,0.29)",
         fontFamily: "var(--font-space-grotesk)",
       }}>{text}</span>
     </div>
@@ -268,17 +268,17 @@ export default function ShaderShowcase() {
           <Link href="/lab" className="flex items-center gap-1.5 group/tsl" style={{ transition: "all 1.5s ease" }}>
             <img src="/tsl-logo.png" alt="" className="h-4 w-4 invert opacity-[0.28] group-hover/tsl:opacity-40" style={{ transition: "opacity 1.5s ease" }} />
             <span style={{
-              fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.44)",
+              fontSize: "9px", letterSpacing: "0.2em", color: "rgba(255,255,255,0.49)",
               fontFamily: "var(--font-space-grotesk)", transition: "color 1.5s ease",
-            }} className="group-hover/tsl:!text-white/15">tsl</span>
+            }} className="group-hover/tsl:!text-white/[0.17]">tsl</span>
           </Link>
         </Magnetic>
-        <span style={{ color: "rgba(255,255,255,0.42)", fontSize: "10px" }}>/</span>
+        <span style={{ color: "rgba(255,255,255,0.47)", fontSize: "10px" }}>/</span>
         <Magnetic strength={0.25} radius={80}>
           <div className="flex items-center gap-2.5">
             <TriangleLogo />
             <span style={{
-              fontSize: "13px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.56)",
+              fontSize: "13px", letterSpacing: "0.25em", color: "rgba(255,255,255,0.63)",
               fontFamily: "var(--font-space-grotesk)", fontWeight: 600,
               textShadow: "0 0 16px rgba(16,185,129,0.2)", transition: "all 1.5s ease",
             }}>VEIL</span>
@@ -305,13 +305,13 @@ export default function ShaderShowcase() {
           transition={{ delay: 0.1, duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
           style={{
             fontFamily: "var(--font-space-grotesk)",
-            color: "rgba(255, 255, 255, 0.56)",
+            color: "rgba(255, 255, 255, 0.63)",
             textShadow: "0 0 18px rgba(16,185,129,0.22), 0 0 36px rgba(16,185,129,0.12), 0 2px 6px rgba(0,0,0,0.45)",
             WebkitTextStroke: "1px rgba(16,185,129,0.18)",
             transition: "color 1.5s ease, text-shadow 1.5s ease",
           }}
           whileHover={{
-            color: "rgba(255,255,255,0.40)",
+            color: "rgba(255,255,255,0.45)",
             textShadow: "0 0 20px rgba(16,185,129,0.35), 0 0 40px rgba(16,185,129,0.2), 0 0 80px rgba(16,185,129,0.1)",
           }}
         >

@@ -30,7 +30,7 @@ export default function VeilPreloader({ onComplete }: { onComplete: () => void }
           >
             <motion.path
               d="M24 42 L6 8 L42 8 Z"
-              stroke="rgba(16, 185, 129, 0.6)"
+              stroke="rgba(16, 185, 129, 0.67)"
               strokeWidth="1"
               fill="none"
               initial={{ pathLength: 0, opacity: 0 }}
@@ -57,7 +57,7 @@ export default function VeilPreloader({ onComplete }: { onComplete: () => void }
               style={{
                 fontSize: "14px",
                 letterSpacing: "0.5em",
-                color: "rgba(255, 255, 255, 0.25)",
+                color: "rgba(255, 255, 255, 0.28)",
                 fontFamily: "var(--font-space-grotesk)",
                 fontWeight: 600,
               }}

@@ -5,7 +5,7 @@ import { VeilFooter, VeilHeader } from '@/components/brand'
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
+
 
 function ScrollReveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef(null)
@@ -14,8 +14,8 @@ function ScrollReveal({ children, className = "" }: { children: React.ReactNode;
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-      animate={isInView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       {children}
@@ -140,30 +140,7 @@ export default function RiskPage() {
         }}
       />
 
-      {/* Fixed nav */}
-      <nav
-        className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-8 py-5"
-        style={{
-          background: "rgba(6, 6, 6, 0.8)",
-          backdropFilter: "blur(20px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
-        }}
-      >
-        <Link
-          href="/app"
-          className="flex items-center gap-2 text-sm transition-all hover:gap-3"
-          style={{ color: "rgba(16, 185, 129, 0.7)", fontFamily: "var(--font-space-grotesk)" }}
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Markets
-        </Link>
-        <span
-          className="text-xs tracking-[0.3em] uppercase"
-          style={{ color: "rgba(255, 255, 255, 0.25)", fontFamily: "var(--font-space-grotesk)" }}
-        >
-          VEIL / Risk Disclosure
-        </span>
-      </nav>
+
 
       <main className="relative z-10 mx-auto max-w-[860px] px-6 pt-32 pb-32">
         {/* Hero */}
@@ -171,7 +148,7 @@ export default function RiskPage() {
           <div className="mb-12 text-center">
             <p
               className="mb-4 text-xs tracking-[0.4em] uppercase"
-              style={{ color: "rgba(16, 185, 129, 0.5)", fontFamily: "var(--font-space-grotesk)" }}
+              style={{ color: "rgba(16, 185, 129, 0.56)", fontFamily: "var(--font-space-grotesk)" }}
             >
               Legal
             </p>
@@ -187,7 +164,7 @@ export default function RiskPage() {
             </h1>
             <p
               className="text-base font-light"
-              style={{ color: "rgba(255, 255, 255, 0.35)", fontFamily: "var(--font-figtree)" }}
+              style={{ color: "rgba(255, 255, 255, 0.39)", fontFamily: "var(--font-figtree)" }}
             >
               Last updated January 10, 2025
             </p>
@@ -212,7 +189,7 @@ export default function RiskPage() {
             </p>
             <p
               className="text-[15px] leading-[1.85] font-light"
-              style={{ color: "rgba(255, 255, 255, 0.5)", fontFamily: "var(--font-figtree)" }}
+              style={{ color: "rgba(255, 255, 255, 0.56)", fontFamily: "var(--font-figtree)" }}
             >
               Trading on prediction markets involves significant financial risk. You may lose your entire investment. Only
               trade with funds you can afford to lose. This disclosure outlines the key risks associated with using VEIL.
@@ -234,7 +211,7 @@ export default function RiskPage() {
                 <div className="flex items-baseline gap-4 mb-6">
                   <span
                     className="text-xs tracking-[0.2em]"
-                    style={{ color: "rgba(16, 185, 129, 0.4)", fontFamily: "var(--font-space-grotesk)" }}
+                    style={{ color: "rgba(16, 185, 129, 0.45)", fontFamily: "var(--font-space-grotesk)" }}
                   >
                     {s.num}
                   </span>
@@ -242,7 +219,7 @@ export default function RiskPage() {
                     className="text-2xl font-light"
                     style={{
                       fontFamily: "var(--font-instrument-serif)",
-                      color: "rgba(255, 255, 255, 0.85)",
+                      color: "rgba(255, 255, 255, 0.95)",
                       letterSpacing: "-0.02em",
                     }}
                   >
@@ -252,20 +229,23 @@ export default function RiskPage() {
 
                 <div className="space-y-4" style={{ fontFamily: "var(--font-figtree)" }}>
                   {s.content.map((p, i) => (
-                    <p key={i} className="text-[15px] leading-[1.85] font-light" style={{ color: "rgba(255, 255, 255, 0.45)" }}>
+                    <p key={i} className="text-[15px] leading-[1.85] font-light" style={{ color: "rgba(255, 255, 255, 0.50)" }}>
                       {p}
                     </p>
                   ))}
 
                   {s.contact && (
-                    <div className="text-[15px] leading-[1.85] font-light" style={{ color: "rgba(255, 255, 255, 0.45)" }}>
+                    <div className="text-[15px] leading-[1.85] font-light" style={{ color: "rgba(255, 255, 255, 0.50)" }}>
                       <p>If you have questions about these risks or need assistance, please contact us at:</p>
                       <p className="mt-3">
-                        Email: <span style={{ color: "rgba(16, 185, 129, 0.7)" }}>risk@veil.markets</span>
+                        Email:{" "}
+                        <a href="mailto:agent@thesecretlab.app" style={{ color: "rgba(16, 185, 129, 0.78)" }} className="hover:underline">
+                          agent@thesecretlab.app
+                        </a>
                       </p>
                       <p>
                         Support:{" "}
-                        <Link href="/app/support" style={{ color: "rgba(16, 185, 129, 0.7)" }} className="hover:underline">
+                        <Link href="/app/support" style={{ color: "rgba(16, 185, 129, 0.78)" }} className="hover:underline">
                           veil.markets/support
                         </Link>
                       </p>
@@ -286,7 +266,7 @@ export default function RiskPage() {
           background: "rgba(6, 6, 6, 0.6)",
         }}
       >
-        <p className="text-xs" style={{ color: "rgba(255, 255, 255, 0.2)", fontFamily: "var(--font-space-grotesk)" }}>
+        <p className="text-xs" style={{ color: "rgba(255, 255, 255, 0.22)", fontFamily: "var(--font-space-grotesk)" }}>
           © 2026 VEIL � TSL
         </p>
       </footer>

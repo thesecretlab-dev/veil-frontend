@@ -13,7 +13,7 @@ export default function ProblemSection() {
           tag="h2"
           className="text-5xl md:text-6xl font-bold tracking-wide mb-12 font-sans cursor-default"
           style={{
-            color: "rgba(255, 255, 255, 0.35)",
+            color: "rgba(255, 255, 255, 0.39)",
             textShadow: `
               0 0 10px rgba(16, 185, 129, 0.3),
               0 0 20px rgba(16, 185, 129, 0.2),
@@ -32,13 +32,13 @@ export default function ProblemSection() {
             <motion.h3
               className="text-3xl font-semibold mb-4 font-sans cursor-default"
               style={{
-                color: "rgba(255, 255, 255, 0.25)",
+                color: "rgba(255, 255, 255, 0.28)",
                 textShadow: "0 0 15px rgba(16, 185, 129, 0.2), inset 0 0 5px rgba(255, 255, 255, 0.1)",
                 WebkitTextStroke: "0.5px rgba(255, 255, 255, 0.15)",
                 filter: "blur(0.3px)",
               }}
               whileHover={{
-                color: "rgba(255, 255, 255, 0.45)",
+                color: "rgba(255, 255, 255, 0.50)",
                 filter: "blur(0.2px) brightness(1.4)",
                 textShadow: `
                   0 0 20px rgba(16, 185, 129, 0.7),
@@ -51,7 +51,7 @@ export default function ProblemSection() {
             >
               Prediction Markets Leak Alpha
             </motion.h3>
-            <p className="text-lg leading-relaxed font-sans" style={{ color: "rgba(255, 255, 255, 0.55)" }}>
+            <p className="text-lg leading-relaxed font-sans" style={{ color: "rgba(255, 255, 255, 0.62)" }}>
               Today{"\u2019"}s on-chain prediction markets expose every order to public mempools. Bots watch, copy, and sandwich
               trades. Market makers who invest in sophisticated models end up subsidizing free riders. The result: thin
               liquidity, wide spreads, and serious traders sitting on the sidelines.
@@ -68,19 +68,19 @@ export default function ProblemSection() {
                 <motion.h4
                   className="text-xl font-semibold mb-2 font-sans"
                   style={{
-                    color: "rgba(255, 255, 255, 0.30)",
+                    color: "rgba(255, 255, 255, 0.34)",
                     textShadow: "0 0 10px rgba(16, 185, 129, 0.15)",
                     WebkitTextStroke: "0.3px rgba(255, 255, 255, 0.15)",
                   }}
                   whileHover={{
-                    color: "rgba(255, 255, 255, 0.50)",
+                    color: "rgba(255, 255, 255, 0.56)",
                     textShadow: "0 0 15px rgba(16, 185, 129, 0.4)",
                     transition: { duration: 0.4 },
                   }}
                 >
                   {item.title}
                 </motion.h4>
-                <p className="font-sans" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
+                <p className="font-sans" style={{ color: "rgba(255, 255, 255, 0.45)" }}>
                   {item.desc}
                 </p>
               </VeilCard>

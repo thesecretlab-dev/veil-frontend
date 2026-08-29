@@ -1,8 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { AppShaderBackground } from "@/components/app-shader-background"
-import { MarketSidebar } from "@/components/market-sidebar"
+import { AppNav } from "@/components/app-nav"
 import { MarketHeader } from "@/components/market-header"
 import { MarketContent } from "@/components/market-content"
 import { TradingPanel } from "@/components/trading-panel"
@@ -10,13 +9,11 @@ import { use } from "react"
 
 export default function MarketDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const [category, setCategory] = useState("all")
 
   return (
-    <div className="min-h-screen relative" style={{ background: "#060606" }}>
+    <div className="min-h-screen relative" style={{ background: "#000000" }}>
       <AppShaderBackground />
 
-      {/* Film grain */}
       <div className="pointer-events-none fixed inset-0 z-50">
         <svg className="h-full w-full opacity-[0.035]">
           <filter id="grain-detail">
@@ -27,8 +24,9 @@ export default function MarketDetailPage({ params }: { params: Promise<{ id: str
         </svg>
       </div>
 
-      <div className="relative z-10 flex h-screen">
-        <MarketSidebar selectedCategory={category} onCategoryChange={setCategory} />
+      <AppNav />
+
+      <div className="relative z-10 flex min-h-screen pt-[88px]">
         <div className="flex-1 overflow-y-auto">
           <MarketHeader marketId={id} />
           <MarketContent marketId={id} />

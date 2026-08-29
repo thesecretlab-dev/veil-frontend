@@ -14,8 +14,8 @@ function SR({ children, delay = 0, className = "" }: { children: React.ReactNode
     <motion.div
       ref={ref}
       className={className}
-      initial={{ opacity: 0, y: 50, filter: "blur(8px)" }}
-      animate={inView ? { opacity: 1, y: 0, filter: "blur(0px)" } : {}}
+      initial={{ opacity: 0, y: 16 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.8, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
       {children}
@@ -41,7 +41,7 @@ function Section({
         <div className="mb-5 flex items-center gap-4">
           <span
             className="text-[11px] font-medium tracking-[0.3em] uppercase"
-            style={{ color: "rgba(16,185,129,0.45)", fontFamily: "var(--font-space-grotesk)" }}
+            style={{ color: "rgba(16,185,129,0.50)", fontFamily: "var(--font-space-grotesk)" }}
           >
             {number}
           </span>
@@ -51,7 +51,7 @@ function Section({
           className="mb-4 text-2xl font-light"
           style={{
             fontFamily: "var(--font-instrument-serif)",
-            color: "rgba(255,255,255,0.85)",
+            color: "rgba(255,255,255,0.95)",
             textShadow: "0 0 30px rgba(16,185,129,0.06)",
           }}
         >
@@ -59,7 +59,7 @@ function Section({
         </h2>
         <div
           className="space-y-4 text-sm leading-[1.8]"
-          style={{ color: "rgba(255,255,255,0.42)", fontFamily: "var(--font-figtree)" }}
+          style={{ color: "rgba(255,255,255,0.47)", fontFamily: "var(--font-figtree)" }}
         >
           {children}
         </div>
@@ -83,33 +83,12 @@ export default function PrivacyPage() {
 
       <div className="min-h-screen" style={{ background: "#060606" }}>
       <VeilHeader />
-        {/* ─── Fixed Nav ─── */}
-        <nav
-          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-5"
-          style={{
-            background: "rgba(6,6,6,0.8)",
-            backdropFilter: "blur(20px)",
-            borderBottom: "1px solid rgba(255,255,255,0.04)",
-          }}
-        >
-          <Link href="/app" className="text-lg font-semibold tracking-wider" style={{ color: "rgba(255,255,255,0.8)", fontFamily: "var(--font-instrument-serif)" }}>
-            VEIL
-          </Link>
-          <div className="flex gap-6">
-            {[{ label: "API Docs", href: "/app/api-docs" }, { label: "Terms", href: "/app/terms" }].map((l) => (
-              <Link key={l.href} href={l.href} className="text-xs tracking-wider uppercase transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-space-grotesk)" }}>
-                {l.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
-
         {/* ─── Hero ─── */}
         <header className="flex flex-col items-center justify-center px-6 pt-40 pb-20 text-center">
           <SR>
             <p
               className="mb-4 text-xs tracking-[0.4em] uppercase"
-              style={{ color: "rgba(16,185,129,0.5)", fontFamily: "var(--font-space-grotesk)" }}
+              style={{ color: "rgba(16,185,129,0.56)", fontFamily: "var(--font-space-grotesk)" }}
             >
               Legal
             </p>
@@ -129,7 +108,7 @@ export default function PrivacyPage() {
           <SR delay={0.2}>
             <p
               className="max-w-lg text-sm leading-relaxed"
-              style={{ color: "rgba(255,255,255,0.35)", fontFamily: "var(--font-figtree)" }}
+              style={{ color: "rgba(255,255,255,0.39)", fontFamily: "var(--font-figtree)" }}
             >
               Last updated February 20, 2026
             </p>
@@ -151,16 +130,16 @@ export default function PrivacyPage() {
 
           <Section number="02" title="Information We Collect" delay={0.05}>
             <p>
-              <strong style={{ color: "rgba(255,255,255,0.6)" }}>Wallet Address:</strong> We collect your public wallet address when you connect to the Platform. This
+              <strong style={{ color: "rgba(255,255,255,0.67)" }}>Wallet Address:</strong> We collect your public wallet address when you connect to the Platform. This
               is necessary for blockchain transactions and cannot be avoided in a decentralized system.
             </p>
             <p>
-              <strong style={{ color: "rgba(255,255,255,0.6)" }}>Transaction Data:</strong> Your trades and transactions are recorded on the Avalanche blockchain.
+              <strong style={{ color: "rgba(255,255,255,0.67)" }}>Transaction Data:</strong> Your trades and transactions are recorded on the Avalanche blockchain.
               While transaction hashes and timestamps are public, your trading positions and balances are encrypted using
               zero-knowledge technology.
             </p>
             <p>
-              <strong style={{ color: "rgba(255,255,255,0.6)" }}>Usage Analytics:</strong> We collect minimal, anonymized analytics data to improve the Platform,
+              <strong style={{ color: "rgba(255,255,255,0.67)" }}>Usage Analytics:</strong> We collect minimal, anonymized analytics data to improve the Platform,
               including page views, feature usage, and performance metrics. No personally identifiable information is
               collected.
             </p>
@@ -292,7 +271,13 @@ export default function PrivacyPage() {
                 </li>
               ))}
             </ul>
-            <p>To exercise these rights, contact us at privacy@veil.markets.</p>
+            <p>
+              To exercise these rights, contact us at{" "}
+              <a href="mailto:agent@thesecretlab.app" className="transition-colors hover:text-white" style={{ color: "rgba(16,185,129,0.78)" }}>
+                agent@thesecretlab.app
+              </a>
+              .
+            </p>
           </Section>
 
           <Section number="10" title="International Users" delay={0.05}>
@@ -319,10 +304,13 @@ export default function PrivacyPage() {
               If you have questions about this Privacy Policy or how we handle your data, please contact us at:
             </p>
             <p>
-              Email: privacy@veil.markets
+              Email:{" "}
+              <a href="mailto:agent@thesecretlab.app" className="transition-colors hover:text-white" style={{ color: "rgba(16,185,129,0.78)" }}>
+                agent@thesecretlab.app
+              </a>
               <br />
               Support:{" "}
-              <Link href="/app/support" className="transition-colors hover:text-white" style={{ color: "rgba(16,185,129,0.7)" }}>
+              <Link href="/app/support" className="transition-colors hover:text-white" style={{ color: "rgba(16,185,129,0.78)" }}>
                 veil.markets/support
               </Link>
             </p>
@@ -335,7 +323,7 @@ export default function PrivacyPage() {
           style={{ borderColor: "rgba(255,255,255,0.04)", background: "rgba(6,6,6,0.6)" }}
         >
           <div className="mx-auto flex max-w-3xl items-center justify-between">
-            <span className="text-xs" style={{ color: "rgba(255,255,255,0.2)", fontFamily: "var(--font-space-grotesk)" }}>
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.22)", fontFamily: "var(--font-space-grotesk)" }}>
               © 2026 VEIL
             </span>
             <div className="flex gap-6">
@@ -343,7 +331,7 @@ export default function PrivacyPage() {
                 { label: "API Docs", href: "/app/api-docs" },
                 { label: "Terms", href: "/app/terms" },
               ].map((l) => (
-                <Link key={l.href} href={l.href} className="text-xs transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-space-grotesk)" }}>
+                <Link key={l.href} href={l.href} className="text-xs transition-colors hover:text-white" style={{ color: "rgba(255,255,255,0.28)", fontFamily: "var(--font-space-grotesk)" }}>
                   {l.label}
                 </Link>
               ))}

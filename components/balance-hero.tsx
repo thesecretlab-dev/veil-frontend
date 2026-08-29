@@ -103,7 +103,7 @@ export function BalanceHero({ balance, usdValue, change24h, rewardGain = 0 }: Ba
               <Sparkles className="w-6 h-6" style={{ color: rank.color }} />
             </motion.div>
             <div>
-              <div className="text-sm" style={{ color: "rgba(255, 255, 255, 0.6)" }}>
+              <div className="text-sm" style={{ color: "rgba(255, 255, 255, 0.67)" }}>
                 Total wVEIL Balance
               </div>
               <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export function BalanceHero({ balance, usdValue, change24h, rewardGain = 0 }: Ba
               {isPositive ? "+" : ""}
               {change24h.toFixed(2)}%
             </span>
-            <span className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
+            <span className="text-xs" style={{ color: "rgba(255, 255, 255, 0.56)" }}>
               24h
             </span>
           </motion.div>
@@ -187,7 +187,7 @@ export function BalanceHero({ balance, usdValue, change24h, rewardGain = 0 }: Ba
 
           <motion.div
             className="text-2xl font-semibold"
-            style={{ color: "rgba(255, 255, 255, 0.7)" }}
+            style={{ color: "rgba(255, 255, 255, 0.78)" }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
@@ -199,7 +199,7 @@ export function BalanceHero({ balance, usdValue, change24h, rewardGain = 0 }: Ba
         {/* Progress bar to next rank */}
         <div className="mt-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs" style={{ color: "rgba(255, 255, 255, 0.5)" }}>
+            <span className="text-xs" style={{ color: "rgba(255, 255, 255, 0.56)" }}>
               Progress to next rank
             </span>
             <span className="text-xs font-medium" style={{ color: rank.color }}>

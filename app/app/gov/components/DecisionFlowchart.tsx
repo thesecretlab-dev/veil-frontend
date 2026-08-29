@@ -75,10 +75,10 @@ export default function DecisionFlowchart() {
       className="w-full my-8"
     >
       <div className="border border-white/10 rounded-xl bg-black/40 backdrop-blur-sm p-6 overflow-x-auto">
-        <h3 className="text-sm font-semibold text-white/70 uppercase tracking-widest mb-1">
+        <h3 className="text-sm font-semibold text-white/[0.78] uppercase tracking-widest mb-1">
           Decision Process
         </h3>
-        <p className="text-xs text-white/40 mb-4">
+        <p className="text-xs text-white/[0.45] mb-4">
           The diagram below illustrates the decision-making process for amending/creating policies.
         </p>
 

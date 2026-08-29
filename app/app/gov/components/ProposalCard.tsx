@@ -43,7 +43,7 @@ export function ProposalCard({ proposal, index }: { proposal: Proposal; index: n
             <StatusBadge status={proposal.status} />
           </div>
 
-          <div className="flex items-center gap-2 mb-4 text-xs text-white/30">
+          <div className="flex items-center gap-2 mb-4 text-xs text-white/[0.34]">
             <AddressAvatar address={proposal.author_address} />
             <span className="font-mono">{truncateAddress(proposal.author_address)}</span>
             <span>·</span>
@@ -52,7 +52,7 @@ export function ProposalCard({ proposal, index }: { proposal: Proposal; index: n
 
           <VoteBar votesFor={votesFor} votesAgainst={votesAgainst} votesAbstain={votesAbstain} compact />
 
-          <div className="flex items-center gap-4 mt-3 text-xs text-white/30">
+          <div className="flex items-center gap-4 mt-3 text-xs text-white/[0.34]">
             <span>{total} vote{total !== 1 ? 's' : ''}</span>
           </div>
         </div>

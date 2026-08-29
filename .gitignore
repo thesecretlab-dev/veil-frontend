@@ -37,6 +37,7 @@ dev-server*.log
 # vercel and runtime
 .vercel
 .runtime/
+.local/
 
 # typescript
 *.tsbuildinfo

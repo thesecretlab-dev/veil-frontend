@@ -1,4 +1,4 @@
-export type CategoryType = "Politics" | "Sports" | "Crypto" | "Earnings" | "Tech" | "Culture" | "World" | "Economy"
+export type CategoryType = "Politics" | "Sports" | "Crypto" | "Earnings" | "Tech" | "Culture" | "World" | "Economy" | "Global" | "Macro" | "Native"
 
 export interface CategoryColors {
   primary: string
@@ -67,6 +67,27 @@ export function getCategoryColors(category: string): CategoryColors {
       glow: "rgba(255, 255, 255, 0.3)",
       bg: "rgba(255, 255, 255, 0.05)",
       border: "rgba(255, 255, 255, 0.2)",
+    },
+    Macro: {
+      primary: "rgb(255, 255, 255)",
+      light: "rgba(255, 255, 255, 0.7)",
+      glow: "rgba(255, 255, 255, 0.3)",
+      bg: "rgba(255, 255, 255, 0.05)",
+      border: "rgba(255, 255, 255, 0.2)",
+    },
+    Global: {
+      primary: "rgb(239, 68, 68)",
+      light: "rgba(239, 68, 68, 0.7)",
+      glow: "rgba(239, 68, 68, 0.3)",
+      bg: "rgba(239, 68, 68, 0.1)",
+      border: "rgba(239, 68, 68, 0.3)",
+    },
+    Native: {
+      primary: "rgb(16, 185, 129)",
+      light: "rgba(16, 185, 129, 0.7)",
+      glow: "rgba(16, 185, 129, 0.3)",
+      bg: "rgba(16, 185, 129, 0.1)",
+      border: "rgba(16, 185, 129, 0.3)",
     },
   }
 

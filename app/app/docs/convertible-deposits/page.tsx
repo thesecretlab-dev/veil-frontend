@@ -1,12 +1,10 @@
 "use client"
 
-import { VeilFooter, VeilHeader } from '@/components/brand'
+import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
 
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { AppShaderBackground } from "@/components/app-shader-background"
-import { TriangleLogo } from "@/components/triangle-logo"
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -140,7 +138,7 @@ function CalloutBox({
           {title}
         </div>
       )}
-      <div className="text-sm leading-relaxed text-white/60">{children}</div>
+      <div className="text-sm leading-relaxed text-white/[0.67]">{children}</div>
     </div>
   )
 }
@@ -167,7 +165,7 @@ function FAQAccordion({ items }: { items: { q: string; a: React.ReactNode }[] })
             <motion.span
               animate={{ rotate: open === i ? 180 : 0 }}
               transition={{ duration: 0.2 }}
-              className="ml-4 text-white/40"
+              className="ml-4 text-white/[0.45]"
             >
               ▾
             </motion.span>
@@ -181,7 +179,7 @@ function FAQAccordion({ items }: { items: { q: string; a: React.ReactNode }[] })
                 transition={{ duration: 0.25 }}
                 className="overflow-hidden"
               >
-                <div className="border-t border-white/5 px-5 py-4 text-sm leading-relaxed text-white/55">
+                <div className="border-t border-white/5 px-5 py-4 text-sm leading-relaxed text-white/[0.62]">
                   {item.a}
                 </div>
               </motion.div>
@@ -199,17 +197,17 @@ function ParamTable({ rows }: { rows: [string, string, string][] }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-white/10 bg-white/[0.03]">
-            <th className="px-4 py-3 text-left font-medium text-white/70">Parameter</th>
-            <th className="px-4 py-3 text-left font-medium text-white/70">Value</th>
-            <th className="px-4 py-3 text-left font-medium text-white/70">Description</th>
+            <th className="px-4 py-3 text-left font-medium text-white/[0.78]">Parameter</th>
+            <th className="px-4 py-3 text-left font-medium text-white/[0.78]">Value</th>
+            <th className="px-4 py-3 text-left font-medium text-white/[0.78]">Description</th>
           </tr>
         </thead>
         <tbody>
           {rows.map(([p, v, d], i) => (
             <tr key={i} className="border-b border-white/5 last:border-0">
               <td className="px-4 py-3 font-mono text-emerald-300/80 text-xs">{p}</td>
-              <td className="px-4 py-3 text-white/60">{v}</td>
-              <td className="px-4 py-3 text-white/50">{d}</td>
+              <td className="px-4 py-3 text-white/[0.67]">{v}</td>
+              <td className="px-4 py-3 text-white/[0.56]">{d}</td>
             </tr>
           ))}
         </tbody>
@@ -282,22 +280,22 @@ function StrategyMatrix() {
       {strategies.map((s, i) => (
         <div key={i} className={`rounded-lg border p-4 ${colorMap[s.color]}`}>
           <div className="mb-2 text-sm font-semibold text-white/80">{s.profile}</div>
-          <div className="space-y-1 text-xs text-white/50">
+          <div className="space-y-1 text-xs text-white/[0.56]">
             <div>
-              <span className="text-white/40">Action:</span>{" "}
-              <span className="text-white/70">{s.action}</span>
+              <span className="text-white/[0.45]">Action:</span>{" "}
+              <span className="text-white/[0.78]">{s.action}</span>
             </div>
             <div>
-              <span className="text-white/40">Period:</span>{" "}
-              <span className="text-white/70">{s.period}</span>
+              <span className="text-white/[0.45]">Period:</span>{" "}
+              <span className="text-white/[0.78]">{s.period}</span>
             </div>
             <div>
-              <span className="text-white/40">Risk:</span>{" "}
-              <span className="text-white/70">{s.risk}</span>
+              <span className="text-white/[0.45]">Risk:</span>{" "}
+              <span className="text-white/[0.78]">{s.risk}</span>
             </div>
             <div>
-              <span className="text-white/40">Reward:</span>{" "}
-              <span className="text-white/70">{s.reward}</span>
+              <span className="text-white/[0.45]">Reward:</span>{" "}
+              <span className="text-white/[0.78]">{s.reward}</span>
             </div>
           </div>
         </div>
@@ -310,13 +308,13 @@ function TickDiagram() {
   return (
     <svg viewBox="0 0 600 200" className="my-6 w-full" fill="none">
       {/* axis */}
-      <line x1="50" y1="160" x2="560" y2="160" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-      <line x1="50" y1="30" x2="50" y2="160" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+      <line x1="50" y1="160" x2="560" y2="160" stroke="rgba(255,255,255,0.22)" strokeWidth="1" />
+      <line x1="50" y1="30" x2="50" y2="160" stroke="rgba(255,255,255,0.22)" strokeWidth="1" />
       {/* labels */}
-      <text x="300" y="190" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="11">
+      <text x="300" y="190" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="11">
         Tick Price (increasing →)
       </text>
-      <text x="15" y="95" textAnchor="middle" fill="rgba(255,255,255,0.4)" fontSize="11" transform="rotate(-90,15,95)">
+      <text x="15" y="95" textAnchor="middle" fill="rgba(255,255,255,0.45)" fontSize="11" transform="rotate(-90,15,95)">
         Deposit Volume
       </text>
       {/* bars */}
@@ -337,8 +335,8 @@ function TickDiagram() {
             y={160 - bar.h}
             width="35"
             height={bar.h}
-            fill={i === 4 ? "rgba(16,185,129,0.5)" : "rgba(16,185,129,0.15)"}
-            stroke={i === 4 ? "rgba(16,185,129,0.8)" : "rgba(16,185,129,0.3)"}
+            fill={i === 4 ? "rgba(16,185,129,0.56)" : "rgba(16,185,129,0.17)"}
+            stroke={i === 4 ? "rgba(16,185,129,0.90)" : "rgba(16,185,129,0.34)"}
             strokeWidth="1"
             rx="2"
           />
@@ -346,7 +344,7 @@ function TickDiagram() {
             x={bar.x + 17}
             y="175"
             textAnchor="middle"
-            fill="rgba(255,255,255,0.35)"
+            fill="rgba(255,255,255,0.39)"
             fontSize="8"
           >
             {bar.label}
@@ -371,15 +369,15 @@ function FlowDiagram() {
   return (
     <svg viewBox="0 0 640 260" className="my-6 w-full" fill="none">
       {/* Deposit box */}
-      <rect x="20" y="100" width="130" height="50" rx="8" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.5)" />
+      <rect x="20" y="100" width="130" height="50" rx="8" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.56)" />
       <text x="85" y="130" textAnchor="middle" fill="white" fontSize="12" opacity="0.8">
         Deposit Asset
       </text>
       {/* Arrow to auction */}
-      <line x1="150" y1="125" x2="190" y2="125" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-      <polygon points="188,120 198,125 188,130" fill="rgba(255,255,255,0.3)" />
+      <line x1="150" y1="125" x2="190" y2="125" stroke="rgba(255,255,255,0.34)" strokeWidth="1.5" />
+      <polygon points="188,120 198,125 188,130" fill="rgba(255,255,255,0.34)" />
       {/* Auction box */}
-      <rect x="200" y="90" width="130" height="70" rx="8" fill="rgba(16,185,129,0.15)" stroke="rgba(16,185,129,0.6)" />
+      <rect x="200" y="90" width="130" height="70" rx="8" fill="rgba(16,185,129,0.17)" stroke="rgba(16,185,129,0.67)" />
       <text x="265" y="118" textAnchor="middle" fill="white" fontSize="12" opacity="0.9" fontWeight="bold">
         Auction
       </text>
@@ -388,9 +386,9 @@ function FlowDiagram() {
       </text>
       {/* Three arrows out */}
       {/* Convert */}
-      <line x1="330" y1="105" x2="400" y2="50" stroke="rgba(16,185,129,0.4)" strokeWidth="1.5" />
-      <polygon points="396,47 404,46 400,55" fill="rgba(16,185,129,0.4)" />
-      <rect x="405" y="25" width="140" height="50" rx="8" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.4)" />
+      <line x1="330" y1="105" x2="400" y2="50" stroke="rgba(16,185,129,0.45)" strokeWidth="1.5" />
+      <polygon points="396,47 404,46 400,55" fill="rgba(16,185,129,0.45)" />
+      <rect x="405" y="25" width="140" height="50" rx="8" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.45)" />
       <text x="475" y="48" textAnchor="middle" fill="rgb(16,185,129)" fontSize="11" fontWeight="bold">
         Convert to VEIL
       </text>
@@ -438,7 +436,7 @@ function SidebarNav({ activeId }: { activeId: string }) {
               className={`block rounded px-3 py-1.5 transition-colors ${
                 isActive
                   ? "bg-emerald-500/10 text-emerald-400"
-                  : "text-white/40 hover:text-white/70 hover:bg-white/5"
+                  : "text-white/[0.45] hover:text-white/[0.78] hover:bg-white/5"
               }`}
             >
               {s.label}
@@ -453,7 +451,7 @@ function SidebarNav({ activeId }: { activeId: string }) {
                     className={`block rounded px-2 py-1 text-xs transition-colors ${
                       activeId === c.id
                         ? "text-emerald-400"
-                        : "text-white/30 hover:text-white/60"
+                        : "text-white/[0.34] hover:text-white/[0.67]"
                     }`}
                   >
                     {c.label}
@@ -473,7 +471,7 @@ function SidebarNav({ activeId }: { activeId: string }) {
       <div className="lg:hidden sticky top-0 z-30 bg-[#060606]/80 backdrop-blur-xl border-b border-white/10 px-4 py-3">
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex items-center gap-2 text-sm text-white/60 hover:text-white"
+          className="flex items-center gap-2 text-sm text-white/[0.67] hover:text-white"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -497,7 +495,7 @@ function SidebarNav({ activeId }: { activeId: string }) {
       {/* Desktop sidebar */}
       <aside className="hidden lg:block sticky top-24 self-start w-56 shrink-0">
         <div className="rounded-lg border border-white/10 bg-white/[0.02] p-4 backdrop-blur-xl max-h-[calc(100vh-8rem)] overflow-y-auto">
-          <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/30">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/[0.34]">
             On this page
           </div>
           {navContent}
@@ -515,7 +513,7 @@ function SectionH2({ id, children }: { id: string; children: React.ReactNode }) 
       id={id}
       className="scroll-mt-24 text-2xl font-light mb-6 mt-16 first:mt-0 transition-all duration-500 hover:text-white"
       style={{
-        color: "rgba(255,255,255,0.85)",
+        color: "rgba(255,255,255,0.95)",
         textShadow: "0 0 15px rgba(16,185,129,0.25)",
       }}
     >
@@ -528,7 +526,7 @@ function SectionH3({ id, children }: { id: string; children: React.ReactNode }) 
   return (
     <h3
       id={id}
-      className="scroll-mt-24 text-lg font-light mb-4 mt-8 text-white/70"
+      className="scroll-mt-24 text-lg font-light mb-4 mt-8 text-white/[0.78]"
       style={{ textShadow: "0 0 10px rgba(16,185,129,0.15)" }}
     >
       {children}
@@ -537,11 +535,11 @@ function SectionH3({ id, children }: { id: string; children: React.ReactNode }) 
 }
 
 function P({ children }: { children: React.ReactNode }) {
-  return <p className="mb-4 leading-relaxed text-white/55 text-sm">{children}</p>
+  return <p className="mb-4 leading-relaxed text-white/[0.62] text-sm">{children}</p>
 }
 
 function UL({ children }: { children: React.ReactNode }) {
-  return <ul className="mb-4 ml-4 list-disc list-inside space-y-2 text-sm text-white/55">{children}</ul>
+  return <ul className="mb-4 ml-4 list-disc list-inside space-y-2 text-sm text-white/[0.62]">{children}</ul>
 }
 
 // ─── Main Page ───────────────────────────────────────────────────────────────
@@ -572,42 +570,12 @@ export default function ConvertibleDepositsPage() {
   }, [])
 
   return (
-    <div className="relative min-h-screen bg-[#0a0a0a]">
-      <AppShaderBackground />
-
-      {/* Film grain overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Header */}
-      <header className="relative z-20 border-b border-white/10 bg-[#060606]/40 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 py-5 flex items-center justify-between">
-          <Link href="/app" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <TriangleLogo />
-            <span className="text-xl font-bold tracking-tight text-white/95" style={{ textShadow: "0 0 30px rgba(16,185,129,0.4)" }}>
-              VEIL
-            </span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/app/docs" className="text-sm text-white/50 hover:text-white/80 transition-colors">
-              ← Docs
-            </Link>
-            <Link
-              href="/app"
-              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 hover:border-emerald-400/30 hover:bg-white/10 transition-all"
-            >
-              Back to Markets
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="relative min-h-screen" style={{ background: "#060606" }}>
+      <FilmGrain />
+      <VeilHeader />
 
       {/* Hero */}
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-16 pb-10">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-28 pb-10">
         <div className="max-w-3xl">
           <div className="mb-4 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-400">
             Protocol Mechanics
@@ -622,9 +590,9 @@ export default function ConvertibleDepositsPage() {
           >
             Convertible Deposits
           </h1>
-          <p className="text-lg text-white/50 max-w-2xl leading-relaxed">
-            A novel mechanism for acquiring VEIL tokens at market-driven prices, with flexible exit options
-            and protocol-aligned incentives. Deposit stablecoins, earn yield, and choose your path.
+          <p className="text-lg text-white/[0.56] max-w-2xl leading-relaxed">
+            Design notes for a deposit/exit mechanism. Not live on this node. Native unit is VEIL; USDC/USDS
+            examples below are spec language, not a billed product.
           </p>
         </div>
       </div>
@@ -697,21 +665,21 @@ export default function ConvertibleDepositsPage() {
               <div className="my-6 grid gap-4 sm:grid-cols-3">
                 <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-5">
                   <div className="mb-2 text-sm font-semibold text-emerald-400">1. Convert to VEIL</div>
-                  <p className="text-xs text-white/50 leading-relaxed">
+                  <p className="text-xs text-white/[0.56] leading-relaxed">
                     Convert your position to VEIL tokens at the auction clearing price.
                     Best if you&apos;re bullish on VEIL and want discounted exposure.
                   </p>
                 </div>
                 <div className="rounded-lg border border-sky-500/30 bg-sky-500/5 p-5">
                   <div className="mb-2 text-sm font-semibold text-sky-400">2. Full Redemption</div>
-                  <p className="text-xs text-white/50 leading-relaxed">
+                  <p className="text-xs text-white/[0.56] leading-relaxed">
                     Wait until maturity and redeem your full deposit amount in the original asset.
                     No VEIL price risk — you get back what you put in.
                   </p>
                 </div>
                 <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-5">
                   <div className="mb-2 text-sm font-semibold text-amber-400">3. Early Reclaim</div>
-                  <p className="text-xs text-white/50 leading-relaxed">
+                  <p className="text-xs text-white/[0.56] leading-relaxed">
                     Reclaim your deposit before maturity, minus a small early withdrawal fee.
                     Useful if you need liquidity or market conditions change.
                   </p>
@@ -841,7 +809,7 @@ export default function ConvertibleDepositsPage() {
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-400">
                       {n}
                     </div>
-                    <p className="text-sm text-white/55 pt-0.5">{text}</p>
+                    <p className="text-sm text-white/[0.62] pt-0.5">{text}</p>
                   </div>
                 ))}
               </div>
@@ -1074,7 +1042,7 @@ export default function ConvertibleDepositsPage() {
                     <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500/20 text-xs font-bold text-emerald-400">
                       {n}
                     </div>
-                    <p className="text-sm text-white/55 pt-0.5">{text}</p>
+                    <p className="text-sm text-white/[0.62] pt-0.5">{text}</p>
                   </div>
                 ))}
               </div>
@@ -1089,20 +1057,7 @@ export default function ConvertibleDepositsPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 bg-[#060606]/40 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} VEIL Protocol. All rights reserved.
-          </p>
-          <div className="flex gap-6 text-xs text-white/30">
-            <Link href="/app/docs" className="hover:text-white/60 transition-colors">Documentation</Link>
-            <Link href="/app/gov" className="hover:text-white/60 transition-colors">Governance</Link>
-            <a href="https://discord.gg/veil" className="hover:text-white/60 transition-colors">Discord</a>
-            <a href="https://twitter.com/VEILmarkets" className="hover:text-white/60 transition-colors">Twitter</a>
-          </div>
-        </div>
-      </footer>
+      <VeilFooter />
     </div>
   )
 }

@@ -52,7 +52,7 @@ export function MarketSidebar({
               style={{
                 borderRadius: "10px",
                 background: isActive ? "rgba(16, 185, 129, 0.08)" : "transparent",
-                color: isActive ? "rgba(16, 185, 129, 0.85)" : "rgba(255, 255, 255, 0.4)",
+                color: isActive ? "rgba(16, 185, 129, 0.95)" : "rgba(255, 255, 255, 0.45)",
                 fontFamily: "var(--font-space-grotesk)",
                 fontWeight: 300,
               }}
@@ -61,7 +61,7 @@ export function MarketSidebar({
                 <span className="text-[11px]">{filter.icon}</span>
                 {filter.name}
               </span>
-              <span className="text-[11px]" style={{ color: "rgba(255, 255, 255, 0.15)" }}>{filter.count}</span>
+              <span className="text-[11px]" style={{ color: "rgba(255, 255, 255, 0.17)" }}>{filter.count}</span>
             </button>
           )
         })}
@@ -78,7 +78,7 @@ export function MarketSidebar({
               style={{
                 borderRadius: "10px",
                 background: isActive ? "rgba(16, 185, 129, 0.08)" : "transparent",
-                color: isActive ? "rgba(16, 185, 129, 0.85)" : "rgba(255, 255, 255, 0.4)",
+                color: isActive ? "rgba(16, 185, 129, 0.95)" : "rgba(255, 255, 255, 0.45)",
                 fontFamily: "var(--font-space-grotesk)",
                 fontWeight: 300,
               }}
@@ -87,7 +87,7 @@ export function MarketSidebar({
                 <span className="text-[11px]">{cat.icon}</span>
                 {cat.name}
               </span>
-              <span className="text-[11px]" style={{ color: "rgba(255, 255, 255, 0.15)" }}>{cat.count}</span>
+              <span className="text-[11px]" style={{ color: "rgba(255, 255, 255, 0.17)" }}>{cat.count}</span>
             </button>
           )
         })}

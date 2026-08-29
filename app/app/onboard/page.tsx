@@ -6,6 +6,8 @@ import Link from "next/link"
 import { Canvas, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
 import { VeilFooter, VeilHeader, FilmGrain } from "@/components/brand"
+import { FlowNext } from "@/components/flow-next"
+import { loadPassport, mintLocalPassport, verifyPassport, ZEROID_STORAGE_KEY } from "@/lib/zeroid/passport"
 
 /* ===========================================================================
    VEIL NETWORK CITIZEN ONBOARDING — AAA EDITION
@@ -94,8 +96,8 @@ const STAGE_DEFS: Omit<StageState, "status" | "evidence" | "error" | "startedAt"
     id: "A7_ZEROID_8004",
     name: "ZER0ID Passport",
     icon: "⊘",
-    description: "ZK identity proof · Groth16 verification",
-    detail: "Generate a ZER0ID Passport (credential type 8004) using zero-knowledge proofs. Your Groth16 circuit proves you are a unique, verified developer without revealing your real-world identity. The proof is verified on-chain. Second market unlock gate.",
+    description: "Type 8004 · tagged SHA-256 · companion registry",
+    detail: "Generate a ZER0ID Passport (credential type 8004). The secret stays on this device. This node HMAC-issues the credential and writes the nullifier to the companion registry on anvil 31337. Groth16 wasm/zkey are not served yet — this is digest-binding, not in-circuit matching. Second market unlock gate.",
   },
   {
     id: "A8_VALIDATOR_ACTIVE",
@@ -198,7 +200,7 @@ type RunnerApiResponse = {
 }
 
 const LOCAL_WALLET_BIND_KEY = "veil:onboard:wallet-bind-v1"
-const LOCAL_ZEROID_KEY = "veil:onboard:zeroid-passport-v1"
+const LOCAL_ZEROID_KEY = ZEROID_STORAGE_KEY
 const LOCAL_PAYMENT_TX_KEY = "veil:onboard:payment-tx-v1"
 
 function isTxHash(value: string): boolean {
@@ -292,7 +294,7 @@ function AnimatedNumber({ value, duration = 1.5 }: { value: number | null; durat
     requestAnimationFrame(animate)
   }, [value, duration])
 
-  if (value === null) return <span className="text-white/15">—</span>
+  if (value === null) return <span className="text-white/[0.17]">—</span>
   return <>{display.toLocaleString()}</>
 }
 
@@ -563,7 +565,7 @@ function ZKHashStream({ active, lines = 6 }: { active: boolean; lines?: number }
   if (!active || hashes.length === 0) return null
 
   return (
-    <div className="font-mono text-[10px] leading-relaxed overflow-hidden" style={{ color: "rgba(16,185,129,0.25)", maxHeight: `${lines * 18}px` }}>
+    <div className="font-mono text-[10px] leading-relaxed overflow-hidden" style={{ color: "rgba(16,185,129,0.28)", maxHeight: `${lines * 18}px` }}>
       {hashes.map((h, i) => (
         <motion.div key={`${h}-${i}`} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.12 }}>{h}</motion.div>
@@ -578,7 +580,7 @@ function HexGrid() {
       <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="hex" width="56" height="100" patternUnits="userSpaceOnUse">
-            <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100" fill="none" stroke="rgba(16,185,129,0.35)" strokeWidth="0.5" />
+            <path d="M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100" fill="none" stroke="rgba(16,185,129,0.39)" strokeWidth="0.5" />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#hex)" />
@@ -696,11 +698,11 @@ const statusColors: Record<StageStatus, string> = {
 }
 
 const statusBadgeColors: Record<StageStatus, string> = {
-  pending: "border-white/15 text-white/35",
+  pending: "border-white/15 text-white/[0.39]",
   running: "border-amber-400/25 bg-amber-500/8 text-amber-300",
   passed: "border-emerald-400/25 bg-emerald-500/8 text-emerald-300",
   failed: "border-red-400/25 bg-red-500/8 text-red-300",
-  blocked: "border-white/8 text-white/15",
+  blocked: "border-white/8 text-white/[0.17]",
 }
 
 /* ===============================================================
@@ -795,13 +797,13 @@ function StageCard({ stage, index, isActive, isGate, onClick }: {
                 stage.status === "passed" ? "text-emerald-400" :
                 stage.status === "running" ? "text-amber-400" :
                 stage.status === "blocked" ? "text-white/10" :
-                "text-white/25"
+                "text-white/[0.28]"
               }`}>
                 {stage.icon}
               </span>
             </div>
             <div>
-              <p className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.25em] text-white/25">
+              <p className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.25em] text-white/[0.28]">
                 A{index}
               </p>
               <h3 className="font-[var(--font-space-grotesk)] text-[15px] font-medium tracking-[-0.01em] text-white/90">
@@ -819,7 +821,7 @@ function StageCard({ stage, index, isActive, isGate, onClick }: {
 
         {/* Description */}
         <p className={`relative z-[3] font-[var(--font-figtree)] text-[13px] leading-relaxed transition-colors duration-500 ${
-          stage.status === "blocked" ? "text-white/15" : "text-white/40"
+          stage.status === "blocked" ? "text-white/[0.17]" : "text-white/[0.45]"
         }`}>
           {stage.description}
         </p>
@@ -923,18 +925,18 @@ function StageDetail({
             <span className={`text-2xl ${
               stage.status === "passed" ? "text-emerald-400" :
               stage.status === "running" ? "text-amber-400" :
-              "text-white/25"
+              "text-white/[0.28]"
             }`}>{stage.icon}</span>
           </motion.div>
           <div>
-            <p className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.25em] text-white/25">
+            <p className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.25em] text-white/[0.28]">
               Stage {stage.id.split("_")[0]}
             </p>
             <h2 className="font-[var(--font-instrument-serif)] text-[26px] tracking-tight text-white/90">{stage.name}</h2>
           </div>
         </div>
 
-        <p className="font-[var(--font-figtree)] text-[13px] leading-[1.8] text-white/40 mb-6">
+        <p className="font-[var(--font-figtree)] text-[13px] leading-[1.8] text-white/[0.45] mb-6">
           {stage.detail}
         </p>
 
@@ -960,9 +962,9 @@ function StageDetail({
               )}
               {stage.id === "A7_ZEROID_8004" && (
                 <>
-                  <p className="font-mono text-[10px] text-amber-400/40">▸ Generating Groth16 witness...</p>
-                  <p className="font-mono text-[10px] text-amber-400/40">▸ Computing ZK proof...</p>
-                  <p className="font-mono text-[10px] text-amber-400/40">▸ Submitting to on-chain verifier...</p>
+                  <p className="font-mono text-[10px] text-amber-400/40">▸ Tagged SHA-256 commitment + nullifier...</p>
+                  <p className="font-mono text-[10px] text-amber-400/40">▸ HMAC issue on this node...</p>
+                  <p className="font-mono text-[10px] text-amber-400/40">▸ Writing nullifier to companion registry...</p>
                 </>
               )}
               {stage.id === "A8_VALIDATOR_ACTIVE" && (
@@ -981,7 +983,7 @@ function StageDetail({
           <div className="space-y-4">
             {stage.status === "pending" && (
               <>
-                <p className="font-[var(--font-space-grotesk)] text-[9px] uppercase tracking-[0.25em] text-white/25 mb-3">
+                <p className="font-[var(--font-space-grotesk)] text-[9px] uppercase tracking-[0.25em] text-white/[0.28] mb-3">
                   Select wallet provider
                 </p>
                 <div className="grid grid-cols-1 gap-2.5">
@@ -1001,7 +1003,7 @@ function StageDetail({
                       <span className="text-xl w-8 text-center">{w.icon}</span>
                       <div>
                         <p className="font-[var(--font-space-grotesk)] text-sm text-white/85">{w.name}</p>
-                        <p className="text-[11px] text-white/20">{w.desc}</p>
+                        <p className="text-[11px] text-white/[0.22]">{w.desc}</p>
                       </div>
                     </motion.button>
                   ))}
@@ -1016,7 +1018,7 @@ function StageDetail({
                     transition={{ duration: 1.2, repeat: Infinity }} />
                   <span className="font-[var(--font-space-grotesk)] text-sm text-amber-300/80">Waiting for signature...</span>
                 </div>
-                <p className="text-[11px] text-white/25 leading-relaxed">
+                <p className="text-[11px] text-white/[0.28] leading-relaxed">
                   Check your wallet for the signature request. Binding address to enrollment token <span className="font-mono text-emerald-400/50">veil_enr_8f3k2m9x4p7n</span>
                 </p>
               </div>
@@ -1030,24 +1032,24 @@ function StageDetail({
               <p className="text-[9px] uppercase tracking-[0.25em] text-emerald-500/45 font-[var(--font-space-grotesk)] mb-3">
                 Avalanche C-Chain Payment Verification
               </p>
-              <p className="text-[12px] text-white/35 leading-relaxed">Paste the exact payment tx hash from C-Chain. The live onboarding runner validates amount and confirmations directly from on-chain data.</p>
+              <p className="text-[12px] text-white/[0.39] leading-relaxed">Paste the exact payment tx hash from C-Chain. The live onboarding runner validates amount and confirmations directly from on-chain data.</p>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="rounded-[12px] border border-white/[0.04] bg-[#050505] p-3.5">
                   <p className="text-[8px] uppercase tracking-[0.2em] text-white/18 font-[var(--font-space-grotesk)]">Target Amount</p>
                   <p className="mt-1.5 font-[var(--font-space-grotesk)] text-xl font-semibold text-emerald-400/90">~$100</p>
-                  <p className="text-[10px] text-white/15 mt-0.5">in AVAX</p>
+                  <p className="text-[10px] text-white/[0.17] mt-0.5">in AVAX</p>
                 </div>
                 <div className="rounded-[12px] border border-white/[0.04] bg-[#050505] p-3.5">
                   <p className="text-[8px] uppercase tracking-[0.2em] text-white/18 font-[var(--font-space-grotesk)]">Confirmations</p>
-                  <p className="mt-1.5 font-[var(--font-space-grotesk)] text-xl font-semibold text-white/60">12</p>
-                  <p className="text-[10px] text-white/15 mt-0.5">required</p>
+                  <p className="mt-1.5 font-[var(--font-space-grotesk)] text-xl font-semibold text-white/[0.67]">12</p>
+                  <p className="text-[10px] text-white/[0.17] mt-0.5">required</p>
                 </div>
               </div>
             </div>
             {stage.status === "pending" && (
               <>
                 <div>
-                  <label className="block text-[9px] uppercase tracking-[0.25em] text-white/25 font-[var(--font-space-grotesk)] mb-2">
+                  <label className="block text-[9px] uppercase tracking-[0.25em] text-white/[0.28] font-[var(--font-space-grotesk)] mb-2">
                     Payment Transaction Hash
                   </label>
                   <input
@@ -1088,7 +1090,7 @@ function StageDetail({
 
         {stage.status === "pending" && stage.id === "A3_PROVISION" && (
           <div className="space-y-4">
-            <p className="font-[var(--font-space-grotesk)] text-[9px] uppercase tracking-[0.25em] text-white/25 mb-3">
+            <p className="font-[var(--font-space-grotesk)] text-[9px] uppercase tracking-[0.25em] text-white/[0.28] mb-3">
               Choose your infrastructure path
             </p>
             <div className="grid grid-cols-1 gap-3">
@@ -1109,7 +1111,7 @@ function StageDetail({
                       Home Server
                       <span className="ml-2 rounded-full border border-emerald-500/25 bg-emerald-500/[0.08] px-2.5 py-0.5 text-[8px] uppercase tracking-[0.2em] text-emerald-400/80">Sovereign</span>
                     </p>
-                    <p className="mt-1.5 text-[12px] text-white/30 leading-relaxed">
+                    <p className="mt-1.5 text-[12px] text-white/[0.34] leading-relaxed">
                       Set up a dedicated machine at home. Under $100 for a capable mini PC.
                       Your hardware, your keys, your rules.
                     </p>
@@ -1134,16 +1136,16 @@ function StageDetail({
                 <NoiseTexture opacity={0.015} />
                 <div className="relative z-10 flex items-start gap-4">
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-[14px] border border-white/[0.06] bg-white/[0.02]">
-                    <span className="text-xl text-white/40">☁️</span>
+                    <span className="text-xl text-white/[0.45]">☁️</span>
                   </div>
                   <div>
                     <p className="font-[var(--font-space-grotesk)] text-[15px] font-medium text-white/85">
                       Automated Cloud
                     </p>
-                    <p className="mt-1.5 text-[12px] text-white/30 leading-relaxed">
+                    <p className="mt-1.5 text-[12px] text-white/[0.34] leading-relaxed">
                       Auto-provision a cloud instance. Faster to start, recurring monthly cost.
                     </p>
-                    <div className="mt-3 flex items-center gap-4 text-[10px] text-white/25 font-[var(--font-space-grotesk)]">
+                    <div className="mt-3 flex items-center gap-4 text-[10px] text-white/[0.28] font-[var(--font-space-grotesk)]">
                       <span>~$5-20/mo</span>
                       <span className="text-white/6">|</span>
                       <span>~2 min</span>
@@ -1154,7 +1156,7 @@ function StageDetail({
                 </div>
               </motion.button>
             </div>
-            <p className="text-[11px] text-white/15 leading-relaxed">
+            <p className="text-[11px] text-white/[0.17] leading-relaxed">
               Both paths produce an identical validator node. Home servers align with the ANIMA vision — agents that own their own infrastructure.
             </p>
           </div>
@@ -1200,13 +1202,14 @@ function StageDetail({
               <p className="relative z-10 text-[9px] uppercase tracking-[0.25em] text-white/18 font-[var(--font-space-grotesk)] mb-3">
                 ZER0ID Passport Generation
               </p>
-              <div className="relative z-10 space-y-2.5 text-[12px] text-white/30 leading-relaxed">
-                <p className="flex items-start gap-2"><span className="text-emerald-500/40 mt-0.5">①</span> A Groth16 circuit generates a zero-knowledge proof of your identity</p>
-                <p className="flex items-start gap-2"><span className="text-emerald-500/40 mt-0.5">②</span> The proof is verified against the on-chain verifier contract</p>
-                <p className="flex items-start gap-2"><span className="text-emerald-500/40 mt-0.5">③</span> A Passport credential (type 8004) is minted to your wallet</p>
-                <p className="text-emerald-400/35 mt-4 text-[11px]">⊘ No personal data leaves your browser. The proof reveals nothing except that you are verified.</p>
+              <div className="relative z-10 space-y-2.5 text-[12px] text-white/[0.46] leading-relaxed">
+                <p className="flex items-start gap-2"><span className="text-emerald-500/40 mt-0.5">①</span> This device hashes a local secret into a tagged SHA-256 commitment and nullifier</p>
+                <p className="flex items-start gap-2"><span className="text-emerald-500/40 mt-0.5">②</span> Mesh HMAC-issues the 8004 credential. The secret never leaves the browser</p>
+                <p className="flex items-start gap-2"><span className="text-emerald-500/40 mt-0.5">③</span> The nullifier is unique on the companion registry (anvil 31337)</p>
+                <p className="text-emerald-400/55 mt-4 text-[11px]">⊘ Groth16 wasm/zkey are not served. This gate is digest-binding, not in-circuit matching.</p>
               </div>
             </div>
+            <div className="flex flex-wrap items-center gap-3">
             <MagneticButton
               disabled={actionBusy}
               onClick={() => onAction("start_zeroid")}
@@ -1220,6 +1223,14 @@ function StageDetail({
                 transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 3 }}
               />
             </MagneticButton>
+              <Link
+                href="/app/zeroid"
+                className="rounded-full px-5 py-3 text-[12px] tracking-wide uppercase"
+                style={{ fontFamily: "var(--font-space-grotesk)", border: "1px solid rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.7)" }}
+              >
+                Open desk
+              </Link>
+            </div>
           </div>
         )}
 
@@ -1242,7 +1253,7 @@ function StageDetail({
               </Link>
             </div>
             <Link href="/app/oath"
-              className="flex items-center justify-center gap-2 rounded-[16px] border border-white/[0.04] bg-white/[0.01] px-5 py-3.5 font-[var(--font-space-grotesk)] text-xs text-white/35 transition-all hover:border-emerald-500/15 hover:text-white/60">
+              className="flex items-center justify-center gap-2 rounded-[16px] border border-white/[0.04] bg-white/[0.01] px-5 py-3.5 font-[var(--font-space-grotesk)] text-xs text-white/[0.39] transition-all hover:border-emerald-500/15 hover:text-white/[0.67]">
               Take the Bloodsworn Oath — begin reputation advancement
             </Link>
           </motion.div>
@@ -1292,7 +1303,7 @@ function StageDetail({
 
         {/* Timestamps */}
         {(stage.startedAt || stage.updatedAt) && (
-          <div className="mt-6 flex gap-6 text-[10px] text-white/15 font-mono">
+          <div className="mt-6 flex gap-6 text-[10px] text-white/[0.17] font-mono">
             {stage.startedAt && <span>Started: {new Date(stage.startedAt).toLocaleString()}</span>}
             {stage.updatedAt && <span>Updated: {new Date(stage.updatedAt).toLocaleString()}</span>}
           </div>
@@ -1330,7 +1341,7 @@ function ProgressSpine({ stages, activeIndex }: { stages: StageState[]; activeIn
           )}
         </div>
       ))}
-      <span className="ml-3 font-[var(--font-space-grotesk)] text-[11px] text-white/20">{passedCount}/{stages.length}</span>
+      <span className="ml-3 font-[var(--font-space-grotesk)] text-[11px] text-white/[0.22]">{passedCount}/{stages.length}</span>
     </div>
   )
 }
@@ -1377,15 +1388,30 @@ export default function OnboardPage() {
       }
     } catch {}
 
-    try {
-      const savedZeroid = window.localStorage.getItem(LOCAL_ZEROID_KEY)
-      if (savedZeroid) {
-        const parsed = JSON.parse(savedZeroid) as Record<string, string>
-        if (parsed.passport_id && parsed.verification_proof) {
-          setZeroidEvidence(parsed)
-        }
+    const savedZeroid = window.localStorage.getItem(LOCAL_ZEROID_KEY)
+    if (savedZeroid) {
+      const p = loadPassport()
+      if (p?.nullifier && p.issuerSig) {
+        void verifyPassport(p)
+          .then((check) => {
+            if (!check.ok || check.onChain !== true) return
+            setZeroidEvidence({
+              passport_id: p.passport_id,
+              verification_proof: p.verification_proof,
+              verified_at: p.verified_at,
+              commitment: p.commitment,
+              nullifier: p.nullifier,
+              credentialHash: p.credentialHash,
+              issuerSig: p.issuerSig,
+              issueTx: p.issueTx,
+              binding: p.binding,
+              inCircuit: p.inCircuit,
+              wallet: p.wallet,
+            })
+          })
+          .catch(() => {})
       }
-    } catch {}
+    }
 
     const savedPaymentTx = window.localStorage.getItem(LOCAL_PAYMENT_TX_KEY)
     if (savedPaymentTx && isTxHash(savedPaymentTx)) {
@@ -1566,7 +1592,7 @@ export default function OnboardPage() {
 
     applyStage("A6_ANIMA_VALIDATED", mvpStageState("M4_ANIMA_VALIDATE_VEIL"))
 
-    applyStage("A7_ZEROID_8004", zeroidEvidence
+    applyStage("A7_ZEROID_8004", zeroidEvidence?.issuerSig && zeroidEvidence?.nullifier
       ? {
           status: "passed",
           evidence: zeroidEvidence,
@@ -1679,18 +1705,32 @@ export default function OnboardPage() {
     window.localStorage.setItem(LOCAL_WALLET_BIND_KEY, JSON.stringify(evidence))
   }, [])
 
-  const captureZeroidEvidence = useCallback(() => {
-    if (typeof window === "undefined") throw new Error("ZER0ID verification requires browser input")
-    const passportId = window.prompt("Enter ZER0ID passport type (expected 8004)", "8004")?.trim() || ""
-    if (!passportId) throw new Error("Passport type is required")
-    if (passportId !== "8004") throw new Error("Passport type must be 8004")
-    const verificationProof = window.prompt("Enter verification proof reference (tx hash or proof id)")?.trim() || ""
-    if (!verificationProof) throw new Error("Verification proof is required")
-    const verifiedAt = new Date().toISOString()
-    const evidence: Record<string, string> = { passport_id: passportId, verification_proof: verificationProof, verified_at: verifiedAt }
-    if (isTxHash(verificationProof)) evidence.verification_tx_hash = verificationProof
+  const captureZeroidEvidence = useCallback(async () => {
+    if (typeof window === "undefined") throw new Error("ZER0ID requires the browser")
+    let p = loadPassport()
+    if (!p?.issuerSig) p = await mintLocalPassport()
+    const check = await verifyPassport(p)
+    if (!check.ok) {
+      throw new Error(`ZER0ID verify failed: ${(check.reasons || []).join(", ") || "issuer rejected"}`)
+    }
+    if (check.onChain !== true) {
+      throw new Error("ZER0ID nullifier is not on the companion registry")
+    }
+    const evidence: Record<string, string> = {
+      passport_id: p.passport_id,
+      verification_proof: p.verification_proof,
+      verified_at: p.verified_at,
+      commitment: p.commitment,
+      nullifier: p.nullifier,
+      credentialHash: p.credentialHash,
+      issuerSig: p.issuerSig,
+      issueTx: p.issueTx,
+      binding: p.binding,
+      inCircuit: p.inCircuit,
+      wallet: p.wallet,
+    }
     setZeroidEvidence(evidence)
-    window.localStorage.setItem(LOCAL_ZEROID_KEY, JSON.stringify(evidence))
+    window.localStorage.setItem(LOCAL_ZEROID_KEY, JSON.stringify(p))
   }, [])
 
   const handleStageAction = useCallback(
@@ -1702,7 +1742,7 @@ export default function OnboardPage() {
         if (action.startsWith("connect_")) { await bindWallet(); return }
         if (action === "verify_payment" || action === "provision_cloud" || action === "retry") { await startRunner("fresh"); return }
         if (action === "provision_home") { await startRunner("reuse"); return }
-        if (action === "start_zeroid") { captureZeroidEvidence(); return }
+        if (action === "start_zeroid") { await captureZeroidEvidence(); return }
         if (action.startsWith("start_")) {
           if (action === "start_a9_markets_unlocked") { await refreshRunner(); return }
           await startRunner("reuse"); return
@@ -1755,7 +1795,7 @@ export default function OnboardPage() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={heroComplete ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="mt-6 max-w-md font-[var(--font-figtree)] text-[15px] leading-[1.8] text-white/30"
+                className="mt-6 max-w-md font-[var(--font-figtree)] text-[15px] leading-[1.8] text-white/[0.34]"
               >
                 Ten stages from stranger to sovereign participant. Provision your infrastructure,
                 prove your identity, validate your node, and unlock the market economy.
@@ -1817,7 +1857,7 @@ export default function OnboardPage() {
         <div className="mx-auto max-w-7xl px-6 py-3.5 flex items-center justify-between">
           <ProgressSpine stages={stages} activeIndex={activeStageIndex} />
           <div className="flex items-center gap-3">
-            <span className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.2em] text-white/20">
+            <span className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.2em] text-white/[0.22]">
               {activeStage.name}
             </span>
             <StatusIcon status={activeStage.status} />
@@ -1874,7 +1914,7 @@ export default function OnboardPage() {
             {/* Gate Status Panel */}
             <div className="relative rounded-[24px] border border-white/[0.04] bg-white/[0.008] p-6 overflow-hidden">
               <NoiseTexture opacity={0.02} />
-              <p className="relative z-10 mb-4 font-[var(--font-space-grotesk)] text-[9px] uppercase tracking-[0.25em] text-white/20">
+              <p className="relative z-10 mb-4 font-[var(--font-space-grotesk)] text-[9px] uppercase tracking-[0.25em] text-white/[0.22]">
                 Market Unlock Gates
               </p>
               {GATE_STAGES.map(gateId => {
@@ -1883,7 +1923,7 @@ export default function OnboardPage() {
                   <div key={gateId} className="relative z-10 flex items-center justify-between py-2.5 border-b border-white/[0.025] last:border-0">
                     <div className="flex items-center gap-3">
                       <span className="text-sm">{gate.icon}</span>
-                      <span className="font-[var(--font-figtree)] text-[12px] text-white/35">{gate.name}</span>
+                      <span className="font-[var(--font-figtree)] text-[12px] text-white/[0.39]">{gate.name}</span>
                     </div>
                     <StatusIcon status={gate.status} size="md" />
                   </div>
@@ -1895,7 +1935,7 @@ export default function OnboardPage() {
                   animate={marketsLocked ? {} : { boxShadow: ["0 0 0px rgba(16,185,129,0.4)", "0 0 12px rgba(16,185,129,0.6)", "0 0 0px rgba(16,185,129,0.4)"] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
-                <span className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.2em] text-white/25">
+                <span className="font-[var(--font-space-grotesk)] text-[10px] uppercase tracking-[0.2em] text-white/[0.28]">
                   {marketsLocked ? "Markets remain locked" : "All gates passed — markets open"}
                 </span>
               </div>
@@ -1904,6 +1944,7 @@ export default function OnboardPage() {
         </div>
       </main>
 
+      <FlowNext />
       <VeilFooter />
 
       <style jsx global>{`

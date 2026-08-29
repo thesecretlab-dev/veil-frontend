@@ -22,7 +22,7 @@ export default function PrinciplesSection() {
           tag="h2"
           className="text-4xl md:text-5xl font-bold tracking-wide mb-12 text-center font-sans cursor-default"
           style={{
-            color: "rgba(255, 255, 255, 0.35)",
+            color: "rgba(255, 255, 255, 0.39)",
             textShadow: `
               0 0 10px rgba(16, 185, 129, 0.3),
               0 0 20px rgba(16, 185, 129, 0.2),
@@ -47,31 +47,31 @@ export default function PrinciplesSection() {
                 }}
                 whileHover={{
                   background: "rgba(16, 185, 129, 0.15)",
-                  borderColor: "rgba(16, 185, 129, 0.35)",
+                  borderColor: "rgba(16, 185, 129, 0.44)",
                   scale: 1.1,
                   transition: { duration: 0.3 },
                 }}
               >
-                <span className="text-2xl font-sans" style={{ color: "rgba(16, 185, 129, 0.5)" }}>
+                <span className="text-2xl font-sans" style={{ color: "rgba(16, 185, 129, 0.56)" }}>
                   {i + 1}
                 </span>
               </motion.div>
               <motion.h3
                 className="text-xl font-semibold mb-3 font-sans"
                 style={{
-                  color: "rgba(255, 255, 255, 0.30)",
+                  color: "rgba(255, 255, 255, 0.34)",
                   textShadow: "0 0 10px rgba(16, 185, 129, 0.15)",
                   WebkitTextStroke: "0.3px rgba(255, 255, 255, 0.15)",
                 }}
                 whileHover={{
-                  color: "rgba(255, 255, 255, 0.50)",
+                  color: "rgba(255, 255, 255, 0.56)",
                   textShadow: "0 0 15px rgba(16, 185, 129, 0.4)",
                   transition: { duration: 0.4 },
                 }}
               >
                 {principle.title}
               </motion.h3>
-              <p className="leading-relaxed font-sans" style={{ color: "rgba(255, 255, 255, 0.4)" }}>
+              <p className="leading-relaxed font-sans" style={{ color: "rgba(255, 255, 255, 0.45)" }}>
                 {principle.desc}
               </p>
             </VeilCard>
