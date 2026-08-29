@@ -30,19 +30,28 @@ export type LocalSnapshot = {
 
 export async function fetchLocalSnapshot(): Promise<LocalSnapshot | null> {
   if (!LOCAL_SNAPSHOT_GIST) return null
+  const ua = { "user-agent": "veil-markets" }
   try {
     const res = await fetch(`https://api.github.com/gists/${LOCAL_SNAPSHOT_GIST}`, {
-      headers: { accept: "application/vnd.github+json" },
+      headers: { accept: "application/vnd.github+json", ...ua },
       cache: "no-store",
       signal: AbortSignal.timeout(8000),
     })
-    if (!res.ok) return null
-    const gist = (await res.json()) as {
-      files?: Record<string, { content?: string }>
+    if (res.ok) {
+      const gist = (await res.json()) as { files?: Record<string, { content?: string }> }
+      const raw = gist.files?.["veil-local-snapshot.json"]?.content
+      if (raw) return JSON.parse(raw) as LocalSnapshot
     }
-    const raw = gist.files?.["veil-local-snapshot.json"]?.content
-    if (!raw) return null
-    return JSON.parse(raw) as LocalSnapshot
+  } catch {
+    /* fall through to raw gist */
+  }
+  try {
+    const res = await fetch(
+      `https://gist.githubusercontent.com/0x12371C/${LOCAL_SNAPSHOT_GIST}/raw/veil-local-snapshot.json?t=${Date.now()}`,
+      { headers: ua, cache: "no-store", signal: AbortSignal.timeout(8000) },
+    )
+    if (!res.ok) return null
+    return (await res.json()) as LocalSnapshot
   } catch {
     return null
   }
